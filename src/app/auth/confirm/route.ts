@@ -16,7 +16,11 @@ export async function GET(request: NextRequest) {
     if (!error) {
       redirect(next);
     }
+    redirect("/connexion?erreur=" + encodeURIComponent("Ce lien n'est plus valide."));
   }
 
-  redirect("/connexion?erreur=" + encodeURIComponent("Ce lien n'est plus valide."));
+  // Sans jeton dans l'URL, la session est probablement dans le fragment, que
+  // le serveur ne reçoit pas. Le navigateur le conserve à travers cette
+  // redirection : l'accueil saura le lire.
+  redirect("/");
 }
