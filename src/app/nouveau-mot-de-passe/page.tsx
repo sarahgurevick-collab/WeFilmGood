@@ -60,7 +60,7 @@ export default async function NouveauMotDePassePage({
           />
         </label>
 
-        <button type="submit" className={formStyles.submit}>
+        <button type="submit" className={formStyles.submitWide}>
           Enregistrer
         </button>
       </form>

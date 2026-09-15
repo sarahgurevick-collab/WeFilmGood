@@ -55,7 +55,7 @@ export default async function LecteurInscriptionPage({
           />
         </label>
 
-        <button type="submit" className={formStyles.submit}>
+        <button type="submit" className={formStyles.submitWide}>
           Créer mon profil
         </button>
       </form>

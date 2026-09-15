@@ -20,9 +20,9 @@ body {
   min-height: 100vh;
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-family: var(--font-sans), ui-rounded, "Nunito", system-ui, sans-serif;
   font-size: 13px;
-  line-height: 1.35;
+  line-height: 1.4;
   letter-spacing: 0.07em;
   text-transform: uppercase;
 }

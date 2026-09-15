@@ -40,7 +40,7 @@ export default async function LostPwdPage({
           <input type="email" name="email" required autoComplete="email" />
         </label>
 
-        <button type="submit" className={formStyles.submit}>
+        <button type="submit" className={formStyles.submitWide}>
           Envoyer le lien
         </button>
 

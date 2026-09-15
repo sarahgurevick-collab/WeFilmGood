@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 
-const mono = JetBrains_Mono({
+const sans = Nunito({
   subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-mono",
+  weight: ["400", "600", "700"],
+  variable: "--font-sans",
   display: "swap",
 });
 
@@ -19,7 +19,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr" className={mono.variable}>
+    <html lang="fr" className={sans.variable}>
       <body>{children}</body>
     </html>
   );
