@@ -1,0 +1,26 @@
+.banner {
+  position: fixed;
+  z-index: 50;
+  left: 50%;
+  /* Au-dessus du lien « Projets » ancré en bas de la page d'accueil. */
+  bottom: 96px;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  background: #140f0e;
+  border: 1px solid #4a2622;
+  color: #ff8a7a;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 12px 16px;
+}
+
+.banner a {
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}

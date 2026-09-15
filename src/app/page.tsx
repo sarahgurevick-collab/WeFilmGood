@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
+import HashSession from "@/components/HashSession";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./page.module.css";
@@ -22,6 +23,7 @@ export default async function Home() {
 
   return (
     <>
+      <HashSession />
       <PitchWall pitches={pitches} />
 
       <div className={styles.ui}>
