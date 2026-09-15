@@ -131,6 +131,12 @@ export default async function LecteurPage() {
       <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
         <Link href="/lecteur/mes-fiches">Voir mes fiches de lecture</Link>
       </p>
+
+      <form action="/deconnexion" method="post" style={{ marginTop: 24 }}>
+        <button type="submit" className={styles.linkButton}>
+          Se déconnecter
+        </button>
+      </form>
     </PageShell>
   );
 }
