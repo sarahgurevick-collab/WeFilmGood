@@ -27,6 +27,7 @@ export default async function MenuPage() {
 
         {user ? (
           <>
+            <Link href="/profil">Mon profil</Link>
             {readerRole && <Link href="/lecteur">Espace lecteur</Link>}
             {isAdmin && <Link href="/admin">Administration</Link>}
             <p className={formStyles.hint}>Connecté·e : {user.email}</p>
