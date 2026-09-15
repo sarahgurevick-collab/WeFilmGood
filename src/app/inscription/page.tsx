@@ -1,7 +1,6 @@
 import Link from "next/link";
 import AuthCard from "@/components/AuthCard";
 import formStyles from "@/components/form.module.css";
-import { createClient } from "@/lib/supabase/server";
 import { signUp } from "./actions";
 
 const CATEGORIES = [
@@ -29,13 +28,6 @@ export default async function InscriptionPage({
       </AuthCard>
     );
   }
-
-  const supabase = await createClient();
-  const { data: roles } = await supabase
-    .from("roles")
-    .select("slug, label_fr")
-    .eq("is_public", true)
-    .order("position", { ascending: true });
 
   return (
     <AuthCard active="inscription">
@@ -86,22 +78,6 @@ export default async function InscriptionPage({
             autoComplete="new-password"
           />
         </label>
-
-        <div className={formStyles.field}>
-          <span>Mes métiers</span>
-          <div className={formStyles.roles}>
-            {(roles ?? []).map((r) => (
-              <label key={r.slug} className={formStyles.role}>
-                <input type="checkbox" name="roles" value={r.slug} />
-                {r.label_fr}
-              </label>
-            ))}
-          </div>
-          <span className={formStyles.hint}>
-            Ils servent de mots clés : les autres talents vous trouvent par ce
-            biais. Vous pourrez les compléter plus tard.
-          </span>
-        </div>
 
         <label className={formStyles.checkline}>
           <input type="checkbox" name="cgu" value="1" required />

@@ -23,7 +23,6 @@ export async function signUp(formData: FormData) {
   const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
   const category = formData.get("category") as string;
-  const roles = formData.getAll("roles").map(String);
   const next = (formData.get("next") as string) || "/";
 
   const params = (extra: Record<string, string>) =>
@@ -46,7 +45,7 @@ export async function signUp(formData: FormData) {
     email,
     password,
     options: {
-      data: { full_name: fullName, category, roles },
+      data: { full_name: fullName, category },
     },
   });
 
