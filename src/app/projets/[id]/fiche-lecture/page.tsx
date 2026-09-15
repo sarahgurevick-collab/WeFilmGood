@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./fiche.module.css";
+import FicheContent from "@/components/FicheContent";
 import { createClient } from "@/lib/supabase/server";
 import { rateReport } from "./actions";
 
@@ -65,7 +66,9 @@ export default async function FicheLecturePage({
         {report.labellise && " · Projet labellisé WFG"}
       </p>
 
-      <div className={styles.content}>{report.content}</div>
+      <div className={styles.content}>
+        <FicheContent html={report.content} />
+      </div>
 
       <h2 className={styles.subhead}>Votre satisfaction</h2>
 

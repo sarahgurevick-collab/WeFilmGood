@@ -1,0 +1,41 @@
+.fiche {
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.fiche p {
+  margin: 0 0 16px;
+}
+
+.fiche h2 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 30px 0 10px;
+}
+
+.fiche h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 24px 0 8px;
+}
+
+.fiche ul,
+.fiche ol {
+  margin: 0 0 16px;
+  padding-left: 22px;
+}
+
+.fiche li {
+  margin-bottom: 6px;
+}
+
+.fiche blockquote {
+  margin: 0 0 16px;
+  padding-left: 16px;
+  border-left: 2px solid #2f2f2f;
+  color: var(--dim);
+}
+
+.fiche :first-child {
+  margin-top: 0;
+}

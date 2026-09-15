@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { ficheEstVide, sanitizeFiche } from "@/lib/sanitize";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -17,10 +18,10 @@ export async function publishReport(formData: FormData) {
   const supabase = await requireAdmin();
 
   const reportId = formData.get("report_id") as string;
-  const content = (formData.get("content") as string)?.trim();
+  const content = sanitizeFiche((formData.get("content") as string) ?? "");
   const score = Number(formData.get("score"));
 
-  if (!content || !Number.isInteger(score) || score < 0 || score > 200) {
+  if (ficheEstVide(content) || !Number.isInteger(score) || score < 0 || score > 200) {
     redirect(`/admin/fiches/${reportId}`);
   }
 

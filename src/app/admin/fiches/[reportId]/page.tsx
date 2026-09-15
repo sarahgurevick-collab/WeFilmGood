@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import adminStyles from "../../admin.module.css";
+import RichTextEditor from "@/components/RichTextEditor";
+import { sanitizeFiche } from "@/lib/sanitize";
 import { createClient } from "@/lib/supabase/server";
 import { publishReport, rejectReport } from "./actions";
 
@@ -48,7 +50,10 @@ export default async function FicheAdminPage({
     .eq("reading_report_id", reportId)
     .maybeSingle();
 
-  const content = publication?.content ?? report.content ?? "";
+  // Passé par le filtre avant d'entrer dans l'éditeur : c'est là que
+  // l'ancienne mise en forme est traduite, sans quoi l'éditeur la
+  // supprimerait en silence.
+  const content = sanitizeFiche(publication?.content ?? report.content ?? "");
   const score = publication?.score ?? report.score ?? 0;
 
   return (
@@ -68,10 +73,10 @@ export default async function FicheAdminPage({
       <form className={formStyles.form} action={publishReport} style={{ marginTop: 32 }}>
         <input type="hidden" name="report_id" value={report.id} />
 
-        <label className={formStyles.field}>
+        <div className={formStyles.field}>
           <span>Texte publié à l&apos;auteur</span>
-          <textarea name="content" rows={24} defaultValue={content} required />
-        </label>
+          <RichTextEditor name="content" defaultValue={content} />
+        </div>
 
         <label className={formStyles.field}>
           <span>Note publiée (au-delà de 150, le projet est labellisé)</span>

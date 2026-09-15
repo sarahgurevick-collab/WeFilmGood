@@ -3,6 +3,7 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "../lecteur.module.css";
 import { createClient } from "@/lib/supabase/server";
+import RichTextEditor from "@/components/RichTextEditor";
 import { submitReadingReport } from "./actions";
 import ScoreSlider from "./ScoreSlider";
 
@@ -88,10 +89,14 @@ export default async function RedactionFichePage({
         <input type="hidden" name="project_id" value={assignment.project.id} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
-        <label className={formStyles.field}>
+        <div className={formStyles.field}>
           <span>Analyse du projet</span>
-          <textarea name="content" rows={18} required />
-        </label>
+          <RichTextEditor name="content" />
+          <span className={formStyles.hint}>
+            Vous pouvez rédiger sous Word et coller ici : la mise en forme
+            est conservée.
+          </span>
+        </div>
 
         <ScoreSlider />
 

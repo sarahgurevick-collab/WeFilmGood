@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { ficheEstVide, sanitizeFiche } from "@/lib/sanitize";
 
 export async function submitReadingReport(formData: FormData) {
   const supabase = await createClient();
@@ -11,7 +12,7 @@ export async function submitReadingReport(formData: FormData) {
 
   const assignmentId = formData.get("assignment_id") as string;
   const projectId = formData.get("project_id") as string;
-  const content = (formData.get("content") as string)?.trim();
+  const content = sanitizeFiche((formData.get("content") as string) ?? "");
   const score = Number(formData.get("score"));
 
   if (!user) {
@@ -21,7 +22,7 @@ export async function submitReadingReport(formData: FormData) {
   const fail = (message: string) =>
     redirect(`/lecteur/${assignmentId}?erreur=${encodeURIComponent(message)}`);
 
-  if (!content) {
+  if (ficheEstVide(content)) {
     fail("L'analyse ne peut pas être vide.");
   }
   if (!Number.isInteger(score) || score < 0 || score > 200) {

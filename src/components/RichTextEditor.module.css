@@ -1,0 +1,88 @@
+.wrapper {
+  border: 1px solid #262626;
+  border-radius: 10px;
+  background: #0b0b0b;
+  overflow: hidden;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  border-bottom: 1px solid #1f1f1f;
+}
+
+.button,
+.buttonActive {
+  background: transparent;
+  border: 1px solid #262626;
+  border-radius: 999px;
+  color: var(--dim);
+  font-family: inherit;
+  font-size: 11px;
+  padding: 5px 11px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.button:hover {
+  color: var(--fg);
+  border-color: #3a3a3a;
+}
+
+.buttonActive {
+  background: var(--fg);
+  border-color: var(--fg);
+  color: #000;
+}
+
+.surface {
+  min-height: 340px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 16px;
+  outline: none;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.surface p {
+  margin: 0 0 14px;
+}
+
+.surface h2 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 26px 0 10px;
+}
+
+.surface h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 22px 0 8px;
+}
+
+.surface ul,
+.surface ol {
+  margin: 0 0 14px;
+  padding-left: 22px;
+}
+
+.surface li {
+  margin-bottom: 5px;
+}
+
+.surface blockquote {
+  margin: 0 0 14px;
+  padding-left: 14px;
+  border-left: 2px solid #2f2f2f;
+  color: var(--dim);
+}
+
+.surface :first-child {
+  margin-top: 0;
+}
