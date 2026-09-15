@@ -36,6 +36,10 @@ export default async function ConnexionPage({
         </button>
 
         <p className={formStyles.linkRow}>
+          <Link href="/lost-pwd">Mot de passe oublié ?</Link>
+        </p>
+
+        <p className={formStyles.linkRow}>
           Pas encore de compte ?{" "}
           <Link href={`/inscription?next=${encodeURIComponent(nextPath)}`}>
             Créer un profil
