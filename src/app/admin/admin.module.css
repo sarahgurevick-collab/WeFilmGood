@@ -1,0 +1,90 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-transform: none;
+  letter-spacing: normal;
+  margin-top: 8px;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid #1f1f1f;
+  vertical-align: top;
+}
+
+.table th {
+  color: var(--dim);
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.table code {
+  font-family: inherit;
+  letter-spacing: 0.05em;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  color: var(--dim);
+  font-family: inherit;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.linkButton:hover {
+  color: var(--fg);
+}
+
+.subhead {
+  margin: 48px 0 4px;
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 16px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.wide {
+  max-width: 720px;
+}
+
+.inlineForm {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inlineForm select {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #2a2a2a;
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 4px 2px;
+  outline: none;
+  appearance: none;
+  border-radius: 0;
+  max-width: 130px;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 8px;
+  border: 1px solid #2a2a2a;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--dim);
+}

@@ -1,0 +1,59 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.corner {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  z-index: 2;
+}
+
+.corner a {
+  transition: opacity 0.2s ease;
+}
+
+.corner a:hover {
+  opacity: 0.55;
+}
+
+.main {
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 130px 24px 96px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.wide {
+  max-width: 760px;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 11px;
+}
+
+.title {
+  margin: 0 0 40px;
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.25;
+}
+
+@media (max-width: 620px) {
+  .corner {
+    top: 16px;
+    left: 16px;
+  }
+  .main {
+    padding: 100px 16px 72px;
+  }
+}

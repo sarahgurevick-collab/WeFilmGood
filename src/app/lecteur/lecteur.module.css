@@ -1,0 +1,122 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid #1f1f1f;
+  vertical-align: top;
+}
+
+.table th {
+  color: var(--dim);
+  font-weight: 400;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* Une fiche payée est grisée, comme demandé dans le cahier des charges. */
+.paid td {
+  color: var(--dim);
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 8px;
+  border: 1px solid #2a2a2a;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--dim);
+}
+
+.subhead {
+  margin: 48px 0 4px;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #1f1f1f;
+  padding: 18px 20px;
+}
+
+.card p {
+  margin: 6px 0 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  color: var(--dim);
+  font-family: inherit;
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.linkButton:hover {
+  color: var(--fg);
+}
+
+.dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 7px;
+  vertical-align: middle;
+}
+
+.vert {
+  background: #4ade80;
+}
+
+.orange {
+  background: #fbbf24;
+}
+
+.rouge {
+  background: #f87171;
+}
+
+.slider {
+  width: 100%;
+  accent-color: var(--fg);
+  padding: 0;
+}
+
+.labelled {
+  font-style: normal;
+  color: var(--fg);
+}

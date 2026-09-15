@@ -1,0 +1,43 @@
+:root {
+  --bg: #000000;
+  --fg: #ededed;
+  --dim: #767676;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --spread-dur: 0.9s;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.35;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+/* La page d'accueil est composée d'éléments position:fixed : elle ne
+   génère donc aucun débordement, pas besoin d'overflow:hidden global
+   qui empêcherait les autres pages (connexion, dépôt…) de défiler. */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (max-width: 620px) {
+  body {
+    font-size: 11px;
+  }
+}

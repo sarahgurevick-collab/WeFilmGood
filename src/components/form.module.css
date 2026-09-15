@@ -1,0 +1,129 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field > span:first-child {
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.field input,
+.field textarea,
+.field select {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #2a2a2a;
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 2px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.field select {
+  appearance: none;
+  border-radius: 0;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: var(--fg);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+.roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.role {
+  position: relative;
+  font-size: 11px;
+  border: 1px solid #2a2a2a;
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.role input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.role:has(input:checked) {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: #000;
+}
+
+.submit {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid var(--fg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 13px 26px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.submit:hover {
+  background: var(--fg);
+  color: #000;
+}
+
+.error {
+  font-size: 12px;
+  color: #ff8a7a;
+  border: 1px solid #4a2622;
+  padding: 10px 12px;
+  margin: 0;
+}
+
+.hint {
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.linkRow {
+  font-size: 12px;
+  color: var(--dim);
+  margin: 0;
+}
+
+.linkRow a {
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
