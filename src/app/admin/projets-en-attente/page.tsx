@@ -4,7 +4,7 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import adminStyles from "../admin.module.css";
 import { createClient } from "@/lib/supabase/server";
-import { reassignReader, validateReport } from "./actions";
+import { markReportPaid, reassignReader } from "./actions";
 import ScenarioLink from "./ScenarioLink";
 
 type PendingProject = {
@@ -30,6 +30,14 @@ type PendingReport = {
   id: string;
   score: number | null;
   labellise: boolean;
+  submitted_at: string;
+  project: { title: string } | null;
+  reader: { full_name: string | null } | null;
+};
+
+type PaidReport = {
+  id: string;
+  payment_status: string;
   submitted_at: string;
   project: { title: string } | null;
   reader: { full_name: string | null } | null;
@@ -66,6 +74,15 @@ export default async function ProjetsEnAttentePage() {
     .eq("status", "soumise")
     .order("submitted_at", { ascending: true })
     .returns<PendingReport[]>();
+
+  const { data: paidReports } = await supabase
+    .from("reading_reports")
+    .select(
+      "id, payment_status, submitted_at, project:projects(title), reader:profiles(full_name)",
+    )
+    .eq("status", "validee_admin")
+    .order("submitted_at", { ascending: false })
+    .returns<PaidReport[]>();
 
   return (
     <PageShell eyebrow="Administration" title="Projets en attente" wide>
@@ -164,22 +181,47 @@ export default async function ProjetsEnAttentePage() {
                 </td>
                 <td>{new Date(r.submitted_at).toLocaleDateString("fr-FR")}</td>
                 <td>
-                  <div className={adminStyles.inlineForm}>
-                    <form action={validateReport}>
+                  <Link href={`/admin/fiches/${r.id}`} className={adminStyles.linkButton}>
+                    Ouvrir et publier
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      <h2 className={adminStyles.subhead}>Fiches publiées — rémunération</h2>
+
+      {(paidReports ?? []).length === 0 ? (
+        <p className={formStyles.hint}>Aucune fiche publiée pour l&apos;instant.</p>
+      ) : (
+        <table className={adminStyles.table}>
+          <thead>
+            <tr>
+              <th>Projet</th>
+              <th>Lecteur</th>
+              <th>Publiée le</th>
+              <th>Rémunération</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {(paidReports ?? []).map((r) => (
+              <tr key={r.id}>
+                <td>{r.project?.title ?? "—"}</td>
+                <td>{r.reader?.full_name ?? "—"}</td>
+                <td>{new Date(r.submitted_at).toLocaleDateString("fr-FR")}</td>
+                <td>{r.payment_status === "payee" ? "Payée" : "Due"}</td>
+                <td>
+                  {r.payment_status !== "payee" && (
+                    <form action={markReportPaid}>
                       <input type="hidden" name="report_id" value={r.id} />
-                      <input type="hidden" name="decision" value="valider" />
                       <button type="submit" className={adminStyles.linkButton}>
-                        Valider
+                        Marquer payée
                       </button>
                     </form>
-                    <form action={validateReport}>
-                      <input type="hidden" name="report_id" value={r.id} />
-                      <input type="hidden" name="decision" value="rejeter" />
-                      <button type="submit" className={adminStyles.linkButton}>
-                        Rejeter
-                      </button>
-                    </form>
-                  </div>
+                  )}
                 </td>
               </tr>
             ))}

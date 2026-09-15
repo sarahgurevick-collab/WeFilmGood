@@ -33,25 +33,15 @@ export async function reassignReader(formData: FormData) {
   revalidatePath("/admin/projets-en-attente");
 }
 
-export async function validateReport(formData: FormData) {
+/** Grise la ligne correspondante chez le lecteur, une fois sa facture réglée. */
+export async function markReportPaid(formData: FormData) {
   const supabase = await requireAdmin();
 
   const reportId = formData.get("report_id") as string;
-  const decision = formData.get("decision") as string;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  // Le passage à « validee_admin » déclenche en base la labellisation du
-  // projet et la libération du lecteur.
   await supabase
     .from("reading_reports")
-    .update({
-      status: decision === "valider" ? "validee_admin" : "rejetee_admin",
-      admin_validated_by: user?.id ?? null,
-      admin_validated_at: new Date().toISOString(),
-    })
+    .update({ payment_status: "payee", paid_at: new Date().toISOString() })
     .eq("id", reportId);
 
   revalidatePath("/admin/projets-en-attente");
