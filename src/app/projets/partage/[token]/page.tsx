@@ -61,6 +61,9 @@ export async function generateMetadata({
   return {
     title: `${resultat.projet.title} — WeFilmGood`,
     description: resultat.projet.logline ?? undefined,
+    // Cette page est destinée à un producteur précis, pas à une
+    // recherche : elle ne doit jamais apparaître dans un moteur.
+    robots: { index: false, follow: false },
     openGraph: {
       title: resultat.projet.title,
       description: resultat.projet.logline ?? undefined,
