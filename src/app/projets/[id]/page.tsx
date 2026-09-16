@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
+import PartageProjet from "./PartageProjet";
+import { setShareLink } from "./actions";
 import { createClient } from "@/lib/supabase/server";
 
 type Project = {
@@ -14,6 +17,7 @@ type Project = {
   country: string | null;
   status: string;
   owner_id: string;
+  share_token: string | null;
   genre: { label_fr: string } | null;
 };
 
@@ -28,7 +32,7 @@ export default async function ProjetPage({ params }: { params: Promise<{ id: str
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, synopsis, format, language, country, status, owner_id, genre:genres(label_fr)",
+      "id, title, logline, synopsis, format, language, country, status, owner_id, share_token, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -38,6 +42,11 @@ export default async function ProjetPage({ params }: { params: Promise<{ id: str
   }
 
   const isOwner = user?.id === project.owner_id;
+
+  const entetes = await headers();
+  const hote = entetes.get("host") ?? "localhost:3000";
+  const origine = `${hote.startsWith("localhost") ? "http" : "https"}://${hote}`;
+
   const { data: characters } = await supabase
     .from("characters")
     .select("id, name, character_type, gender, age_range, biography")
@@ -74,11 +83,38 @@ export default async function ProjetPage({ params }: { params: Promise<{ id: str
       )}
 
       {isOwner && (
-        <p className={formStyles.linkRow} style={{ marginTop: 40 }}>
-          <Link href={`/projets/${project.id}/fiche-lecture`}>
-            Voir la fiche de lecture de mon projet
-          </Link>
-        </p>
+        <>
+          <h2 style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
+            Partager ce projet
+          </h2>
+          <p className={formStyles.hint}>
+            {project.share_token
+              ? "Toute personne disposant de ce lien peut consulter la fiche, sans avoir de compte. Le scénario, lui, reste inaccessible."
+              : "Créez un lien à envoyer à un producteur. Il ouvre une page de présentation de votre projet — avec le label WeFilmGood s'il est labellisé."}
+          </p>
+
+          {project.share_token && (
+            <PartageProjet url={`${origine}/projets/partage/${project.share_token}`} />
+          )}
+
+          <form action={setShareLink} style={{ marginTop: 16 }}>
+            <input type="hidden" name="project_id" value={project.id} />
+            <input type="hidden" name="actif" value={project.share_token ? "0" : "1"} />
+            <button
+              type="submit"
+              className={project.share_token ? formStyles.hint : formStyles.submit}
+              style={project.share_token ? { cursor: "pointer", background: "none", border: "none", padding: 0, textDecoration: "underline" } : undefined}
+            >
+              {project.share_token ? "Désactiver ce lien" : "Créer un lien de partage"}
+            </button>
+          </form>
+
+          <p className={formStyles.linkRow} style={{ marginTop: 40 }}>
+            <Link href={`/projets/${project.id}/fiche-lecture`}>
+              Voir la fiche de lecture de mon projet
+            </Link>
+          </p>
+        </>
       )}
     </PageShell>
   );
