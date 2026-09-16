@@ -89,6 +89,47 @@
   color: var(--fg);
 }
 
+/* La disponibilité s'applique au clic : pas de bouton de validation. */
+.choix {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.choixBouton,
+.choixActif {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 12px 22px;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease,
+    border-color 0.15s ease;
+}
+
+.choixBouton {
+  background: transparent;
+  border: 1px solid var(--bordure);
+  color: var(--dim);
+}
+
+.choixBouton:hover {
+  border-color: var(--fg);
+  color: var(--fg);
+}
+
+.choixActif {
+  background: var(--fg);
+  border: 1px solid var(--fg);
+  color: var(--bg);
+  cursor: default;
+}
+
 /* L'orange est un état subi, pas un choix : il s'affiche, il ne se clique pas. */
 .etat {
   display: inline-flex;

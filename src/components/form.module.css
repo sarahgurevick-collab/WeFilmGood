@@ -156,29 +156,30 @@
   text-underline-offset: 3px;
 }
 
+/*
+ * Un seul langage de boutons dans toute l'application : plein, arrondi,
+ * texte inversé. Seule la largeur distingue les deux variantes.
+ */
 .submit {
   align-self: flex-start;
-  background: transparent;
+  background: var(--fg);
   border: 1px solid var(--fg);
-  border-radius: 999px;
-  color: var(--fg);
+  border-radius: 10px;
+  color: var(--bg);
   font-family: inherit;
-  font-size: 11px;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  padding: 13px 26px;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 12px 26px;
   cursor: pointer;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
+  text-align: center;
+  transition: opacity 0.2s ease;
 }
 
 .submit:hover {
-  background: var(--fg);
-  color: var(--bg);
+  opacity: 0.85;
 }
 
-/* Action principale des écrans d'authentification : pleine largeur, pleine. */
+/* Action principale des écrans d'authentification : pleine largeur. */
 .submitWide {
   align-self: stretch;
   background: var(--fg);

@@ -60,12 +60,20 @@ export default async function RedactionFichePage({
     .eq("kind", "scenario");
 
   const scenario = files?.[0];
-  let pdfUrl: string | null = null;
+  let lireUrl: string | null = null;
+  let telechargerUrl: string | null = null;
+
   if (scenario) {
-    const { data: signed } = await supabase.storage
-      .from("scenarios")
-      .createSignedUrl(scenario.storage_path, 60 * 60);
-    pdfUrl = signed?.signedUrl ?? null;
+    // Deux liens signés : l'un s'ouvre dans le navigateur, l'autre force
+    // l'enregistrement du fichier.
+    const [lecture, telechargement] = await Promise.all([
+      supabase.storage.from("scenarios").createSignedUrl(scenario.storage_path, 60 * 60),
+      supabase.storage.from("scenarios").createSignedUrl(scenario.storage_path, 60 * 60, {
+        download: scenario.original_name ?? "scenario.pdf",
+      }),
+    ]);
+    lireUrl = lecture.data?.signedUrl ?? null;
+    telechargerUrl = telechargement.data?.signedUrl ?? null;
   }
 
   return (
@@ -74,12 +82,22 @@ export default async function RedactionFichePage({
         {[assignment.project.format, assignment.project.language].filter(Boolean).join(" · ")}
       </p>
 
-      {pdfUrl ? (
-        <p style={{ marginTop: 20 }}>
-          <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className={styles.linkButton}>
-            Ouvrir le document PDF
+      {lireUrl ? (
+        <div className={styles.actions} style={{ marginTop: 20 }}>
+          <a
+            href={lireUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={formStyles.submit}
+          >
+            Lire en ligne
           </a>
-        </p>
+          {telechargerUrl && (
+            <a href={telechargerUrl} className={styles.choixBouton}>
+              Télécharger le texte
+            </a>
+          )}
+        </div>
       ) : (
         <p className={formStyles.hint}>Aucun document PDF n&apos;est rattaché à ce projet.</p>
       )}

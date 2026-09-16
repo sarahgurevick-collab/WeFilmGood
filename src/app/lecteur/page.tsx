@@ -75,33 +75,28 @@ export default async function LecteurPage() {
           </span>
         </div>
       ) : (
-        <form className={formStyles.form} action={updateAvailability}>
-          <div className={formStyles.field}>
-            <span>Ma disponibilité</span>
-            <div className={formStyles.roles}>
-              {VOYANTS.map((v) => (
-                <label key={v.value} className={formStyles.role}>
-                  <input
-                    type="radio"
-                    name="availability_status"
-                    value={v.value}
-                    defaultChecked={current === v.value}
-                  />
-                  <span className={`${styles.dot} ${styles[v.value]}`} aria-hidden="true" />
-                  {v.label}
-                </label>
-              ))}
-            </div>
-            {enAttente > 0 && (
-              <span className={formStyles.hint}>
-                Vous mettre en indisponible refusera {enAttente > 1 ? "les projets" : "le projet"}{" "}
-                qui {enAttente > 1 ? "vous sont proposés" : "vous est proposé"}.
-              </span>
-            )}
+        <form className={formStyles.field} action={updateAvailability}>
+          <span>Ma disponibilité</span>
+          <div className={styles.choix}>
+            {VOYANTS.map((v) => (
+              <button
+                key={v.value}
+                type="submit"
+                name="availability_status"
+                value={v.value}
+                className={current === v.value ? styles.choixActif : styles.choixBouton}
+              >
+                <span className={`${styles.dot} ${styles[v.value]}`} aria-hidden="true" />
+                {v.label}
+              </button>
+            ))}
           </div>
-          <button type="submit" className={formStyles.submit}>
-            Mettre à jour
-          </button>
+          {enAttente > 0 && (
+            <span className={formStyles.hint}>
+              Vous mettre en indisponible refusera {enAttente > 1 ? "les projets" : "le projet"}{" "}
+              qui {enAttente > 1 ? "vous sont proposés" : "vous est proposé"}.
+            </span>
+          )}
         </form>
       )}
 
