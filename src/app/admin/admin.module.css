@@ -77,6 +77,31 @@
   max-width: 130px;
 }
 
+.motivation {
+  margin-top: 20px;
+  padding: 18px 20px;
+  border: 1px solid var(--bordure);
+  border-left: 3px solid #2f7d4f;
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.motivation strong {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--dim);
+  margin-bottom: 8px;
+}
+
+.motivation p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
 .badge {
   display: inline-block;
   margin-left: 8px;

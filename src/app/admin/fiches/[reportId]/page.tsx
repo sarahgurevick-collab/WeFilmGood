@@ -12,6 +12,7 @@ type Report = {
   id: string;
   content: string | null;
   score: number | null;
+  label_motivation: string | null;
   status: string;
   submitted_at: string;
   project: { id: string; title: string } | null;
@@ -34,7 +35,7 @@ export default async function FicheAdminPage({
   const { data: report } = await supabase
     .from("reading_reports")
     .select(
-      "id, content, score, status, submitted_at, project:projects(id, title), reader:profiles(full_name)",
+      "id, content, score, label_motivation, status, submitted_at, project:projects(id, title), reader:profiles(full_name)",
     )
     .eq("id", reportId)
     .maybeSingle<Report>();
@@ -64,6 +65,13 @@ export default async function FicheAdminPage({
         {report.score ?? "—"} / 200
         {publication && ` · publiée le ${new Date(publication.published_at).toLocaleDateString("fr-FR")}`}
       </p>
+
+      {report.label_motivation && (
+        <div className={adminStyles.motivation}>
+          <strong>Pourquoi le lecteur labellise ce projet</strong>
+          <p>{report.label_motivation}</p>
+        </div>
+      )}
 
       <p className={formStyles.hint} style={{ marginTop: 16 }}>
         Vos corrections ne sont pas visibles par le lecteur : il voit sa
