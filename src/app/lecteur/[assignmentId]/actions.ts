@@ -4,6 +4,31 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ficheEstVide, sanitizeFiche } from "@/lib/sanitize";
 
+/**
+ * Enregistre le brouillon en cours de frappe. Silencieux : une
+ * sauvegarde qui échoue ne doit jamais interrompre quelqu'un en train
+ * d'écrire.
+ */
+export async function saveDraft(assignmentId: string, content: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { error } = await supabase
+    .from("reading_assignments")
+    .update({
+      draft_content: sanitizeFiche(content),
+      draft_saved_at: new Date().toISOString(),
+    })
+    .eq("id", assignmentId)
+    .eq("reader_id", user.id);
+
+  return error ? null : new Date().toISOString();
+}
+
 export async function submitReadingReport(formData: FormData) {
   const supabase = await createClient();
   const {

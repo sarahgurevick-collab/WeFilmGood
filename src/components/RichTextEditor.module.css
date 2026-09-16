@@ -86,3 +86,11 @@
 .surface :first-child {
   margin-top: 0;
 }
+
+.brouillon {
+  margin: 0;
+  padding: 9px 14px;
+  border-top: 1px solid var(--bordure-douce);
+  font-size: 11.5px;
+  color: var(--dim);
+}

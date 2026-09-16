@@ -5,7 +5,7 @@ import { TextStyle } from "@tiptap/extension-text-style";
 import Underline from "@tiptap/extension-underline";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./RichTextEditor.module.css";
 
 const ROUGE = "#e5484d";
@@ -23,11 +23,29 @@ const ROUGE = "#e5484d";
 export default function RichTextEditor({
   name,
   defaultValue = "",
+  onDraft,
 }: {
   name: string;
   defaultValue?: string;
+  /** Appelé après une pause dans la frappe, pour conserver le brouillon. */
+  onDraft?: (html: string) => Promise<string | null>;
 }) {
   const [html, setHtml] = useState(defaultValue);
+  const [enregistre, setEnregistre] = useState<string | null>(null);
+  const minuterie = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const planifier = (valeur: string) => {
+    if (!onDraft) return;
+    if (minuterie.current) clearTimeout(minuterie.current);
+    minuterie.current = setTimeout(async () => {
+      const date = await onDraft(valeur);
+      if (date) setEnregistre(date);
+    }, 2500);
+  };
+
+  useEffect(() => () => {
+    if (minuterie.current) clearTimeout(minuterie.current);
+  }, []);
 
   const editor = useEditor({
     extensions: [
@@ -44,7 +62,11 @@ export default function RichTextEditor({
     editorProps: {
       attributes: { class: styles.surface },
     },
-    onUpdate: ({ editor }) => setHtml(editor.getHTML()),
+    onUpdate: ({ editor }) => {
+      const valeur = editor.getHTML();
+      setHtml(valeur);
+      planifier(valeur);
+    },
   });
 
   const bouton = (actif: boolean) => (actif ? styles.buttonActive : styles.button);
@@ -118,6 +140,17 @@ export default function RichTextEditor({
 
       <EditorContent editor={editor} />
       <input type="hidden" name={name} value={html} />
+
+      {onDraft && (
+        <p className={styles.brouillon}>
+          {enregistre
+            ? `Brouillon enregistré à ${new Date(enregistre).toLocaleTimeString("fr-FR", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}`
+            : "Votre texte est enregistré automatiquement pendant que vous écrivez."}
+        </p>
+      )}
     </div>
   );
 }

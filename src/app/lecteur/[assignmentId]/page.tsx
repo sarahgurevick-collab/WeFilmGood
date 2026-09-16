@@ -3,13 +3,15 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "../lecteur.module.css";
 import { createClient } from "@/lib/supabase/server";
-import RichTextEditor from "@/components/RichTextEditor";
+import EditeurFiche from "./EditeurFiche";
+import { sanitizeFiche } from "@/lib/sanitize";
 import { submitReadingReport } from "./actions";
 import ScoreSlider from "./ScoreSlider";
 
 type Assignment = {
   id: string;
   status: string;
+  draft_content: string | null;
   project: { id: string; title: string; format: string | null; language: string | null } | null;
 };
 
@@ -34,7 +36,7 @@ export default async function RedactionFichePage({
 
   const { data: assignment } = await supabase
     .from("reading_assignments")
-    .select("id, status, project:projects(id, title, format, language)")
+    .select("id, status, draft_content, project:projects(id, title, format, language)")
     .eq("id", assignmentId)
     .eq("reader_id", user.id)
     .maybeSingle<Assignment>();
@@ -109,7 +111,10 @@ export default async function RedactionFichePage({
 
         <div className={formStyles.field}>
           <span>Analyse du projet</span>
-          <RichTextEditor name="content" />
+          <EditeurFiche
+            assignmentId={assignment.id}
+            brouillon={sanitizeFiche(assignment.draft_content ?? "")}
+          />
           <span className={formStyles.hint}>
             Vous pouvez rédiger sous Word et coller ici : la mise en forme
             est conservée.
