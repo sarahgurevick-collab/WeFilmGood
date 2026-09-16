@@ -27,7 +27,7 @@ export default function HashSession() {
 
     const description = params.get("error_description");
     if (description) {
-      setError(description.replace(/\+/g, " "));
+      queueMicrotask(() => setError(description.replace(/\+/g, " ")));
       clearHash();
       return;
     }
