@@ -210,6 +210,12 @@ export default async function ProfilPage({
         </button>
       </form>
 
+      <form action="/deconnexion" method="post" style={{ marginTop: 20 }}>
+        <button type="submit" className={formStyles.submit}>
+          Se déconnecter
+        </button>
+      </form>
+
       <h2 className={styles.section}>Quitter la plateforme</h2>
       <p className={formStyles.hint}>
         Votre accès est fermé et votre profil retiré de l&apos;annuaire : plus
