@@ -32,9 +32,12 @@ async function chargerProjet(token: string) {
   const projet = ((data ?? []) as ProjetPartage[])[0];
   if (!projet) return null;
 
-  const vignette = projet.vignette_path
-    ? supabase.storage.from("project-media").getPublicUrl(projet.vignette_path).data.publicUrl
-    : null;
+  // Le projet est partagé, donc la règle de stockage laisse passer la
+  // signature même pour un visiteur sans compte.
+  const { data: signe } = projet.vignette_path
+    ? await supabase.storage.from("project-media").createSignedUrl(projet.vignette_path, 60 * 60)
+    : { data: null };
+  const vignette = signe?.signedUrl ?? null;
 
   // Le nombre de projets est l'argument le plus concret pour un producteur
   // qui découvre la plateforme. On ne l'affiche que s'il est parlant.

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
@@ -19,6 +20,12 @@ export default async function ProjetsPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Les vignettes proviennent parfois de films ou d'images trouvées en
+  // ligne : la pitchothèque n'est pas exposée aux visiteurs de passage.
+  if (!user) {
+    redirect("/connexion?next=/projets");
+  }
+
   const { data: projects } = await supabase
     .from("projects")
     .select(
@@ -28,10 +35,20 @@ export default async function ProjetsPage() {
     .order("created_at", { ascending: false })
     .returns<Projet[]>();
 
+  // Le stockage est privé : on signe les vignettes en un seul appel.
+  const chemins = (projects ?? [])
+    .map((p) => (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path)
+    .filter((c): c is string => Boolean(c));
+
+  const { data: signes } = chemins.length
+    ? await supabase.storage.from("project-media").createSignedUrls(chemins, 60 * 60)
+    : { data: [] };
+
+  const urlDe = new Map((signes ?? []).map((s) => [s.path, s.signedUrl]));
+
   const vignetteDe = (p: Projet) => {
-    const fichier = (p.files ?? []).find((f) => f.kind === "vignette");
-    if (!fichier) return null;
-    return supabase.storage.from("project-media").getPublicUrl(fichier.storage_path).data.publicUrl;
+    const chemin = (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path;
+    return chemin ? urlDe.get(chemin) ?? null : null;
   };
 
   return (
