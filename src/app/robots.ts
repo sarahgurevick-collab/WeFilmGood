@@ -1,12 +1,30 @@
 import type { MetadataRoute } from "next";
 
 /**
- * WeFilmGood ne fait pas commerce de la présence de ses membres : on ne
- * doit pas pouvoir découvrir par une recherche qu'un comédien ou un
- * producteur a un profil ici. Rien n'est proposé à l'indexation.
+ * La plateforme doit se trouver facilement ; ses membres, jamais.
+ *
+ * Ce qui vend WeFilmGood — accueil, tarifs, success stories, mentions
+ * légales — reste ouvert aux moteurs. Tout ce qui désigne quelqu'un ou
+ * expose le catalogue en est écarté.
+ *
+ * Ce fichier n'est qu'une consigne adressée aux moteurs bien élevés. Ce
+ * qui protège réellement les profils, c'est l'authentification et les
+ * règles d'accès en base.
  */
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", disallow: "/" },
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: [
+        "/projets", // pitchothèque, fiches projet et liens de partage
+        "/profil",
+        "/lecteur",
+        "/admin",
+        "/auth",
+        "/lost-pwd",
+        "/nouveau-mot-de-passe",
+      ],
+    },
   };
 }
