@@ -1,0 +1,86 @@
+.barre {
+  position: fixed;
+  z-index: 40;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 24px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--bordure-douce);
+}
+
+.marque {
+  display: flex;
+  align-items: center;
+  color: var(--fg);
+}
+
+.onglets {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.onglet,
+.ongletActif {
+  position: relative;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.onglet { color: var(--dim); }
+.onglet:hover { color: var(--fg); }
+
+.ongletActif {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.pastille {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #d14b43;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 16px;
+  text-align: center;
+  padding: 0 4px;
+}
+
+/* Sur téléphone, la barre descend sous le pouce. */
+@media (max-width: 720px) {
+  .barre {
+    top: auto;
+    bottom: 0;
+    border-bottom: none;
+    border-top: 1px solid var(--bordure-douce);
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+    gap: 10px;
+  }
+
+  .onglets {
+    justify-content: space-around;
+    gap: 2px;
+  }
+
+  .onglet,
+  .ongletActif {
+    flex: 1;
+    text-align: center;
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+}

@@ -15,6 +15,9 @@ type Projet = {
 
 export default async function ProjetsPage() {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: projects } = await supabase
     .from("projects")
@@ -32,7 +35,7 @@ export default async function ProjetsPage() {
   };
 
   return (
-    <PageShell eyebrow="Pitchothèque" title="Projets" wide>
+    <PageShell eyebrow="Pitchothèque" title="Projets" wide nav="pitchotheque" connecte={!!user}>
       {!projects || projects.length === 0 ? (
         <p className={formStyles.hint}>
           Aucun projet public pour l&apos;instant.{" "}

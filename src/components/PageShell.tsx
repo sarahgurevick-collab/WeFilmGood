@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
+import BarreNav from "./BarreNav";
 import styles from "./PageShell.module.css";
 
 export default function PageShell({
@@ -7,6 +7,8 @@ export default function PageShell({
   title,
   wide = false,
   theme = "sombre",
+  nav,
+  connecte = false,
   children,
 }: {
   eyebrow: string;
@@ -14,16 +16,14 @@ export default function PageShell({
   wide?: boolean;
   /** "clair" pour les pages qui se lisent longuement ou qui doivent respirer. */
   theme?: "sombre" | "clair";
+  /** Onglet à marquer comme actif dans la barre de navigation. */
+  nav?: "pitchotheque" | "deposer" | "messages" | "profil";
+  connecte?: boolean;
   children: ReactNode;
 }) {
   return (
     <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
-      <div className={styles.corner}>
-        <div>
-          <Link href="/">← WeFilmGood</Link>
-        </div>
-        <div>2026</div>
-      </div>
+      <BarreNav actif={nav} connecte={connecte} />
       <main className={`${styles.main} ${wide ? styles.wide : ""}`}>
         <p className={styles.eyebrow}>{eyebrow}</p>
         <h1 className={styles.title}>{title}</h1>

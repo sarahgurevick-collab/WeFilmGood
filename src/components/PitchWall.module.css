@@ -62,3 +62,12 @@
     transition: none;
   }
 }
+
+/*
+ * Composition pensée pour un grand écran. Sur téléphone elle se tasse
+ * dans un coin, et l'accueil mobile la recouvre de toute façon : on
+ * évite de l'animer en pure perte.
+ */
+@media (max-width: 720px) {
+  .stage { display: none; }
+}

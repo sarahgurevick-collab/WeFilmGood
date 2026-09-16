@@ -72,7 +72,7 @@ export default async function ProfilPage({
   };
 
   return (
-    <PageShell eyebrow="Mon profil" title={profile?.full_name ?? "Profil"} wide>
+    <PageShell eyebrow="Mon profil" title={profile?.full_name ?? "Profil"} wide nav="profil" connecte>
       {enregistre && <p className={styles.ok}>Modifications enregistrées.</p>}
 
       <p className={formStyles.hint}>

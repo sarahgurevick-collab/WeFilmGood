@@ -108,3 +108,67 @@
     animation: none;
   }
 }
+
+
+/* ---------- accueil sur téléphone ---------- */
+
+.mobile { display: none; }
+
+/*
+ * Le mur de vignettes est une composition pour grand écran : sur
+ * téléphone il se tasse dans un coin et laisse l'écran vide. Les
+ * producteurs consultent la plateforme en festival et dans les
+ * transports, on leur donne donc une entrée directe vers le catalogue.
+ */
+@media (max-width: 720px) {
+  .ui { display: none; }
+
+  .mobile {
+    display: flex;
+    position: relative;
+    z-index: 3;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+    padding: 24px 24px calc(120px + env(safe-area-inset-bottom));
+    background: var(--bg);
+  }
+
+  .mobileMarque {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-transform: none;
+  }
+
+  .mobileSignature {
+    font-size: 13px;
+    color: var(--dim);
+    text-transform: none;
+    letter-spacing: normal;
+    max-width: 30ch;
+    line-height: 1.5;
+  }
+
+  .mobileCompte {
+    font-size: 13px;
+    color: var(--dim);
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  .mobileBouton {
+    margin-top: 10px;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 13px 30px;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+}

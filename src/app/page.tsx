@@ -1,6 +1,8 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
+import BarreNav from "@/components/BarreNav";
 import HashSession from "@/components/HashSession";
+import Logo from "@/components/Logo";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./page.module.css";
@@ -21,10 +23,33 @@ export default async function Home() {
 
   const pitches: Pitch[] = data ?? [];
 
+  const [{ count }, { data: auth }] = await Promise.all([
+    supabase.from("projects").select("id", { count: "exact", head: true }).eq("is_public", true),
+    supabase.auth.getUser(),
+  ]);
+
   return (
     <>
       <HashSession />
       <PitchWall pitches={pitches} />
+
+      <div className={styles.mobile}>
+        <Logo size={46} />
+        <div className={styles.mobileMarque}>WeFilmGood</div>
+        <p className={styles.mobileSignature}>
+          The best stories wherever they are
+        </p>
+        {count ? (
+          <p className={styles.mobileCompte}>
+            {count} projet{count > 1 ? "s" : ""} dans la pitchothèque
+          </p>
+        ) : null}
+        <Link href="/projets" className={styles.mobileBouton}>
+          Voir les projets
+        </Link>
+      </div>
+
+      <BarreNav connecte={!!auth?.user} />
 
       <div className={styles.ui}>
         <div className={`${styles.corner} ${styles.topLeft}`}>
