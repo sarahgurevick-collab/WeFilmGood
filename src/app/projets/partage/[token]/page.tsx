@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import Logo from "@/components/Logo";
 import styles from "./partage.module.css";
@@ -35,7 +36,14 @@ async function chargerProjet(token: string) {
     ? supabase.storage.from("project-media").getPublicUrl(projet.vignette_path).data.publicUrl
     : null;
 
-  return { projet, vignette };
+  // Le nombre de projets est l'argument le plus concret pour un producteur
+  // qui découvre la plateforme. On ne l'affiche que s'il est parlant.
+  const { count } = await supabase
+    .from("projects")
+    .select("id", { count: "exact", head: true })
+    .eq("is_public", true);
+
+  return { projet, vignette, nombreProjets: count ?? 0 };
 }
 
 export async function generateMetadata({
@@ -70,7 +78,7 @@ export default async function ProjetPartagePage({
     notFound();
   }
 
-  const { projet, vignette } = resultat;
+  const { projet, vignette, nombreProjets } = resultat;
 
   return (
     <div className={styles.page}>
@@ -112,12 +120,23 @@ export default async function ProjetPartagePage({
 
         {projet.logline && <p className={styles.logline}>{projet.logline}</p>}
 
-        <footer className={styles.pied}>
-          <a href="https://www.wefilmgood.com" target="_blank" rel="noopener noreferrer">
-            WeFilmGood
-          </a>
-          <span>La plateforme de rencontres Auteurs — Producteurs</span>
-        </footer>
+        <section className={styles.invitation}>
+          <Logo size={30} />
+          <h2>Ce projet vous intéresse&nbsp;?</h2>
+          <p>
+            Créez votre profil pour contacter {projet.author_name ?? "l'auteur"}
+            {nombreProjets > 1
+              ? ` et découvrir les ${nombreProjets} projets de la pitchothèque.`
+              : " et découvrir la pitchothèque."}
+          </p>
+          <Link href="/inscription" className={styles.bouton}>
+            Créer mon profil
+          </Link>
+          <span className={styles.signature}>
+            WeFilmGood — La plateforme de rencontres Auteurs&nbsp;·&nbsp;Producteurs de la
+            Maison des Scénaristes
+          </span>
+        </section>
       </main>
     </div>
   );
