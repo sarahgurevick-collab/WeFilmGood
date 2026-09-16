@@ -32,7 +32,7 @@
 .fiche blockquote {
   margin: 0 0 16px;
   padding-left: 16px;
-  border-left: 2px solid #2f2f2f;
+  border-left: 2px solid var(--bordure-forte);
   color: var(--dim);
 }
 

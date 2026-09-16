@@ -20,8 +20,8 @@
 
 .ok {
   font-size: 12px;
-  color: #7ee0a0;
-  border: 1px solid #23402f;
+  color: var(--succes);
+  border: 1px solid var(--succes-bordure);
   border-radius: 10px;
   padding: 10px 12px;
   margin: 0 0 24px;

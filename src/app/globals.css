@@ -1,9 +1,44 @@
+/*
+ * Deux palettes, choisies par usage : le noir pour ce qui se regarde —
+ * la pitchothèque est une salle de cinéma — le blanc pour ce qui se lit
+ * et s'écrit longuement, comme l'espace des lecteurs, ou pour ce qui doit
+ * respirer la transparence, comme les témoignages.
+ *
+ * Les composants ne connaissent que ces variables : ajouter la classe
+ * .clair sur un conteneur suffit à retourner tout ce qu'il contient.
+ */
 :root {
   --bg: #000000;
   --fg: #ededed;
   --dim: #767676;
+  --surface: #0b0b0b;
+  --surface-actif: #141414;
+  --bordure: #262626;
+  --bordure-douce: #1f1f1f;
+  --bordure-forte: #3a3a3a;
+  --placeholder: #4d4d4d;
+  --erreur: #ff8a7a;
+  --erreur-bordure: #4a2622;
+  --succes: #7ee0a0;
+  --succes-bordure: #23402f;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --spread-dur: 0.9s;
+}
+
+.clair {
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --dim: #6b6b6b;
+  --surface: #fbfbfa;
+  --surface-actif: #f2f2f0;
+  --bordure: #dedad6;
+  --bordure-douce: #ebe8e5;
+  --bordure-forte: #b0aaa4;
+  --placeholder: #a6a09a;
+  --erreur: #b4231d;
+  --erreur-bordure: #e8c4c1;
+  --succes: #1d6b3f;
+  --succes-bordure: #bfdcc9;
 }
 
 * {

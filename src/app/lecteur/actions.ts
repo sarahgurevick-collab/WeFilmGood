@@ -4,7 +4,11 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-const VOYANTS = ["vert", "orange", "rouge"];
+/**
+ * L'orange n'est pas un choix : la plateforme l'allume à l'acceptation
+ * d'une lecture. Le lecteur ne pilote que sa disponibilité.
+ */
+const VOYANTS_CHOISIS = ["vert", "rouge"];
 
 async function requireReader() {
   const supabase = await createClient();
@@ -34,8 +38,32 @@ export async function updateAvailability(formData: FormData) {
   const { supabase, user } = await requireReader();
 
   const status = formData.get("availability_status") as string;
-  if (!VOYANTS.includes(status)) {
+  if (!VOYANTS_CHOISIS.includes(status)) {
     redirect("/lecteur");
+  }
+
+  // Une lecture acceptée verrouille le voyant : on ne se déclare pas
+  // indisponible après avoir pris un texte en charge.
+  const { data: enCours } = await supabase
+    .from("reading_assignments")
+    .select("id")
+    .eq("reader_id", user.id)
+    .eq("status", "en_cours")
+    .maybeSingle();
+
+  if (enCours) {
+    redirect("/lecteur");
+  }
+
+  // Se déclarer indisponible vaut refus des projets encore en attente de
+  // réponse : c'est le geste du lecteur qui a oublié de fermer sa porte et
+  // découvre qu'on lui a confié un texte.
+  if (status === "rouge") {
+    await supabase
+      .from("reading_assignments")
+      .update({ status: "refusee", responded_at: new Date().toISOString() })
+      .eq("reader_id", user.id)
+      .eq("status", "proposee");
   }
 
   await supabase

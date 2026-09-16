@@ -1,7 +1,7 @@
 .wrapper {
-  border: 1px solid #262626;
+  border: 1px solid var(--bordure);
   border-radius: 10px;
-  background: #0b0b0b;
+  background: var(--surface);
   overflow: hidden;
 }
 
@@ -10,13 +10,13 @@
   flex-wrap: wrap;
   gap: 4px;
   padding: 8px;
-  border-bottom: 1px solid #1f1f1f;
+  border-bottom: 1px solid var(--bordure-douce);
 }
 
 .button,
 .buttonActive {
   background: transparent;
-  border: 1px solid #262626;
+  border: 1px solid var(--bordure);
   border-radius: 999px;
   color: var(--dim);
   font-family: inherit;
@@ -31,13 +31,13 @@
 
 .button:hover {
   color: var(--fg);
-  border-color: #3a3a3a;
+  border-color: var(--bordure-forte);
 }
 
 .buttonActive {
   background: var(--fg);
   border-color: var(--fg);
-  color: #000;
+  color: var(--bg);
 }
 
 .surface {
@@ -79,7 +79,7 @@
 .surface blockquote {
   margin: 0 0 14px;
   padding-left: 14px;
-  border-left: 2px solid #2f2f2f;
+  border-left: 2px solid var(--bordure-forte);
   color: var(--dim);
 }
 

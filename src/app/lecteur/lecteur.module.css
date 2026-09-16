@@ -9,7 +9,7 @@
 .table td {
   text-align: left;
   padding: 10px 12px 10px 0;
-  border-bottom: 1px solid #1f1f1f;
+  border-bottom: 1px solid var(--bordure-douce);
   vertical-align: top;
 }
 
@@ -29,7 +29,7 @@
 .badge {
   display: inline-block;
   margin-left: 8px;
-  border: 1px solid #2a2a2a;
+  border: 1px solid var(--bordure);
   border-radius: 999px;
   padding: 2px 8px;
   font-size: 10px;
@@ -59,7 +59,7 @@
   gap: 16px;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid #1f1f1f;
+  border: 1px solid var(--bordure-douce);
   padding: 18px 20px;
 }
 
@@ -87,6 +87,19 @@
 
 .linkButton:hover {
   color: var(--fg);
+}
+
+/* L'orange est un état subi, pas un choix : il s'affiche, il ne se clique pas. */
+.etat {
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  padding: 8px 14px;
+  margin: 2px 0 0;
+  align-self: flex-start;
+  width: fit-content;
 }
 
 .dot {

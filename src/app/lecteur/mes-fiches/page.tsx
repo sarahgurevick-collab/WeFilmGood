@@ -42,7 +42,7 @@ export default async function MesFichesPage() {
     .returns<Report[]>();
 
   return (
-    <PageShell eyebrow="Espace lecteur" title="Mes fiches de lecture" wide>
+    <PageShell eyebrow="Espace lecteur" title="Mes fiches de lecture" wide theme="clair">
       {(reports ?? []).length === 0 ? (
         <p className={formStyles.hint}>
           Aucune fiche rédigée pour l&apos;instant.{" "}

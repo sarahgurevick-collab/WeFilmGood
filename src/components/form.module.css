@@ -18,8 +18,8 @@
 .field input,
 .field textarea,
 .field select {
-  background: #0b0b0b;
-  border: 1px solid #262626;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
   border-radius: 10px;
   color: var(--fg);
   font-family: inherit;
@@ -31,7 +31,7 @@
 
 .field input::placeholder,
 .field textarea::placeholder {
-  color: #4d4d4d;
+  color: var(--placeholder);
 }
 
 .field select {
@@ -60,7 +60,7 @@
 .role {
   position: relative;
   font-size: 11px;
-  border: 1px solid #2a2a2a;
+  border: 1px solid var(--bordure);
   border-radius: 999px;
   padding: 8px 14px;
   cursor: pointer;
@@ -81,7 +81,7 @@
 .role:has(input:checked) {
   border-color: var(--fg);
   background: var(--fg);
-  color: #000;
+  color: var(--bg);
 }
 
 /* Choix de catégorie : grands boutons empilés, avec leur explication. */
@@ -97,7 +97,7 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
-  border: 1px solid #262626;
+  border: 1px solid var(--bordure);
   border-radius: 10px;
   padding: 12px 14px;
   cursor: pointer;
@@ -116,7 +116,7 @@
 
 .option:has(input:checked) {
   border-color: var(--fg);
-  background: #141414;
+  background: var(--surface-actif);
 }
 
 .optionLabel {
@@ -131,7 +131,7 @@
 }
 
 .option:has(input:checked) .optionHint {
-  color: #9a9a9a;
+  color: var(--dim);
 }
 
 .checkline {
@@ -175,7 +175,7 @@
 
 .submit:hover {
   background: var(--fg);
-  color: #000;
+  color: var(--bg);
 }
 
 /* Action principale des écrans d'authentification : pleine largeur, pleine. */
@@ -184,7 +184,7 @@
   background: var(--fg);
   border: 1px solid var(--fg);
   border-radius: 10px;
-  color: #000;
+  color: var(--bg);
   font-family: inherit;
   font-size: 13.5px;
   font-weight: 700;
@@ -200,8 +200,8 @@
 
 .error {
   font-size: 12px;
-  color: #ff8a7a;
-  border: 1px solid #4a2622;
+  color: var(--erreur);
+  border: 1px solid var(--erreur-bordure);
   padding: 10px 12px;
   margin: 0;
 }

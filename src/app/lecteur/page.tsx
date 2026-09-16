@@ -6,9 +6,12 @@ import styles from "./lecteur.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { respondToAssignment, updateAvailability } from "./actions";
 
+/**
+ * L'orange ne se choisit pas : la plateforme l'allume quand une lecture
+ * est acceptée, et l'éteint quand la fiche est rendue.
+ */
 const VOYANTS = [
   { value: "vert", label: "Disponible" },
-  { value: "orange", label: "En cours de lecture" },
   { value: "rouge", label: "Indisponible" },
 ];
 
@@ -55,31 +58,52 @@ export default async function LecteurPage() {
     .returns<Assignment[]>();
 
   const current = readerProfile?.availability_status ?? "vert";
+  const enLecture = (assignments ?? []).some((a) => a.status === "en_cours");
+  const enAttente = (assignments ?? []).filter((a) => a.status === "proposee").length;
 
   return (
-    <PageShell eyebrow="Espace lecteur" title="Mes lectures" wide>
-      <form className={formStyles.form} action={updateAvailability}>
+    <PageShell eyebrow="Espace lecteur" title="Mes lectures" wide theme="clair">
+      {enLecture ? (
         <div className={formStyles.field}>
           <span>Ma disponibilité</span>
-          <div className={formStyles.roles}>
-            {VOYANTS.map((v) => (
-              <label key={v.value} className={formStyles.role}>
-                <input
-                  type="radio"
-                  name="availability_status"
-                  value={v.value}
-                  defaultChecked={current === v.value}
-                />
-                <span className={`${styles.dot} ${styles[v.value]}`} aria-hidden="true" />
-                {v.label}
-              </label>
-            ))}
-          </div>
+          <p className={styles.etat}>
+            <span className={`${styles.dot} ${styles.orange}`} aria-hidden="true" />
+            En cours de lecture
+          </p>
+          <span className={formStyles.hint}>
+            Votre disponibilité se rouvrira dès que vous aurez rendu votre fiche.
+          </span>
         </div>
-        <button type="submit" className={formStyles.submit}>
-          Mettre à jour
-        </button>
-      </form>
+      ) : (
+        <form className={formStyles.form} action={updateAvailability}>
+          <div className={formStyles.field}>
+            <span>Ma disponibilité</span>
+            <div className={formStyles.roles}>
+              {VOYANTS.map((v) => (
+                <label key={v.value} className={formStyles.role}>
+                  <input
+                    type="radio"
+                    name="availability_status"
+                    value={v.value}
+                    defaultChecked={current === v.value}
+                  />
+                  <span className={`${styles.dot} ${styles[v.value]}`} aria-hidden="true" />
+                  {v.label}
+                </label>
+              ))}
+            </div>
+            {enAttente > 0 && (
+              <span className={formStyles.hint}>
+                Vous mettre en indisponible refusera {enAttente > 1 ? "les projets" : "le projet"}{" "}
+                qui {enAttente > 1 ? "vous sont proposés" : "vous est proposé"}.
+              </span>
+            )}
+          </div>
+          <button type="submit" className={formStyles.submit}>
+            Mettre à jour
+          </button>
+        </form>
+      )}
 
       <h2 className={styles.subhead}>Projets qui me sont attribués</h2>
 

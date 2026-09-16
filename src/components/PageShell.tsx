@@ -6,15 +6,18 @@ export default function PageShell({
   eyebrow,
   title,
   wide = false,
+  theme = "sombre",
   children,
 }: {
   eyebrow: string;
   title: string;
   wide?: boolean;
+  /** "clair" pour les pages qui se lisent longuement ou qui doivent respirer. */
+  theme?: "sombre" | "clair";
   children: ReactNode;
 }) {
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
       <div className={styles.corner}>
         <div>
           <Link href="/">← WeFilmGood</Link>

@@ -10,9 +10,9 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 14px;
-  background: #140f0e;
-  border: 1px solid #4a2622;
-  color: #ff8a7a;
+  background: var(--surface);
+  border: 1px solid var(--erreur-bordure);
+  color: var(--erreur);
   font-size: 12px;
   line-height: 1.5;
   padding: 12px 16px;

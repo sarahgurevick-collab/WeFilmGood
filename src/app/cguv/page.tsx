@@ -15,6 +15,7 @@ export default async function CguvPage() {
       eyebrow="Mentions légales"
       title={doc?.title ?? "Conditions Générales d'Utilisation et de Vente"}
       wide
+      theme="clair"
     >
       {doc?.content ? (
         <div style={{ whiteSpace: "pre-wrap", fontSize: 14, lineHeight: 1.7 }}>

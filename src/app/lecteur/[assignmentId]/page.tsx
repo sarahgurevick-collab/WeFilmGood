@@ -69,7 +69,7 @@ export default async function RedactionFichePage({
   }
 
   return (
-    <PageShell eyebrow="Fiche de lecture" title={assignment.project.title}>
+    <PageShell eyebrow="Fiche de lecture" title={assignment.project.title} theme="clair">
       <p className={formStyles.hint}>
         {[assignment.project.format, assignment.project.language].filter(Boolean).join(" · ")}
       </p>
