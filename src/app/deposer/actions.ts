@@ -12,6 +12,8 @@ const FORMATS = [
   "immersif_360_vr",
 ];
 
+const IMAGES = ["image/jpeg", "image/png"];
+
 export async function createProject(formData: FormData) {
   const supabase = await createClient();
   const {
@@ -28,6 +30,7 @@ export async function createProject(formData: FormData) {
   const format = formData.get("format") as string;
   const genreSlug = (formData.get("genre_slug") as string)?.trim();
   const file = formData.get("scenario") as File | null;
+  const vignette = formData.get("vignette") as File | null;
 
   if (!title) {
     redirect("/deposer?erreur=" + encodeURIComponent("Le titre est obligatoire."));
@@ -37,6 +40,11 @@ export async function createProject(formData: FormData) {
   }
   if (file && file.size > 0 && file.type !== "application/pdf") {
     redirect("/deposer?erreur=" + encodeURIComponent("Le scénario doit être un fichier PDF."));
+  }
+  if (vignette && vignette.size > 0 && !IMAGES.includes(vignette.type)) {
+    redirect(
+      "/deposer?erreur=" + encodeURIComponent("La vignette doit être une image JPG ou PNG."),
+    );
   }
 
   const { data: project, error } = await supabase
@@ -76,6 +84,24 @@ export async function createProject(formData: FormData) {
     }
     // Le projet est déjà créé : un échec d'upload n'annule pas le dépôt,
     // l'auteur pourra rajouter le fichier depuis son profil.
+  }
+
+  // La vignette part dans un espace public : c'est elle qui illustre la
+  // pitchothèque, contrairement au scénario qui reste confidentiel.
+  if (vignette && vignette.size > 0) {
+    const path = `${user.id}/${project.id}-${Date.now()}`;
+    const { error: uploadError } = await supabase.storage
+      .from("project-media")
+      .upload(path, vignette, { contentType: vignette.type });
+
+    if (!uploadError) {
+      await supabase.from("project_files").insert({
+        project_id: project.id,
+        storage_path: path,
+        kind: "vignette",
+        original_name: vignette.name,
+      });
+    }
   }
 
   redirect("/deposer/merci");

@@ -1,0 +1,80 @@
+.grille {
+  list-style: none;
+  padding: 0;
+  margin: 28px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.carte {
+  display: block;
+}
+
+.vignette {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  max-width: 100%;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vignette img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s var(--ease);
+}
+
+.carte:hover .vignette img {
+  transform: scale(1.04);
+}
+
+.sansImage {
+  font-size: 11px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+.legende {
+  margin-top: 12px;
+}
+
+.legende strong {
+  font-size: 14px;
+}
+
+.genre {
+  display: block;
+  font-size: 11px;
+  color: var(--dim);
+  margin-top: 3px;
+}
+
+.logline {
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.5;
+  margin: 8px 0 0;
+}

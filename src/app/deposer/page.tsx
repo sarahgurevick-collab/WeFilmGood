@@ -79,6 +79,19 @@ export default async function DeposerPage({
         <label className={formStyles.field}>
           <span>Scénario (PDF)</span>
           <input type="file" name="scenario" accept="application/pdf" />
+          <span className={formStyles.hint}>
+            Confidentiel : seuls vous, le lecteur qui en sera chargé et
+            l&apos;administration y auront accès.
+          </span>
+        </label>
+
+        <label className={formStyles.field}>
+          <span>Vignette de présentation (JPG ou PNG, format 16/9)</span>
+          <input type="file" name="vignette" accept="image/jpeg,image/png" />
+          <span className={formStyles.hint}>
+            C&apos;est l&apos;image qui représentera votre projet dans la
+            pitchothèque. N&apos;y faites figurer ni votre nom ni le titre.
+          </span>
         </label>
 
         <button type="submit" className={formStyles.submit}>
