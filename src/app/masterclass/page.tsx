@@ -8,6 +8,7 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Paul LAVERTY - Cannes 2016", vimeoId: "168531815" },
   { titre: "Kim NGUYEN - Cannes 2016", vimeoId: "169153806" },
   { titre: "Sacha WOLF - Cannes 2016", vimeoId: "170454805" },
+  { titre: "David BIRKE - Cannes 2016", vimeoId: "170676380" },
   { titre: "Beatriz SEIGNER Cannes 2018", vimeoId: "281351697" },
   { titre: "Pierre SCHOELLER Clermont-Ferrand 2020", vimeoId: "904082025" },
 ];
