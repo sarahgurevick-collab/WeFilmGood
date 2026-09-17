@@ -183,34 +183,6 @@
   letter-spacing: normal;
 }
 
-.recherche {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  max-width: 420px;
-  margin-top: 8px;
-  padding: 12px 20px;
-  border: 1px solid var(--bordure-forte);
-  border-radius: 999px;
-  color: var(--rouge-wfg);
-}
-
-.rechercheChamp {
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  font-size: 14px;
-  color: var(--fg);
-  text-transform: none;
-  letter-spacing: normal;
-}
-
-.rechercheChamp::placeholder {
-  color: var(--placeholder);
-}
-
 /* ---------- accueil sur téléphone ---------- */
 
 .mobile { display: none; }

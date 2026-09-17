@@ -1,0 +1,59 @@
+.zone {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 8px;
+}
+
+.champ {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border: 1px solid var(--bordure-forte);
+  border-radius: 999px;
+  color: var(--rouge-wfg);
+}
+
+.champInput {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 14px;
+  color: var(--fg);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.champInput::placeholder {
+  color: var(--placeholder);
+}
+
+.suggestions {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  text-align: left;
+}
+
+.suggestions li {
+  padding: 9px 20px;
+  font-size: 13px;
+  color: var(--fg);
+  text-transform: none;
+  letter-spacing: normal;
+  border-bottom: 1px solid var(--bordure-douce);
+}
+
+.suggestions li:last-child {
+  border-bottom: 0;
+}
