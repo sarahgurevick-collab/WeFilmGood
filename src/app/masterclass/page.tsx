@@ -14,6 +14,7 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Beatriz SEIGNER Cannes 2018", vimeoId: "281351697" },
   { titre: "Romain GAVRAS - Cannes 2018", vimeoId: "277538414" },
   { titre: "Abu BAKR SHAWKY - Cannes 2018", vimeoId: "279861719" },
+  { titre: "Paul LAVERTY 2 - Cannes 2019", vimeoId: "338559739" },
   { titre: "Pierre SCHOELLER Clermont-Ferrand 2020", vimeoId: "904082025" },
 ];
 
