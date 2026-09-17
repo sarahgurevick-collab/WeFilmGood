@@ -15,9 +15,8 @@
 }
 
 .logoFestival {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 1px solid var(--bordure-douce);
+  width: 88px;
+  height: 88px;
+  border-radius: 10px;
   flex-shrink: 0;
 }
