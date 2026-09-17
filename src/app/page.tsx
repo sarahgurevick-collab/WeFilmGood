@@ -72,6 +72,7 @@ export default async function Home() {
           <p className={styles.heroSignature}>
             The best stories wherever they are
           </p>
+          <AnneeCompteur annees={10} />
           <div className={styles.heroActions}>
             <Link href="/inscription" className={styles.heroPrimary}>
               Créer un profil
@@ -91,20 +92,7 @@ export default async function Home() {
         <div className={`${styles.corner} ${styles.bottomCenter}`}>
           <Link href="/projets">Projets</Link>
         </div>
-        <div className={`${styles.corner} ${styles.bottomLeft}`}>
-          <AnneeCompteur annees={10} />
-        </div>
       </div>
-
-      <section className={styles.stories}>
-        <p className={styles.storiesEyebrow}>10 ans de pitchothèque</p>
-        <h2 className={styles.storiesTitle}>Nos success stories</h2>
-        <p className={styles.storiesIntro}>
-          Depuis 10 ans, des auteurs, réalisateurs et producteurs se
-          rencontrent sur WeFilmGood. Cette section accueillera bientôt
-          leurs histoires.
-        </p>
-      </section>
     </>
   );
 }
