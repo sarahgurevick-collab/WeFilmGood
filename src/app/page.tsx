@@ -103,7 +103,7 @@ export default async function Home() {
         <RechercheDemo />
       </section>
 
-      <section id="success-stories" className={styles.stories}>
+      <section className={styles.stories}>
         <h2 className={styles.storiesTitre}>Success stories</h2>
         <div className={styles.affiches}>
           {AFFICHES_TEINTES.map((teinte, i) => (

@@ -17,7 +17,6 @@ const DELAI_APRES_SCROLL_MS = 500;
 const ELEMENTS_MENU = [
   { label: "Nos appels à projets", href: "/appels-a-projets" },
   { label: "Tutoriels", href: "/tutoriels" },
-  { label: "Success Stories", href: "/#success-stories" },
   { label: "Masterclass", href: "/masterclass" },
   { label: "Festivals & Résidences", href: "/festivals-residences" },
   { label: "Témoignages", href: "/temoignages" },
