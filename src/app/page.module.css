@@ -118,6 +118,24 @@
   }
 }
 
+.statsBar {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 22px;
+  max-width: 90vw;
+}
+
+@media (max-width: 720px) {
+  .statsBar {
+    display: none;
+  }
+}
+
 /* ---------- réserve l'écran plein pour la page vignettes fixe ---------- */
 
 .heroSpace {
@@ -130,23 +148,13 @@
   }
 }
 
-/* ---------- chiffres clés (bande sous l'écran d'accueil) ---------- */
+/* ---------- bande blanche sous l'écran d'accueil, en attente de texte ---------- */
 
-.stats {
+.bande {
   position: relative;
   z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 56px 24px;
+  min-height: 200px;
   background: var(--bg);
-}
-
-.statsRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 48px;
-  justify-content: center;
 }
 
 /* ---------- accueil sur téléphone ---------- */

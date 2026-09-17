@@ -77,18 +77,18 @@ export default async function Home() {
         <div className={`${styles.corner} ${styles.topRight}`}>
           <Link href="/menu">Menu</Link>
         </div>
+
+        <div className={styles.statsBar}>
+          <Compteur valeur={9170} label="Scénarios analysés" />
+          <Compteur valeur={1325} label="Projets labellisés" />
+          <Compteur valeur={135} label="Pays connectés" />
+          <Compteur valeur={13058} label="talents" />
+        </div>
       </div>
 
       <div className={styles.heroSpace} aria-hidden="true" />
 
-      <section className={`${styles.stats} clair`}>
-        <div className={styles.statsRow}>
-          <Compteur valeur={9170} label="Scénarios analysés" taille="grand" />
-          <Compteur valeur={1325} label="Projets labellisés" taille="grand" />
-          <Compteur valeur={135} label="Pays connectés" taille="grand" />
-          <Compteur valeur={13058} label="talents" taille="grand" />
-        </div>
-      </section>
+      <section className={`${styles.bande} clair`} />
     </>
   );
 }
