@@ -95,6 +95,16 @@ export default async function Home() {
           <AnneeCompteur annees={10} />
         </div>
       </div>
+
+      <section className={styles.stories}>
+        <p className={styles.storiesEyebrow}>10 ans de pitchothèque</p>
+        <h2 className={styles.storiesTitle}>Nos success stories</h2>
+        <p className={styles.storiesIntro}>
+          Depuis 10 ans, des auteurs, réalisateurs et producteurs se
+          rencontrent sur WeFilmGood. Cette section accueillera bientôt
+          leurs histoires.
+        </p>
+      </section>
     </>
   );
 }

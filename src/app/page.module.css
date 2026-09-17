@@ -176,6 +176,46 @@
   }
 }
 
+/* ---------- success stories (section sous l'écran d'accueil) ---------- */
+
+.stories {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  padding: 48px 24px;
+  background: var(--bg);
+}
+
+.storiesEyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.storiesTitle {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+.storiesIntro {
+  font-size: 14px;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: normal;
+  max-width: 42ch;
+  line-height: 1.6;
+}
+
 
 /* ---------- accueil sur téléphone ---------- */
 
