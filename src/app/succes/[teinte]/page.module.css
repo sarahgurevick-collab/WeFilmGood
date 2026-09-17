@@ -1,4 +1,5 @@
 .page {
+  position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -6,6 +7,21 @@
   justify-content: center;
   gap: 24px;
   padding: 48px 24px;
+}
+
+.retour {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  font-size: 13px;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: normal;
+  transition: color 0.2s ease;
+}
+
+.retour:hover {
+  color: var(--fg);
 }
 
 .affiche {

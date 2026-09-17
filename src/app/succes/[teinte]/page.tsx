@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import placeholders from "@/styles/placeholders.module.css";
 import styles from "./page.module.css";
@@ -20,6 +21,9 @@ export default async function FicheExemple({
 
   return (
     <div className={styles.page}>
+      <Link href="/" className={styles.retour}>
+        ← Retour
+      </Link>
       <div className={`${styles.affiche} ${placeholders[cle]}`} />
       <p className={styles.attente}>Informations complètes à venir.</p>
     </div>
