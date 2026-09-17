@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
+import AnneeCompteur from "@/components/AnneeCompteur";
 import BarreNav from "@/components/BarreNav";
 import HashSession from "@/components/HashSession";
 import Logo from "@/components/Logo";
@@ -89,6 +90,9 @@ export default async function Home() {
         </div>
         <div className={`${styles.corner} ${styles.bottomCenter}`}>
           <Link href="/projets">Projets</Link>
+        </div>
+        <div className={`${styles.corner} ${styles.bottomLeft}`}>
+          <AnneeCompteur annees={10} />
         </div>
       </div>
     </>

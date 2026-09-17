@@ -1,0 +1,16 @@
+.compteur {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.chiffre {
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  font-size: 13px;
+  color: var(--dim);
+}

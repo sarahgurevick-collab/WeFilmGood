@@ -45,6 +45,11 @@
   transform: translateX(-50%);
 }
 
+.bottomLeft {
+  bottom: 20px;
+  left: 24px;
+}
+
 .loader {
   position: absolute;
   top: 66px;
