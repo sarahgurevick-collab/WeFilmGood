@@ -12,7 +12,7 @@ export default async function ConnexionPage({
   const nextPath = next ?? "/";
 
   return (
-    <AuthCard active="connexion">
+    <AuthCard active="connexion" theme="clair">
       <form className={formStyles.form} action={signIn}>
         <input type="hidden" name="next" value={nextPath} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
