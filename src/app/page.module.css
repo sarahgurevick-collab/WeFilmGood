@@ -28,11 +28,6 @@
   left: 24px;
 }
 
-.topRight {
-  top: 20px;
-  right: 24px;
-}
-
 .loader {
   position: absolute;
   top: 66px;
@@ -76,10 +71,6 @@
   .topLeft {
     top: 16px;
     left: 16px;
-  }
-  .topRight {
-    top: 16px;
-    right: 16px;
   }
   .loader {
     top: 56px;

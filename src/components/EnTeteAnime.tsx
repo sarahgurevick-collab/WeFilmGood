@@ -67,24 +67,14 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
       </Link>
 
       <nav className={styles.nav}>
-        <div className={styles.groupe}>
-          <Link href="/projets" className={styles.navIcone} aria-label="Projets">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <span className={styles.etiquette}>Projets</span>
-          </Link>
-
-          <Link href="/deposer" className={styles.navIcone} aria-label="Déposer">
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3b7fc4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polyline points="16 16 12 12 8 16" />
-              <line x1="12" y1="12" x2="12" y2="21" />
-              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
-            </svg>
-            <span className={styles.etiquette}>Déposer</span>
-          </Link>
-        </div>
+        <Link href="/menu" className={styles.navIcone} aria-label="Menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+          <span className={styles.etiquette}>Menu</span>
+        </Link>
 
         <span className={styles.separateur} aria-hidden="true" />
 

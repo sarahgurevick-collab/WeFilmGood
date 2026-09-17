@@ -82,10 +82,6 @@ export default async function Home() {
           <Compteur valeur={10} label="ans" />
         </div>
 
-        <div className={`${styles.corner} ${styles.topRight}`}>
-          <Link href="/menu">Menu</Link>
-        </div>
-
         <div className={styles.statsBar}>
           <Compteur valeur={9170} label="Scénarios analysés" />
           <Compteur valeur={1325} label="Projets labellisés" />
