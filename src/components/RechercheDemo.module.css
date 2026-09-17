@@ -70,6 +70,9 @@
   max-width: 420px;
   max-height: 220px;
   overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
   border: 1px solid var(--bordure-douce);
   border-radius: 16px;
   background: var(--surface);
@@ -97,5 +100,5 @@
 }
 
 .suggestions button:hover {
-  background: var(--surface-actif);
+  color: var(--rouge-wfg);
 }
