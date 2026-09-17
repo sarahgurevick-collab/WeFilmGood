@@ -24,13 +24,20 @@ export default function TuileEntree({
 }) {
   const router = useRouter();
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const enCours = useRef(false);
 
+  // onMouseMove plutôt que onMouseEnter : les vignettes se déplacent (CSS)
+  // sous un curseur resté immobile, ce qui déclenche un faux survol sans
+  // que la personne n'ait rien fait — un vrai mousemove exige un geste réel.
   const survol = () => {
+    if (enCours.current) return;
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    enCours.current = true;
     minuteur.current = setTimeout(() => router.push(href), DELAI_MS);
   };
 
   const annuler = () => {
+    enCours.current = false;
     if (minuteur.current) clearTimeout(minuteur.current);
   };
 
@@ -39,7 +46,7 @@ export default function TuileEntree({
       href={href}
       className={className}
       style={style}
-      onMouseEnter={survol}
+      onMouseMove={survol}
       onMouseLeave={annuler}
     >
       {children}
