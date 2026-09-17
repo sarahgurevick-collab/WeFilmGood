@@ -19,7 +19,7 @@ export default async function InscriptionPage({
 
   if (envoye) {
     return (
-      <AuthCard active="inscription">
+      <AuthCard active="inscription" theme="clair">
         <p className={formStyles.hint}>
           Un email de confirmation vient de vous être envoyé. Cliquez sur le
           lien qu&apos;il contient pour activer votre profil, puis revenez vous{" "}
@@ -30,7 +30,7 @@ export default async function InscriptionPage({
   }
 
   return (
-    <AuthCard active="inscription">
+    <AuthCard active="inscription" theme="clair">
       <form className={formStyles.form} action={signUp}>
         <input type="hidden" name="next" value={nextPath} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}

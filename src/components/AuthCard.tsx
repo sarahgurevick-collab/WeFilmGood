@@ -10,13 +10,16 @@ import styles from "./AuthCard.module.css";
  */
 export default function AuthCard({
   active,
+  theme = "sombre",
   children,
 }: {
   active: "connexion" | "inscription";
+  /** "clair" pour un fond blanc. */
+  theme?: "sombre" | "clair";
   children: ReactNode;
 }) {
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
       <div className={styles.card}>
         <Link href="/" className={styles.brand}>
           <Logo />
