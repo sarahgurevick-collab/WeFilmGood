@@ -28,12 +28,6 @@
   left: 24px;
 }
 
-.topCenter {
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
 .topRight {
   top: 20px;
   right: 24px;
@@ -86,9 +80,6 @@
   .topRight {
     top: 16px;
     right: 16px;
-  }
-  .topCenter {
-    top: 16px;
   }
   .loader {
     top: 56px;
@@ -229,6 +220,14 @@
 /* ---------- accueil sur téléphone ---------- */
 
 .mobile { display: none; }
+
+/* Projets/Déposer/Connexion vivent désormais dans la bande blanche du
+   haut sur desktop ; sur téléphone, BarreNav garde sa barre au pouce. */
+@media (min-width: 721px) {
+  .barreNavMobileSeule {
+    display: none;
+  }
+}
 
 /*
  * Le mur de vignettes est une composition pour grand écran : sur

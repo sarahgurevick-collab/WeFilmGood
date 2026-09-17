@@ -6,12 +6,49 @@
   z-index: 200;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   padding: 10px 20px;
   background: #ffffff;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
   transition:
     opacity 0.3s ease,
     transform 0.3s ease;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.navLien {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+  transition: opacity 0.2s ease;
+}
+
+.navLien:hover {
+  opacity: 0.6;
+}
+
+.compte {
+  display: flex;
+  transition: transform 0.2s ease;
+}
+
+.compte:hover {
+  transform: scale(1.08);
+}
+
+@media (max-width: 620px) {
+  .nav {
+    gap: 12px;
+  }
+  .navLien {
+    font-size: 11px;
+  }
 }
 
 .cachee {

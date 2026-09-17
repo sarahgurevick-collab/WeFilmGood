@@ -40,7 +40,7 @@ export default async function Home() {
   return (
     <>
       <HashSession />
-      <EnTeteAnime />
+      <EnTeteAnime connecte={!!auth?.user} />
       <PitchWall pitches={pitches} />
 
       <div className={styles.mobile}>
@@ -59,7 +59,9 @@ export default async function Home() {
         </Link>
       </div>
 
-      <BarreNav connecte={!!auth?.user} />
+      <div className={styles.barreNavMobileSeule}>
+        <BarreNav connecte={!!auth?.user} />
+      </div>
 
       <div className={styles.ui}>
         <div className={`${styles.corner} ${styles.topLeft}`}>
@@ -80,9 +82,6 @@ export default async function Home() {
           <Compteur valeur={10} label="ans" />
         </div>
 
-        <div className={`${styles.corner} ${styles.topCenter}`}>
-          <Link href="/deposer">Déposer</Link>
-        </div>
         <div className={`${styles.corner} ${styles.topRight}`}>
           <Link href="/menu">Menu</Link>
         </div>

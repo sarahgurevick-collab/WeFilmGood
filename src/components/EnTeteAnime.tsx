@@ -20,7 +20,7 @@ const DELAI_APRES_SCROLL_MS = 500;
  * La bande se masque pendant le défilement pour ne pas gêner la
  * lecture des vignettes/bandes, et revient dès que ça s'arrête.
  */
-export default function EnTeteAnime() {
+export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -65,6 +65,34 @@ export default function EnTeteAnime() {
 
         {etat.accroche && <span className={styles.accroche}>{etat.accroche}</span>}
       </Link>
+
+      <nav className={styles.nav}>
+        <Link href="/projets" className={styles.navLien}>
+          Projets
+        </Link>
+        <Link href="/deposer" className={styles.navLien}>
+          Déposer
+        </Link>
+        <Link
+          href={connecte ? "/profil" : "/connexion"}
+          className={styles.compte}
+          aria-label={connecte ? "Mon profil" : "Connexion"}
+          title={connecte ? "Mon profil" : "Connexion"}
+        >
+          <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true">
+            <defs>
+              <clipPath id="rond-compte">
+                <circle cx="24" cy="24" r="22" />
+              </clipPath>
+            </defs>
+            <circle cx="24" cy="24" r="22" fill="#3b7fc4" />
+            <g clipPath="url(#rond-compte)">
+              <circle cx="24" cy="19" r="7.5" fill="#fff" />
+              <path d="M9 44c0-8.5 6.5-14 15-14s15 5.5 15 14" fill="#fff" />
+            </g>
+          </svg>
+        </Link>
+      </nav>
     </div>
   );
 }
