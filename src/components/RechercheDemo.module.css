@@ -1,14 +1,24 @@
 .zone {
   position: relative;
   width: 100%;
-  max-width: 420px;
+  max-width: 640px;
   margin-top: 8px;
+}
+
+.ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
 }
 
 .champ {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
+  max-width: 420px;
   padding: 12px 20px;
   border: 1px solid var(--bordure-forte);
   border-radius: 999px;
@@ -30,12 +40,19 @@
   color: var(--placeholder);
 }
 
+.resultats {
+  display: flex;
+  gap: 20px;
+}
+
 .suggestions {
   position: absolute;
   z-index: 20;
   top: calc(100% + 8px);
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 420px;
   max-height: 220px;
   overflow-y: auto;
   border: 1px solid var(--bordure-douce);
@@ -46,14 +63,24 @@
 }
 
 .suggestions li {
-  padding: 9px 20px;
-  font-size: 13px;
-  color: var(--fg);
-  text-transform: none;
-  letter-spacing: normal;
   border-bottom: 1px solid var(--bordure-douce);
 }
 
 .suggestions li:last-child {
   border-bottom: 0;
+}
+
+.suggestions button {
+  display: block;
+  width: 100%;
+  padding: 9px 20px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--fg);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.suggestions button:hover {
+  background: var(--surface-actif);
 }
