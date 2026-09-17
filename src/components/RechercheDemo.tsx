@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import Compteur from "./Compteur";
 import styles from "./RechercheDemo.module.css";
@@ -71,6 +72,15 @@ export default function RechercheDemo() {
           </div>
         )}
       </div>
+
+      {selection && (
+        <p className={styles.cta}>
+          Pour voir ces projets,{" "}
+          <Link href="/inscription" className={styles.ctaLien}>
+            créez votre profil
+          </Link>
+        </p>
+      )}
 
       {montrer && (
         <ul className={styles.suggestions}>

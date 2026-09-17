@@ -45,6 +45,21 @@
   gap: 20px;
 }
 
+.cta {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.ctaLien {
+  color: var(--rouge-wfg);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
 .suggestions {
   position: absolute;
   z-index: 20;
