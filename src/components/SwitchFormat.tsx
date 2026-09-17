@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import styles from "./SwitchFormat.module.css";
 
-export default function SwitchFormat() {
+export default function SwitchFormat({
+  contenuCourt,
+  contenuLong,
+}: {
+  contenuCourt?: ReactNode;
+  contenuLong?: ReactNode;
+}) {
   const [format, setFormat] = useState<"court" | "long">("court");
 
   return (
@@ -25,11 +31,11 @@ export default function SwitchFormat() {
         </button>
       </nav>
 
-      <p className={styles.contenu}>
+      <div className={styles.contenu}>
         {format === "court"
-          ? "Contenu à venir pour le court-métrage."
-          : "Contenu à venir pour le long-métrage."}
-      </p>
+          ? (contenuCourt ?? "Contenu à venir pour le court-métrage.")
+          : (contenuLong ?? "Contenu à venir pour le long-métrage.")}
+      </div>
     </div>
   );
 }

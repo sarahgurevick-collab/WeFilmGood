@@ -40,8 +40,45 @@
 }
 
 .contenu {
+  max-width: 65ch;
   font-size: 14px;
   color: var(--dim);
   text-transform: none;
   letter-spacing: normal;
+  line-height: 1.6;
+}
+
+.contenu h3 {
+  margin: 24px 0 8px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--fg);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.contenu h3:first-child {
+  margin-top: 0;
+}
+
+.contenu p {
+  margin: 0 0 12px;
+}
+
+.contenu ol {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+.contenu li {
+  margin-bottom: 10px;
+}
+
+.contenu strong {
+  color: var(--fg);
+}
+
+.contenu a {
+  color: var(--rouge-wfg);
+  font-weight: 700;
 }
