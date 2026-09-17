@@ -219,11 +219,11 @@
   aspect-ratio: 2 / 3;
   border-radius: 10px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-  transition: transform 0.25s var(--ease);
+  transition: transform 0.8s var(--ease);
 }
 
 .affiche:hover {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
 /* ---------- accueil sur téléphone ---------- */

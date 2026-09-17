@@ -13,15 +13,54 @@
   position: absolute;
   top: 20px;
   left: 24px;
+  padding: 10px 18px;
+  border: 1px solid var(--bordure-forte);
+  border-radius: 999px;
   font-size: 13px;
-  color: var(--dim);
+  font-weight: 700;
+  color: var(--fg);
   text-transform: none;
   letter-spacing: normal;
-  transition: color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .retour:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.fleche {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--bordure-forte);
+  border-radius: 999px;
+  font-size: 22px;
+  line-height: 1;
   color: var(--fg);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.fleche:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.flecheGauche {
+  left: 20px;
+}
+
+.flecheDroite {
+  right: 20px;
 }
 
 .affiche {
@@ -36,4 +75,18 @@
   color: var(--dim);
   text-transform: none;
   letter-spacing: normal;
+}
+
+@media (max-width: 620px) {
+  .fleche {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  .flecheGauche {
+    left: 10px;
+  }
+  .flecheDroite {
+    right: 10px;
+  }
 }

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, type CSSProperties, type ReactNode } from "react";
 
-const DELAI_MS = 350;
+const DELAI_MS = 900;
 
 /**
  * Sur souris/trackpad, le survol suffit à "entrer" dans la fiche après un

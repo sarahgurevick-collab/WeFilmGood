@@ -1,0 +1,126 @@
+.bouton {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease;
+}
+
+.bouton:hover {
+  transform: scale(1.08);
+}
+
+.panneau {
+  position: fixed;
+  right: 20px;
+  bottom: 84px;
+  z-index: 100;
+  width: min(320px, calc(100vw - 40px));
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--bordure-douce);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  color: var(--fg);
+}
+
+.fermer {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--dim);
+}
+
+.fermer:hover {
+  color: var(--fg);
+}
+
+.titre {
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: normal;
+  margin-bottom: 4px;
+}
+
+.soustitre {
+  font-size: 12px;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: normal;
+  margin-bottom: 14px;
+}
+
+.formulaire {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formulaire input,
+.formulaire textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: normal;
+  resize: vertical;
+}
+
+.formulaire input::placeholder,
+.formulaire textarea::placeholder {
+  color: var(--placeholder);
+}
+
+.formulaire button {
+  margin-top: 4px;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.formulaire button:disabled {
+  opacity: 0.6;
+}
+
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.erreur {
+  font-size: 12px;
+  color: var(--erreur);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.confirmation {
+  font-size: 13px;
+  color: var(--fg);
+  text-transform: none;
+  letter-spacing: normal;
+}
