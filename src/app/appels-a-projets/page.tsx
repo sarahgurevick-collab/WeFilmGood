@@ -90,7 +90,7 @@ export default async function AppelsAProjetsPage() {
               professionnels du secteur.
             </p>
             <p>
-              <strong>Date limite :</strong> 25 octobre 2026
+              <strong>Date limite :</strong> 26 octobre 2026
             </p>
 
             <h3>Modalités de candidature</h3>
