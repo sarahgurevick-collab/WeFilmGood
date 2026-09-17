@@ -6,6 +6,7 @@ import HashSession from "@/components/HashSession";
 import Logo from "@/components/Logo";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
 import RechercheDemo from "@/components/RechercheDemo";
+import TuileEntree from "@/components/TuileEntree";
 import { createClient } from "@/lib/supabase/server";
 import placeholders from "@/styles/placeholders.module.css";
 import styles from "./page.module.css";
@@ -109,7 +110,7 @@ export default async function Home() {
         <h2 className={styles.storiesTitre}>Success stories</h2>
         <div className={styles.affiches}>
           {AFFICHES_TEINTES.map((teinte, i) => (
-            <Link
+            <TuileEntree
               key={i}
               href={`/succes/${teinte}`}
               className={`${styles.affiche} ${placeholders[`ph${teinte}`]}`}

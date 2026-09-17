@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
-import Link from "next/link";
 import placeholders from "@/styles/placeholders.module.css";
+import TuileEntree from "./TuileEntree";
 import styles from "./PitchWall.module.css";
 
 export type Pitch = {
@@ -70,7 +70,7 @@ export default function PitchWall({ pitches }: { pitches: Pitch[] }) {
         } as CSSProperties;
 
         return (
-          <Link
+          <TuileEntree
             key={pitch?.id ?? `slot-${i}`}
             href={pitch?.id ? `/projets/${pitch.id}` : `/succes/${i % 6}`}
             className={styles.tile}
@@ -85,7 +85,7 @@ export default function PitchWall({ pitches }: { pitches: Pitch[] }) {
             ) : (
               <div className={`${styles.ph} ${PLACEHOLDERS[i % 6]}`} />
             )}
-          </Link>
+          </TuileEntree>
         );
       })}
     </div>
