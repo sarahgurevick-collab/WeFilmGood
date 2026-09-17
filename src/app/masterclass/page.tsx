@@ -5,6 +5,7 @@ import PageShell from "@/components/PageShell";
 import styles from "./page.module.css";
 
 const MASTERCLASSES: Masterclass[] = [
+  { titre: "Jacques FIESCHI - Cannes 2012", vimeoId: "669374688" },
   { titre: "Paul LAVERTY - Cannes 2016", vimeoId: "168531815" },
   { titre: "Kim NGUYEN - Cannes 2016", vimeoId: "169153806" },
   { titre: "Sacha WOLF - Cannes 2016", vimeoId: "170454805" },
