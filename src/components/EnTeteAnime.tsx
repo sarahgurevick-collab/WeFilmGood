@@ -67,17 +67,30 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
       </Link>
 
       <nav className={styles.nav}>
-        <Link href="/projets" className={styles.navLien}>
-          Projets
+        <Link href="/projets" className={styles.navIcone} aria-label="Projets">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <span className={styles.etiquette}>Projets</span>
         </Link>
-        <Link href="/deposer" className={styles.navLien}>
-          Déposer
+
+        <Link href="/deposer" className={styles.navIcone} aria-label="Déposer">
+          <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true">
+            <path
+              d="M20 40c-7 0-12-5-12-11 0-5 4-9 9-10 1-8 8-14 16-14 7 0 13 5 15 11 6 1 10 6 10 12 0 6-5 12-12 12H20Z"
+              fill="#3b7fc4"
+            />
+            <path d="M32 20 43 33h-7v9H24v-9h-7Z" fill="#fff" />
+            <path d="M32 24 40 34h-5v8h-6v-8h-5Z" fill="#3a3f47" />
+          </svg>
+          <span className={styles.etiquette}>Déposer</span>
         </Link>
+
         <Link
           href={connecte ? "/profil" : "/connexion"}
-          className={styles.compte}
+          className={styles.navIcone}
           aria-label={connecte ? "Mon profil" : "Connexion"}
-          title={connecte ? "Mon profil" : "Connexion"}
         >
           <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true">
             <defs>
@@ -91,6 +104,9 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
               <path d="M9 44c0-8.5 6.5-14 15-14s15 5.5 15 14" fill="#fff" />
             </g>
           </svg>
+          <span className={styles.etiquette}>
+            {connecte ? "Mon profil" : "Connexion"}
+          </span>
         </Link>
       </nav>
     </div>
