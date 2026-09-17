@@ -14,6 +14,16 @@ const ETATS = [
 const CYCLE_MS = 4000;
 const DELAI_APRES_SCROLL_MS = 500;
 
+const ELEMENTS_MENU = [
+  { label: "Nos appels à projets", href: "/appels-a-projets" },
+  { label: "Tutoriels", href: "/tutoriels" },
+  { label: "Success Stories", href: "/#success-stories" },
+  { label: "Masterclass", href: "/masterclass" },
+  { label: "Festivals & Résidences", href: "/festivals-residences" },
+  { label: "Témoignages", href: "/temoignages" },
+  { label: "Tarifs", href: "/tarifs" },
+];
+
 /**
  * Reconstitution approximative du logo réel (cercle à encoche en
  * escalier + "WE FILM GOOD") en attendant le fichier SVG source.
@@ -23,7 +33,22 @@ const DELAI_APRES_SCROLL_MS = 500;
 export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
   const [index, setIndex] = useState(0);
   const [visible, setVisible] = useState(true);
+  const [menuOuvert, setMenuOuvert] = useState(false);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!menuOuvert) return;
+
+    const surClicExterieur = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOuvert(false);
+      }
+    };
+
+    document.addEventListener("mousedown", surClicExterieur);
+    return () => document.removeEventListener("mousedown", surClicExterieur);
+  }, [menuOuvert]);
 
   useEffect(() => {
     const id = setInterval(() => setIndex((i) => (i + 1) % ETATS.length), CYCLE_MS);
@@ -67,14 +92,34 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
       </Link>
 
       <nav className={styles.nav}>
-        <Link href="/menu" className={styles.navIcone} aria-label="Menu">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-          <span className={styles.etiquette}>Menu</span>
-        </Link>
+        <div className={styles.menuConteneur} ref={menuRef}>
+          <button
+            type="button"
+            className={styles.navIcone}
+            aria-label="Menu"
+            aria-expanded={menuOuvert}
+            onClick={() => setMenuOuvert((o) => !o)}
+          >
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+            <span className={styles.etiquette}>Menu</span>
+          </button>
+
+          {menuOuvert && (
+            <ul className={styles.menuDeroule}>
+              {ELEMENTS_MENU.map((el) => (
+                <li key={el.href}>
+                  <Link href={el.href} onClick={() => setMenuOuvert(false)}>
+                    {el.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         <span className={styles.separateur} aria-hidden="true" />
 

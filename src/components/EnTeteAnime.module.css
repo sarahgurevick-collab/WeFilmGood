@@ -31,7 +31,49 @@
 .navIcone {
   position: relative;
   display: flex;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
   transition: transform 0.2s ease;
+}
+
+.menuConteneur {
+  position: relative;
+}
+
+.menuDeroule {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  min-width: 220px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #ebe8e5;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+}
+
+.menuDeroule li + li {
+  margin-top: 2px;
+}
+
+.menuDeroule a {
+  display: block;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-transform: none;
+  letter-spacing: normal;
+  transition: background 0.15s ease;
+}
+
+.menuDeroule a:hover {
+  background: #f2f2f0;
 }
 
 .navIcone:hover {
