@@ -12,6 +12,7 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Brian SZELNICK - Cannes 2017", vimeoId: "220287202" },
   { titre: "Anahita GHAZVINIZADEH - Cannes 2017", vimeoId: "220597607" },
   { titre: "Beatriz SEIGNER Cannes 2018", vimeoId: "281351697" },
+  { titre: "Romain GAVRAS - Cannes 2018", vimeoId: "277538414" },
   { titre: "Pierre SCHOELLER Clermont-Ferrand 2020", vimeoId: "904082025" },
 ];
 
