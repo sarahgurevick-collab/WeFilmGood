@@ -18,6 +18,7 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Paul LAVERTY 2 - Cannes 2019", vimeoId: "338559739" },
   { titre: "Olivier MEGATON - Clermont-Ferrand 2016", vimeoId: "164111497" },
   { titre: "Julien SERI - Clermont-Ferrand 2017", vimeoId: "206539679" },
+  { titre: "David OELHOFFEN - Clermont-Ferrand 2019", vimeoId: "340089009" },
   { titre: "Pierre SCHOELLER Clermont-Ferrand 2020", vimeoId: "904082025" },
 ];
 
