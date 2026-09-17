@@ -19,7 +19,19 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 20px;
+}
+
+.groupe {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.separateur {
+  width: 1px;
+  height: 22px;
+  background: #dedad6;
 }
 
 .navIcone {

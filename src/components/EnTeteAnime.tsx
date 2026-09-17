@@ -67,25 +67,26 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
       </Link>
 
       <nav className={styles.nav}>
-        <Link href="/projets" className={styles.navIcone} aria-label="Projets">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="7" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <span className={styles.etiquette}>Projets</span>
-        </Link>
+        <div className={styles.groupe}>
+          <Link href="/projets" className={styles.navIcone} aria-label="Projets">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <span className={styles.etiquette}>Projets</span>
+          </Link>
 
-        <Link href="/deposer" className={styles.navIcone} aria-label="Déposer">
-          <svg viewBox="0 0 48 48" width="26" height="26" aria-hidden="true">
-            <path
-              d="M20 40c-7 0-12-5-12-11 0-5 4-9 9-10 1-8 8-14 16-14 7 0 13 5 15 11 6 1 10 6 10 12 0 6-5 12-12 12H20Z"
-              fill="#3b7fc4"
-            />
-            <path d="M32 20 43 33h-7v9H24v-9h-7Z" fill="#fff" />
-            <path d="M32 24 40 34h-5v8h-6v-8h-5Z" fill="#3a3f47" />
-          </svg>
-          <span className={styles.etiquette}>Déposer</span>
-        </Link>
+          <Link href="/deposer" className={styles.navIcone} aria-label="Déposer">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3b7fc4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="16 16 12 12 8 16" />
+              <line x1="12" y1="12" x2="12" y2="21" />
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" />
+            </svg>
+            <span className={styles.etiquette}>Déposer</span>
+          </Link>
+        </div>
+
+        <span className={styles.separateur} aria-hidden="true" />
 
         <Link
           href={connecte ? "/profil" : "/connexion"}
