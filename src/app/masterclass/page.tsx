@@ -6,6 +6,7 @@ import styles from "./page.module.css";
 
 const MASTERCLASSES: Masterclass[] = [
   { titre: "Paul LAVERTY - Cannes 2016", vimeoId: "168531815" },
+  { titre: "Kim Nguyen - Cannes 2016", vimeoId: "169153806" },
   { titre: "Beatriz SEIGNER Cannes 2018", vimeoId: "281351697" },
   { titre: "Pierre SCHOELLER Clermont-Ferrand 2020", vimeoId: "904082025" },
 ];
