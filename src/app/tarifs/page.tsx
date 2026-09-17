@@ -1,9 +1,15 @@
-import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
+import PageShell from "@/components/PageShell";
+import { createClient } from "@/lib/supabase/server";
 
-export default function TarifsPage() {
+export default async function TarifsPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
-    <PageShell eyebrow="WeFilmGood" title="Tarifs">
+    <PageShell eyebrow="WeFilmGood" title="Tarifs" enTeteAnime connecte={!!user}>
       <p className={formStyles.hint}>Contenu à venir.</p>
     </PageShell>
   );

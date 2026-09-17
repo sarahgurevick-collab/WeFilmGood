@@ -2,6 +2,7 @@ import MasterclassLecteur, {
   type Masterclass,
 } from "@/components/MasterclassLecteur";
 import PageShell from "@/components/PageShell";
+import { createClient } from "@/lib/supabase/server";
 import styles from "./page.module.css";
 
 const MASTERCLASSES: Masterclass[] = [
@@ -22,9 +23,19 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Pierre SCHOELLER Clermont-Ferrand 2020", vimeoId: "904082025" },
 ];
 
-export default function MasterclassPage() {
+export default async function MasterclassPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   return (
-    <PageShell eyebrow="WeFilmGood" title="Masterclass">
+    <PageShell
+      eyebrow="WeFilmGood"
+      title="Masterclass"
+      enTeteAnime
+      connecte={!!user}
+    >
       <p className={styles.intro}>
         WeFilmGood et La Maison des Scénaristes organisent des masterclass en
         festival afin de partager les expériences des auteurs et des
