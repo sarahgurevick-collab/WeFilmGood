@@ -79,6 +79,8 @@ export default async function Home() {
         </div>
       </div>
 
+      <div className={styles.heroSpace} aria-hidden="true" />
+
       <section className={`${styles.stats} clair`}>
         <div className={styles.statsRow}>
           <Compteur valeur={9170} label="Scénarios analysés" taille="grand" />

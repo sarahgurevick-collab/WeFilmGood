@@ -21,6 +21,7 @@
   --erreur-bordure: #4a2622;
   --succes: #7ee0a0;
   --succes-bordure: #23402f;
+  --rouge-wfg: #e2231a;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --spread-dur: 0.9s;
 }

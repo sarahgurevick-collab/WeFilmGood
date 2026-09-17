@@ -118,15 +118,27 @@
   }
 }
 
-/* ---------- chiffres clés (section sous l'écran d'accueil) ---------- */
+/* ---------- réserve l'écran plein pour la page vignettes fixe ---------- */
+
+.heroSpace {
+  min-height: 100vh;
+}
+
+@media (max-width: 720px) {
+  .heroSpace {
+    display: none;
+  }
+}
+
+/* ---------- chiffres clés (bande sous l'écran d'accueil) ---------- */
 
 .stats {
   position: relative;
   z-index: 10;
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 56px 24px;
   background: var(--bg);
 }
 
@@ -135,7 +147,6 @@
   flex-wrap: wrap;
   gap: 48px;
   justify-content: center;
-  padding: 24px;
 }
 
 /* ---------- accueil sur téléphone ---------- */
