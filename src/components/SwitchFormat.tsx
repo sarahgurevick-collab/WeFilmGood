@@ -6,11 +6,13 @@ import styles from "./SwitchFormat.module.css";
 export default function SwitchFormat({
   contenuCourt,
   contenuLong,
+  defaut = "court",
 }: {
   contenuCourt?: ReactNode;
   contenuLong?: ReactNode;
+  defaut?: "court" | "long";
 }) {
-  const [format, setFormat] = useState<"court" | "long">("court");
+  const [format, setFormat] = useState<"court" | "long">(defaut);
 
   return (
     <div>

@@ -20,6 +20,7 @@ export default async function AppelsAProjetsPage() {
         />
       </div>
       <SwitchFormat
+        defaut="long"
         contenuCourt={
           <>
             <img
