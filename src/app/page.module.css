@@ -163,6 +163,10 @@
   background: var(--bg);
 }
 
+.rouge {
+  color: var(--rouge-wfg);
+}
+
 .bandeTitre {
   font-size: 26px;
   font-weight: 800;

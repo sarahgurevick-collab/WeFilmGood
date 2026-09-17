@@ -90,7 +90,8 @@ export default async function Home() {
 
       <section className={`${styles.bande} clair`}>
         <h2 className={styles.bandeTitre}>
-          Rejoignez WeFilmGood la plateforme de la Maison des Scénaristes
+          Rejoignez <span className={styles.rouge}>We</span>Film<span className={styles.rouge}>Good</span> la
+          plateforme de la Maison des Scénaristes
         </h2>
         <p className={styles.bandeSousTitre}>
           Créons ensemble les Films et les Séries de demain !
