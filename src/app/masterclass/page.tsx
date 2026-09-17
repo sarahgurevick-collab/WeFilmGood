@@ -6,7 +6,7 @@ import styles from "./page.module.css";
 
 const MASTERCLASSES: Masterclass[] = [
   { titre: "Beatriz SEIGNER Cannes 2018", vimeoId: "281351697" },
-  { titre: "Pierre Schoeller Clermont-Ferrand 2020", vimeoId: "904082025" },
+  { titre: "Pierre SCHOELLER Clermont-Ferrand 2020", vimeoId: "904082025" },
 ];
 
 export default function MasterclassPage() {
