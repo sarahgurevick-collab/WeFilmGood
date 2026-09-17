@@ -11,6 +11,17 @@ import styles from "./page.module.css";
 
 const DOTS = [0, 45, 90, 135, 180, 225, 270, 315];
 
+const AFFICHES = [
+  styles.affichePh0,
+  styles.affichePh1,
+  styles.affichePh2,
+  styles.affichePh3,
+  styles.affichePh4,
+  styles.affichePh5,
+  styles.affichePh0,
+  styles.affichePh1,
+];
+
 export default async function Home() {
   const supabase = await createClient();
 
@@ -98,6 +109,15 @@ export default async function Home() {
           Créons ensemble les Films et les Séries de demain !
         </p>
         <RechercheDemo />
+      </section>
+
+      <section className={styles.stories}>
+        <h2 className={styles.storiesTitre}>Success stories</h2>
+        <div className={styles.affiches}>
+          {AFFICHES.map((classe, i) => (
+            <div key={i} className={`${styles.affiche} ${classe}`} />
+          ))}
+        </div>
       </section>
     </>
   );
