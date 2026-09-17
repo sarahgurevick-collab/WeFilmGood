@@ -39,12 +39,6 @@
   right: 24px;
 }
 
-.bottomCenter {
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
 .loader {
   position: absolute;
   top: 66px;
@@ -122,6 +116,26 @@
   .hero {
     display: none;
   }
+}
+
+/* ---------- chiffres clés (section sous l'écran d'accueil) ---------- */
+
+.stats {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.statsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px;
+  justify-content: center;
+  padding: 24px;
 }
 
 /* ---------- accueil sur téléphone ---------- */

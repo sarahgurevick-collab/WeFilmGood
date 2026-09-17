@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
-import AnneeCompteur from "@/components/AnneeCompteur";
 import BarreNav from "@/components/BarreNav";
+import Compteur from "@/components/Compteur";
 import HashSession from "@/components/HashSession";
 import Logo from "@/components/Logo";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
@@ -68,7 +68,7 @@ export default async function Home() {
         </div>
 
         <div className={styles.hero}>
-          <AnneeCompteur annees={10} />
+          <Compteur valeur={10} label="ans" />
         </div>
 
         <div className={`${styles.corner} ${styles.topCenter}`}>
@@ -77,10 +77,16 @@ export default async function Home() {
         <div className={`${styles.corner} ${styles.topRight}`}>
           <Link href="/menu">Menu</Link>
         </div>
-        <div className={`${styles.corner} ${styles.bottomCenter}`}>
-          <Link href="/projets">Projets</Link>
-        </div>
       </div>
+
+      <section className={`${styles.stats} clair`}>
+        <div className={styles.statsRow}>
+          <Compteur valeur={9170} label="Scénarios analysés" taille="grand" />
+          <Compteur valeur={1325} label="Projets labellisés" taille="grand" />
+          <Compteur valeur={135} label="Pays connectés" taille="grand" />
+          <Compteur valeur={13058} label="talents" taille="grand" />
+        </div>
+      </section>
     </>
   );
 }

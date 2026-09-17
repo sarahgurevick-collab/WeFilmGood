@@ -1,19 +1,27 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import styles from "./AnneeCompteur.module.css";
+import styles from "./Compteur.module.css";
 
 /**
- * Défile de 0 à `annees` à l'affichage, sauf préférence réduite pour le
+ * Défile de 0 à `valeur` à l'affichage, sauf préférence réduite pour le
  * mouvement où la valeur finale s'affiche directement.
  */
-export default function AnneeCompteur({ annees }: { annees: number }) {
-  const [valeur, setValeur] = useState(0);
+export default function Compteur({
+  valeur,
+  label,
+  taille = "petit",
+}: {
+  valeur: number;
+  label: string;
+  taille?: "petit" | "grand";
+}) {
+  const [affiche, setAffiche] = useState(0);
   const depart = useRef<number | null>(null);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setValeur(annees);
+      setAffiche(valeur);
       return;
     }
 
@@ -23,18 +31,18 @@ export default function AnneeCompteur({ annees }: { annees: number }) {
     const tick = (t: number) => {
       if (depart.current === null) depart.current = t;
       const progres = Math.min((t - depart.current) / duree, 1);
-      setValeur(Math.round(progres * annees));
+      setAffiche(Math.round(progres * valeur));
       if (progres < 1) frame = requestAnimationFrame(tick);
     };
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [annees]);
+  }, [valeur]);
 
   return (
-    <div className={styles.compteur}>
-      <span className={styles.chiffre}>{valeur}</span>
-      <span className={styles.label}>ans</span>
+    <div className={`${styles.compteur} ${taille === "grand" ? styles.grand : ""}`}>
+      <span className={styles.chiffre}>{affiche.toLocaleString("fr-FR")}</span>
+      <span className={styles.label}>{label}</span>
     </div>
   );
 }
