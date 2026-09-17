@@ -1,6 +1,7 @@
-import formStyles from "@/components/form.module.css";
 import PageShell from "@/components/PageShell";
+import SwitchFormat from "@/components/SwitchFormat";
 import { createClient } from "@/lib/supabase/server";
+import styles from "./page.module.css";
 
 export default async function AppelsAProjetsPage() {
   const supabase = await createClient();
@@ -16,7 +17,8 @@ export default async function AppelsAProjetsPage() {
       enTeteAnime
       connecte={!!user}
     >
-      <p className={formStyles.hint}>Contenu à venir.</p>
+      <h2 className={styles.sousTitre}>Prochain appel à projets</h2>
+      <SwitchFormat />
     </PageShell>
   );
 }
