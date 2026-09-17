@@ -113,7 +113,7 @@ export default async function Home() {
           </svg>
           <input
             type="text"
-            placeholder="mots clés"
+            placeholder="Trouvez des projets, des talents, des personnages"
             className={styles.rechercheChamp}
             disabled
           />
