@@ -109,6 +109,68 @@
   }
 }
 
+/* ---------- hero (accroche + CTA par-dessus l'animation) ---------- */
+
+.hero {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.heroMarque {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+.heroSignature {
+  font-size: 13px;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: normal;
+  max-width: 30ch;
+  line-height: 1.5;
+}
+
+.heroActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.heroPrimary,
+.heroSecondary {
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 13px 26px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.heroPrimary {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.heroSecondary {
+  border: 1px solid var(--bordure-forte);
+  color: var(--fg);
+}
+
+@media (max-width: 720px) {
+  .hero {
+    display: none;
+  }
+}
+
 
 /* ---------- accueil sur téléphone ---------- */
 

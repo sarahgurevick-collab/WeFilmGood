@@ -66,6 +66,21 @@ export default async function Home() {
           ))}
         </div>
 
+        <div className={styles.hero}>
+          <div className={styles.heroMarque}>WeFilmGood</div>
+          <p className={styles.heroSignature}>
+            The best stories wherever they are
+          </p>
+          <div className={styles.heroActions}>
+            <Link href="/inscription" className={styles.heroPrimary}>
+              Créer un profil
+            </Link>
+            <Link href="/connexion" className={styles.heroSecondary}>
+              Se connecter
+            </Link>
+          </div>
+        </div>
+
         <div className={`${styles.corner} ${styles.topCenter}`}>
           <Link href="/deposer">Déposer</Link>
         </div>
