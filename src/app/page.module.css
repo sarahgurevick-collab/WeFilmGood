@@ -214,29 +214,16 @@
 }
 
 .affiche {
+  display: block;
   width: 150px;
   aspect-ratio: 2 / 3;
   border-radius: 10px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.25s var(--ease);
 }
 
-.affichePh0 {
-  background: radial-gradient(120% 120% at 30% 20%, #6f7a80 0%, #39434a 55%, #14181b 100%);
-}
-.affichePh1 {
-  background: radial-gradient(120% 120% at 70% 25%, #8a8375 0%, #4a463d 55%, #17160f 100%);
-}
-.affichePh2 {
-  background: radial-gradient(120% 120% at 40% 30%, #6b7a6e 0%, #37423a 55%, #111614 100%);
-}
-.affichePh3 {
-  background: radial-gradient(120% 120% at 60% 15%, #7d7480 0%, #433d47 55%, #16131a 100%);
-}
-.affichePh4 {
-  background: radial-gradient(120% 120% at 25% 35%, #8a7a72 0%, #4a403b 55%, #191312 100%);
-}
-.affichePh5 {
-  background: radial-gradient(120% 120% at 75% 30%, #6d7886 0%, #38404d 55%, #12151c 100%);
+.affiche:hover {
+  transform: scale(1.08);
 }
 
 /* ---------- accueil sur téléphone ---------- */

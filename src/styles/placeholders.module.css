@@ -1,0 +1,21 @@
+/* Dégradés pastel/gris utilisés tant qu'aucune image réelle (vignette
+   vidéo ou affiche) n'est disponible pour un emplacement donné. */
+
+.ph0 {
+  background: radial-gradient(120% 120% at 30% 20%, #6f7a80 0%, #39434a 55%, #14181b 100%);
+}
+.ph1 {
+  background: radial-gradient(120% 120% at 70% 25%, #8a8375 0%, #4a463d 55%, #17160f 100%);
+}
+.ph2 {
+  background: radial-gradient(120% 120% at 40% 30%, #6b7a6e 0%, #37423a 55%, #111614 100%);
+}
+.ph3 {
+  background: radial-gradient(120% 120% at 60% 15%, #7d7480 0%, #433d47 55%, #16131a 100%);
+}
+.ph4 {
+  background: radial-gradient(120% 120% at 25% 35%, #8a7a72 0%, #4a403b 55%, #191312 100%);
+}
+.ph5 {
+  background: radial-gradient(120% 120% at 75% 30%, #6d7886 0%, #38404d 55%, #12151c 100%);
+}

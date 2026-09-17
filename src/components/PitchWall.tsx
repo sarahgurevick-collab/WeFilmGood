@@ -1,4 +1,6 @@
 import type { CSSProperties } from "react";
+import Link from "next/link";
+import placeholders from "@/styles/placeholders.module.css";
 import styles from "./PitchWall.module.css";
 
 export type Pitch = {
@@ -43,12 +45,12 @@ const LAYOUT = [
 ];
 
 const PLACEHOLDERS = [
-  styles.ph0,
-  styles.ph1,
-  styles.ph2,
-  styles.ph3,
-  styles.ph4,
-  styles.ph5,
+  placeholders.ph0,
+  placeholders.ph1,
+  placeholders.ph2,
+  placeholders.ph3,
+  placeholders.ph4,
+  placeholders.ph5,
 ];
 
 export default function PitchWall({ pitches }: { pitches: Pitch[] }) {
@@ -68,7 +70,12 @@ export default function PitchWall({ pitches }: { pitches: Pitch[] }) {
         } as CSSProperties;
 
         return (
-          <div key={pitch?.id ?? `slot-${i}`} className={styles.tile} style={style}>
+          <Link
+            key={pitch?.id ?? `slot-${i}`}
+            href={pitch?.id ? `/projets/${pitch.id}` : `/succes/${i % 6}`}
+            className={styles.tile}
+            style={style}
+          >
             {pitch?.vimeo_id ? (
               <iframe
                 src={`https://player.vimeo.com/video/${pitch.vimeo_id}?background=1&autoplay=1&loop=1&muted=1`}
@@ -78,7 +85,7 @@ export default function PitchWall({ pitches }: { pitches: Pitch[] }) {
             ) : (
               <div className={`${styles.ph} ${PLACEHOLDERS[i % 6]}`} />
             )}
-          </div>
+          </Link>
         );
       })}
     </div>

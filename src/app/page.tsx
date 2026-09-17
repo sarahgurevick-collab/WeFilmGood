@@ -7,20 +7,14 @@ import Logo from "@/components/Logo";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
 import RechercheDemo from "@/components/RechercheDemo";
 import { createClient } from "@/lib/supabase/server";
+import placeholders from "@/styles/placeholders.module.css";
 import styles from "./page.module.css";
 
 const DOTS = [0, 45, 90, 135, 180, 225, 270, 315];
 
-const AFFICHES = [
-  styles.affichePh0,
-  styles.affichePh1,
-  styles.affichePh2,
-  styles.affichePh3,
-  styles.affichePh4,
-  styles.affichePh5,
-  styles.affichePh0,
-  styles.affichePh1,
-];
+// Teintes des affiches placeholder : chacune renvoie vers une fiche
+// projet d'exemple de la même couleur, en attendant les vraies affiches.
+const AFFICHES_TEINTES = [0, 1, 2, 3, 4, 5, 0, 1];
 
 export default async function Home() {
   const supabase = await createClient();
@@ -114,8 +108,12 @@ export default async function Home() {
       <section className={styles.stories}>
         <h2 className={styles.storiesTitre}>Success stories</h2>
         <div className={styles.affiches}>
-          {AFFICHES.map((classe, i) => (
-            <div key={i} className={`${styles.affiche} ${classe}`} />
+          {AFFICHES_TEINTES.map((teinte, i) => (
+            <Link
+              key={i}
+              href={`/succes/${teinte}`}
+              className={`${styles.affiche} ${placeholders[`ph${teinte}`]}`}
+            />
           ))}
         </div>
       </section>
