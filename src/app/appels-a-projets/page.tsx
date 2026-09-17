@@ -22,6 +22,11 @@ export default async function AppelsAProjetsPage() {
       <SwitchFormat
         contenuCourt={
           <>
+            <img
+              src="/festivals/clermont-ferrand.jpg"
+              alt="Festival International du Court Métrage de Clermont-Ferrand"
+              className={styles.logoContenu}
+            />
             <h3>Festival de Clermont-Ferrand 2026 — appel à projets (édition précédente, à mettre à jour)</h3>
             <p>
               La Maison des Scénaristes et WeFilmGood, en partenariat avec le
