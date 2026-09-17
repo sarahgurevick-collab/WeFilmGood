@@ -10,14 +10,15 @@ export default async function AppelsAProjetsPage() {
   } = await supabase.auth.getUser();
 
   return (
-    <PageShell
-      eyebrow="WeFilmGood"
-      title="Nos appels à projets"
-      theme="clair"
-      enTeteAnime
-      connecte={!!user}
-    >
-      <h2 className={styles.sousTitre}>Prochain appel à projets</h2>
+    <PageShell theme="clair" enTeteAnime connecte={!!user}>
+      <div className={styles.entete}>
+        <h1 className={styles.sousTitre}>Prochain appel à projets</h1>
+        <img
+          src="/festivals/paris-courts-devant.png"
+          alt="Paris Courts Devant"
+          className={styles.logoFestival}
+        />
+      </div>
       <SwitchFormat
         contenuLong={
           <>

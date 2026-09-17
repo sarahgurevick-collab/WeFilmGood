@@ -13,8 +13,8 @@ export default function PageShell({
   enTeteAnime = false,
   children,
 }: {
-  eyebrow: string;
-  title: string;
+  eyebrow?: string;
+  title?: string;
   wide?: boolean;
   /** "clair" pour les pages qui se lisent longuement ou qui doivent respirer. */
   theme?: "sombre" | "clair";
@@ -33,8 +33,8 @@ export default function PageShell({
         <BarreNav actif={nav} connecte={connecte} />
       )}
       <main className={`${styles.main} ${wide ? styles.wide : ""}`}>
-        <p className={styles.eyebrow}>{eyebrow}</p>
-        <h1 className={styles.title}>{title}</h1>
+        {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
+        {title && <h1 className={styles.title}>{title}</h1>}
         {children}
       </main>
     </div>

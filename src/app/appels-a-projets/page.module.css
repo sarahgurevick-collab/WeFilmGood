@@ -1,7 +1,23 @@
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
 .sousTitre {
-  font-size: 16px;
+  font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.01em;
   text-transform: none;
-  margin: 0 0 18px;
+  margin: 0;
+}
+
+.logoFestival {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid var(--bordure-douce);
+  flex-shrink: 0;
 }
