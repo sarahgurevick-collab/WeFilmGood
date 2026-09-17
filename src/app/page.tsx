@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import BarreNav from "@/components/BarreNav";
 import Compteur from "@/components/Compteur";
+import EnTeteAnime from "@/components/EnTeteAnime";
 import HashSession from "@/components/HashSession";
 import Logo from "@/components/Logo";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
@@ -39,6 +40,7 @@ export default async function Home() {
   return (
     <>
       <HashSession />
+      <EnTeteAnime />
       <PitchWall pitches={pitches} />
 
       <div className={styles.mobile}>
