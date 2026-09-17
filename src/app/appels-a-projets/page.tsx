@@ -12,6 +12,7 @@ export default async function AppelsAProjetsPage() {
     <PageShell
       eyebrow="WeFilmGood"
       title="Nos appels à projets"
+      theme="clair"
       enTeteAnime
       connecte={!!user}
     >
