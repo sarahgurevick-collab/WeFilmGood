@@ -4,9 +4,8 @@ import MasterclassLecteur, {
 import PageShell from "@/components/PageShell";
 import styles from "./page.module.css";
 
-// En attente de la vraie liste (titre + identifiant Vimeo) des masterclass.
 const MASTERCLASSES: Masterclass[] = [
-  { titre: "Exemple à remplacer", vimeoId: "281351697" },
+  { titre: "Beatriz SEIGNER Cannes 2018", vimeoId: "281351697" },
 ];
 
 export default function MasterclassPage() {
