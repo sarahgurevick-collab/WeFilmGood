@@ -1,0 +1,9 @@
+.intro {
+  max-width: 65ch;
+  font-size: 14px;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
