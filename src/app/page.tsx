@@ -2,7 +2,6 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import BarreNav from "@/components/BarreNav";
 import Compteur from "@/components/Compteur";
-import Confetti from "@/components/Confetti";
 import EnTeteAnime from "@/components/EnTeteAnime";
 import HashSession from "@/components/HashSession";
 import Logo from "@/components/Logo";
@@ -80,7 +79,6 @@ export default async function Home() {
         </div>
 
         <div className={styles.hero}>
-          <Confetti />
           <Compteur valeur={10} label="ans" />
         </div>
 
