@@ -1,6 +1,7 @@
 .ligne {
   border-top: 1px solid #e5e5e5;
   margin-top: 24px;
+  margin-bottom: 64px;
   padding-top: 16px;
 }
 
@@ -16,7 +17,7 @@
   font-weight: 700;
   padding: 0;
   text-align: left;
-  color: inherit;
+  color: #e2231a;
 }
 
 .fleche {
