@@ -1,0 +1,44 @@
+.ligne {
+  border-top: 1px solid #e5e5e5;
+  margin-top: 24px;
+  padding-top: 16px;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+}
+
+.fleche {
+  flex-shrink: 0;
+  margin-left: 12px;
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+
+.ouverte {
+  transform: rotate(180deg);
+}
+
+.contenu {
+  margin-top: 12px;
+  line-height: 1.6;
+}
+
+.contenu p {
+  margin: 0 0 12px;
+}
+
+.contenu p:last-child {
+  margin-bottom: 0;
+}
