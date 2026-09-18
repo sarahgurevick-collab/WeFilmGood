@@ -23,7 +23,8 @@
 .fleche {
   flex-shrink: 0;
   margin-left: 12px;
-  font-size: 14px;
+  font-size: 26px;
+  line-height: 1;
   transition: transform 0.2s ease;
 }
 

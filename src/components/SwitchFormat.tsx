@@ -7,13 +7,10 @@ export default function SwitchFormat({
   contenuCourt,
   contenuLong,
   defaut = "court",
-  apresOnglets,
 }: {
   contenuCourt?: ReactNode;
   contenuLong?: ReactNode;
   defaut?: "court" | "long";
-  /** Contenu affiché juste sous les boutons Court/Long-métrage, quel que soit l'onglet actif. */
-  apresOnglets?: ReactNode;
 }) {
   const [format, setFormat] = useState<"court" | "long">(defaut);
 
@@ -35,8 +32,6 @@ export default function SwitchFormat({
           Long-métrage
         </button>
       </nav>
-
-      {apresOnglets}
 
       <div className={styles.contenu}>
         {format === "court"
