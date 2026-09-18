@@ -11,8 +11,8 @@
 
 .colonne {
   width: min(560px, 88vw);
-  padding-top: 100vh;
-  animation: defiler 260s linear infinite;
+  padding-top: 50vh;
+  animation: defiler 70s linear infinite;
 }
 
 @keyframes defiler {
