@@ -20,7 +20,7 @@ export default async function AdhesionPage() {
               répondent à vos envies.
             </AvantageAdhesion>
             <AvantageAdhesion icone="oeil">
-              1 projet / moi (random)
+              1 projet / mois (random)
             </AvantageAdhesion>
           </ul>,
 
@@ -30,7 +30,7 @@ export default async function AdhesionPage() {
               répondent à vos envies.
             </AvantageAdhesion>
             <AvantageAdhesion icone="oeil">
-              1 projet / moi (random)
+              1 projet / mois (random)
             </AvantageAdhesion>
             <AvantageAdhesion icone="nuage">1 projet</AvantageAdhesion>
             <AvantageAdhesion icone="oeil">
