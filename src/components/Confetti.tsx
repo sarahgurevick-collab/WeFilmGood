@@ -27,8 +27,8 @@ export default function Confetti() {
       Array.from({ length: NB_PIECES }, () => ({
         gauche: Math.random() * 100,
         couleur: COULEURS[Math.floor(Math.random() * COULEURS.length)],
-        delai: Math.random() * 3,
-        duree: 3 + Math.random() * 2,
+        delai: Math.random() * 1.2,
+        duree: 1 + Math.random() * 0.8,
         derive: Math.random() * 60 - 30,
         rotation: Math.random() * 360,
         taille: 6 + Math.random() * 6,
