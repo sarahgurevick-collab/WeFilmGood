@@ -136,6 +136,75 @@ export default async function AppelsAProjetsPage() {
               alt="Festival de Cannes"
               className={styles.logoCannes}
             />
+
+            <h3>
+              Festival de Cannes 2026 — appel à pitchs long métrage
+              (&laquo;&nbsp;Les Pitchs sans frontières&nbsp;&raquo;, 3e
+              édition)
+            </h3>
+            <p>
+              La Maison des Scénaristes et WeFilmGood lancent la 3e édition
+              des &laquo;&nbsp;Pitchs sans frontières&nbsp;&raquo;, un appel à
+              projets international de longs métrages francophones ou
+              anglophones. Les auteurs sélectionnés pitcheront leur projet
+              aux professionnels au Marché du Film du Festival de Cannes 2026
+              lors d&apos;une présentation en direct.
+            </p>
+            <p>
+              <strong>Date limite :</strong> 10 mars 2026 à 23h59 (heure
+              française)
+            </p>
+
+            <h3>Modalités de candidature</h3>
+            <ol>
+              <li>
+                <strong>Dossier du projet</strong> : rédigez un traitement de
+                long métrage de 8 à 10 pages ainsi que les 5 premières pages
+                du scénario (note d&apos;intention recommandée). Sujet libre,
+                en français ou en anglais : fiction, animation ou
+                documentaire.
+              </li>
+              <li>
+                <strong>Inscription sur la plateforme</strong> : créez ou
+                utilisez votre compte WeFilmGood.com pour déposer votre
+                traitement. Le document doit être un PDF anonyme ; vous
+                pouvez y ajouter une note d&apos;intention et/ou un
+                moodboard. Chaque candidature fait l&apos;objet d&apos;une
+                double lecture minimum. Une fois le projet déposé, cliquez
+                sur &laquo;&nbsp;Soumettre à la sélection et aux appels à
+                projets&nbsp;&raquo; pour participer automatiquement à
+                l&apos;appel à projets Cannes 2026.
+              </li>
+              <li>
+                <strong>Pitch vidéo</strong> : envoyez un pitch vidéo en
+                français et/ou en anglais (2 minutes 30 maximum, moins de
+                100 Mo). Il doit s&apos;agir d&apos;un plan unique, sans
+                montage ni effets spéciaux, où vous présentez votre projet
+                face caméra. À envoyer à contact@wefilmgood.com.
+              </li>
+            </ol>
+
+            <h3>Processus de sélection</h3>
+            <p>
+              WeFilmGood établit une présélection de projets
+              &laquo;&nbsp;labellisés&nbsp;&raquo;, les auteurs sont prévenus
+              par email. Une sélection finale détermine quels projets
+              participent aux &laquo;&nbsp;Pitchs sans frontières&nbsp;&raquo;
+              au Festival de Cannes 2026 ; elle est annoncée sur les réseaux
+              sociaux et le site de la Maison des Scénaristes. Les projets
+              non retenus pour le festival restent accessibles aux
+              producteurs en ligne sur la plateforme.
+            </p>
+
+            <h3>Ce que la plateforme vous apporte</h3>
+            <p>
+              Accès à près de 2 000 producteurs internationaux, retour de
+              lecture constructif sous 15 jours, visibilité du projet pendant
+              un an, adhésion de 30 € à la Maison des Scénaristes incluse.
+              Les frais de candidature de 50 € couvrent exclusivement le
+              dédommagement des lecteurs.
+            </p>
+            <p>Contact : hello@maisondesscenaristes.org</p>
           </>
         }
       />
