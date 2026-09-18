@@ -21,43 +21,45 @@ export default async function AppelsAProjetsPage() {
         />
       </div>
 
-      <LigneFAQ question="En savoir plus sur nos lecteurs">
-        <p>
-          Les lecteurs sont les piliers de la Maison des Scénaristes depuis 5
-          ans. Ils sont également lecteurs pour la plateforme WeFilmGood. Ils
-          sont scénaristes, réalisateurs avec une grande expérience de la
-          dramaturgie et une réelle envie de découvrir de nouvelles
-          histoires. Ils sont aussi extrêmement conscients des réalités du
-          marché.
-        </p>
-        <p>
-          Les lecteurs de WeFilmGood ont été retenus pour leurs aptitudes
-          d&apos;évaluation d&apos;un scénario et leurs capacités à pouvoir
-          formuler les besoins de réécriture pour l&apos;amélioration
-          d&apos;un projet. Chaque lecteur reçoit aléatoirement et
-          confidentiellement un projet via la plateforme. Il fait un retour
-          précis et constructif sur le projet dans un délai de 10 jours sous
-          forme de fiche de lecture motivée.
-        </p>
-        <p>
-          Les bonnes histoires sont rares, voilà pourquoi nous allons les
-          chercher partout où elles se trouvent. Si la majorité des lecteurs
-          de WFG sont européens, la plateforme dispose d&apos;au moins un
-          lecteur qui lit pour nous dans chaque continent. Sans cette
-          sensibilité multiculturelle propre à nos lecteurs, ces récits
-          resteraient dans l&apos;ombre et ne pourraient être proposés sur la
-          plateforme WFG.
-        </p>
-        <p>
-          Notre sélection assure à la filière de production, des projets aux
-          qualités dramatiques fortes, servant des récits originaux. Elle
-          permet à tous les partenaires de voir leurs démarches soutenues par
-          un socle narratif solide.
-        </p>
-      </LigneFAQ>
-
       <SwitchFormat
         defaut="long"
+        apresOnglets={
+          <LigneFAQ question="En savoir plus sur nos lecteurs">
+            <p>
+              Les lecteurs sont les piliers de la Maison des Scénaristes
+              depuis 5 ans. Ils sont également lecteurs pour la plateforme
+              WeFilmGood. Ils sont scénaristes, réalisateurs avec une grande
+              expérience de la dramaturgie et une réelle envie de découvrir
+              de nouvelles histoires. Ils sont aussi extrêmement conscients
+              des réalités du marché.
+            </p>
+            <p>
+              Les lecteurs de WeFilmGood ont été retenus pour leurs aptitudes
+              d&apos;évaluation d&apos;un scénario et leurs capacités à
+              pouvoir formuler les besoins de réécriture pour
+              l&apos;amélioration d&apos;un projet. Chaque lecteur reçoit
+              aléatoirement et confidentiellement un projet via la
+              plateforme. Il fait un retour précis et constructif sur le
+              projet dans un délai de 10 jours sous forme de fiche de lecture
+              motivée.
+            </p>
+            <p>
+              Les bonnes histoires sont rares, voilà pourquoi nous allons les
+              chercher partout où elles se trouvent. Si la majorité des
+              lecteurs de WFG sont européens, la plateforme dispose
+              d&apos;au moins un lecteur qui lit pour nous dans chaque
+              continent. Sans cette sensibilité multiculturelle propre à nos
+              lecteurs, ces récits resteraient dans l&apos;ombre et ne
+              pourraient être proposés sur la plateforme WFG.
+            </p>
+            <p>
+              Notre sélection assure à la filière de production, des projets
+              aux qualités dramatiques fortes, servant des récits originaux.
+              Elle permet à tous les partenaires de voir leurs démarches
+              soutenues par un socle narratif solide.
+            </p>
+          </LigneFAQ>
+        }
         contenuCourt={
           <>
             <img
