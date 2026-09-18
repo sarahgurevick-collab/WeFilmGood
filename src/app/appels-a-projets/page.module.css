@@ -27,3 +27,10 @@
   border-radius: 50%;
   margin-bottom: 16px;
 }
+
+.logoCannes {
+  width: 220px;
+  height: auto;
+  margin-top: 24px;
+  display: block;
+}

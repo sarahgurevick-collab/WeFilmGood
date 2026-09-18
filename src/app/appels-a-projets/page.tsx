@@ -131,6 +131,11 @@ export default async function AppelsAProjetsPage() {
               le festival restent visibles en ligne auprès des producteurs.
             </p>
             <p>Contact : hello@maisondesscenaristes.org</p>
+            <img
+              src="/festivals/festival-de-cannes.png"
+              alt="Festival de Cannes"
+              className={styles.logoCannes}
+            />
           </>
         }
       />
