@@ -20,7 +20,7 @@ const ELEMENTS_MENU = [
   { label: "Masterclass", href: "/masterclass" },
   { label: "Festivals & Résidences", href: "/festivals-residences" },
   { label: "Témoignages", href: "/temoignages" },
-  { label: "Tarifs", href: "/tarifs" },
+  { label: "Adhésion", href: "/adhesion" },
 ];
 
 /**

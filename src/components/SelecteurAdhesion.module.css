@@ -1,0 +1,61 @@
+.ligne {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  max-width: 480px;
+  margin-bottom: 32px;
+}
+
+.ligne::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  right: 9px;
+  height: 1px;
+  background: var(--bordure-forte);
+  z-index: 0;
+}
+
+.palier {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.point {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--bordure-forte);
+  background: var(--bg);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.pointActif {
+  background: var(--rouge-wfg);
+  border-color: var(--rouge-wfg);
+}
+
+.montant {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dim);
+}
+
+.contenu {
+  max-width: 65ch;
+  font-size: 14px;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.6;
+}

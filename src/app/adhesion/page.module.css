@@ -1,0 +1,23 @@
+.avantages {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.avantages li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--rouge-wfg);
+}
+
+.avantages li span {
+  color: var(--dim);
+  font-size: 14px;
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.5;
+}
