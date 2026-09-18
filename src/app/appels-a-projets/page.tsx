@@ -23,11 +23,6 @@ export default async function AppelsAProjetsPage() {
         defaut="long"
         contenuCourt={
           <>
-            <img
-              src="/festivals/clermont-ferrand.jpg"
-              alt="Festival International du Court Métrage de Clermont-Ferrand"
-              className={styles.logoContenu}
-            />
             <h3>Festival de Clermont-Ferrand 2026 — appel à projets (édition précédente, à mettre à jour)</h3>
             <p>
               La Maison des Scénaristes et WeFilmGood, en partenariat avec le
@@ -64,6 +59,11 @@ export default async function AppelsAProjetsPage() {
               <strong>Date limite :</strong> 8 novembre 2025 à 23h59 (heure
               française)
             </p>
+            <img
+              src="/festivals/clermont-ferrand.jpg"
+              alt="Festival International du Court Métrage de Clermont-Ferrand"
+              className={styles.logoContenu}
+            />
 
             <h3>Processus de sélection</h3>
             <p>
