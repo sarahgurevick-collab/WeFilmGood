@@ -1,10 +1,6 @@
-import BarreNav from "@/components/BarreNav";
-import EnTeteAnime from "@/components/EnTeteAnime";
-import GeneriqueCannes from "@/components/GeneriqueCannes";
-import Logo from "@/components/Logo";
-import PitchWall from "@/components/PitchWall";
+import formStyles from "@/components/form.module.css";
+import PageShell from "@/components/PageShell";
 import { createClient } from "@/lib/supabase/server";
-import styles from "./page.module.css";
 
 export default async function FestivalsResidencesPage() {
   const supabase = await createClient();
@@ -13,25 +9,13 @@ export default async function FestivalsResidencesPage() {
   } = await supabase.auth.getUser();
 
   return (
-    <>
-      <EnTeteAnime connecte={!!user} />
-      <GeneriqueCannes />
-      <PitchWall pitches={[]} />
-
-      <div className={styles.mobile}>
-        <Logo size={46} />
-        <div className={styles.mobileMarque}>Festivals & Résidences</div>
-        <p className={styles.mobileSignature}>
-          Retrouvez ici les sélections du Festival de Cannes, année après
-          année.
-        </p>
-      </div>
-
-      <div className={styles.barreNavMobileSeule}>
-        <BarreNav connecte={!!user} />
-      </div>
-
-      <div className={styles.heroSpace} aria-hidden="true" />
-    </>
+    <PageShell
+      eyebrow="WeFilmGood"
+      title="Festivals & Résidences"
+      enTeteAnime
+      connecte={!!user}
+    >
+      <p className={formStyles.hint}>Contenu à venir.</p>
+    </PageShell>
   );
 }
