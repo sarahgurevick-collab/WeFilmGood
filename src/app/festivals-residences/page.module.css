@@ -1,0 +1,51 @@
+.heroSpace {
+  min-height: 100vh;
+}
+
+@media (max-width: 720px) {
+  .heroSpace {
+    display: none;
+  }
+}
+
+.mobile {
+  display: none;
+}
+
+@media (min-width: 721px) {
+  .barreNavMobileSeule {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .mobile {
+    display: flex;
+    position: relative;
+    z-index: 3;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+    padding: 24px 24px calc(120px + env(safe-area-inset-bottom));
+    background: var(--bg);
+  }
+
+  .mobileMarque {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-transform: none;
+  }
+
+  .mobileSignature {
+    font-size: 13px;
+    color: var(--dim);
+    text-transform: none;
+    letter-spacing: normal;
+    max-width: 30ch;
+    line-height: 1.5;
+  }
+}
