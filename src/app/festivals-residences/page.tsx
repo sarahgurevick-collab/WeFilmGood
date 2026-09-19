@@ -1,8 +1,19 @@
 import GrilleInclineeCannes from "@/components/GrilleInclineeCannes";
 import PageShell from "@/components/PageShell";
+import PanelFestivals from "@/components/PanelFestivals";
 import { SELECTIONS_CANNES } from "@/data/selectionsCannes";
+import { SELECTIONS_PCDV } from "@/data/selectionsPCDV";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./page.module.css";
+
+const FESTIVALS = [
+  { id: "cannes", label: "Cannes", selections: SELECTIONS_CANNES },
+  {
+    id: "pcdv",
+    label: "Paris Courts Devant",
+    selections: SELECTIONS_PCDV,
+  },
+];
 
 export default async function FestivalsResidencesPage() {
   const supabase = await createClient();
@@ -20,32 +31,14 @@ export default async function FestivalsResidencesPage() {
       connecte={!!user}
     >
       <p className={styles.intro}>
-        Le Festival de Cannes, année après année : les projets sélectionnés
-        par la Maison des Scénaristes et WeFilmGood pour pitcher devant les
-        professionnels du secteur.
+        Les festivals et résidences partenaires, année après année : les
+        projets sélectionnés par la Maison des Scénaristes et WeFilmGood pour
+        pitcher devant les professionnels du secteur.
       </p>
 
       <div className={styles.layout}>
         <GrilleInclineeCannes />
-
-        <div className={styles.panelAuteurs}>
-          {SELECTIONS_CANNES.map((annee) => (
-            <section key={annee.annee} className={styles.annee}>
-              <h2 className={styles.anneeTitre}>Cannes {annee.annee}</h2>
-
-              {annee.blocs.map((bloc, i) => (
-                <div key={i} className={styles.bloc}>
-                  <h3 className={styles.blocTitre}>{bloc.titre}</h3>
-                  <ul className={styles.liste}>
-                    {bloc.entrees.map((entree, j) => (
-                      <li key={j}>{entree}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </section>
-          ))}
-        </div>
+        <PanelFestivals festivals={FESTIVALS} />
       </div>
     </PageShell>
   );

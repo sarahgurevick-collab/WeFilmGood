@@ -1,0 +1,107 @@
+.panelAuteurs {
+  position: sticky;
+  top: 90px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+  background: var(--surface);
+  padding: 28px 32px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bordure-forte) transparent;
+}
+
+@media (max-width: 860px) {
+  .panelAuteurs {
+    position: static;
+    max-height: 70vh;
+  }
+}
+
+.panelAuteurs::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panelAuteurs::-webkit-scrollbar-thumb {
+  background: var(--bordure-forte);
+  border-radius: 4px;
+}
+
+.panelAuteurs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.selecteur {
+  position: sticky;
+  top: -28px;
+  z-index: 1;
+  display: flex;
+  gap: 4px;
+  margin: -28px -32px 24px;
+  padding: 16px 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--bordure);
+}
+
+.option,
+.optionActive {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.option {
+  background: transparent;
+  color: var(--dim);
+}
+
+.option:hover {
+  color: var(--fg);
+}
+
+.optionActive {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.annee {
+  padding-top: 40px;
+  margin-top: 40px;
+  border-top: 1px solid var(--bordure-douce);
+}
+
+.annee:first-of-type {
+  padding-top: 0;
+  margin-top: 0;
+  border-top: none;
+}
+
+.anneeTitre {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 16px;
+}
+
+.bloc {
+  margin-bottom: 20px;
+}
+
+.blocTitre {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin: 0 0 8px;
+}
+
+.liste {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  line-height: 1.8;
+}
