@@ -1,13 +1,18 @@
 import PageShell from "@/components/PageShell";
 import SectionFestivals from "@/components/SectionFestivals";
 import { SELECTIONS_CANNES } from "@/data/selectionsCannes";
+import { SELECTIONS_CLERMONT_FERRAND } from "@/data/selectionsClermontFerrand";
 import { SELECTIONS_PCDV } from "@/data/selectionsPCDV";
 import { createClient } from "@/lib/supabase/server";
 
 const FESTIVALS = [
   { id: "cannes", label: "Cannes", selections: SELECTIONS_CANNES },
   { id: "pcdv", label: "Paris Courts Devant", selections: SELECTIONS_PCDV },
-  { id: "clermont-ferrand", label: "Clermont-Ferrand", selections: [] },
+  {
+    id: "clermont-ferrand",
+    label: "Clermont-Ferrand",
+    selections: SELECTIONS_CLERMONT_FERRAND,
+  },
   { id: "serie-mania", label: "Série Mania", selections: [] },
   { id: "valence", label: "Valence", selections: [] },
   {
