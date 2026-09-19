@@ -65,12 +65,12 @@
 
 .option:hover {
   color: var(--fg);
-  background: var(--surface-actif);
+  background: color-mix(in srgb, var(--rouge-wfg) 12%, transparent);
 }
 
 .optionActive {
-  background: var(--fg);
-  color: var(--bg);
+  background: color-mix(in srgb, var(--rouge-wfg) 80%, black 20%);
+  color: #fff;
 }
 
 .intro {
