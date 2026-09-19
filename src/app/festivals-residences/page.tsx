@@ -1,17 +1,19 @@
-import GrilleInclineeCannes from "@/components/GrilleInclineeCannes";
 import PageShell from "@/components/PageShell";
-import PanelFestivals from "@/components/PanelFestivals";
+import SectionFestivals from "@/components/SectionFestivals";
 import { SELECTIONS_CANNES } from "@/data/selectionsCannes";
 import { SELECTIONS_PCDV } from "@/data/selectionsPCDV";
 import { createClient } from "@/lib/supabase/server";
-import styles from "./page.module.css";
 
 const FESTIVALS = [
   { id: "cannes", label: "Cannes", selections: SELECTIONS_CANNES },
+  { id: "pcdv", label: "Paris Courts Devant", selections: SELECTIONS_PCDV },
+  { id: "clermont-ferrand", label: "Clermont-Ferrand", selections: [] },
+  { id: "serie-mania", label: "Série Mania", selections: [] },
+  { id: "valence", label: "Valence", selections: [] },
   {
-    id: "pcdv",
-    label: "Paris Courts Devant",
-    selections: SELECTIONS_PCDV,
+    id: "maison-bleue",
+    label: 'Résidence d\'écriture "La Maison Bleue"',
+    selections: [],
   },
 ];
 
@@ -30,16 +32,7 @@ export default async function FestivalsResidencesPage() {
       enTeteAnime
       connecte={!!user}
     >
-      <p className={styles.intro}>
-        Les festivals et résidences partenaires, année après année : les
-        projets sélectionnés par la Maison des Scénaristes et WeFilmGood pour
-        pitcher devant les professionnels du secteur.
-      </p>
-
-      <div className={styles.layout}>
-        <GrilleInclineeCannes />
-        <PanelFestivals festivals={FESTIVALS} />
-      </div>
+      <SectionFestivals festivals={FESTIVALS} />
     </PageShell>
   );
 }
