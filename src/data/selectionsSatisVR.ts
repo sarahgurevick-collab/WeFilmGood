@@ -14,6 +14,11 @@ export const SELECTIONS_SATIS_VR: AnneeSelection[] = [
           '"Bienvenue au club" - Yann Kerloch',
           '"Peeping Jerry" - Errel Margot',
           '"Les Hémisphères" - Isabelle Pruneau-Brunet',
+          '"La lune sur le Gange" - Sylvain Pieplu',
+          '"Dreamlike" - Noémie Fansten',
+          '"369" - Ananda Safo',
+          '"Liberté, égalité, fraternité" - Christian Dauteuille',
+          '"Seul contre tous" - Gilles Guerraz',
         ],
       },
       {
