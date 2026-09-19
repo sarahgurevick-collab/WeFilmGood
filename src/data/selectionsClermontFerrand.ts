@@ -6,7 +6,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2026,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           "Wize - France",
           "La coupe - France",
@@ -24,7 +24,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2025,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           "Au crépuscule - France - Maxime Crépieux",
           "Cold Cuts - France - Caroline Hallier",
@@ -42,7 +42,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2024,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           "En pensant à toi - France - Mathieu Nieto-Juan",
           "Marcel - France - Paul Veloso",
@@ -62,7 +62,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2023,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           "Baggage - Gemma Bonfoglioli - France/Zambie",
           "Gomax - Ugo Savouillan - France",
@@ -88,7 +88,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2022,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           "Denise-Denise - Annick Christiaens - Belgique",
           "Eau de vie - Jules Guillemet - France",
@@ -114,7 +114,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2021,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs en ligne",
+        titre: "Writers-Producers Meetings (en ligne)",
         entrees: [
           "🎦 Rêves d'assassins - Bruno Pieretti - France",
           "🎦 Black Hole - Lucie Kazarjian - France",
@@ -153,7 +153,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2020,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           "Un air de violoncelle - Mathieu Deshayes - France",
           "Béré (Zina) - Jean-Philippe Rimbaud - France",
@@ -188,7 +188,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2019,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           "🎦 Florentin - Michèle Robin-Clerc - France",
           "🎦 Robert the Robot - Aaron Lucas - Australie",
@@ -225,7 +225,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2018,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           "Mouloud - Abdelmalek Saifi - France",
           "Étoile Filante - Cécile Fraboul - France",
@@ -260,7 +260,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2017,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           "🎦 La dernière ballade - Fethi Benmokthar - Algérie",
           "🎦 Crossing - Richard Hadjù - Royaume-Uni",
@@ -285,7 +285,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2016,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           "Belleville, France - Anaïs Leclerc",
           "🎦 Johnny Johnny (aka \"Ah que... Johnny\") - Angélique Muller",
@@ -310,7 +310,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
     annee: 2015,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           "🎦 Negative Space - Ru Kawahata et Pax Porter - Ikki Films Production",
           "Julien - Alexandre Opeccini",

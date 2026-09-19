@@ -106,7 +106,7 @@ export const SELECTIONS_PCDV: AnneeSelection[] = [
     annee: 2017,
     blocs: [
       {
-        titre: "Short Connection (rencontres auteurs-producteurs)",
+        titre: "Short Connection (Writers-Producers Meetings)",
         entrees: [
           "Moha - Bastien Bouillon",
           "Amachahou - Isabelle Montoya",
@@ -141,7 +141,7 @@ export const SELECTIONS_PCDV: AnneeSelection[] = [
     annee: 2016,
     blocs: [
       {
-        titre: "Short Connection (rencontres auteurs-producteurs)",
+        titre: "Short Connection (Writers-Producers Meetings)",
         entrees: [
           "Skinhead Girl - Marc Berthier",
           "L'oiseau rare - Morgann Martin",
@@ -173,7 +173,7 @@ export const SELECTIONS_PCDV: AnneeSelection[] = [
     annee: 2015,
     blocs: [
       {
-        titre: "Short Connection (rencontres auteurs-producteurs)",
+        titre: "Short Connection (Writers-Producers Meetings)",
         entrees: [
           "Les temps qui courent - Boris Sztulman",
           "Animals - Caroline Delaunay",
@@ -204,7 +204,7 @@ export const SELECTIONS_PCDV: AnneeSelection[] = [
     annee: 2014,
     blocs: [
       {
-        titre: "Short Connection (rencontres auteurs-producteurs)",
+        titre: "Short Connection (Writers-Producers Meetings)",
         entrees: [
           "T'as pas une clope ? - Karen Alix",
           "Landes - Jean-Baptiste Becq",

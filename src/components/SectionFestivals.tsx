@@ -84,21 +84,28 @@ export default function SectionFestivals({
         <GrilleInclineeCannes />
 
         <div className={styles.panelAuteurs}>
+          <h2 className={styles.festivalTitre}>{festival.label}</h2>
+
           {festival.selections.length === 0 ? (
-            <p className={styles.aVenir}>
-              Sélection à venir pour {festival.label}.
-            </p>
+            <p className={styles.aVenir}>Sélection à venir.</p>
           ) : (
             festival.selections.map((annee, i) => (
               <section key={annee.annee ?? i} className={styles.annee}>
-                <h2 className={styles.anneeTitre}>
-                  {festival.label}
-                  {annee.annee ? ` ${annee.annee}` : ""}
-                </h2>
+                {annee.annee && (
+                  <h3 className={styles.anneeTitre}>{annee.annee}</h3>
+                )}
 
                 {annee.blocs.map((bloc, i) => (
                   <div key={i} className={styles.bloc}>
-                    <h3 className={styles.blocTitre}>{bloc.titre}</h3>
+                    <h4
+                      className={
+                        bloc.titre.includes("Writers-Producers Meetings")
+                          ? styles.blocTitreRouge
+                          : styles.blocTitre
+                      }
+                    >
+                      {bloc.titre}
+                    </h4>
                     <ul className={styles.liste}>
                       {bloc.entrees.map((entree, j) => (
                         <li key={j}>{entree}</li>

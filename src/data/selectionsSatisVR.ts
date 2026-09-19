@@ -6,7 +6,7 @@ export const SELECTIONS_SATIS_VR: AnneeSelection[] = [
     annee: 2020,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           '"La cabane" - Damien Faure',
           "\"L'oeil du purgatoire\" - Cédriane Fossat",
@@ -19,7 +19,7 @@ export const SELECTIONS_SATIS_VR: AnneeSelection[] = [
     annee: 2019,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           '"Last moment" - Charles-Henry Marraud des Grottes',
           '"Poker Battle" - Yohann Ghellis',
@@ -38,7 +38,7 @@ export const SELECTIONS_SATIS_VR: AnneeSelection[] = [
     annee: 2018,
     blocs: [
       {
-        titre: "Rencontres auteurs-producteurs",
+        titre: "Writers-Producers Meetings",
         entrees: [
           '"Planet espoir" - Fabrice Oussou',
           '"La persistance du rêve" - Laurent Foulon',

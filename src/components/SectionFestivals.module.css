@@ -125,6 +125,12 @@
   background: transparent;
 }
 
+.festivalTitre {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 24px;
+}
+
 .aVenir {
   color: var(--dim);
   margin: 0;
@@ -143,7 +149,7 @@
 }
 
 .anneeTitre {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 800;
   margin: 0 0 16px;
 }
@@ -152,13 +158,21 @@
   margin-bottom: 20px;
 }
 
-.blocTitre {
+.blocTitre,
+.blocTitreRouge {
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--dim);
   margin: 0 0 8px;
+}
+
+.blocTitre {
+  color: var(--dim);
+}
+
+.blocTitreRouge {
+  color: var(--rouge-wfg);
 }
 
 .liste {
