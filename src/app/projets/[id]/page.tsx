@@ -53,6 +53,12 @@ export default async function ProjetPage({ params }: { params: Promise<{ id: str
     .eq("project_id", id)
     .order("position", { ascending: true });
 
+  const { data: motsCles } = await supabase
+    .from("project_keywords")
+    .select("keyword:keywords(label_fr)")
+    .eq("project_id", id)
+    .returns<{ keyword: { label_fr: string } | null }[]>();
+
   return (
     <PageShell eyebrow="Projet" title={project.title}>
       <p className={formStyles.hint}>
@@ -64,6 +70,37 @@ export default async function ProjetPage({ params }: { params: Promise<{ id: str
 
       {project.logline && <p style={{ marginTop: 24 }}>{project.logline}</p>}
       {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
+
+      {(motsCles ?? []).length > 0 && (
+        <ul
+          style={{
+            listStyle: "none",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 8,
+            padding: 0,
+            margin: "20px 0 0",
+          }}
+        >
+          {(motsCles ?? [])
+            .map((m) => m.keyword?.label_fr)
+            .filter((label): label is string => Boolean(label))
+            .map((label) => (
+              <li
+                key={label}
+                style={{
+                  border: "1px solid currentColor",
+                  borderRadius: 999,
+                  padding: "4px 12px",
+                  fontSize: 13,
+                  opacity: 0.75,
+                }}
+              >
+                {label}
+              </li>
+            ))}
+        </ul>
+      )}
 
       {(characters ?? []).length > 0 && (
         <>
