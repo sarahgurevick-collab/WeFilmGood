@@ -3,6 +3,7 @@ import type { AnneeSelection } from "./selectionsCannes";
 /** Sélections du festival SATIS / VR-360°. */
 export const SELECTIONS_SATIS_VR: AnneeSelection[] = [
   {
+    annee: 2018,
     blocs: [
       {
         titre: "Rencontres auteurs-producteurs",
@@ -17,7 +18,7 @@ export const SELECTIONS_SATIS_VR: AnneeSelection[] = [
       },
       {
         titre: "Scenariolab",
-        entrees: ["Noémie Fansten", "Martin Fournier"],
+        entrees: ["Noémie Fansten - Bertrand Suarez", "Martin Fournier"],
       },
     ],
   },

@@ -14,13 +14,13 @@ const FESTIVALS = [
     label: "Clermont-Ferrand",
     selections: SELECTIONS_CLERMONT_FERRAND,
   },
+  { id: "serie-mania", label: "Série Mania", selections: [] },
+  { id: "valence", label: "Valence", selections: [] },
   {
     id: "satis-vr",
     label: "SATIS/VR-360°",
     selections: SELECTIONS_SATIS_VR,
   },
-  { id: "serie-mania", label: "Série Mania", selections: [] },
-  { id: "valence", label: "Valence", selections: [] },
   {
     id: "maison-bleue",
     label: 'Résidence d\'écriture "La Maison Bleue"',
