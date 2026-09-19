@@ -3,29 +3,64 @@ import type { AnneeSelection } from "./selectionsCannes";
 /** Sélections du festival SATIS / VR-360°. */
 export const SELECTIONS_SATIS_VR: AnneeSelection[] = [
   {
+    annee: 2020,
+    blocs: [
+      {
+        titre: "Rencontres auteurs-producteurs",
+        entrees: [
+          '"La cabane" - Damien Faure',
+          "\"L'oeil du purgatoire\" - Cédriane Fossat",
+          '"Maison à vendre" - Martin Fournier',
+        ],
+      },
+    ],
+  },
+  {
+    annee: 2019,
+    blocs: [
+      {
+        titre: "Rencontres auteurs-producteurs",
+        entrees: [
+          '"Last moment" - Charles-Henry Marraud des Grottes',
+          '"Poker Battle" - Yohann Ghellis',
+          "\"Le dernier colibri d'Amazonie\" - Lara El-Hassan",
+          '"Bienvenue au club" - Yann Kerloch',
+          '"Peeping Jerry" - Errel Margot',
+          '"II Worlds" - Naomi Van Niekerk',
+          '"Les Hémisphères" - Isabelle Pruneau-Brunet',
+          '"Estrella" - Nicolas Bouf & David Garnacho',
+          '"La suite del Demonio" - Alejandro Ortega Maeso',
+        ],
+      },
+    ],
+  },
+  {
     annee: 2018,
     blocs: [
       {
         titre: "Rencontres auteurs-producteurs",
         entrees: [
-          '"Poker Battle" - Yohann Ghellis',
-          '"Estrella" - Nicolas Bouf & David Garnacho',
-          '"Le dernier colibri d\'Amazonie" - Lara El-Hassan',
-          '"Bienvenue au club" - Yann Kerloch',
-          '"Peeping Jerry" - Errel Margot',
-          '"Les Hémisphères" - Isabelle Pruneau-Brunet',
-          '"La lune sur le Gange" - Sylvain Pieplu',
-          '"Dreamlike" - Noémie Fansten',
+          '"Planet espoir" - Fabrice Oussou',
+          '"La persistance du rêve" - Laurent Foulon',
+          '"Care" - Cédriane Fossat',
           '"369" - Ananda Safo',
-          '"Liberté, égalité, fraternité" - Christian Dauteuille',
           '"Seul contre tous" - Gilles Guerraz',
-          '"Visites" - Martin Fournier',
-          '"Bus N53" - Sejiane Belmond',
+          '"La lune sur le Gange" - Sylvain Pieplu',
+          '"Big Sister" - Denis Volt',
+          '"Liberté, égalité, fraternité" - Christian Dauteuille',
+          '"Women" - Urmila Jagannathan',
         ],
       },
+    ],
+  },
+  {
+    blocs: [
       {
         titre: "Scenariolab",
-        entrees: ["Noémie Fansten - Bertrand Suarez", "Martin Fournier"],
+        entrees: [
+          '"Dreamlike" - Noémie Fansten - Bertrand Suarez',
+          '"Visites" - Martin Fournier',
+        ],
       },
     ],
   },
