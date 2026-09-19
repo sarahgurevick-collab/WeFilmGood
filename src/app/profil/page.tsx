@@ -4,7 +4,13 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./profil.module.css";
 import { createClient } from "@/lib/supabase/server";
-import { quitterLaPlateforme, saveKeywords, savePrivateDetails, savePublicInfo } from "./actions";
+import {
+  quitterLaPlateforme,
+  saveKeywords,
+  savePrivateDetails,
+  savePublicInfo,
+  saveTestimonial,
+} from "./actions";
 
 const RESEAUX = [
   { slug: "vimeo", label: "Vimeo" },
@@ -42,7 +48,9 @@ export default async function ProfilPage({
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("full_name, display_name, category, validation_status, city, country, website, biofilmo, agent_name")
+      .select(
+        "full_name, display_name, category, validation_status, city, country, website, biofilmo, agent_name, testimonial, testimonial_is_public",
+      )
       .eq("id", user.id)
       .maybeSingle(),
     supabase
@@ -158,6 +166,38 @@ export default async function ProfilPage({
             <input type="url" name={`social_${r.slug}`} defaultValue={lienDe(r.slug)} placeholder="https://" />
           </label>
         ))}
+        <button type="submit" className={formStyles.submit}>
+          Enregistrer
+        </button>
+      </form>
+
+      <h2 className={styles.section}>Mon témoignage</h2>
+      <p className={formStyles.hint}>
+        Si vous cochez &laquo;&nbsp;rendre public&nbsp;&raquo;, votre photo de
+        profil et ce texte apparaissent sur la page{" "}
+        <Link href="/temoignages">Témoignages</Link>, visible par tous, même
+        sans connexion.
+      </p>
+
+      <form className={formStyles.form} action={saveTestimonial} style={{ marginTop: 20 }}>
+        <label className={formStyles.field}>
+          <span>Votre témoignage</span>
+          <textarea
+            name="testimonial"
+            rows={4}
+            defaultValue={profile?.testimonial ?? ""}
+            placeholder="Ce que WeFilmGood vous a apporté..."
+          />
+        </label>
+        <label className={formStyles.checkline}>
+          <input
+            type="checkbox"
+            name="testimonial_is_public"
+            value="1"
+            defaultChecked={profile?.testimonial_is_public ?? false}
+          />
+          <span>Rendre mon témoignage public</span>
+        </label>
         <button type="submit" className={formStyles.submit}>
           Enregistrer
         </button>

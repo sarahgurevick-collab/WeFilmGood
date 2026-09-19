@@ -85,6 +85,23 @@ export async function savePublicInfo(formData: FormData) {
   redirect("/profil?enregistre=1");
 }
 
+export async function saveTestimonial(formData: FormData) {
+  const { supabase, user } = await requireUser();
+
+  await supabase
+    .from("profiles")
+    .update({
+      testimonial: texte(formData, "testimonial"),
+      testimonial_is_public: formData.get("testimonial_is_public") === "1",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+
+  revalidatePath("/profil");
+  revalidatePath("/temoignages");
+  redirect("/profil?enregistre=1");
+}
+
 export async function saveKeywords(formData: FormData) {
   const { supabase, user } = await requireUser();
 
