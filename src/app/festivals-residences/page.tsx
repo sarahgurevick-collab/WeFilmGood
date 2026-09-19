@@ -1,4 +1,4 @@
-import MurPhotosCannes from "@/components/MurPhotosCannes";
+import GrilleInclineeCannes from "@/components/GrilleInclineeCannes";
 import PageShell from "@/components/PageShell";
 import { SELECTIONS_CANNES } from "@/data/selectionsCannes";
 import { createClient } from "@/lib/supabase/server";
@@ -15,6 +15,7 @@ export default async function FestivalsResidencesPage() {
       eyebrow="WeFilmGood"
       title="Festivals & Résidences"
       theme="clair"
+      wide
       enTeteAnime
       connecte={!!user}
     >
@@ -24,7 +25,7 @@ export default async function FestivalsResidencesPage() {
         professionnels du secteur.
       </p>
 
-      <MurPhotosCannes />
+      <GrilleInclineeCannes />
 
       <div className={styles.panelAuteurs}>
         {SELECTIONS_CANNES.map((annee) => (

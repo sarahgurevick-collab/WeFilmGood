@@ -1,0 +1,43 @@
+.section {
+  position: relative;
+  width: 100%;
+}
+
+.grille {
+  width: 100%;
+  margin: 20vh auto 10vh;
+  padding: 20vh 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+}
+
+.case {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  perspective: 900px;
+}
+
+.cadre {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 6px;
+  will-change: filter, transform;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+}
+
+@media (max-width: 560px) {
+  .grille {
+    gap: 20px;
+  }
+}
