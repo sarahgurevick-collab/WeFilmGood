@@ -1,20 +1,36 @@
 .selecteur {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
   margin: 0 0 24px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.selecteur::-webkit-scrollbar {
+  display: none;
 }
 
 .option,
 .optionActive {
+  flex-shrink: 0;
   font-size: 12px;
   font-weight: 700;
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid var(--bordure);
+  padding: 10px 16px;
+  border: none;
+  border-right: 1px solid var(--bordure);
   cursor: pointer;
   background: transparent;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.option:last-child,
+.optionActive:last-child {
+  border-right: none;
 }
 
 .option {
@@ -23,13 +39,12 @@
 
 .option:hover {
   color: var(--fg);
-  border-color: var(--bordure-forte);
+  background: var(--surface-actif);
 }
 
 .optionActive {
   background: var(--fg);
   color: var(--bg);
-  border-color: var(--fg);
 }
 
 .intro {
