@@ -1,8 +1,34 @@
+.selecteurLigne {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  margin: 0 0 24px;
+}
+
+.fleche {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--dim);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.fleche:hover {
+  color: var(--fg);
+  border-color: var(--bordure-forte);
+  background: var(--surface-actif);
+}
+
 .selecteur {
   display: flex;
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 0 24px;
+  flex: 1;
+  min-width: 0;
   border: 1px solid var(--bordure);
   border-radius: 10px;
   overflow-x: auto;
