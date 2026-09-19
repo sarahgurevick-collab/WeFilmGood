@@ -25,25 +25,27 @@ export default async function FestivalsResidencesPage() {
         professionnels du secteur.
       </p>
 
-      <GrilleInclineeCannes />
+      <div className={styles.layout}>
+        <GrilleInclineeCannes />
 
-      <div className={styles.panelAuteurs}>
-        {SELECTIONS_CANNES.map((annee) => (
-          <section key={annee.annee} className={styles.annee}>
-            <h2 className={styles.anneeTitre}>Cannes {annee.annee}</h2>
+        <div className={styles.panelAuteurs}>
+          {SELECTIONS_CANNES.map((annee) => (
+            <section key={annee.annee} className={styles.annee}>
+              <h2 className={styles.anneeTitre}>Cannes {annee.annee}</h2>
 
-            {annee.blocs.map((bloc, i) => (
-              <div key={i} className={styles.bloc}>
-                <h3 className={styles.blocTitre}>{bloc.titre}</h3>
-                <ul className={styles.liste}>
-                  {bloc.entrees.map((entree, j) => (
-                    <li key={j}>{entree}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </section>
-        ))}
+              {annee.blocs.map((bloc, i) => (
+                <div key={i} className={styles.bloc}>
+                  <h3 className={styles.blocTitre}>{bloc.titre}</h3>
+                  <ul className={styles.liste}>
+                    {bloc.entrees.map((entree, j) => (
+                      <li key={j}>{entree}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </section>
+          ))}
+        </div>
       </div>
     </PageShell>
   );
