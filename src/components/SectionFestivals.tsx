@@ -99,7 +99,8 @@ export default function SectionFestivals({
                   <div key={i} className={styles.bloc}>
                     <h4
                       className={
-                        bloc.titre.includes("Writers-Producers Meetings")
+                        bloc.titre.includes("Writers-Producers Meetings") ||
+                        bloc.titre.includes("Scenariolab")
                           ? styles.blocTitreRouge
                           : styles.blocTitre
                       }
