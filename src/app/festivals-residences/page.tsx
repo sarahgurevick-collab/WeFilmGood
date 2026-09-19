@@ -3,6 +3,7 @@ import SectionFestivals from "@/components/SectionFestivals";
 import { SELECTIONS_CANNES } from "@/data/selectionsCannes";
 import { SELECTIONS_CLERMONT_FERRAND } from "@/data/selectionsClermontFerrand";
 import { SELECTIONS_PCDV } from "@/data/selectionsPCDV";
+import { SELECTIONS_SATIS_VR } from "@/data/selectionsSatisVR";
 import { createClient } from "@/lib/supabase/server";
 
 const FESTIVALS = [
@@ -12,6 +13,11 @@ const FESTIVALS = [
     id: "clermont-ferrand",
     label: "Clermont-Ferrand",
     selections: SELECTIONS_CLERMONT_FERRAND,
+  },
+  {
+    id: "satis-vr",
+    label: "SATIS/VR-360°",
+    selections: SELECTIONS_SATIS_VR,
   },
   { id: "serie-mania", label: "Série Mania", selections: [] },
   { id: "valence", label: "Valence", selections: [] },

@@ -4,7 +4,8 @@ export type BlocSelection = {
 };
 
 export type AnneeSelection = {
-  annee: number;
+  /** Absente quand la sélection n'est pas datée par année. */
+  annee?: number;
   blocs: BlocSelection[];
 };
 

@@ -57,10 +57,11 @@ export default function SectionFestivals({
               Sélection à venir pour {festival.label}.
             </p>
           ) : (
-            festival.selections.map((annee) => (
-              <section key={annee.annee} className={styles.annee}>
+            festival.selections.map((annee, i) => (
+              <section key={annee.annee ?? i} className={styles.annee}>
                 <h2 className={styles.anneeTitre}>
-                  {festival.label} {annee.annee}
+                  {festival.label}
+                  {annee.annee ? ` ${annee.annee}` : ""}
                 </h2>
 
                 {annee.blocs.map((bloc, i) => (
