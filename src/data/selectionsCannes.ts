@@ -15,7 +15,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
     annee: 2026,
     blocs: [
       {
-        titre: '"Pitchs sans frontières" 2026',
+        titre: '"Pitchs sans frontières"',
         entrees: [
           '"Lanmé" - Eloane Venkatapen - Canada',
           '"Sameba" - Tinatin & Khvicha Emiridze - Georgia',
@@ -30,7 +30,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
     annee: 2025,
     blocs: [
       {
-        titre: '"Pitchs sans frontières" 2025',
+        titre: '"Pitchs sans frontières"',
         entrees: [
           '"A Humming Melody" - Alexia Fernandes - Germany/Portugal/France',
           '"A Year in Arizona" - François Yang - France/Switzerland',
@@ -52,7 +52,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
     annee: 2024,
     blocs: [
       {
-        titre: '"Pitchs de la francophonie" 2024',
+        titre: '"Pitchs de la francophonie"',
         entrees: [
           '"Tunis Forever" - Nadia El Fani - France-Tunisie',
           '"AgroBiz" - Honoré Essoh - Côte d\'Ivoire',
@@ -67,7 +67,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
     annee: 2023,
     blocs: [
       {
-        titre: '"Pitchs de la francophonie" 2023',
+        titre: '"Pitchs de la francophonie"',
         entrees: [
           "Atteinte à la pudeur - Mohamed Bouhari (Belgique / Maroc)",
           "Cet infini jardin - Susana Lastreto Prieto (France / Uruguay)",

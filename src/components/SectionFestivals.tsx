@@ -100,7 +100,10 @@ export default function SectionFestivals({
                     <h4
                       className={
                         bloc.titre.includes("Writers-Producers Meetings") ||
-                        bloc.titre.includes("Scenariolab")
+                        bloc.titre.includes("Scenariolab") ||
+                        bloc.titre.includes("Pitchs sans frontières") ||
+                        bloc.titre.includes("Pitchs de la francophonie") ||
+                        bloc.titre.includes("Un pitch pour un long")
                           ? styles.blocTitreRouge
                           : styles.blocTitre
                       }
