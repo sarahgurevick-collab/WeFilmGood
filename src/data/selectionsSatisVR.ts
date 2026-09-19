@@ -19,6 +19,8 @@ export const SELECTIONS_SATIS_VR: AnneeSelection[] = [
           '"369" - Ananda Safo',
           '"Liberté, égalité, fraternité" - Christian Dauteuille',
           '"Seul contre tous" - Gilles Guerraz',
+          '"Visites" - Martin Fournier',
+          '"Bus N53" - Sejiane Belmond',
         ],
       },
       {
