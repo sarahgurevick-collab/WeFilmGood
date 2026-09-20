@@ -1,0 +1,66 @@
+.zone {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.champ {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid #d5d5d5;
+  font-size: 16px;
+}
+
+.champ:focus {
+  outline: 2px solid var(--fg);
+  outline-offset: 1px;
+}
+
+.reponse {
+  margin-top: 20px;
+}
+
+.attente {
+  margin: 0;
+  font-size: 14px;
+  color: var(--dim);
+}
+
+.compteurs {
+  display: flex;
+  justify-content: center;
+  gap: 34px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.compteurs li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.compteurs strong {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.compteurs span {
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.appel {
+  margin: 18px 0 0;
+  font-size: 14px;
+}
+
+.lien {
+  color: #e2231a;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

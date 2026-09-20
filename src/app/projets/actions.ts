@@ -99,3 +99,26 @@ export async function motsClesProches(requete: string): Promise<MotCle[]> {
   const lignes = (data ?? []) as { label_fr: string; effectif: number; score: number }[];
   return lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif }));
 }
+
+export type DecompteRecherche = {
+  projets: number;
+  talents: number;
+  personnages: number;
+};
+
+/**
+ * Le décompte affiché sur la page d'accueil : des nombres, jamais de
+ * contenu. Les fiches sont réservées aux membres — droits à l'image sur
+ * certaines photos, et protection du travail des auteurs, dont même la
+ * logline ne s'adresse qu'à des professionnels.
+ */
+export async function compterRecherche(requete: string): Promise<DecompteRecherche> {
+  const q = requete.trim();
+  const vide = { projets: 0, talents: 0, personnages: 0 };
+  if (!q) return vide;
+
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("compter_recherche", { q });
+  const ligne = (data ?? [])[0] as DecompteRecherche | undefined;
+  return ligne ?? vide;
+}

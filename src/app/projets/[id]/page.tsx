@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -56,6 +56,14 @@ export default async function ProjetPage({
 
   if (!project) {
     notFound();
+  }
+
+  // Aucune fiche n'est lisible sans compte : les auteurs protègent leur
+  // travail et certaines photos portent des droits à l'image. Le seul
+  // chemin public vers un projet est le lien de partage, que son auteur
+  // décide d'émettre.
+  if (!user) {
+    redirect(`/connexion?next=/projets/${id}`);
   }
 
   const isOwner = user?.id === project.owner_id;
