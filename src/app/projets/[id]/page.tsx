@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
-import { setShareLink } from "./actions";
+import { contacterAuteur, setShareLink } from "./actions";
 import { createClient } from "@/lib/supabase/server";
 
 type Project = {
@@ -21,8 +21,15 @@ type Project = {
   genre: { label_fr: string } | null;
 };
 
-export default async function ProjetPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProjetPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ message?: string }>;
+}) {
   const { id } = await params;
+  const { message } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -151,6 +158,44 @@ export default async function ProjetPage({ params }: { params: Promise<{ id: str
               Voir la fiche de lecture de mon projet
             </Link>
           </p>
+        </>
+      )}
+
+      {!isOwner && (
+        <>
+          <h2 style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
+            Contacter l&apos;auteur
+          </h2>
+
+          {message === "envoye" && (
+            <p className={formStyles.hint} style={{ color: "#2f7d4f" }}>
+              Message envoyé.
+            </p>
+          )}
+          {message === "vide" && (
+            <p className={formStyles.hint} style={{ color: "#b3261e" }}>
+              Le message ne peut pas être vide.
+            </p>
+          )}
+
+          {user ? (
+            <form action={contacterAuteur} className={formStyles.form} style={{ marginTop: 16 }}>
+              <input type="hidden" name="project_id" value={project.id} />
+              <input type="hidden" name="recipient_id" value={project.owner_id} />
+              <label className={formStyles.field}>
+                <span>Votre message</span>
+                <textarea name="body" rows={4} required />
+              </label>
+              <button type="submit" className={formStyles.submit}>
+                Envoyer
+              </button>
+            </form>
+          ) : (
+            <p className={formStyles.hint}>
+              <Link href={`/connexion?next=/projets/${project.id}`}>Connectez-vous</Link> pour
+              contacter l&apos;auteur de ce projet.
+            </p>
+          )}
         </>
       )}
     </PageShell>

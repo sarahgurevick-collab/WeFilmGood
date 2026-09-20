@@ -29,6 +29,8 @@ export default async function AdminPage() {
     <PageShell eyebrow="Administration" title="Codes lecteurs" wide>
       <p className={formStyles.linkRow} style={{ marginBottom: 24 }}>
         <Link href="/admin/projets-en-attente">Projets en attente et fiches à valider</Link>
+        {" · "}
+        <Link href="/admin/adhesions">Adhésions</Link>
       </p>
 
       <p className={formStyles.hint}>
