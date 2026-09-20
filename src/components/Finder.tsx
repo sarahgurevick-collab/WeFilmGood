@@ -18,10 +18,17 @@ export default function Finder() {
   const [enCours, setEnCours] = useState(false);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [nuageVisible, setNuageVisible] = useState(false);
+  // Le nuage s'affiche tant qu'on n'a rien tapé — c'est là qu'on a
+  // besoin d'idées — et se rouvre à la demande quand une recherche ne
+  // donne rien. Il n'a pas de bouton dédié : on le referme par sa croix.
+  const [nuageDemande, setNuageDemande] = useState(false);
+  const [nuageEcarte, setNuageEcarte] = useState(false);
   const [nuage, setNuage] = useState<MotCle[] | null>(null);
   const [nuageEnCours, setNuageEnCours] = useState(false);
   const minuteurNuage = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const vide = !requete.trim();
+  const nuageAffiche = (vide && !nuageEcarte) || nuageDemande;
 
   // Recherche de projets, avec un léger délai pour ne pas interroger à
   // chaque frappe.
@@ -52,7 +59,7 @@ export default function Finder() {
   // jamais figé sur une liste générique une fois qu'on cherche quelque
   // chose de précis.
   useEffect(() => {
-    if (!nuageVisible) return;
+    if (!nuageAffiche) return;
     if (minuteurNuage.current) clearTimeout(minuteurNuage.current);
 
     setNuageEnCours(true);
@@ -65,7 +72,7 @@ export default function Finder() {
     return () => {
       if (minuteurNuage.current) clearTimeout(minuteurNuage.current);
     };
-  }, [requete, nuageVisible]);
+  }, [requete, nuageAffiche]);
 
   // La liste est triée par ressemblance, pas par popularité : la
   // référence de taille doit être le mot le PLUS fréquent de la liste,
@@ -90,12 +97,15 @@ export default function Finder() {
         />
       </div>
 
-      {nuageVisible && (
+      {nuageAffiche && (
         <div className={styles.nuage}>
           <button
             type="button"
             className={styles.fermerNuage}
-            onClick={() => setNuageVisible(false)}
+            onClick={() => {
+              setNuageDemande(false);
+              setNuageEcarte(true);
+            }}
             aria-label="Fermer les mots-clés"
             title="Fermer les mots-clés"
           >
@@ -120,7 +130,7 @@ export default function Finder() {
                   style={{ fontSize: tailleDe(m.effectif) }}
                   onClick={() => {
                     setRequete(m.label);
-                    setNuageVisible(false);
+                    setNuageDemande(false);
                   }}
                   title={`${m.effectif} projet${m.effectif > 1 ? "s" : ""}`}
                 >
@@ -173,11 +183,11 @@ export default function Finder() {
           ) : (
             <p className={styles.indice}>
               Aucun résultat pour «&nbsp;{requete}&nbsp;».{" "}
-              {!nuageVisible && (
+              {!nuageAffiche && (
                 <button
                   type="button"
                   className={styles.lienNuage}
-                  onClick={() => setNuageVisible(true)}
+                  onClick={() => setNuageDemande(true)}
                 >
                   Voir les mots-clés proches
                 </button>
