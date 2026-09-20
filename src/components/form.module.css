@@ -237,3 +237,50 @@
   font-size: 14px;
   line-height: 1.5;
 }
+
+/* Taux de remplissage d'une fiche projet, visible de son auteur et de
+   l'administration. Il annonce une meilleure visibilité, jamais un
+   résultat : une fiche complète ne garantit ni vues ni contacts. */
+.remplissage {
+  margin: 24px 0 0;
+  padding: 16px 18px;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+}
+
+.remplissageEntete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.remplissageEntete a {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e2231a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.jauge {
+  margin: 10px 0 0;
+  height: 8px;
+  border-radius: 999px;
+  background: #ececec;
+  overflow: hidden;
+}
+
+.jauge span {
+  display: block;
+  height: 100%;
+  background: #e2231a;
+  transition: width 400ms ease;
+}
+
+.remplissageTexte {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+}

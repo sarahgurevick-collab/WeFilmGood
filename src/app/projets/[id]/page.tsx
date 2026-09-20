@@ -6,6 +6,7 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
 import { contacterAuteur, setShareLink } from "./actions";
+import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";
 
 type FicheLecture = {
@@ -27,6 +28,7 @@ type Project = {
   status: string;
   owner_id: string;
   legacy_id: string | null;
+  genre_slug: string | null;
   share_code: string | null;
   genre: { label_fr: string } | null;
 };
@@ -58,7 +60,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, synopsis, format, language, country, status, owner_id, share_code, legacy_id, genre:genres(label_fr)",
+      "id, title, logline, synopsis, format, genre_slug, language, country, status, owner_id, share_code, legacy_id, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -85,12 +87,32 @@ export default async function ProjetPage({
     .eq("project_id", id)
     .order("position", { ascending: true });
 
+  const { data: estAdmin } = await supabase.rpc("is_admin");
+
+  const { data: fichiers } = await supabase
+    .from("project_files")
+    .select("kind")
+    .eq("project_id", id)
+    .returns<{ kind: string }[]>();
+
   const { data: fichesLecture } = await supabase
     .from("legacy_reading_reports")
     .select("legacy_review_id, content, final_mark, wfg_review, read_at")
     .eq("project_id", id)
     .order("read_at", { ascending: false })
     .returns<FicheLecture[]>();
+
+  const etatFiche = {
+    titre: project.title,
+    tagline: project.logline,
+    logline: project.synopsis,
+    genre: project.genre_slug,
+    format: project.format,
+    aUneVignette: (fichiers ?? []).some((f) => f.kind === "vignette"),
+    aUnScenario: (fichiers ?? []).some((f) => f.kind === "scenario"),
+  };
+  const taux = tauxDeRemplissage(etatFiche);
+  const aFaire = prochaineAction(etatFiche);
 
   const { data: motsCles } = await supabase
     .from("project_keywords")
@@ -111,6 +133,37 @@ export default async function ProjetPage({
           <LabelWFG hauteur={38} />
           <strong>Projet labellisé WeFilmGood</strong>
         </p>
+      )}
+
+      {(isOwner || estAdmin) && (
+        <div className={formStyles.remplissage}>
+          <div className={formStyles.remplissageEntete}>
+            <strong>Fiche remplie à {taux} %</strong>
+            <Link href={`/projets/${project.id}/modifier`}>Modifier ma fiche</Link>
+          </div>
+          <div className={formStyles.jauge} role="img" aria-label={`Fiche remplie à ${taux} pour cent`}>
+            <span style={{ width: `${taux}%` }} />
+          </div>
+          {aFaire ? (
+            <p className={formStyles.remplissageTexte}>
+              <strong>Il manque&nbsp;:</strong> {aFaire}
+            </p>
+          ) : (
+            <p className={formStyles.remplissageTexte}>
+              Votre fiche est complète. Rien ne vous garantit pour autant
+              qu&apos;un producteur vous contactera — mais elle est mieux
+              placée dans la pitchothèque, et elle donne une bonne image de
+              votre travail.
+            </p>
+          )}
+          {aFaire && (
+            <p className={formStyles.hint} style={{ margin: "8px 0 0" }}>
+              Les fiches complètes apparaissent plus haut dans la pitchothèque.
+              C&apos;est une question de visibilité, pas une promesse de
+              résultat.
+            </p>
+          )}
+        </div>
       )}
 
       {isOwner && project.legacy_id && (
