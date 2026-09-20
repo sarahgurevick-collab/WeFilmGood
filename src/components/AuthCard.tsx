@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import Logo from "./Logo";
+import LogoComplet from "./LogoComplet";
 import styles from "./AuthCard.module.css";
 
 /**
@@ -22,10 +22,7 @@ export default function AuthCard({
     <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
       <div className={styles.card}>
         <Link href="/" className={styles.brand}>
-          <Logo />
-          <span className={styles.mark}>
-            We<span className={styles.markAccent}>Film</span>Good
-          </span>
+          <LogoComplet hauteur={48} />
           <span className={styles.tagline}>The best stories wherever they are</span>
         </Link>
 

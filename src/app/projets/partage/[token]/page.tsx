@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import LabelWFG from "@/components/LabelWFG";
-import Logo from "@/components/Logo";
+import LogoComplet from "@/components/LogoComplet";
 import styles from "./partage.module.css";
 import { createClient } from "@/lib/supabase/server";
 
@@ -128,7 +128,7 @@ export default async function ProjetPartagePage({
         {projet.logline && <p className={styles.logline}>{projet.logline}</p>}
 
         <section className={styles.invitation}>
-          <Logo size={30} />
+          <LogoComplet hauteur={34} />
           <h2>Ce projet vous intéresse&nbsp;?</h2>
           <p>
             Créez votre profil pour contacter {projet.author_name ?? "l'auteur"}

@@ -4,7 +4,7 @@ import BarreNav from "@/components/BarreNav";
 import Compteur from "@/components/Compteur";
 import EnTeteAnime from "@/components/EnTeteAnime";
 import HashSession from "@/components/HashSession";
-import Logo from "@/components/Logo";
+import LogoComplet from "@/components/LogoComplet";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
 import TuileEntree from "@/components/TuileEntree";
 import { createClient } from "@/lib/supabase/server";
@@ -43,8 +43,7 @@ export default async function Home() {
       <PitchWall pitches={pitches} />
 
       <div className={styles.mobile}>
-        <Logo size={46} />
-        <div className={styles.mobileMarque}>WeFilmGood</div>
+        <LogoComplet hauteur={52} />
         <p className={styles.mobileSignature}>
           The best stories wherever they are
         </p>
