@@ -53,8 +53,12 @@ const ETATS: Record<string, string> = {
 
 /**
  * L'objectif est de rendre l'analyse en 10 jours. Une date seule oblige
- * à compter de tête : on affiche le délai, en rouge au-delà du délai.
+ * à compter de tête : on affiche le délai écoulé, et il passe en rouge
+ * dès 6 jours — assez tôt pour réattribuer le projet avant l'échéance,
+ * plutôt que de constater le retard une fois qu'il est là.
  */
+const ALERTE_JOURS = 6;
+
 function joursDepuis(date: string): number {
   return Math.floor((Date.now() - new Date(date).getTime()) / 86400000);
 }
@@ -169,7 +173,7 @@ export default async function ProjetsEnAttentePage() {
                   <br />
                   <span
                     className={formStyles.hint}
-                    style={joursDepuis(p.submitted_at) > 10 ? { color: "#e2231a", fontWeight: 600 } : undefined}
+                    style={joursDepuis(p.submitted_at) >= ALERTE_JOURS ? { color: "#e2231a", fontWeight: 600 } : undefined}
                   >
                     {delaiEcoule(p.submitted_at)}
                   </span>
