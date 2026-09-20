@@ -141,14 +141,23 @@ export async function nuagePublic(limite = 15): Promise<MotNuage[]> {
 }
 
 
-/** L'adhésion ouvre le nuage complet : mots, effectifs et clic vers la recherche. */
-export async function estAdherent(): Promise<boolean> {
+/**
+ * Qui a droit au nuage complet : les adhérents, et les administrateurs.
+ *
+ * L'administratrice de la plateforme doit pouvoir surveiller ce qui s'y
+ * publie — un profil de prostitution démarchant les producteurs a déjà
+ * dû être traité. Son accès ne dépend donc pas d'une adhésion.
+ */
+export async function peutVoirLeNuage(): Promise<boolean> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return false;
 
-  const { data } = await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id });
-  return data === true;
+  const [{ data: adherent }, { data: admin }] = await Promise.all([
+    supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id }),
+    supabase.rpc("is_admin"),
+  ]);
+  return adherent === true || admin === true;
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Finder from "@/components/Finder";
-import { estAdherent } from "./actions";
+import { peutVoirLeNuage } from "./actions";
 import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -29,7 +29,7 @@ export default async function ProjetsPage() {
     redirect("/connexion?next=/projets");
   }
 
-  const adherent = await estAdherent();
+  const adherent = await peutVoirLeNuage();
 
   const { data: projects } = await supabase
     .from("projects")
