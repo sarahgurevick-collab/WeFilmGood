@@ -27,9 +27,9 @@ const FORMATS: Record<string, string> = {
   immersif_360_vr: "Format immersif (360/VR)",
 };
 
-async function chargerProjet(token: string) {
+async function chargerProjet(code: string) {
   const supabase = await createClient();
-  const { data } = await supabase.rpc("get_shared_project", { p_token: token });
+  const { data } = await supabase.rpc("get_shared_project", { p_code: code });
   const projet = ((data ?? []) as ProjetPartage[])[0];
   if (!projet) return null;
 
@@ -53,10 +53,10 @@ async function chargerProjet(token: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ token: string }>;
+  params: Promise<{ code: string }>;
 }): Promise<Metadata> {
-  const { token } = await params;
-  const resultat = await chargerProjet(token);
+  const { code } = await params;
+  const resultat = await chargerProjet(code);
   if (!resultat) return { title: "Projet introuvable" };
 
   return {
@@ -76,10 +76,10 @@ export async function generateMetadata({
 export default async function ProjetPartagePage({
   params,
 }: {
-  params: Promise<{ token: string }>;
+  params: Promise<{ code: string }>;
 }) {
-  const { token } = await params;
-  const resultat = await chargerProjet(token);
+  const { code } = await params;
+  const resultat = await chargerProjet(code);
 
   if (!resultat) {
     notFound();

@@ -27,7 +27,7 @@ type Project = {
   status: string;
   owner_id: string;
   legacy_id: string | null;
-  share_token: string | null;
+  share_code: string | null;
   genre: { label_fr: string } | null;
 };
 
@@ -58,7 +58,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, synopsis, format, language, country, status, owner_id, share_token, legacy_id, genre:genres(label_fr)",
+      "id, title, logline, synopsis, format, language, country, status, owner_id, share_code, legacy_id, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -249,24 +249,20 @@ export default async function ProjetPage({
             Partager ce projet
           </h2>
           <p className={formStyles.hint}>
-            {project.share_token
-              ? "Toute personne disposant de ce lien peut consulter la fiche, sans avoir de compte. Le scénario, lui, reste inaccessible."
-              : "Créez un lien à envoyer à un producteur. Il ouvre une page de présentation de votre projet — avec le label WeFilmGood s'il est labellisé."}
+            {project.share_code
+              ? "Toute personne disposant de ce lien peut consulter la fiche, sans avoir de compte, et le transmettre à son tour. Le scénario, lui, reste inaccessible. Vous pouvez désactiver ce lien à tout moment : il cesse alors définitivement de fonctionner, y compris chez ceux à qui il a été transféré."
+              : "Créez un lien à envoyer à un producteur. Il ouvre une page de présentation de votre projet — avec le label WeFilmGood s'il est labellisé. Vous pourrez le désactiver quand vous voudrez."}
           </p>
 
-          {project.share_token && (
-            <PartageProjet url={`${origine}/projets/partage/${project.share_token}`} />
+          {project.share_code && (
+            <PartageProjet url={`${origine}/p/${project.share_code}`} />
           )}
 
           <form action={setShareLink} style={{ marginTop: 16 }}>
             <input type="hidden" name="project_id" value={project.id} />
-            <input type="hidden" name="actif" value={project.share_token ? "0" : "1"} />
-            <button
-              type="submit"
-              className={project.share_token ? formStyles.hint : formStyles.submit}
-              style={project.share_token ? { cursor: "pointer", background: "none", border: "none", padding: 0, textDecoration: "underline" } : undefined}
-            >
-              {project.share_token ? "Désactiver ce lien" : "Créer un lien de partage"}
+            <input type="hidden" name="actif" value={project.share_code ? "0" : "1"} />
+            <button type="submit" className={formStyles.submit}>
+              {project.share_code ? "Désactiver ce lien" : "Créer un lien de partage"}
             </button>
           </form>
 
