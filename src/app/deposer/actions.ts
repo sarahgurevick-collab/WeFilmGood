@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { alleger } from "@/lib/image";
 import { createClient } from "@/lib/supabase/server";
 
 const FORMATS = [
@@ -89,10 +90,14 @@ export async function createProject(formData: FormData) {
   // La vignette part dans un espace public : c'est elle qui illustre la
   // pitchothèque, contrairement au scénario qui reste confidentiel.
   if (vignette && vignette.size > 0) {
+    // Allégée avant d'être stockée : les auteurs déposent des photos de
+    // 15 à 20 Mo pour une vignette affichée à 400 pixels. Transparent
+    // pour eux, rien à régler.
+    const image = await alleger(vignette);
     const path = `${user.id}/${project.id}-${Date.now()}`;
     const { error: uploadError } = await supabase.storage
       .from("project-media")
-      .upload(path, vignette, { contentType: vignette.type });
+      .upload(path, image.donnees, { contentType: image.type });
 
     if (!uploadError) {
       await supabase.from("project_files").insert({
