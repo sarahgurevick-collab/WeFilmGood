@@ -1,0 +1,12 @@
+.compteur {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--dim);
+  text-align: right;
+}
+
+.bientotPlein {
+  color: #e2231a;
+  font-weight: 600;
+}

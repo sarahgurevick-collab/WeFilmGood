@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import ChampAvecCompteur from "@/components/ChampAvecCompteur";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
@@ -42,12 +43,15 @@ export default async function DeposerPage({
           <span>Titre</span>
           <input type="text" name="title" required />
         </label>
+        <ChampAvecCompteur
+          nom="logline"
+          libelle="Tag line"
+          indication="Une ou deux phrases courtes pour résumer l'histoire"
+          limite={300}
+          lignes={3}
+        />
         <label className={formStyles.field}>
           <span>Logline</span>
-          <input type="text" name="logline" placeholder="Une phrase pour résumer l'histoire" />
-        </label>
-        <label className={formStyles.field}>
-          <span>Synopsis</span>
           <textarea name="synopsis" rows={6} />
         </label>
         <label className={formStyles.field}>

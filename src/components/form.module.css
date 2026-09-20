@@ -225,3 +225,15 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* Avertissement doux, pour signaler à l'auteur d'une fiche héritée de
+   l'ancienne plateforme que les règles de saisie ont changé. */
+.avertissement {
+  margin: 24px 0 0;
+  padding: 12px 16px;
+  border-left: 3px solid #e2231a;
+  background: rgba(226, 35, 26, 0.06);
+  border-radius: 0 8px 8px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}

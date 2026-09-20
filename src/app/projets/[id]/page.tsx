@@ -17,6 +17,7 @@ type Project = {
   country: string | null;
   status: string;
   owner_id: string;
+  legacy_id: string | null;
   share_token: string | null;
   genre: { label_fr: string } | null;
 };
@@ -39,7 +40,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, synopsis, format, language, country, status, owner_id, share_token, genre:genres(label_fr)",
+      "id, title, logline, synopsis, format, language, country, status, owner_id, share_token, legacy_id, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -74,6 +75,19 @@ export default async function ProjetPage({
           .join(" · ")}
         {project.status === "labellise" && " · Labellisé WFG"}
       </p>
+
+      {isOwner && project.legacy_id && (
+        <p className={formStyles.avertissement}>
+          Cette fiche a été créée sur l&apos;ancienne plateforme, où la tag line
+          n&apos;était pas limitée. Sur WeFilmGood 2, elle tient en 300 caractères —
+          une ou deux phrases courtes.
+          {(project.logline?.length ?? 0) > 300 && (
+            <> La vôtre en compte {project.logline?.length}. Elle reste enregistrée
+            telle quelle : vous n&apos;avez rien à faire, mais vous pouvez la
+            raccourcir si vous le souhaitez.</>
+          )}
+        </p>
+      )}
 
       {project.logline && <p style={{ marginTop: 24 }}>{project.logline}</p>}
       {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
