@@ -67,9 +67,14 @@ export default function Finder() {
     };
   }, [requete, nuageVisible]);
 
-  const effectifMax = nuage?.[0]?.effectif ?? 1;
+  // La liste est triée par ressemblance, pas par popularité : la
+  // référence de taille doit être le mot le PLUS fréquent de la liste,
+  // pas le premier. Sinon un mot populaire placé loin dans la liste
+  // s'affichait démesurément gros (ex. "comédie dramatique", 292
+  // projets, comparé à un premier mot n'en ayant qu'un seul).
+  const effectifMax = Math.max(1, ...(nuage ?? []).map((m) => m.effectif));
   const tailleDe = (effectif: number) => {
-    const ratio = effectif / effectifMax;
+    const ratio = Math.min(1, effectif / effectifMax);
     return 13 + Math.round(ratio * 15); // 13px à 28px
   };
 
