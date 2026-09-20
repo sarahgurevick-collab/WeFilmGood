@@ -132,3 +132,33 @@
   border-color: #e2231a;
   color: #e2231a;
 }
+
+/* Le voyant de validation d'un profil : vert tant que la référence
+   professionnelle tient, rouge une fois écartée par l'administration. */
+.voyantVert,
+.voyantRouge {
+  min-width: 96px;
+  padding: 7px 14px;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.voyantVert {
+  background: #1f8a3c;
+}
+
+.voyantVert:hover {
+  background: #176b2e;
+}
+
+.voyantRouge {
+  background: #e2231a;
+}
+
+.voyantRouge:hover {
+  background: #b81b14;
+}

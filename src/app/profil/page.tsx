@@ -152,8 +152,19 @@ export default async function ProfilPage({
         </label>
         <div className={styles.row}>
           <label className={formStyles.field}>
-            <span>Site internet</span>
-            <input type="url" name="website" defaultValue={profile?.website ?? ""} placeholder="https://" />
+            <span>Votre référence professionnelle</span>
+            <input
+              type="url"
+              name="website"
+              defaultValue={profile?.website ?? ""}
+              placeholder="https://www.imdb.com/name/…"
+            />
+            <span className={formStyles.hint}>
+              Votre page IMDb, votre Vimeo ou votre site personnel — de quoi
+              montrer au moins une expérience sur un film, un court métrage ou
+              un clip. C&apos;est ce qui distingue les professionnels sur la
+              plateforme.
+            </span>
           </label>
           <label className={formStyles.field}>
             <span>Nom de votre agent</span>
