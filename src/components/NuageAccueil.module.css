@@ -1,0 +1,49 @@
+.bloc {
+  max-width: 720px;
+  margin: 40px auto 0;
+  text-align: center;
+}
+
+.titre {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--dim);
+}
+
+/* Les mots ne sont pas des liens : on ne peut rien en faire, ils sont là
+   pour montrer la richesse du fonds. */
+.nuage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px 16px;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.nuage span {
+  font-weight: 700;
+}
+
+.nuage span:nth-child(3n) {
+  color: #e2231a;
+}
+
+.mention {
+  margin: 22px 0 0;
+  font-size: 14px;
+  color: var(--dim);
+  line-height: 1.6;
+}
+
+.lien {
+  color: #e2231a;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}

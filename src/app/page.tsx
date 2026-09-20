@@ -4,6 +4,7 @@ import BarreNav from "@/components/BarreNav";
 import Compteur from "@/components/Compteur";
 import EnTeteAnime from "@/components/EnTeteAnime";
 import HashSession from "@/components/HashSession";
+import NuageAccueil from "@/components/NuageAccueil";
 import RechercheAccueil from "@/components/RechercheAccueil";
 import LogoComplet from "@/components/LogoComplet";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
@@ -32,10 +33,14 @@ export default async function Home() {
 
   const pitches: Pitch[] = data ?? [];
 
-  const [{ count }, { data: auth }] = await Promise.all([
-    supabase.from("projects").select("id", { count: "exact", head: true }).eq("is_public", true),
+  // Les projets ne sont plus lisibles sans compte : les totaux passent
+  // par une fonction dédiée, qui ne renvoie que des nombres.
+  const [{ data: fonds }, { data: auth }] = await Promise.all([
+    supabase.rpc("compter_fonds"),
     supabase.auth.getUser(),
   ]);
+  const { projets: count = 0, mots_cles: totalMotsCles = 0 } =
+    ((fonds ?? [])[0] as { projets: number; mots_cles: number } | undefined) ?? {};
 
   return (
     <>
@@ -102,6 +107,7 @@ export default async function Home() {
 
         <div className={styles.bandeFinder}>
           <RechercheAccueil />
+          <NuageAccueil total={totalMotsCles} />
         </div>
       </section>
 

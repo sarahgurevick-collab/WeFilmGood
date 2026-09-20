@@ -122,3 +122,20 @@ export async function compterRecherche(requete: string): Promise<DecompteRecherc
   const ligne = (data ?? [])[0] as DecompteRecherche | undefined;
   return ligne ?? vide;
 }
+
+export type MotNuage = { label: string; poids: number };
+
+/**
+ * L'aperçu du nuage pour la page d'accueil : des mots et leur poids
+ * relatif, rien de plus. Pas d'effectif chiffré, aucun lien vers un
+ * projet, et rien de cliquable — le nuage complet, les chiffres et la
+ * recherche par mots-clés sont réservés aux adhérents.
+ */
+export async function nuagePublic(limite = 15): Promise<MotNuage[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("nuage_public", { p_limite: limite });
+  return ((data ?? []) as { label_fr: string; poids: number }[]).map((m) => ({
+    label: m.label_fr,
+    poids: m.poids ?? 0,
+  }));
+}
