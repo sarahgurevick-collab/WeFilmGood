@@ -51,6 +51,23 @@ const ETATS: Record<string, string> = {
   refusee: "Refusée par le lecteur",
 };
 
+/**
+ * L'objectif est de rendre l'analyse en 10 jours. Une date seule oblige
+ * à compter de tête : on affiche le délai, en rouge au-delà du délai.
+ */
+function joursDepuis(date: string): number {
+  return Math.floor((Date.now() - new Date(date).getTime()) / 86400000);
+}
+
+function delaiEcoule(date: string): string {
+  const jours = joursDepuis(date);
+  if (jours <= 0) return "aujourd'hui";
+  if (jours === 1) return "il y a 1 jour";
+  if (jours < 31) return `il y a ${jours} jours`;
+  const mois = Math.floor(jours / 30);
+  return mois === 1 ? "il y a 1 mois" : `il y a ${mois} mois`;
+}
+
 export default async function ProjetsEnAttentePage() {
   const supabase = await createClient();
   const { data: isAdmin } = await supabase.rpc("is_admin");
@@ -105,7 +122,6 @@ export default async function ProjetsEnAttentePage() {
               <th>PDF</th>
               <th>Déposé le</th>
               <th>Lecteur</th>
-              <th>Refus</th>
               <th>Attribuer</th>
             </tr>
           </thead>
@@ -128,9 +144,17 @@ export default async function ProjetsEnAttentePage() {
                 <td>
                   <ScenarioLink projectId={p.project_id} />
                 </td>
-                <td>{new Date(p.submitted_at).toLocaleDateString("fr-FR")}</td>
+                <td>
+                  {new Date(p.submitted_at).toLocaleDateString("fr-FR")}
+                  <br />
+                  <span
+                    className={formStyles.hint}
+                    style={joursDepuis(p.submitted_at) > 10 ? { color: "#e2231a", fontWeight: 600 } : undefined}
+                  >
+                    {delaiEcoule(p.submitted_at)}
+                  </span>
+                </td>
                 <td>{p.current_reader_name ?? "—"}</td>
-                <td>{p.reader_refusal_count}</td>
                 <td>
                   <form action={reassignReader} className={adminStyles.inlineForm}>
                     <input type="hidden" name="project_id" value={p.project_id} />
