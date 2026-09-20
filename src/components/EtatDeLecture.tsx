@@ -13,7 +13,11 @@ import styles from "./EtatDeLecture.module.css";
  * e-mail partait à chaque changement de lecteur, et l'auteur, ne
  * comprenant pas, écrivait à l'administration.
  */
-export type Etat = "attribution" | "en_lecture" | "disponible";
+export type Etat =
+  | "attribution"
+  | "premiere_lecture"
+  | "deuxieme_lecture"
+  | "disponible";
 
 const ETAPES: { cle: Etat; titre: string; texte: string }[] = [
   {
@@ -22,9 +26,15 @@ const ETAPES: { cle: Etat; titre: string; texte: string }[] = [
     texte: "Votre projet est enregistré. Un lecteur va en être chargé.",
   },
   {
-    cle: "en_lecture",
-    titre: "Analyse en cours",
+    cle: "premiere_lecture",
+    titre: "Première lecture",
     texte: "Un lecteur professionnel lit votre scénario et rédige son analyse.",
+  },
+  {
+    cle: "deuxieme_lecture",
+    titre: "Deuxième lecture",
+    texte:
+      "Chaque projet est lu deux fois. Un second lecteur reprend votre scénario, puis la fiche définitive est arrêtée par la Maison des Scénaristes.",
   },
   {
     cle: "disponible",
