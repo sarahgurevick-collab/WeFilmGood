@@ -46,6 +46,15 @@ export default async function ProjetPage({
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Aucune fiche n'est lisible sans compte : les auteurs protègent leur
+  // travail et certaines photos portent des droits à l'image. Le seul
+  // chemin public vers un projet est le lien de partage, que son auteur
+  // décide d'émettre. On redirige avant d'interroger la base, sinon le
+  // visiteur reçoit une page « introuvable » au lieu d'une invitation.
+  if (!user) {
+    redirect(`/connexion?next=/projets/${id}`);
+  }
+
   const { data: project } = await supabase
     .from("projects")
     .select(
@@ -56,14 +65,6 @@ export default async function ProjetPage({
 
   if (!project) {
     notFound();
-  }
-
-  // Aucune fiche n'est lisible sans compte : les auteurs protègent leur
-  // travail et certaines photos portent des droits à l'image. Le seul
-  // chemin public vers un projet est le lien de partage, que son auteur
-  // décide d'émettre.
-  if (!user) {
-    redirect(`/connexion?next=/projets/${id}`);
   }
 
   const isOwner = user?.id === project.owner_id;
