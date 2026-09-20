@@ -30,7 +30,7 @@ export default function BarreNav({
   return (
     <nav className={styles.barre} aria-label="Navigation principale">
       <Link href="/" className={styles.marque} aria-label="Accueil">
-        <LogoAnime size={22} />
+        <LogoAnime hauteur={34} />
       </Link>
 
       <div className={styles.onglets}>

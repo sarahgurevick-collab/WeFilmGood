@@ -1,15 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Logo, { ROUGE_WFG } from "./Logo";
+import { ROUGE_WFG } from "./Logo";
 import styles from "./LogoAnime.module.css";
 
 /**
- * Le logo de la barre de menu, qui passe d'un engagement à l'autre.
+ * Le logo complet — disque et « WE FILM GOOD » — qui passe d'un
+ * engagement à l'autre.
  *
- * Le rouge est la couleur d'origine de la marque : il ne porte aucune
- * mention, c'est WeFilmGood tout court. Les trois autres couleurs
- * affichent l'engagement qu'elles désignent, à côté du disque.
+ * Le dessin n'est pas redessiné : c'est le fichier original de la marque,
+ * utilisé comme pochoir (`mask`). Le navigateur peint la couleur à
+ * travers la forme exacte du logo, texte compris. Rien n'est approximé,
+ * et la couleur reste libre — ce qu'une image ordinaire, rouge une fois
+ * pour toutes, n'aurait pas permis.
+ *
+ * Le rouge est la couleur d'origine : il ne porte aucune mention.
  */
 const ETATS = [
   { couleur: ROUGE_WFG, mention: null },
@@ -18,9 +23,10 @@ const ETATS = [
   { couleur: "#3B8EF5", mention: "for Education" },
 ] as const;
 
+const RATIO = 1381 / 1113;
 const DUREE = 3600; // temps d'affichage de chaque couleur, en millisecondes
 
-export default function LogoAnime({ size = 22 }: { size?: number }) {
+export default function LogoAnime({ hauteur = 34 }: { hauteur?: number }) {
   const [i, setI] = useState(0);
   const [anime, setAnime] = useState(false);
 
@@ -37,7 +43,12 @@ export default function LogoAnime({ size = 22 }: { size?: number }) {
 
   return (
     <span className={styles.bloc} style={{ color: etat.couleur }}>
-      <Logo size={size} couleur="currentColor" />
+      <span
+        className={styles.dessin}
+        role="img"
+        aria-label="WeFilmGood"
+        style={{ width: Math.round(hauteur * RATIO), height: hauteur }}
+      />
       {etat.mention && (
         <span key={etat.mention} className={styles.mention}>
           {etat.mention}

@@ -2,8 +2,23 @@
 .bloc {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 9px;
   transition: color 900ms ease-in-out;
+}
+
+/* Le logo original sert de pochoir : la couleur du texte (currentColor)
+   est peinte à travers sa forme exacte, disque et lettres compris. */
+.dessin {
+  display: block;
+  background-color: currentColor;
+  -webkit-mask-image: url("/label-wfg.png");
+  mask-image: url("/label-wfg.png");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 .mention {
