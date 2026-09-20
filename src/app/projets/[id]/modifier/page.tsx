@@ -5,12 +5,13 @@ import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { modifierProjet } from "./actions";
 
+// Un documentaire ou un film d'animation n'est pas un format : selon sa
+// durée, c'est un long ou un court métrage. Les quatre valeurs ci-dessous
+// sont les seules utilisées, ici comme sur l'ancienne plateforme.
 const FORMATS = [
   { value: "long_metrage", label: "Long métrage" },
   { value: "court_metrage", label: "Court métrage" },
   { value: "serie", label: "Série" },
-  { value: "documentaire", label: "Documentaire" },
-  { value: "animation", label: "Animation" },
   { value: "immersif_360_vr", label: "Format immersif (360/VR)" },
 ];
 

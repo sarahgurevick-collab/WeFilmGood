@@ -4,14 +4,9 @@ import { redirect } from "next/navigation";
 import { alleger } from "@/lib/image";
 import { createClient } from "@/lib/supabase/server";
 
-const FORMATS = [
-  "long_metrage",
-  "court_metrage",
-  "serie",
-  "documentaire",
-  "animation",
-  "immersif_360_vr",
-];
+// Un documentaire ou un film d'animation n'est pas un format : selon sa
+// durée, c'est un long ou un court métrage.
+const FORMATS = ["long_metrage", "court_metrage", "serie", "immersif_360_vr"];
 
 const IMAGES = ["image/jpeg", "image/png"];
 

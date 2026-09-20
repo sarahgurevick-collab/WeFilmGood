@@ -63,8 +63,6 @@ const FORMATS_COURTS: Record<string, string> = {
   long_metrage: "LM",
   court_metrage: "CM",
   serie: "TV",
-  documentaire: "DOC",
-  animation: "ANIM",
   immersif_360_vr: "VR",
 };
 

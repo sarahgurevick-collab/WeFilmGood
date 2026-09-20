@@ -5,14 +5,7 @@ import { revalidatePath } from "next/cache";
 import { alleger } from "@/lib/image";
 import { createClient } from "@/lib/supabase/server";
 
-const FORMATS = [
-  "long_metrage",
-  "court_metrage",
-  "serie",
-  "documentaire",
-  "animation",
-  "immersif_360_vr",
-];
+const FORMATS = ["long_metrage", "court_metrage", "serie", "immersif_360_vr"];
 
 const IMAGES = ["image/jpeg", "image/png"];
 
