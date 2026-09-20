@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ROUGE_WFG } from "./Logo";
+import { DUREE_ENGAGEMENT, ENGAGEMENTS } from "@/lib/engagements";
 import styles from "./LogoAnime.module.css";
 
 /**
@@ -16,15 +16,7 @@ import styles from "./LogoAnime.module.css";
  *
  * Le rouge est la couleur d'origine : il ne porte aucune mention.
  */
-const ETATS = [
-  { couleur: ROUGE_WFG, mention: null },
-  { couleur: "#35B05E", mention: "for Planet" },
-  { couleur: "#F2C230", mention: "for Humanity" },
-  { couleur: "#3B8EF5", mention: "for Education" },
-] as const;
-
 const RATIO = 1381 / 1113;
-const DUREE = 3600; // temps d'affichage de chaque couleur, en millisecondes
 
 export default function LogoAnime({ hauteur = 34 }: { hauteur?: number }) {
   const [i, setI] = useState(0);
@@ -35,11 +27,11 @@ export default function LogoAnime({ hauteur = 34 }: { hauteur?: number }) {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     setAnime(true);
-    const t = setInterval(() => setI((n) => (n + 1) % ETATS.length), DUREE);
+    const t = setInterval(() => setI((n) => (n + 1) % ENGAGEMENTS.length), DUREE_ENGAGEMENT);
     return () => clearInterval(t);
   }, []);
 
-  const etat = anime ? ETATS[i] : ETATS[0];
+  const etat = anime ? ENGAGEMENTS[i] : ENGAGEMENTS[0];
 
   return (
     <span className={styles.bloc} style={{ color: etat.couleur }}>

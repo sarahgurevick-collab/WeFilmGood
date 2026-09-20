@@ -2,16 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { DUREE_ENGAGEMENT, ENGAGEMENTS } from "@/lib/engagements";
 import styles from "./EnTeteAnime.module.css";
 
-const ETATS = [
-  { couleur: "#e2231a", accroche: null },
-  { couleur: "#1f8a3c", accroche: "for the Planet" },
-  { couleur: "#f0b400", accroche: "for Humanity" },
-  { couleur: "#1b63c9", accroche: "for Education" },
-] as const;
+const ETATS = ENGAGEMENTS;
 
-const CYCLE_MS = 4000;
+const CYCLE_MS = DUREE_ENGAGEMENT;
 const DELAI_APRES_SCROLL_MS = 500;
 
 const ELEMENTS_MENU = [
@@ -24,10 +20,12 @@ const ELEMENTS_MENU = [
 ];
 
 /**
- * Reconstitution approximative du logo réel (cercle à encoche en
- * escalier + "WE FILM GOOD") en attendant le fichier SVG source.
- * La bande se masque pendant le défilement pour ne pas gêner la
- * lecture des vignettes/bandes, et revient dès que ça s'arrête.
+ * Bande blanche de l'accueil. Le logo est le fichier original de la
+ * marque, utilisé comme pochoir pour prendre la couleur de l'engagement
+ * en cours — plus aucune reconstitution approximative.
+ *
+ * La bande se masque pendant le défilement pour ne pas gêner la lecture
+ * des vignettes, et revient dès que ça s'arrête.
  */
 export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
   const [index, setIndex] = useState(0);
@@ -73,21 +71,9 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
   return (
     <div className={`${styles.bande} ${visible ? "" : styles.cachee}`}>
       <Link href="/" className={styles.lien} title="Retour à l'accueil" style={{ color: etat.couleur }}>
-        <svg width="34" height="34" viewBox="0 0 100 100" aria-hidden="true">
-          <mask id="encoche-entete">
-            <rect width="100" height="100" fill="white" />
-            <polygon points="100,38 58,38 58,58 40,58 40,78 22,78 22,100 100,100" fill="black" />
-          </mask>
-          <circle cx="50" cy="50" r="46" fill="currentColor" mask="url(#encoche-entete)" />
-        </svg>
+        <span className={styles.logo} aria-label="WeFilmGood" role="img" />
 
-        <span className={styles.mot}>
-          <span className={styles.ligne} style={{ marginLeft: 0 }}>We</span>
-          <span className={styles.ligne} style={{ marginLeft: 10 }}>Film</span>
-          <span className={styles.ligne} style={{ marginLeft: 18 }}>Good</span>
-        </span>
-
-        {etat.accroche && <span className={styles.accroche}>{etat.accroche}</span>}
+        {etat.mention && <span className={styles.accroche}>{etat.mention}</span>}
       </Link>
 
       <nav className={styles.nav}>

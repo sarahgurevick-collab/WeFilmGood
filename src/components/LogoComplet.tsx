@@ -1,4 +1,4 @@
-import { ROUGE_WFG } from "./Logo";
+import { ROUGE_WFG } from "@/lib/engagements";
 import styles from "./LogoComplet.module.css";
 
 /**
