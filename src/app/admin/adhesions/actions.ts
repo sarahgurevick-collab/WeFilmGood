@@ -14,9 +14,9 @@ async function requireAdmin() {
 }
 
 const PLAN_PAR_CATEGORIE: Record<string, string> = {
-  auteur: "adhesion_auteur_50",
-  producteur: "adhesion_pt_50",
-  talent: "adhesion_pt_50",
+  auteur: "depot_50",
+  producteur: "acces_50",
+  talent: "acces_50",
 };
 
 /** Active l'adhésion d'un profil : met à jour la plus récente si elle existe, sinon en crée une. */
@@ -43,7 +43,7 @@ export async function activerAdhesion(formData: FormData) {
     .limit(1)
     .maybeSingle<{ id: string }>();
 
-  const plan = planChoisi || PLAN_PAR_CATEGORIE[profile?.category ?? ""] || "adhesion_auteur_50";
+  const plan = planChoisi || PLAN_PAR_CATEGORIE[profile?.category ?? ""] || "depot_50";
 
   if (derniere) {
     await supabase
