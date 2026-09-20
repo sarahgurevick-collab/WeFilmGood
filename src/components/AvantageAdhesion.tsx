@@ -33,6 +33,24 @@ const ICONES = {
       <circle cx="12" cy="12" r="3" />
     </svg>
   ),
+  // Étiquette : les mots-clés, à ne pas confondre avec le nuage de dépôt
+  // ci-dessous, qui est une flèche montant vers un nuage.
+  motscles: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z" />
+      <circle cx="7.5" cy="7.5" r="1.5" />
+    </svg>
+  ),
   nuage: (
     <svg
       width="20"

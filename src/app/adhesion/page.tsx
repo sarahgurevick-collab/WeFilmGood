@@ -6,9 +6,12 @@ import styles from "./page.module.css";
 
 export default async function AdhesionPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const [{ data: { user } }, { data: fonds }] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase.rpc("compter_fonds"),
+  ]);
+  const motsCles =
+    ((fonds ?? [])[0] as { mots_cles: number } | undefined)?.mots_cles ?? 0;
 
   return (
     <PageShell eyebrow="WeFilmGood" title="Adhésion" enTeteAnime connecte={!!user}>
@@ -29,6 +32,11 @@ export default async function AdhesionPage() {
               La Pitchothèque et le Finder — pour savoir combien de projets
               répondent à vos envies.
             </AvantageAdhesion>
+            <AvantageAdhesion icone="motscles">
+              Le nuage de mots-clés — les {motsCles.toLocaleString("fr-FR")} thèmes
+              portés par les projets, avec leurs chiffres, à ouvrir aussi large
+              que vous voulez
+            </AvantageAdhesion>
             <AvantageAdhesion icone="oeil">
               1 projet / mois (random)
             </AvantageAdhesion>
@@ -42,6 +50,11 @@ export default async function AdhesionPage() {
             <AvantageAdhesion icone="loupe">
               La Pitchothèque et le Finder — pour savoir combien de projets
               répondent à vos envies.
+            </AvantageAdhesion>
+            <AvantageAdhesion icone="motscles">
+              Le nuage de mots-clés — les {motsCles.toLocaleString("fr-FR")} thèmes
+              portés par les projets, avec leurs chiffres, à ouvrir aussi large
+              que vous voulez
             </AvantageAdhesion>
             <AvantageAdhesion icone="nuage">11 dépôts</AvantageAdhesion>
             <AvantageAdhesion>
