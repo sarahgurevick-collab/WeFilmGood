@@ -95,12 +95,12 @@ export default async function ProjetPage({
     .eq("project_id", id)
     .returns<{ kind: string }[]>();
 
-  const { data: fichesLecture } = await supabase
-    .from("legacy_reading_reports")
-    .select("legacy_review_id, content, final_mark, wfg_review, read_at")
-    .eq("project_id", id)
-    .order("read_at", { ascending: false })
-    .returns<FicheLecture[]>();
+  // Par une fonction dédiée, et non par la table : celle-ci porte
+  // l'identifiant du lecteur, que l'auteur ne doit jamais approcher.
+  const { data: fichesLectureBrut } = await supabase.rpc("get_legacy_reading_reports", {
+    p_project_id: id,
+  });
+  const fichesLecture = (fichesLectureBrut ?? []) as FicheLecture[];
 
   const etatFiche = {
     titre: project.title,
@@ -243,17 +243,17 @@ export default async function ProjetPage({
         </>
       )}
 
-      {(fichesLecture ?? []).length > 0 && (
+      {fichesLecture.length > 0 && (
         <>
           <h2 style={{ marginTop: 48, fontWeight: 400, fontSize: 16 }}>
             Fiches de lecture
           </h2>
           <p className={formStyles.hint}>
-            {(fichesLecture ?? []).length === 1
+            {fichesLecture.length === 1
               ? "Une lecture a été faite sur ce projet."
-              : `${fichesLecture?.length} lectures ont été faites sur ce projet, de la plus récente à la plus ancienne.`}
+              : `${fichesLecture.length} lectures ont été faites sur ce projet, de la plus récente à la plus ancienne.`}
           </p>
-          {(fichesLecture ?? []).map((f, i) => (
+          {fichesLecture.map((f, i) => (
             <details
               key={f.legacy_review_id}
               open={i === 0}
