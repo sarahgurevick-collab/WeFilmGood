@@ -6,6 +6,7 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
 import { contacterAuteur, setShareLink } from "./actions";
+import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";
 
@@ -89,6 +90,14 @@ export default async function ProjetPage({
 
   const { data: estAdmin } = await supabase.rpc("is_admin");
 
+  // « Où en est mon projet ? » — la réponse que l'auteur allait chercher
+  // par e-mail auprès de l'administration.
+  const { data: etatBrut } = await supabase.rpc("etat_de_lecture", { p_project_id: id });
+  const etatLecture = ((etatBrut ?? []) as {
+    etat: Etat;
+    depose_le: string | null;
+  }[])[0];
+
   const { data: fichiers } = await supabase
     .from("project_files")
     .select("kind")
@@ -133,6 +142,10 @@ export default async function ProjetPage({
           <LabelWFG hauteur={38} />
           <strong>Projet labellisé WeFilmGood</strong>
         </p>
+      )}
+
+      {(isOwner || estAdmin) && etatLecture && (
+        <EtatDeLecture etat={etatLecture.etat} deposeLe={etatLecture.depose_le} />
       )}
 
       {(isOwner || estAdmin) && (
