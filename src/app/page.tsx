@@ -6,7 +6,6 @@ import EnTeteAnime from "@/components/EnTeteAnime";
 import HashSession from "@/components/HashSession";
 import Logo from "@/components/Logo";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
-import RechercheDemo from "@/components/RechercheDemo";
 import TuileEntree from "@/components/TuileEntree";
 import { createClient } from "@/lib/supabase/server";
 import placeholders from "@/styles/placeholders.module.css";
@@ -100,7 +99,6 @@ export default async function Home() {
         <p className={styles.bandeSousTitre}>
           Créons ensemble les Films et les Séries de demain !
         </p>
-        <RechercheDemo />
       </section>
 
       <section className={styles.stories}>
