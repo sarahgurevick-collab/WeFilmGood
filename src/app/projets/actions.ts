@@ -82,20 +82,20 @@ export async function rechercherProjets(requete: string): Promise<ResultatRecher
 export type MotCle = { label: string; effectif: number };
 
 /** Sans recherche en cours : les mots-clés les plus utilisés, pour explorer. */
-export async function nuageMotsCles(): Promise<MotCle[]> {
+export async function nuageMotsCles(limite = 80): Promise<MotCle[]> {
   const supabase = await createClient();
-  const { data } = await supabase.rpc("nuage_mots_cles", { p_limite: 80 });
+  const { data } = await supabase.rpc("nuage_mots_cles", { p_limite: limite });
   const lignes = (data ?? []) as { label_fr: string; effectif: number }[];
   return lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif }));
 }
 
 /** Avec une recherche en cours : les mots-clés existants les plus proches de ce qui est tapé. */
-export async function motsClesProches(requete: string): Promise<MotCle[]> {
+export async function motsClesProches(requete: string, limite = 80): Promise<MotCle[]> {
   const q = requete.trim();
-  if (!q) return nuageMotsCles();
+  if (!q) return nuageMotsCles(limite);
 
   const supabase = await createClient();
-  const { data } = await supabase.rpc("mots_cles_proches", { q, p_limite: 30 });
+  const { data } = await supabase.rpc("mots_cles_proches", { q, p_limite: limite });
   const lignes = (data ?? []) as { label_fr: string; effectif: number; score: number }[];
   return lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif }));
 }
@@ -138,4 +138,17 @@ export async function nuagePublic(limite = 15): Promise<MotNuage[]> {
     label: m.label_fr,
     poids: m.poids ?? 0,
   }));
+}
+
+
+/** L'adhésion ouvre le nuage complet : mots, effectifs et clic vers la recherche. */
+export async function estAdherent(): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data } = await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id });
+  return data === true;
 }

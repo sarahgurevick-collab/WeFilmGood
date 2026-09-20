@@ -50,9 +50,51 @@
   opacity: 0.7;
 }
 
-.nuageTitre {
-  margin: 0 0 12px;
+/* Le titre et le réglage +/- sur une même ligne, la croix de fermeture
+   gardant son coin en haut à droite. */
+.nuageEntete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
   padding-right: 28px;
+}
+
+.reglage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.reglage button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #d5d5d5;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.reglage button:hover:not(:disabled) {
+  border-color: var(--fg);
+  color: var(--fg);
+}
+
+.reglage button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.nuageTitre {
+  margin: 0;
   font-size: 13px;
   font-weight: 700;
   color: var(--dim);

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Finder from "@/components/Finder";
+import { estAdherent } from "./actions";
 import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -27,6 +28,8 @@ export default async function ProjetsPage() {
   if (!user) {
     redirect("/connexion?next=/projets");
   }
+
+  const adherent = await estAdherent();
 
   const { data: projects } = await supabase
     .from("projects")
@@ -55,7 +58,7 @@ export default async function ProjetsPage() {
 
   return (
     <PageShell eyebrow="Pitchothèque" title="Projets" wide nav="pitchotheque" connecte={!!user}>
-      <Finder />
+      <Finder adherent={adherent} />
 
       {!projects || projects.length === 0 ? (
         <p className={formStyles.hint}>

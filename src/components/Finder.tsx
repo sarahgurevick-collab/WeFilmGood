@@ -11,7 +11,12 @@ import {
 import styles from "./Finder.module.css";
 import projetsStyles from "@/app/projets/projets.module.css";
 
-export default function Finder() {
+const PAS = 20;
+const MIN = 20;
+const MAX = 200;
+const DEFAUT = 80;
+
+export default function Finder({ adherent = false }: { adherent?: boolean }) {
   const [requete, setRequete] = useState("");
   const [resultats, setResultats] = useState<ProjetTrouve[] | null>(null);
   const [total, setTotal] = useState(0);
@@ -23,12 +28,36 @@ export default function Finder() {
   // donne rien. Il n'a pas de bouton dédié : on le referme par sa croix.
   const [nuageDemande, setNuageDemande] = useState(false);
   const [nuageEcarte, setNuageEcarte] = useState(false);
+  // Combien de mots le nuage affiche : l'adhérent l'ajuste au + et au -,
+  // et son choix le suit d'une visite à l'autre.
+  const [combien, setCombien] = useState(DEFAUT);
+
+  useEffect(() => {
+    try {
+      const garde = Number(localStorage.getItem("wfg-nuage-mots"));
+      if (garde >= MIN && garde <= MAX) setCombien(garde);
+    } catch {
+      // Stockage refusé par le navigateur : on reste sur la valeur par défaut.
+    }
+  }, []);
+
+  const ajuster = (delta: number) => {
+    setCombien((n) => {
+      const suivant = Math.min(MAX, Math.max(MIN, n + delta));
+      try {
+        localStorage.setItem("wfg-nuage-mots", String(suivant));
+      } catch {
+        // Sans stockage, le réglage vaut pour la visite en cours.
+      }
+      return suivant;
+    });
+  };
   const [nuage, setNuage] = useState<MotCle[] | null>(null);
   const [nuageEnCours, setNuageEnCours] = useState(false);
   const minuteurNuage = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const vide = !requete.trim();
-  const nuageAffiche = (vide && !nuageEcarte) || nuageDemande;
+  const nuageAffiche = adherent && ((vide && !nuageEcarte) || nuageDemande);
 
   // Recherche de projets, avec un léger délai pour ne pas interroger à
   // chaque frappe.
@@ -64,7 +93,7 @@ export default function Finder() {
 
     setNuageEnCours(true);
     minuteurNuage.current = setTimeout(async () => {
-      const mots = await motsClesProches(requete);
+      const mots = await motsClesProches(requete, combien);
       setNuage(mots);
       setNuageEnCours(false);
     }, 300);
@@ -72,7 +101,7 @@ export default function Finder() {
     return () => {
       if (minuteurNuage.current) clearTimeout(minuteurNuage.current);
     };
-  }, [requete, nuageAffiche]);
+  }, [requete, nuageAffiche, combien]);
 
   // La liste est triée par ressemblance, pas par popularité : la
   // référence de taille doit être le mot le PLUS fréquent de la liste,
@@ -111,11 +140,34 @@ export default function Finder() {
           >
             ×
           </button>
-          <p className={styles.nuageTitre}>
-            {requete.trim()
-              ? <>Mots-clés proches de «&nbsp;{requete}&nbsp;»</>
-              : "Mots-clés les plus utilisés"}
-          </p>
+          <div className={styles.nuageEntete}>
+            <p className={styles.nuageTitre}>
+              {requete.trim()
+                ? <>Mots-clés proches de «&nbsp;{requete}&nbsp;»</>
+                : "Mots-clés les plus utilisés"}
+            </p>
+            <div className={styles.reglage}>
+              <button
+                type="button"
+                onClick={() => ajuster(-PAS)}
+                disabled={combien <= MIN}
+                aria-label="Afficher moins de mots-clés"
+                title="Moins de mots-clés"
+              >
+                −
+              </button>
+              <span>{combien} mots</span>
+              <button
+                type="button"
+                onClick={() => ajuster(PAS)}
+                disabled={combien >= MAX}
+                aria-label="Afficher plus de mots-clés"
+                title="Plus de mots-clés"
+              >
+                +
+              </button>
+            </div>
+          </div>
           {nuageEnCours && !nuage ? (
             <p className={styles.indice}>Chargement…</p>
           ) : !nuage || nuage.length === 0 ? (
@@ -183,14 +235,20 @@ export default function Finder() {
           ) : (
             <p className={styles.indice}>
               Aucun résultat pour «&nbsp;{requete}&nbsp;».{" "}
-              {!nuageAffiche && (
-                <button
-                  type="button"
-                  className={styles.lienNuage}
-                  onClick={() => setNuageDemande(true)}
-                >
-                  Voir les mots-clés proches
-                </button>
+              {adherent ? (
+                !nuageAffiche && (
+                  <button
+                    type="button"
+                    className={styles.lienNuage}
+                    onClick={() => setNuageDemande(true)}
+                  >
+                    Voir les mots-clés proches
+                  </button>
+                )
+              ) : (
+                <Link href="/adhesion" className={styles.lienNuage}>
+                  Les mots-clés proches sont réservés aux adhérents
+                </Link>
               )}
             </p>
           )}
