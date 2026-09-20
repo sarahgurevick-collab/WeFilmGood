@@ -5,6 +5,7 @@ import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../admin.module.css";
 import { basculerValidation } from "./actions";
+import { prendreLaPlace } from "./prise-de-place";
 
 type Membre = {
   profile_id: string;
@@ -66,6 +67,7 @@ export default async function ProfilsPage() {
               <th>Référence professionnelle</th>
               <th>Inscrit</th>
               <th>Validation</th>
+              <th>Agir pour lui</th>
             </tr>
           </thead>
           <tbody>
@@ -117,6 +119,18 @@ export default async function ProfilsPage() {
                     ) : (
                       <span className={formStyles.hint}>en attente</span>
                     )}
+                  </td>
+                  <td>
+                    <form action={prendreLaPlace}>
+                      <input type="hidden" name="profile_id" value={m.profile_id} />
+                      <button
+                        type="submit"
+                        className={adminStyles.linkButton}
+                        title="Se connecter à sa place pour compléter son profil ou déposer un document"
+                      >
+                        Prendre sa place
+                      </button>
+                    </form>
                   </td>
                 </tr>
               );

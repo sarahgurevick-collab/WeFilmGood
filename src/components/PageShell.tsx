@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
+import { incarnationEnCours } from "@/app/admin/profils/prise-de-place";
+import BandeauIncarnation from "./BandeauIncarnation";
 import BarreNav from "./BarreNav";
 import EnTeteAnime from "./EnTeteAnime";
 import styles from "./PageShell.module.css";
 
-export default function PageShell({
+export default async function PageShell({
   eyebrow,
   title,
   wide = false,
@@ -25,8 +27,11 @@ export default function PageShell({
   enTeteAnime?: boolean;
   children: ReactNode;
 }) {
+  const incarne = await incarnationEnCours();
+
   return (
     <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
+      {incarne && <BandeauIncarnation />}
       {enTeteAnime ? (
         <EnTeteAnime connecte={connecte} />
       ) : (
