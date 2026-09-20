@@ -2,6 +2,9 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { envoyerEmail } from "@/lib/brevo";
+import { emailDuMembre } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 /** Crée le lien de partage, ou le révoque — ce qui referme l'accès aux destinataires précédents. */
@@ -50,6 +53,27 @@ export async function contacterAuteur(formData: FormData) {
     recipient_id: recipientId,
     body,
   });
+
+  // On prévient, on ne raconte pas : ni le message, ni son auteur. Le
+  // destinataire vient le lire sur la plateforme, ce qui laisse jouer la
+  // règle d'adhésion. Libre aux deux membres d'échanger ensuite leurs
+  // adresses pour continuer ailleurs.
+  const destinataire = await emailDuMembre(recipientId);
+  if (destinataire) {
+    const entetes = await headers();
+    const hote = entetes.get("host") ?? "app.wefilmgood.com";
+    const origine = `${hote.startsWith("localhost") ? "http" : "https"}://${hote}`;
+
+    await envoyerEmail({
+      to: [{ email: destinataire }],
+      subject: "Vous avez reçu un message sur WeFilmGood",
+      htmlContent: `
+        <p>Bonjour,</p>
+        <p>Vous avez reçu un message sur WeFilmGood.</p>
+        <p><a href="${origine}/mes-messages">Le consulter</a></p>
+      `,
+    });
+  }
 
   revalidatePath(`/projets/${projectId}`);
   redirect(`/projets/${projectId}?message=envoye`);
