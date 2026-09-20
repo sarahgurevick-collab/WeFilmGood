@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import EnTeteAnime from "@/components/EnTeteAnime";
+import { createClient } from "@/lib/supabase/server";
 import placeholders from "@/styles/placeholders.module.css";
 import styles from "./page.module.css";
 
@@ -17,6 +19,11 @@ export default async function FicheExemple({
   params: Promise<{ teinte: string }>;
 }) {
   const { teinte } = await params;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const index = Number(teinte);
   const cle = TEINTES[index];
   if (!cle) notFound();
@@ -26,9 +33,7 @@ export default async function FicheExemple({
 
   return (
     <div className={styles.page}>
-      <Link href="/" className={styles.retour}>
-        ← Retour à l&apos;accueil
-      </Link>
+      <EnTeteAnime connecte={!!user} />
 
       <Link
         href={`/succes/${precedent}`}

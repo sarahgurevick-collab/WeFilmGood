@@ -72,6 +72,7 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
     <div className={`${styles.bande} ${visible ? "" : styles.cachee}`}>
       <Link href="/" className={styles.lien} title="Retour à l'accueil" style={{ color: etat.couleur }}>
         <span className={styles.logo} aria-label="WeFilmGood" role="img" />
+        <span className={styles.etiquetteLogo}>Accueil</span>
 
         {etat.mention && <span className={styles.accroche}>{etat.mention}</span>}
       </Link>
