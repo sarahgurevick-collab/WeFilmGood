@@ -30,6 +30,11 @@ export async function activerAdhesion(formData: FormData) {
     .eq("id", profileId)
     .maybeSingle<{ category: string | null }>();
 
+  // La formule choisie l'emporte : c'est ainsi qu'un crédit est offert,
+  // en geste commercial — par exemple à un auteur déçu de sa fiche de
+  // lecture. Sans choix, on retombe sur celle que suggère sa catégorie.
+  const planChoisi = (formData.get("plan_slug") as string)?.trim();
+
   const { data: derniere } = await supabase
     .from("memberships")
     .select("id")
@@ -38,15 +43,22 @@ export async function activerAdhesion(formData: FormData) {
     .limit(1)
     .maybeSingle<{ id: string }>();
 
+  const plan = planChoisi || PLAN_PAR_CATEGORIE[profile?.category ?? ""] || "adhesion_auteur_50";
+
   if (derniere) {
     await supabase
       .from("memberships")
-      .update({ status: "active", started_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .update({
+        status: "active",
+        plan_slug: plan,
+        started_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", derniere.id);
   } else {
     await supabase.from("memberships").insert({
       profile_id: profileId,
-      plan_slug: PLAN_PAR_CATEGORIE[profile?.category ?? ""] ?? "adhesion_auteur_50",
+      plan_slug: plan,
       status: "active",
       started_at: new Date().toISOString(),
     });

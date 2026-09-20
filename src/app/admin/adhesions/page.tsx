@@ -59,6 +59,15 @@ export default async function AdminAdhesionsPage({
         .returns<Adhesion[]>()
     : { data: [] as Adhesion[] };
 
+  // Les formules offrables : c'est ainsi qu'un crédit est accordé en
+  // geste commercial, sans paiement.
+  const { data: formules } = await supabase
+    .from("membership_plans")
+    .select("slug, label")
+    .eq("is_active", true)
+    .order("price_cents")
+    .returns<{ slug: string; label: string }[]>();
+
   const derniereAdhesionDe = (profileId: string) =>
     (adhesions ?? []).find((a) => a.profile_id === profileId) ?? null;
 
@@ -139,10 +148,18 @@ export default async function AdminAdhesionsPage({
                       </button>
                     </form>
                   ) : (
-                    <form action={activerAdhesion}>
+                    <form action={activerAdhesion} className={adminStyles.inlineForm}>
                       <input type="hidden" name="profile_id" value={p.id} />
+                      <select name="plan_slug" defaultValue="">
+                        <option value="">D&apos;après sa catégorie</option>
+                        {(formules ?? []).map((f) => (
+                          <option key={f.slug} value={f.slug}>
+                            {f.label}
+                          </option>
+                        ))}
+                      </select>
                       <button type="submit" className={adminStyles.linkButton}>
-                        Activer
+                        Offrir
                       </button>
                     </form>
                   )}
