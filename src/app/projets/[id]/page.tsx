@@ -99,7 +99,7 @@ export default async function ProjetPage({
 
       {project.status === "labellise" && (
         <p style={{ display: "flex", alignItems: "center", gap: 10, margin: "16px 0 0" }}>
-          <LabelWFG taille={44} />
+          <LabelWFG hauteur={38} />
           <strong>Projet labellisé WeFilmGood</strong>
         </p>
       )}

@@ -101,7 +101,7 @@ export default async function ProjetPartagePage({
 
         {projet.labellise && (
           <div className={styles.label}>
-            <LabelWFG taille={40} />
+            <LabelWFG hauteur={30} />
             <div>
               <strong>Projet labellisé WeFilmGood</strong>
               <span>
