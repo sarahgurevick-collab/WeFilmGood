@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
-  nuageMotsCles,
+  motsClesProches,
   rechercherProjets,
   type MotCle,
   type ProjetTrouve,
@@ -20,7 +20,11 @@ export default function Finder() {
 
   const [nuageVisible, setNuageVisible] = useState(false);
   const [nuage, setNuage] = useState<MotCle[] | null>(null);
+  const [nuageEnCours, setNuageEnCours] = useState(false);
+  const minuteurNuage = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Recherche de projets, avec un léger délai pour ne pas interroger à
+  // chaque frappe.
   useEffect(() => {
     if (minuteur.current) clearTimeout(minuteur.current);
 
@@ -44,14 +48,24 @@ export default function Finder() {
     };
   }, [requete]);
 
-  const ouvrirNuage = async () => {
-    const prochain = !nuageVisible;
-    setNuageVisible(prochain);
-    if (prochain && !nuage) {
-      const mots = await nuageMotsCles();
+  // Le nuage suit ce qui est tapé, tant qu'il est ouvert : il ne reste
+  // jamais figé sur une liste générique une fois qu'on cherche quelque
+  // chose de précis.
+  useEffect(() => {
+    if (!nuageVisible) return;
+    if (minuteurNuage.current) clearTimeout(minuteurNuage.current);
+
+    setNuageEnCours(true);
+    minuteurNuage.current = setTimeout(async () => {
+      const mots = await motsClesProches(requete);
       setNuage(mots);
-    }
-  };
+      setNuageEnCours(false);
+    }, 300);
+
+    return () => {
+      if (minuteurNuage.current) clearTimeout(minuteurNuage.current);
+    };
+  }, [requete, nuageVisible]);
 
   const effectifMax = nuage?.[0]?.effectif ?? 1;
   const tailleDe = (effectif: number) => {
@@ -69,33 +83,44 @@ export default function Finder() {
           value={requete}
           onChange={(e) => setRequete(e.target.value)}
         />
-        <button type="button" className={styles.boutonNuage} onClick={ouvrirNuage}>
+        <button
+          type="button"
+          className={styles.boutonNuage}
+          onClick={() => setNuageVisible((v) => !v)}
+        >
           {nuageVisible ? "Masquer les mots-clés" : "Voir les mots-clés"}
         </button>
       </div>
 
       {nuageVisible && (
         <div className={styles.nuage}>
-          {!nuage ? (
+          <p className={styles.nuageTitre}>
+            {requete.trim()
+              ? <>Mots-clés proches de «&nbsp;{requete}&nbsp;»</>
+              : "Mots-clés les plus utilisés"}
+          </p>
+          {nuageEnCours && !nuage ? (
             <p className={styles.indice}>Chargement…</p>
-          ) : nuage.length === 0 ? (
+          ) : !nuage || nuage.length === 0 ? (
             <p className={styles.indice}>Aucun mot-clé pour l&apos;instant.</p>
           ) : (
-            nuage.map((m) => (
-              <button
-                key={m.label}
-                type="button"
-                className={styles.motCle}
-                style={{ fontSize: tailleDe(m.effectif) }}
-                onClick={() => {
-                  setRequete(m.label);
-                  setNuageVisible(false);
-                }}
-                title={`${m.effectif} projet${m.effectif > 1 ? "s" : ""}`}
-              >
-                {m.label}
-              </button>
-            ))
+            <div className={styles.motsCles}>
+              {nuage.map((m) => (
+                <button
+                  key={m.label}
+                  type="button"
+                  className={styles.motCle}
+                  style={{ fontSize: tailleDe(m.effectif) }}
+                  onClick={() => {
+                    setRequete(m.label);
+                    setNuageVisible(false);
+                  }}
+                  title={`${m.effectif} projet${m.effectif > 1 ? "s" : ""}`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
           )}
         </div>
       )}
@@ -141,9 +166,15 @@ export default function Finder() {
           ) : (
             <p className={styles.indice}>
               Aucun résultat pour «&nbsp;{requete}&nbsp;».{" "}
-              <button type="button" className={styles.lienNuage} onClick={ouvrirNuage}>
-                Voir les mots-clés existants
-              </button>
+              {!nuageVisible && (
+                <button
+                  type="button"
+                  className={styles.lienNuage}
+                  onClick={() => setNuageVisible(true)}
+                >
+                  Voir les mots-clés proches
+                </button>
+              )}
             </p>
           )}
         </div>

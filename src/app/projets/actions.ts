@@ -81,9 +81,21 @@ export async function rechercherProjets(requete: string): Promise<ResultatRecher
 
 export type MotCle = { label: string; effectif: number };
 
+/** Sans recherche en cours : les mots-clés les plus utilisés, pour explorer. */
 export async function nuageMotsCles(): Promise<MotCle[]> {
   const supabase = await createClient();
   const { data } = await supabase.rpc("nuage_mots_cles", { p_limite: 80 });
   const lignes = (data ?? []) as { label_fr: string; effectif: number }[];
+  return lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif }));
+}
+
+/** Avec une recherche en cours : les mots-clés existants les plus proches de ce qui est tapé. */
+export async function motsClesProches(requete: string): Promise<MotCle[]> {
+  const q = requete.trim();
+  if (!q) return nuageMotsCles();
+
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("mots_cles_proches", { q, p_limite: 30 });
+  const lignes = (data ?? []) as { label_fr: string; effectif: number; score: number }[];
   return lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif }));
 }
