@@ -1,0 +1,29 @@
+-- =====================================================================
+-- Les comptes de WFG 1 qui n'avaient pas déposé de projet.
+--
+-- L'import initial n'avait retenu que les comptes ayant déposé : 3 597
+-- sur 13 868. Or un producteur ne dépose jamais, il vient chercher — et
+-- un lecteur lit sans déposer. La règle a donc écarté 99 % des
+-- producteurs (2 005 sur 2 022) et 166 lecteurs sur 167, c'est-à-dire
+-- exactement les deux populations dont la plateforme a besoin.
+--
+-- Ces comptes rejoignent `legacy_profiles`, la table des profils
+-- réclamables : aucun compte n'est créé, aucun e-mail n'est envoyé. Leur
+-- ancien profil — nom, rôle, ville, pays, biographie — les attend le
+-- jour où ils reviennent, au lieu de les accueillir par une page vide.
+--
+-- 10 180 comptes repris, portant la table à 10 351 profils réclamables.
+-- =====================================================================
+
+-- Correspondance des rôles de l'ancienne plateforme, pour mémoire :
+--   author → scenariste          novelist → romancier
+--   comicbook → auteur_bd        theater → auteur_theatre
+--   producer → producteur        director → realisateur
+--   composer → compositeur       actor → comedien
+--   soundengineer → sound_designer   editor → monteur
+--   photodirector → directeur_photo  hdecorator → chef_decorateur
+--   sfxcreator → sfx_digitaux    animator2d3d → animateur_2d_3d
+--   reader → lecteur
+--
+-- Écartés : les comptes sans nom, sans adresse e-mail valable, et les
+-- doublons d'adresse (le plus ancien identifiant est conservé).
