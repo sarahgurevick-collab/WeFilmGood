@@ -85,6 +85,26 @@ export default async function ProjetsEnAttentePage() {
     .eq("role_slug", "lecteur")
     .returns<Reader[]>();
 
+  // Le voyant que chaque lecteur règle lui-même : l'attribution se fait
+  // tous les jours en fonction des disponibilités, autant les montrer
+  // plutôt que de les faire retenir.
+  const { data: voyants } = await supabase
+    .from("reader_profiles")
+    .select("profile_id, availability_status")
+    .returns<{ profile_id: string; availability_status: string }[]>();
+
+  const voyantDe = new Map((voyants ?? []).map((v) => [v.profile_id, v.availability_status]));
+  const parVoyant = (couleur: string) =>
+    (readers ?? [])
+      .filter((r) => (voyantDe.get(r.profile_id) ?? "vert") === couleur)
+      .sort((a, b) => (a.profile?.full_name ?? "").localeCompare(b.profile?.full_name ?? ""));
+
+  const GROUPES = [
+    { couleur: "vert", libelle: "Disponibles" },
+    { couleur: "orange", libelle: "Peu disponibles" },
+    { couleur: "rouge", libelle: "Indisponibles" },
+  ];
+
   const { data: pendingReports } = await supabase
     .from("reading_reports")
     .select("id, score, labellise, submitted_at, project:projects(title), reader:profiles(full_name)")
@@ -162,11 +182,19 @@ export default async function ProjetsEnAttentePage() {
                       <option value="" disabled>
                         Choisir…
                       </option>
-                      {(readers ?? []).map((r) => (
-                        <option key={r.profile_id} value={r.profile_id}>
-                          {r.profile?.full_name ?? r.profile_id.slice(0, 8)}
-                        </option>
-                      ))}
+                      {GROUPES.map(({ couleur, libelle }) => {
+                        const lecteurs = parVoyant(couleur);
+                        if (lecteurs.length === 0) return null;
+                        return (
+                          <optgroup key={couleur} label={libelle}>
+                            {lecteurs.map((r) => (
+                              <option key={r.profile_id} value={r.profile_id}>
+                                {r.profile?.full_name ?? r.profile_id.slice(0, 8)}
+                              </option>
+                            ))}
+                          </optgroup>
+                        );
+                      })}
                     </select>
                     <button type="submit" className={adminStyles.linkButton}>
                       Attribuer
