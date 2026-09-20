@@ -113,3 +113,22 @@
   letter-spacing: 0.07em;
   color: var(--dim);
 }
+
+/* L'icône d'ouverture du scénario, posée contre le titre du projet. */
+.iconePdf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-left: 8px;
+  vertical-align: -6px;
+  border-radius: 6px;
+  border: 1px solid var(--bordure-forte, #d5d5d5);
+  color: inherit;
+}
+
+.iconePdf:hover {
+  border-color: #e2231a;
+  color: #e2231a;
+}

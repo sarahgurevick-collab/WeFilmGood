@@ -59,6 +59,24 @@ const ETATS: Record<string, string> = {
  */
 const ALERTE_JOURS = 6;
 
+const FORMATS_COURTS: Record<string, string> = {
+  long_metrage: "LM",
+  court_metrage: "CM",
+  serie: "TV",
+  documentaire: "DOC",
+  animation: "ANIM",
+  immersif_360_vr: "VR",
+};
+
+const LANGUES: Record<string, string> = { fr: "fr", en: "ang" };
+
+function formatCourt(format: string | null, langue: string | null): string {
+  const abrege = format ? (FORMATS_COURTS[format] ?? format) : null;
+  const lang = langue ? (LANGUES[langue] ?? langue) : null;
+  if (!abrege) return lang ? `(${lang})` : "—";
+  return lang ? `${abrege} (${lang})` : abrege;
+}
+
 function joursDepuis(date: string): number {
   return Math.floor((Date.now() - new Date(date).getTime()) / 86400000);
 }
@@ -143,7 +161,6 @@ export default async function ProjetsEnAttentePage() {
               <th>Auteur</th>
               <th>Projet</th>
               <th>Format</th>
-              <th>PDF</th>
               <th>Déposé le</th>
               <th>Lecteur</th>
               <th>Attribuer</th>
@@ -159,15 +176,13 @@ export default async function ProjetsEnAttentePage() {
                 </td>
                 <td>
                   <Link href={`/projets/${p.project_id}`}>{p.title}</Link>
+                  <ScenarioLink projectId={p.project_id} />
                   <br />
                   <span className={formStyles.hint}>
                     {ETATS[p.reading_status] ?? p.reading_status}
                   </span>
                 </td>
-                <td>{[p.format, p.language].filter(Boolean).join(" · ") || "—"}</td>
-                <td>
-                  <ScenarioLink projectId={p.project_id} />
-                </td>
+                <td>{formatCourt(p.format, p.language)}</td>
                 <td>
                   {new Date(p.submitted_at).toLocaleDateString("fr-FR")}
                   <br />
