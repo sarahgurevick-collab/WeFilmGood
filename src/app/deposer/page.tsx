@@ -46,14 +46,17 @@ export default async function DeposerPage({
         <ChampAvecCompteur
           nom="logline"
           libelle="Tagline"
-          indication="Une ou deux phrases courtes pour résumer l'histoire"
+          indication="Votre phrase d'accroche — une ou deux phrases courtes"
           limite={300}
           lignes={3}
         />
-        <label className={formStyles.field}>
-          <span>Logline</span>
-          <textarea name="synopsis" rows={6} />
-        </label>
+        <ChampAvecCompteur
+          nom="synopsis"
+          libelle="Logline"
+          indication="Un petit résumé de l'histoire, en quelques phrases"
+          limite={600}
+          lignes={6}
+        />
         <label className={formStyles.field}>
           <span>Format</span>
           <select name="format" defaultValue="">
