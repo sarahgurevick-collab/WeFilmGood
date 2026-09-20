@@ -16,6 +16,20 @@ type EnvoyerEmailParams = {
  * le flux appelant : un email raté ne doit jamais bloquer une inscription
  * ou un dépôt de projet déjà enregistrés en base.
  */
+/**
+ * Neutralise ce qu'une personne a tapé avant de l'insérer dans un email.
+ *
+ * Sans cela, un message contenant des chevrons casse la mise en forme de
+ * l'email reçu — et un contenu malveillant s'y glisserait aussi bien.
+ */
+export function echapper(texte: string): string {
+  return texte
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 export async function envoyerEmail({
   to,
   subject,

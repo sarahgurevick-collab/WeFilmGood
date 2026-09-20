@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { envoyerEmail } from "@/lib/brevo";
+import { echapper, envoyerEmail } from "@/lib/brevo";
 
 const ADMIN_EMAIL = process.env.BREVO_SENDER_EMAIL || "";
 
@@ -35,9 +35,9 @@ export async function envoyerMessageContact(formData: FormData) {
     replyTo: { email, name: nom || undefined },
     subject: `Nouveau message de contact${nom ? ` de ${nom}` : ""}`,
     htmlContent: `
-      <p><strong>De :</strong> ${nom || "(anonyme)"} — ${email}</p>
+      <p><strong>De :</strong> ${echapper(nom || "(anonyme)")} — ${echapper(email)}</p>
       <p><strong>Message :</strong></p>
-      <p>${message.replace(/\n/g, "<br>")}</p>
+      <p>${echapper(message).replace(/\n/g, "<br>")}</p>
     `,
   });
 

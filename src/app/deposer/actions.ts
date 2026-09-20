@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { alleger } from "@/lib/image";
 import { createClient } from "@/lib/supabase/server";
-import { envoyerEmail } from "@/lib/brevo";
+import { echapper, envoyerEmail } from "@/lib/brevo";
 
 // Un documentaire ou un film d'animation n'est pas un format : selon sa
 // durée, c'est un long ou un court métrage.
@@ -111,7 +111,7 @@ export async function createProject(formData: FormData) {
       subject: `Projet "${title}" bien reçu`,
       htmlContent: `
         <p>Bonjour,</p>
-        <p>Votre projet <strong>${title}</strong> a bien été déposé sur WeFilmGood. Il est en attente de lecture.</p>
+        <p>Votre projet <strong>${echapper(title)}</strong> a bien été déposé sur WeFilmGood. Il est en attente de lecture.</p>
       `,
     });
   }

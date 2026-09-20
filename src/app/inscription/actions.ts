@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { envoyerEmail } from "@/lib/brevo";
+import { echapper, envoyerEmail } from "@/lib/brevo";
 
 function traduireErreur(message: string) {
   if (message.includes("already registered") || message.includes("already exists")) {
@@ -58,7 +58,7 @@ export async function signUp(formData: FormData) {
     to: [{ email, name: fullName }],
     subject: "Bienvenue sur WeFilmGood",
     htmlContent: `
-      <p>Bonjour ${fullName},</p>
+      <p>Bonjour ${echapper(fullName)},</p>
       <p>Votre compte WeFilmGood vient d'être créé. Bienvenue !</p>
     `,
   });
