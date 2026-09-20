@@ -4,6 +4,7 @@ import BarreNav from "@/components/BarreNav";
 import Compteur from "@/components/Compteur";
 import EnTeteAnime from "@/components/EnTeteAnime";
 import HashSession from "@/components/HashSession";
+import Finder from "@/components/Finder";
 import LogoComplet from "@/components/LogoComplet";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
 import TuileEntree from "@/components/TuileEntree";
@@ -98,6 +99,10 @@ export default async function Home() {
         <p className={styles.bandeSousTitre}>
           Créons ensemble les Films et les Séries de demain !
         </p>
+
+        <div className={styles.bandeFinder}>
+          <Finder />
+        </div>
       </section>
 
       <section className={styles.stories}>

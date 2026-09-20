@@ -278,3 +278,11 @@
     letter-spacing: normal;
   }
 }
+
+/* Le Finder au centre de la bande d'accueil : c'est l'outil principal du
+   site, il mérite la largeur d'un texte de lecture, pas toute la page. */
+.bandeFinder {
+  max-width: 900px;
+  margin: 28px auto 0;
+  text-align: left;
+}
