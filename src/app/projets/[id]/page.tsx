@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
+import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
@@ -94,8 +95,14 @@ export default async function ProjetPage({
         {[project.genre?.label_fr, project.format, project.language, project.country]
           .filter(Boolean)
           .join(" · ")}
-        {project.status === "labellise" && " · Labellisé WFG"}
       </p>
+
+      {project.status === "labellise" && (
+        <p style={{ display: "flex", alignItems: "center", gap: 10, margin: "16px 0 0" }}>
+          <LabelWFG taille={44} />
+          <strong>Projet labellisé WeFilmGood</strong>
+        </p>
+      )}
 
       {isOwner && project.legacy_id && (
         <div className={formStyles.avertissement}>

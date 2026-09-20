@@ -43,18 +43,14 @@
   letter-spacing: 0.07em;
 }
 
+/* Le label n'est plus une pastille de texte mais le logo WeFilmGood,
+   qui porte lui-même son fond blanc et son ombre. */
 .label {
   position: absolute;
   top: 10px;
   left: 10px;
-  background: var(--fg);
-  color: var(--bg);
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  border-radius: 999px;
-  padding: 4px 10px;
+  display: block;
+  line-height: 0;
 }
 
 .legende {

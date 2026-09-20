@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import LabelWFG from "@/components/LabelWFG";
 import Logo from "@/components/Logo";
 import styles from "./partage.module.css";
 import { createClient } from "@/lib/supabase/server";
@@ -100,7 +101,7 @@ export default async function ProjetPartagePage({
 
         {projet.labellise && (
           <div className={styles.label}>
-            <Logo size={34} />
+            <LabelWFG taille={40} />
             <div>
               <strong>Projet labellisé WeFilmGood</strong>
               <span>

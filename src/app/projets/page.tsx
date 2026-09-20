@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Finder from "@/components/Finder";
+import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
@@ -81,7 +82,9 @@ export default async function ProjetsPage() {
                         <span className={styles.sansImage}>Sans vignette</span>
                       )}
                       {p.status === "labellise" && (
-                        <span className={styles.label}>Labellisé</span>
+                        <span className={styles.label}>
+                          <LabelWFG taille={40} />
+                        </span>
                       )}
                     </div>
                     <div className={styles.legende}>
