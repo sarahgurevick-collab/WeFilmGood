@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Logo from "./Logo";
+import LogoAnime from "./LogoAnime";
 import styles from "./BarreNav.module.css";
 
 /**
@@ -30,7 +30,7 @@ export default function BarreNav({
   return (
     <nav className={styles.barre} aria-label="Navigation principale">
       <Link href="/" className={styles.marque} aria-label="Accueil">
-        <Logo size={22} />
+        <LogoAnime size={22} />
       </Link>
 
       <div className={styles.onglets}>

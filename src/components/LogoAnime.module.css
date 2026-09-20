@@ -1,0 +1,32 @@
+/* La couleur se fond d'un engagement à l'autre plutôt que de sauter. */
+.bloc {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: color 900ms ease-in-out;
+}
+
+.mention {
+  font-size: 12px;
+  font-weight: 600;
+  font-style: italic;
+  white-space: nowrap;
+  animation: apparait 800ms ease-out;
+}
+
+@keyframes apparait {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mention {
+    animation: none;
+  }
+}
