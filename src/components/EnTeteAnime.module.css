@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 40px;
   padding: 10px 20px;
   background: #ffffff;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
@@ -172,8 +172,24 @@
   mask-position: center;
 }
 
-.accroche {
+.zoneAccroche {
+  position: relative;
+  display: inline-block;
   margin-left: 14px;
+}
+
+/* Invisible, mais il occupe la place du plus long engagement. */
+.gabaritAccroche {
+  visibility: hidden;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.accroche {
+  position: absolute;
+  left: 0;
+  top: 0;
   font-size: 15px;
   font-weight: 700;
   text-transform: none;

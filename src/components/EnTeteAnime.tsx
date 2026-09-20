@@ -74,7 +74,14 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
         <span className={styles.logo} aria-label="WeFilmGood" role="img" />
         <span className={styles.etiquetteLogo}>Accueil</span>
 
-        {etat.mention && <span className={styles.accroche}>{etat.mention}</span>}
+        {/* Même réserve de place que dans la barre noire : la mention
+            change toutes les 3,6 secondes, le menu ne doit pas suivre. */}
+        <span className={styles.zoneAccroche}>
+          <span className={styles.gabaritAccroche} aria-hidden="true">
+            for Humanity
+          </span>
+          {etat.mention && <span className={styles.accroche}>{etat.mention}</span>}
+        </span>
       </Link>
 
       <nav className={styles.nav}>

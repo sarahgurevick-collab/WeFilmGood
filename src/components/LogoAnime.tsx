@@ -41,11 +41,18 @@ export default function LogoAnime({ hauteur = 34 }: { hauteur?: number }) {
         aria-label="WeFilmGood"
         style={{ width: Math.round(hauteur * RATIO), height: hauteur }}
       />
-      {etat.mention && (
-        <span key={etat.mention} className={styles.mention}>
-          {etat.mention}
+      {/* La place du plus long engagement est réservée en permanence :
+          sans cela, les onglets se décalaient toutes les 3,6 secondes. */}
+      <span className={styles.zoneMention}>
+        <span className={styles.gabarit} aria-hidden="true">
+          for Humanity
         </span>
-      )}
+        {etat.mention && (
+          <span key={etat.mention} className={styles.mention}>
+            {etat.mention}
+          </span>
+        )}
+      </span>
     </span>
   );
 }
