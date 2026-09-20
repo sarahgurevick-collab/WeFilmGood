@@ -83,8 +83,8 @@ export default async function ProjetPage({
           une ou deux phrases courtes.
           {(project.logline?.length ?? 0) > 300 && (
             <> La vôtre en compte {project.logline?.length}. Elle reste enregistrée
-            telle quelle : vous n&apos;avez rien à faire, mais vous pouvez la
-            raccourcir si vous le souhaitez.</>
+            telle quelle. Nous vous conseillons néanmoins plus de concision pour
+            qu&apos;elle ne dépasse pas les 300 caractères.</>
           )}
         </p>
       )}
