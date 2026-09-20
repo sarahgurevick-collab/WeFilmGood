@@ -1,16 +1,14 @@
 -- =====================================================================
--- Chaque projet est lu deux fois.
+-- Un projet est relu avant que sa fiche soit arrêtée.
 --
--- Le suivi montré à l'auteur n'en mentionnait qu'une. Or la seconde
--- lecture prend du temps, et son silence est précisément ce qui pousse
--- un auteur à écrire pour demander où en est son projet.
+-- Le suivi montré à l'auteur s'arrêtait à la première lecture. Or cette
+-- phase de relecture prend du temps, et son silence est précisément ce
+-- qui pousse un auteur à écrire pour demander où en est son projet.
 --
--- Les deux lectures peuvent donner deux analyses distinctes quand les
--- lecteurs ne s'accordent pas, ou une analyse complétée d'un paragraphe
--- quand le second rejoint le premier. Ce détail ne regarde pas l'auteur.
---
--- L'étape « deuxième lecture » couvre aussi la validation : la fiche
--- définitive est arrêtée par l'administration, à partir des analyses.
+-- « Relecture » et non « deuxième lecture » : le relecteur est tantôt un
+-- second lecteur professionnel, tantôt la Maison elle-même, qui s'en
+-- charge bénévolement. Le libellé doit rester vrai dans les deux cas, et
+-- l'organisation interne ne regarde pas l'auteur.
 -- =====================================================================
 
 create or replace function public.etat_de_lecture(p_project_id uuid)
@@ -31,7 +29,7 @@ as $$
       -- validation de la fiche définitive.
       when exists (
         select 1 from public.reading_reports r where r.project_id = p.id
-      ) then 'deuxieme_lecture'
+      ) then 'relecture'
       when exists (
         select 1 from public.reading_assignments a
         where a.project_id = p.id and a.status in ('en_cours', 'rendue')

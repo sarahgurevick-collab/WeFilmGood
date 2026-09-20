@@ -4,8 +4,12 @@ import styles from "./EtatDeLecture.module.css";
 /**
  * « Où en est mon projet ? » — ce que l'auteur voit de l'avancement.
  *
- * Trois états, et rien d'autre : les refus, les réattributions et les
+ * Quatre étapes, et rien d'autre : les refus, les réattributions et les
  * 48 heures laissées à chaque lecteur pour accepter ne le regardent pas.
+ *
+ * « Relecture » plutôt que « deuxième lecture » : le relecteur est
+ * tantôt un second lecteur professionnel, tantôt la Maison elle-même.
+ * Le libellé doit rester vrai dans les deux cas.
  * Un projet décliné par trois lecteurs affiche le même état qu'un projet
  * confié du premier coup — c'est exact, et c'est tout ce qui le concerne.
  *
@@ -16,7 +20,7 @@ import styles from "./EtatDeLecture.module.css";
 export type Etat =
   | "attribution"
   | "premiere_lecture"
-  | "deuxieme_lecture"
+  | "relecture"
   | "disponible";
 
 const ETAPES: { cle: Etat; titre: string; texte: string }[] = [
@@ -27,14 +31,14 @@ const ETAPES: { cle: Etat; titre: string; texte: string }[] = [
   },
   {
     cle: "premiere_lecture",
-    titre: "Première lecture",
+    titre: "Lecture en cours",
     texte: "Un lecteur professionnel lit votre scénario et rédige son analyse.",
   },
   {
-    cle: "deuxieme_lecture",
-    titre: "Deuxième lecture",
+    cle: "relecture",
+    titre: "Relecture et validation",
     texte:
-      "Chaque projet est lu deux fois. Un second lecteur reprend votre scénario, puis la fiche définitive est arrêtée par la Maison des Scénaristes.",
+      "Votre scénario est relu, puis la fiche définitive est arrêtée par la Maison des Scénaristes.",
   },
   {
     cle: "disponible",
