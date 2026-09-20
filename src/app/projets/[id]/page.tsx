@@ -7,6 +7,14 @@ import PartageProjet from "./PartageProjet";
 import { contacterAuteur, setShareLink } from "./actions";
 import { createClient } from "@/lib/supabase/server";
 
+type FicheLecture = {
+  legacy_review_id: number;
+  content: string | null;
+  final_mark: number | null;
+  wfg_review: string | null;
+  read_at: string | null;
+};
+
 type Project = {
   id: string;
   title: string;
@@ -66,6 +74,13 @@ export default async function ProjetPage({
     .select("id, name, character_type, gender, age_range, biography")
     .eq("project_id", id)
     .order("position", { ascending: true });
+
+  const { data: fichesLecture } = await supabase
+    .from("legacy_reading_reports")
+    .select("legacy_review_id, content, final_mark, wfg_review, read_at")
+    .eq("project_id", id)
+    .order("read_at", { ascending: false })
+    .returns<FicheLecture[]>();
 
   const { data: motsCles } = await supabase
     .from("project_keywords")
@@ -156,6 +171,59 @@ export default async function ProjetPage({
               </li>
             ))}
           </ul>
+        </>
+      )}
+
+      {(fichesLecture ?? []).length > 0 && (
+        <>
+          <h2 style={{ marginTop: 48, fontWeight: 400, fontSize: 16 }}>
+            Fiches de lecture
+          </h2>
+          <p className={formStyles.hint}>
+            {(fichesLecture ?? []).length === 1
+              ? "Une lecture a été faite sur ce projet."
+              : `${fichesLecture?.length} lectures ont été faites sur ce projet, de la plus récente à la plus ancienne.`}
+          </p>
+          {(fichesLecture ?? []).map((f, i) => (
+            <details
+              key={f.legacy_review_id}
+              open={i === 0}
+              style={{
+                marginTop: 16,
+                padding: "12px 16px",
+                border: "1px solid #e5e5e5",
+                borderRadius: 10,
+              }}
+            >
+              <summary style={{ cursor: "pointer", fontWeight: 600 }}>
+                {f.read_at
+                  ? new Date(f.read_at).toLocaleDateString("fr-FR", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })
+                  : "Date inconnue"}
+                {f.final_mark !== null && (
+                  <span style={{ fontWeight: 400 }}>
+                    {" — "}
+                    {f.final_mark}/200
+                    {f.final_mark > 150 && " · labellisé"}
+                  </span>
+                )}
+              </summary>
+              {f.content && (
+                <p style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>{f.content}</p>
+              )}
+              {f.wfg_review && (
+                <>
+                  <p className={formStyles.hint} style={{ marginTop: 16, marginBottom: 4 }}>
+                    Avis WeFilmGood
+                  </p>
+                  <p style={{ whiteSpace: "pre-wrap", margin: 0 }}>{f.wfg_review}</p>
+                </>
+              )}
+            </details>
+          ))}
         </>
       )}
 
