@@ -143,9 +143,6 @@ export default async function FacturePage({
         </tfoot>
       </table>
 
-      <p className={formStyles.hint} style={{ marginTop: 24 }}>
-        TVA non applicable, article 293 B du Code général des impôts.
-      </p>
     </PageShell>
   );
 }

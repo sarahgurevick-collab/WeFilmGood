@@ -92,7 +92,7 @@ export default async function MesFichesPage() {
         </table>
 
         <p className={formStyles.hint} style={{ marginTop: 16 }}>
-          Cochez les fiches à facturer — 15 € l&apos;unité. Celles qui portent
+          Cochez les fiches à facturer. Celles qui portent
           déjà un numéro ont été facturées : elles ne peuvent pas l&apos;être
           une seconde fois.
         </p>
