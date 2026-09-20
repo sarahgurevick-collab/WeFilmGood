@@ -51,6 +51,12 @@ export default async function ProjetPage({
 
   const isOwner = user?.id === project.owner_id;
 
+  // Limites introduites par WeFilmGood 2 : les fiches héritées de
+  // l'ancienne plateforme gardent leurs textes, mais leur auteur est
+  // informé de la nouvelle règle.
+  const taglineTropLongue = (project.logline?.length ?? 0) > 300;
+  const loglineTropLongue = (project.synopsis?.length ?? 0) > 600;
+
   const entetes = await headers();
   const hote = entetes.get("host") ?? "localhost:3000";
   const origine = `${hote.startsWith("localhost") ? "http" : "https"}://${hote}`;
@@ -77,16 +83,29 @@ export default async function ProjetPage({
       </p>
 
       {isOwner && project.legacy_id && (
-        <p className={formStyles.avertissement}>
-          Cette fiche a été créée sur l&apos;ancienne plateforme, où la tagline
-          n&apos;était pas limitée. Sur WeFilmGood 2, elle tient en 300 caractères —
-          une ou deux phrases courtes.
-          {(project.logline?.length ?? 0) > 300 && (
-            <> La vôtre en compte {project.logline?.length}. Elle reste enregistrée
-            telle quelle. Nous vous conseillons néanmoins plus de concision pour
-            qu&apos;elle ne dépasse pas les 300 caractères.</>
+        <div className={formStyles.avertissement}>
+          <p style={{ margin: 0 }}>
+            Cette fiche a été créée sur l&apos;ancienne plateforme, où la longueur
+            des textes n&apos;était pas limitée. Sur WeFilmGood 2, la tagline tient
+            en 300 caractères (une phrase d&apos;accroche) et la logline en 600
+            (un petit résumé).
+          </p>
+          {(taglineTropLongue || loglineTropLongue) && (
+            <p style={{ margin: "8px 0 0" }}>
+              {taglineTropLongue && (
+                <>Votre tagline en compte {project.logline?.length}. </>
+              )}
+              {loglineTropLongue && (
+                <>Votre logline en compte {project.synopsis?.length}. </>
+              )}
+              {taglineTropLongue && loglineTropLongue
+                ? "Elles restent enregistrées telles quelles."
+                : "Elle reste enregistrée telle quelle."}{" "}
+              Nous vous conseillons néanmoins plus de concision pour respecter ces
+              limites.
+            </p>
           )}
-        </p>
+        </div>
       )}
 
       {project.logline && <p style={{ marginTop: 24 }}>{project.logline}</p>}
