@@ -4,6 +4,7 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "../lecteur.module.css";
 import { createClient } from "@/lib/supabase/server";
+import { etablirFacture } from "./actions";
 
 type Report = {
   id: string;
@@ -11,6 +12,8 @@ type Report = {
   labellise: boolean;
   status: string;
   payment_status: string;
+  invoice_id: string | null;
+  facture: { numero: string } | null;
   submitted_at: string;
   project: { title: string } | null;
   rating: { stars: number } | null;
@@ -35,7 +38,7 @@ export default async function MesFichesPage() {
   const { data: reports } = await supabase
     .from("reading_reports")
     .select(
-      "id, score, labellise, status, payment_status, submitted_at, project:projects(title), rating:reading_report_ratings(stars)",
+      "id, score, labellise, status, payment_status, submitted_at, invoice_id, project:projects(title), rating:reading_report_ratings(stars), facture:reader_invoices(numero)",
     )
     .eq("reader_id", user.id)
     .order("submitted_at", { ascending: false })
@@ -49,9 +52,11 @@ export default async function MesFichesPage() {
           <Link href="/lecteur">Voir mes projets attribués</Link>.
         </p>
       ) : (
+        <form action={etablirFacture}>
         <table className={styles.table}>
           <thead>
             <tr>
+              <th>Facturer</th>
               <th>Projet</th>
               <th>Date</th>
               <th>Note</th>
@@ -62,7 +67,16 @@ export default async function MesFichesPage() {
           </thead>
           <tbody>
             {(reports ?? []).map((r) => (
-              <tr key={r.id} className={r.payment_status === "payee" ? styles.paid : undefined}>
+              <tr key={r.id} className={r.invoice_id ? styles.paid : undefined}>
+                <td>
+                  {r.invoice_id ? (
+                    <span className={formStyles.hint}>{r.facture?.numero}</span>
+                  ) : r.status === "validee_admin" ? (
+                    <input type="checkbox" name="report_id" value={r.id} />
+                  ) : (
+                    <span className={formStyles.hint}>—</span>
+                  )}
+                </td>
                 <td>
                   {r.project?.title ?? "—"}
                   {r.labellise && <span className={styles.badge}>Labellisé</span>}
@@ -76,6 +90,16 @@ export default async function MesFichesPage() {
             ))}
           </tbody>
         </table>
+
+        <p className={formStyles.hint} style={{ marginTop: 16 }}>
+          Cochez les fiches à facturer — 15 € l&apos;unité. Celles qui portent
+          déjà un numéro ont été facturées : elles ne peuvent pas l&apos;être
+          une seconde fois.
+        </p>
+        <button type="submit" className={formStyles.submit}>
+          Établir ma facture
+        </button>
+        </form>
       )}
 
       <p className={formStyles.linkRow} style={{ marginTop: 32 }}>

@@ -1,0 +1,42 @@
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 24px 0;
+  line-height: 1.6;
+}
+
+.destinataire {
+  text-align: right;
+}
+
+.table {
+  width: 100%;
+  margin-top: 16px;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e5e5;
+  text-align: left;
+}
+
+.table tfoot td {
+  border-bottom: none;
+  border-top: 2px solid #1a1a1a;
+  padding-top: 14px;
+}
+
+.nombre {
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media print {
+  .entete {
+    margin-top: 0;
+  }
+}
