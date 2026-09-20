@@ -83,17 +83,19 @@ export default function Finder() {
           value={requete}
           onChange={(e) => setRequete(e.target.value)}
         />
-        <button
-          type="button"
-          className={styles.boutonNuage}
-          onClick={() => setNuageVisible((v) => !v)}
-        >
-          {nuageVisible ? "Masquer les mots-clés" : "Voir les mots-clés"}
-        </button>
       </div>
 
       {nuageVisible && (
         <div className={styles.nuage}>
+          <button
+            type="button"
+            className={styles.fermerNuage}
+            onClick={() => setNuageVisible(false)}
+            aria-label="Fermer les mots-clés"
+            title="Fermer les mots-clés"
+          >
+            ×
+          </button>
           <p className={styles.nuageTitre}>
             {requete.trim()
               ? <>Mots-clés proches de «&nbsp;{requete}&nbsp;»</>
