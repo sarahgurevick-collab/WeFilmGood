@@ -10,6 +10,13 @@ import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";
 
+const FORMATS_LISIBLES: Record<string, string> = {
+  long_metrage: "Long métrage",
+  court_metrage: "Court métrage",
+  serie: "Série",
+  immersif_360_vr: "Format immersif (360/VR)",
+};
+
 type FicheLecture = {
   legacy_review_id: number;
   content: string | null;
@@ -123,6 +130,29 @@ export default async function ProjetPage({
   const taux = tauxDeRemplissage(etatFiche);
   const aFaire = prochaineAction(etatFiche);
 
+  const { data: auteur } = await supabase
+    .from("profiles")
+    .select("id, full_name, display_name")
+    .eq("id", project.owner_id)
+    .maybeSingle<{ id: string; full_name: string | null; display_name: string | null }>();
+
+  // Les talents que l'auteur a déclarés sur son projet, identifiés par
+  // leur adresse. La règle d'accès limite déjà la lecture à l'auteur,
+  // aux invités et à l'administration.
+  const { data: talents } = await supabase
+    .from("project_co_authors")
+    .select("id, invited_email, profile_id, status, role:roles(label_fr)")
+    .eq("project_id", id)
+    .returns<
+      {
+        id: string;
+        invited_email: string;
+        profile_id: string | null;
+        status: string;
+        role: { label_fr: string } | null;
+      }[]
+    >();
+
   const { data: motsCles } = await supabase
     .from("project_keywords")
     .select("keyword:keywords(label_fr)")
@@ -132,16 +162,58 @@ export default async function ProjetPage({
   return (
     <PageShell eyebrow="Projet" title={project.title}>
       <p className={formStyles.hint}>
-        {[project.genre?.label_fr, project.format, project.language, project.country]
+        {[
+          project.genre?.label_fr,
+          FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
+          project.language,
+          project.country,
+        ]
           .filter(Boolean)
           .join(" · ")}
       </p>
 
       {project.status === "labellise" && (
         <p style={{ display: "flex", alignItems: "center", gap: 10, margin: "16px 0 0" }}>
-          <LabelWFG hauteur={38} />
+          <LabelWFG hauteur={38} sansFond />
           <strong>Projet labellisé WeFilmGood</strong>
         </p>
+      )}
+
+      {(isOwner || estAdmin) && (
+        <div className={formStyles.remplissage}>
+          <div className={formStyles.remplissageEntete}>
+            <strong>Qui porte ce projet</strong>
+          </div>
+
+          <p style={{ margin: "12px 0 0" }}>
+            <Link href={`/membres/${project.owner_id}`}>
+              {auteur?.display_name ?? auteur?.full_name ?? "L'auteur"}
+            </Link>{" "}
+            <span className={formStyles.hint}>— auteur du projet</span>
+          </p>
+
+          {(talents ?? []).length > 0 ? (
+            <ul style={{ listStyle: "none", padding: 0, margin: "10px 0 0" }}>
+              {(talents ?? []).map((t) => (
+                <li key={t.id} style={{ marginTop: 6 }}>
+                  {t.profile_id ? (
+                    <Link href={`/membres/${t.profile_id}`}>{t.invited_email}</Link>
+                  ) : (
+                    <a href={`mailto:${t.invited_email}`}>{t.invited_email}</a>
+                  )}{" "}
+                  <span className={formStyles.hint}>
+                    — {t.role?.label_fr ?? "rôle non précisé"}
+                    {t.profile_id ? "" : " · pas encore inscrit"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={formStyles.hint} style={{ margin: "10px 0 0" }}>
+              Aucun autre talent n&apos;est rattaché à ce projet.
+            </p>
+          )}
+        </div>
       )}
 
       {(isOwner || estAdmin) && etatLecture && (

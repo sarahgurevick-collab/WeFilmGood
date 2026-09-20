@@ -1,0 +1,68 @@
+import { notFound, redirect } from "next/navigation";
+import PageShell from "@/components/PageShell";
+import formStyles from "@/components/form.module.css";
+import { createClient } from "@/lib/supabase/server";
+
+type Membre = {
+  id: string;
+  full_name: string | null;
+  display_name: string | null;
+  bio: string | null;
+  city: string | null;
+  country: string | null;
+  website: string | null;
+};
+
+/**
+ * Le profil d'un autre membre.
+ *
+ * Réservé aux membres connectés, comme l'annuaire : les profils ne sont
+ * pas publics. Rien d'ici ne concerne les lecteurs — leur identité reste
+ * protégée, un auteur n'en connaît que le prénom.
+ */
+export default async function ProfilMembrePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect(`/connexion?next=/membres/${id}`);
+
+  const { data: membre } = await supabase
+    .from("profiles")
+    .select("id, full_name, display_name, bio, city, country, website")
+    .eq("id", id)
+    .maybeSingle<Membre>();
+
+  if (!membre) notFound();
+
+  const nom = membre.display_name ?? membre.full_name ?? "Membre";
+  const lieu = [membre.city, membre.country].filter(Boolean).join(", ");
+
+  return (
+    <PageShell eyebrow="Membre" title={nom}>
+      {lieu && <p className={formStyles.hint}>{lieu}</p>}
+
+      {membre.bio ? (
+        <p style={{ marginTop: 24, whiteSpace: "pre-wrap" }}>{membre.bio}</p>
+      ) : (
+        <p className={formStyles.hint} style={{ marginTop: 24 }}>
+          Ce membre n&apos;a pas encore rédigé sa biographie.
+        </p>
+      )}
+
+      {membre.website && (
+        <p className={formStyles.linkRow} style={{ marginTop: 24 }}>
+          <a href={membre.website} target="_blank" rel="noopener noreferrer">
+            Son site
+          </a>
+        </p>
+      )}
+    </PageShell>
+  );
+}

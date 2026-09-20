@@ -11,7 +11,15 @@
  */
 const RATIO = 1381 / 1113;
 
-export default function LabelWFG({ hauteur = 34 }: { hauteur?: number }) {
+export default function LabelWFG({
+  hauteur = 34,
+  sansFond = false,
+}: {
+  hauteur?: number;
+  /** Sur une fiche projet, le logo se suffit à lui-même : la pastille
+   *  blanche ne sert que sur les vignettes, dont la teinte varie. */
+  sansFond?: boolean;
+}) {
   return (
     <span
       title="Projet labellisé WeFilmGood"
@@ -19,10 +27,12 @@ export default function LabelWFG({ hauteur = 34 }: { hauteur?: number }) {
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: `${Math.round(hauteur * 0.26)}px ${Math.round(hauteur * 0.32)}px`,
-        borderRadius: 999,
-        background: "#fff",
-        boxShadow: "0 1px 4px rgba(0,0,0,0.25)",
+        padding: sansFond
+          ? 0
+          : `${Math.round(hauteur * 0.26)}px ${Math.round(hauteur * 0.32)}px`,
+        borderRadius: sansFond ? 0 : 999,
+        background: sansFond ? "none" : "#fff",
+        boxShadow: sansFond ? "none" : "0 1px 4px rgba(0,0,0,0.25)",
       }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
