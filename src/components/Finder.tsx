@@ -9,6 +9,7 @@ import projetsStyles from "@/app/projets/projets.module.css";
 export default function Finder() {
   const [requete, setRequete] = useState("");
   const [resultats, setResultats] = useState<ProjetTrouve[] | null>(null);
+  const [total, setTotal] = useState(0);
   const [enCours, setEnCours] = useState(false);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -24,8 +25,9 @@ export default function Finder() {
 
     setEnCours(true);
     minuteur.current = setTimeout(async () => {
-      const trouves = await rechercherProjets(q);
-      setResultats(trouves);
+      const { projets, total } = await rechercherProjets(q);
+      setResultats(projets);
+      setTotal(total);
       setEnCours(false);
     }, 300);
 
@@ -51,7 +53,9 @@ export default function Finder() {
           ) : resultats && resultats.length > 0 ? (
             <>
               <p className={styles.indice}>
-                {resultats.length} résultat{resultats.length > 1 ? "s" : ""} pour «&nbsp;{requete}&nbsp;»
+                {total} résultat{total > 1 ? "s" : ""} pour «&nbsp;{requete}&nbsp;»
+                {total > resultats.length &&
+                  ` — les ${resultats.length} plus récents affichés`}
               </p>
               <ul className={projetsStyles.grille}>
                 {resultats.map((p) => (

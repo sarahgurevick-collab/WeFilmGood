@@ -11,20 +11,28 @@ export type ProjetTrouve = {
   vignette: string | null;
 };
 
-export async function rechercherProjets(requete: string): Promise<ProjetTrouve[]> {
+export type ResultatRecherche = {
+  projets: ProjetTrouve[];
+  total: number;
+};
+
+const LIMITE = 60;
+
+export async function rechercherProjets(requete: string): Promise<ResultatRecherche> {
   const q = requete.trim();
-  if (!q) return [];
+  if (!q) return { projets: [], total: 0 };
 
   const supabase = await createClient();
 
   const { data: trouves } = await supabase.rpc("rechercher_projets", {
     q,
-    p_limite: 60,
+    p_limite: LIMITE,
   });
 
-  const lignes = (trouves ?? []) as { id: string; score: number }[];
+  const lignes = (trouves ?? []) as { id: string; score: number; total: number }[];
   const ids: string[] = lignes.map((t) => t.id);
-  if (ids.length === 0) return [];
+  const total = lignes[0]?.total ?? 0;
+  if (ids.length === 0) return { projets: [], total: 0 };
 
   const { data: projects } = await supabase
     .from("projects")
@@ -54,7 +62,7 @@ export async function rechercherProjets(requete: string): Promise<ProjetTrouve[]
   const urlDe = new Map((signes ?? []).map((s) => [s.path, s.signedUrl]));
   const ordreDe = new Map<string, number>(ids.map((id, i) => [id, i]));
 
-  return (projects ?? [])
+  const projets = (projects ?? [])
     .map((p) => {
       const chemin = (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path;
       return {
@@ -67,4 +75,6 @@ export async function rechercherProjets(requete: string): Promise<ProjetTrouve[]
       };
     })
     .sort((a, b) => (ordreDe.get(a.id) ?? 0) - (ordreDe.get(b.id) ?? 0));
+
+  return { projets, total };
 }
