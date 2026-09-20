@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { envoyerMessageContact } from "@/app/actions";
 import styles from "./BoutonContact.module.css";
 
 type Etat = "ferme" | "ouvert" | "envoi" | "envoye" | "erreur";
@@ -14,21 +14,10 @@ export default function BoutonContact() {
     const form = e.currentTarget;
     const data = new FormData(form);
 
-    // Piège à robots : un champ invisible que seul un bot remplit.
-    if (data.get("site_web")) {
-      setEtat("envoye");
-      return;
-    }
-
     setEtat("envoi");
-    const supabase = createClient();
-    const { error } = await supabase.rpc("envoyer_message_contact", {
-      p_nom: data.get("nom"),
-      p_email: data.get("email"),
-      p_message: data.get("message"),
-    });
+    const { ok } = await envoyerMessageContact(data);
 
-    if (error) {
+    if (!ok) {
       setEtat("erreur");
       return;
     }
