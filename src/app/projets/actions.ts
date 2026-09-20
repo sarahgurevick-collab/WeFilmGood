@@ -78,3 +78,12 @@ export async function rechercherProjets(requete: string): Promise<ResultatRecher
 
   return { projets, total };
 }
+
+export type MotCle = { label: string; effectif: number };
+
+export async function nuageMotsCles(): Promise<MotCle[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("nuage_mots_cles", { p_limite: 80 });
+  const lignes = (data ?? []) as { label_fr: string; effectif: number }[];
+  return lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif }));
+}
