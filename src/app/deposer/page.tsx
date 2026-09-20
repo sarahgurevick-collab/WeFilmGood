@@ -45,7 +45,7 @@ export default async function DeposerPage({
         </label>
         <ChampAvecCompteur
           nom="logline"
-          libelle="Tag line"
+          libelle="Tagline"
           indication="Une ou deux phrases courtes pour résumer l'histoire"
           limite={300}
           lignes={3}

@@ -7,7 +7,7 @@ import styles from "./ChampAvecCompteur.module.css";
 /**
  * Champ de texte avec une limite de caractères visible pendant la frappe.
  *
- * L'ancienne plateforme proposait la tag line dans une fente d'une seule
+ * L'ancienne plateforme proposait la tagline dans une fente d'une seule
  * ligne : les auteurs y collaient des paragraphes entiers sans voir leur
  * texte (88 % des "loglines" importées font plus de 150 caractères). D'où
  * le cadre de plusieurs lignes et le décompte affiché.

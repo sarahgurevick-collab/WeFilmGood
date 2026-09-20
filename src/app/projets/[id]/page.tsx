@@ -78,7 +78,7 @@ export default async function ProjetPage({
 
       {isOwner && project.legacy_id && (
         <p className={formStyles.avertissement}>
-          Cette fiche a été créée sur l&apos;ancienne plateforme, où la tag line
+          Cette fiche a été créée sur l&apos;ancienne plateforme, où la tagline
           n&apos;était pas limitée. Sur WeFilmGood 2, elle tient en 300 caractères —
           une ou deux phrases courtes.
           {(project.logline?.length ?? 0) > 300 && (
