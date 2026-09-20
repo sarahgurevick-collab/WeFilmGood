@@ -11,7 +11,12 @@
 --    afficher "1656 résultats, 60 affichés".
 -- =====================================================================
 
-create or replace function public.rechercher_projets(q text, p_limite int default 60)
+-- Postgres refuse de changer la forme des colonnes de sortie d'une
+-- fonction existante avec "create or replace" : il faut d'abord la
+-- supprimer (0026 l'avait créée avec seulement id, score).
+drop function if exists public.rechercher_projets(text, int);
+
+create function public.rechercher_projets(q text, p_limite int default 60)
 returns table (id uuid, score real, total bigint)
 language sql
 stable
