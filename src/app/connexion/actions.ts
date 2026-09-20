@@ -33,5 +33,13 @@ export async function signIn(formData: FormData) {
     );
   }
 
+  // Une administratrice arrive pour travailler : sa première page est
+  // l'attribution des lecteurs, pas la vitrine. On ne détourne que le
+  // cas par défaut : si elle cliquait sur un lien précis, il l'emporte.
+  if (next === "/") {
+    const { data: admin } = await supabase.rpc("is_admin");
+    if (admin === true) redirect("/admin/projets-en-attente");
+  }
+
   redirect(next);
 }
