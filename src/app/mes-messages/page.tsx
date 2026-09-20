@@ -34,6 +34,10 @@ export default async function MesMessagesPage() {
   const liste = messages ?? [];
   const nbVerrouilles = liste.filter((m) => m.verrouille).length;
 
+  // Marqués lus seulement s'ils sont lisibles : un message verrouillé
+  // faute d'adhésion continue de compter et de faire clignoter l'onglet.
+  await supabase.rpc("marquer_messages_lus");
+
   return (
     <PageShell eyebrow="Mon profil" title="Mes messages" connecte nav="messages">
       {liste.length === 0 ? (

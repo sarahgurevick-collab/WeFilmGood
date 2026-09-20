@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 import LogoAnime from "./LogoAnime";
 import styles from "./BarreNav.module.css";
 
@@ -9,15 +10,21 @@ import styles from "./BarreNav.module.css";
  *
  * Sur grand écran elle passe en haut, en simple rangée de liens.
  */
-export default function BarreNav({
+export default async function BarreNav({
   actif,
   connecte,
-  messagesNonLus = 0,
 }: {
   actif?: "pitchotheque" | "deposer" | "messages" | "profil";
   connecte: boolean;
-  messagesNonLus?: number;
 }) {
+  // Le nombre de messages en attente, même pour un membre sans adhésion :
+  // il ne peut pas les ouvrir, mais il doit voir qu'ils l'attendent.
+  let messagesNonLus = 0;
+  if (connecte) {
+    const supabase = await createClient();
+    const { data } = await supabase.rpc("compter_messages_non_lus");
+    messagesNonLus = typeof data === "number" ? data : 0;
+  }
   const onglets = [
     { cle: "pitchotheque", href: "/projets", label: "Projets" },
     { cle: "deposer", href: "/deposer", label: "Déposer" },
@@ -38,11 +45,23 @@ export default function BarreNav({
           <Link
             key={o.cle}
             href={o.href}
-            className={actif === o.cle ? styles.ongletActif : styles.onglet}
+            className={[
+              actif === o.cle ? styles.ongletActif : styles.onglet,
+              o.cle === "messages" && messagesNonLus > 0 ? styles.clignote : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
           >
             {o.label}
             {o.cle === "messages" && messagesNonLus > 0 && (
-              <span className={styles.pastille}>{messagesNonLus}</span>
+              <span className={styles.pastille}>
+                {messagesNonLus}
+                <span className={styles.lecteurEcran}>
+                  {" "}
+                  message{messagesNonLus > 1 ? "s" : ""} non lu
+                  {messagesNonLus > 1 ? "s" : ""}
+                </span>
+              </span>
             )}
           </Link>
         ))}

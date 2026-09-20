@@ -84,3 +84,54 @@
     font-size: 12px;
   }
 }
+
+/* Un message qui attend doit se voir : l'onglet pulse doucement tant
+   qu'il n'a pas été lu. L'animation s'arrête pour qui a demandé à son
+   appareil de limiter les mouvements. */
+.clignote {
+  animation: appelMessage 1.6s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes appelMessage {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(226, 35, 26, 0);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(226, 35, 26, 0.45);
+  }
+}
+
+.clignote .pastille {
+  animation: pastilleMessage 1.6s ease-in-out infinite;
+}
+
+@keyframes pastilleMessage {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clignote,
+  .clignote .pastille {
+    animation: none;
+  }
+  .clignote {
+    box-shadow: 0 0 0 2px rgba(226, 35, 26, 0.6);
+  }
+}
+
+.lecteurEcran {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
