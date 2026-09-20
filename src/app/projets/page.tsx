@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import Finder from "@/components/Finder";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
@@ -53,6 +54,8 @@ export default async function ProjetsPage() {
 
   return (
     <PageShell eyebrow="Pitchothèque" title="Projets" wide nav="pitchotheque" connecte={!!user}>
+      <Finder />
+
       {!projects || projects.length === 0 ? (
         <p className={formStyles.hint}>
           Aucun projet public pour l&apos;instant.{" "}
