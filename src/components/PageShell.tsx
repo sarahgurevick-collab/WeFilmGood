@@ -8,6 +8,7 @@ import styles from "./PageShell.module.css";
 export default async function PageShell({
   eyebrow,
   title,
+  apresTitre,
   wide = false,
   theme = "sombre",
   nav,
@@ -17,6 +18,8 @@ export default async function PageShell({
 }: {
   eyebrow?: string;
   title?: string;
+  /** Posé juste après le titre, dans la même ligne (ex. le label d'un projet). */
+  apresTitre?: ReactNode;
   wide?: boolean;
   /** "clair" pour les pages qui se lisent longuement ou qui doivent respirer. */
   theme?: "sombre" | "clair";
@@ -39,7 +42,12 @@ export default async function PageShell({
       )}
       <main className={`${styles.main} ${wide ? styles.wide : ""}`}>
         {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
-        {title && <h1 className={styles.title}>{title}</h1>}
+        {title && (
+          <h1 className={styles.title}>
+            {title}
+            {apresTitre}
+          </h1>
+        )}
         {children}
       </main>
     </div>

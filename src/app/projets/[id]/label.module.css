@@ -1,0 +1,7 @@
+/* Le label WeFilmGood en exposant du titre, comme le © d'un copyright. */
+.exposant {
+  display: inline-block;
+  margin-left: 0.25em;
+  vertical-align: super;
+  line-height: 0;
+}

@@ -1,0 +1,110 @@
+/* Le cadre de WFG 1 : bordure rouge arrondie, onglet posé dessus. Il a
+   la largeur du videopitch. */
+.cadre {
+  position: relative;
+  max-width: 800px;
+  margin: 44px 0 0;
+  padding: 44px 24px 20px;
+  border: 3px solid var(--rouge-wfg);
+  border-radius: 14px;
+}
+
+.onglets {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.onglet {
+  padding: 6px 18px;
+  border: 3px solid var(--rouge-wfg);
+  background: #fff;
+  color: var(--rouge-wfg);
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.equipe {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Chaque talent, dans un rond blanc. */
+.pastille {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 210px;
+  height: 210px;
+  padding: 24px;
+  border-radius: 50%;
+  background: #fff;
+  color: #000;
+  text-align: center;
+}
+
+.attente {
+  background: #f2f2f0;
+  border: 2px dashed #b0aaa4;
+}
+
+.nom {
+  font-size: 17px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.role {
+  font-size: 16px;
+}
+
+.voir {
+  padding: 6px 14px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.voir:hover {
+  opacity: 0.85;
+}
+
+.enAttente {
+  font-size: 13px;
+  color: #6b6b6b;
+}
+
+/* En pied de cadre : le nombre de fiches de lecture. */
+.fiches {
+  margin: 24px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--bordure);
+  text-align: center;
+  font-weight: 600;
+}
+
+.fiches a {
+  color: inherit;
+}
+
+.discret {
+  font-weight: 400;
+  color: var(--dim);
+}
+
+.discret a {
+  color: var(--dim);
+}

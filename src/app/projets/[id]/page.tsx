@@ -7,7 +7,8 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
 import { contacterAuteur, setShareLink } from "./actions";
-import fichesStyles from "./fiches.module.css";
+import labelStyles from "./label.module.css";
+import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";
@@ -17,14 +18,6 @@ const FORMATS_LISIBLES: Record<string, string> = {
   court_metrage: "Court métrage",
   serie: "Série",
   immersif_360_vr: "Format immersif (360/VR)",
-};
-
-type FicheLecture = {
-  legacy_review_id: number;
-  content: string | null;
-  final_mark: number | null;
-  wfg_review: string | null;
-  read_at: string | null;
 };
 
 type Project = {
@@ -113,51 +106,6 @@ export default async function ProjetPage({
     .eq("project_id", id)
     .returns<{ kind: string }[]>();
 
-  // Par une fonction dédiée, et non par la table : celle-ci porte
-  // l'identifiant du lecteur, que l'auteur ne doit jamais approcher.
-  const { data: fichesLectureBrut } = await supabase.rpc("get_legacy_reading_reports", {
-    p_project_id: id,
-  });
-  const fichesHeritees = (fichesLectureBrut ?? []) as FicheLecture[];
-
-  // Les fiches rendues sur WFG 2, sans le prénom du lecteur.
-  const { data: fichesPublieesBrut } = await supabase.rpc("fiches_lecture_publiees", {
-    p_project_id: id,
-  });
-  const fichesPubliees = (fichesPublieesBrut ?? []) as {
-    report_id: string;
-    content: string | null;
-    score: number | null;
-    submitted_at: string | null;
-  }[];
-
-  // Les deux sources réunies, de la plus récente à la plus ancienne. La
-  // base ne les renvoie qu'à l'auteur et à l'administration : c'est aussi
-  // le travail de WeFilmGood, qui ne doit pas être copié.
-  const fichesLecture = [
-    ...fichesHeritees.map((f) => ({
-      cle: `h${f.legacy_review_id}`,
-      date: f.read_at,
-      note: f.final_mark,
-      contenu: f.content,
-      avis: f.wfg_review,
-    })),
-    ...fichesPubliees.map((f) => ({
-      cle: `p${f.report_id}`,
-      date: f.submitted_at,
-      note: f.score,
-      contenu: f.content,
-      avis: null as string | null,
-    })),
-  ].sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
-
-  // Le nombre de fiches, que tout membre peut connaître — sans leur contenu.
-  const { data: nombreBrut, error: sansNombre } = await supabase.rpc("nombre_fiches_lecture", {
-    p_project_id: id,
-  });
-  const nombreFiches = sansNombre ? fichesLecture.length : Number(nombreBrut ?? 0);
-
-
   const etatFiche = {
     titre: project.title,
     tagline: project.logline,
@@ -193,6 +141,47 @@ export default async function ProjetPage({
       }[]
     >();
 
+  // Le nombre de fiches de lecture, que tout membre peut connaître. Leur
+  // contenu, lui, ne s'ouvre qu'à l'auteur et à l'administration, sur une
+  // page à part.
+  const { data: nombreBrut } = await supabase.rpc("nombre_fiches_lecture", {
+    p_project_id: id,
+  });
+  const nombreFiches = Number(nombreBrut ?? 0);
+
+  // L'équipe : l'auteur et les talents qui ont accepté d'être rattachés
+  // au projet. Tant que la fonction manque dans la base, l'auteur seul.
+  const { data: equipeBrut, error: sansEquipe } = await supabase.rpc("equipe_projet", {
+    p_project_id: id,
+  });
+  const equipe: MembreEquipe[] = sansEquipe
+    ? [
+        {
+          cle: project.owner_id,
+          profileId: project.owner_id,
+          nom: auteur?.display_name ?? auteur?.full_name ?? "L'auteur",
+          role: null,
+          enAttente: null,
+        },
+      ]
+    : ((equipeBrut ?? []) as { profile_id: string; nom: string | null; role: string | null }[]).map(
+        (m) => ({ cle: m.profile_id, profileId: m.profile_id, nom: m.nom ?? "Membre", role: m.role, enAttente: null }),
+      );
+  // L'auteur et l'administration voient aussi les invitations en attente.
+  if (isOwner || estAdmin) {
+    for (const t of talents ?? []) {
+      if (t.status === "accepte" && t.profile_id) continue;
+      if (t.status === "refuse") continue;
+      equipe.push({
+        cle: t.id,
+        profileId: t.profile_id,
+        nom: t.invited_email,
+        role: t.role?.label_fr ?? null,
+        enAttente: t.profile_id ? "Invitation envoyée" : "Pas encore inscrit",
+      });
+    }
+  }
+
   // À part : si les colonnes n'existent pas encore dans la base, la
   // fiche s'affiche quand même, sans videopitch.
   const { data: videopitch } = await supabase
@@ -208,7 +197,17 @@ export default async function ProjetPage({
     .returns<{ keyword: { label_fr: string } | null }[]>();
 
   return (
-    <PageShell eyebrow="Projet" title={project.title}>
+    <PageShell
+      title={project.title}
+      apresTitre={
+        project.status === "labellise" ? (
+          // Comme le © d'un copyright : le label, en exposant du titre.
+          <span className={labelStyles.exposant}>
+            <LabelWFG hauteur={30} sansFond />
+          </span>
+        ) : undefined
+      }
+    >
       <p className={formStyles.hint}>
         {[
           project.genre?.label_fr,
@@ -220,48 +219,6 @@ export default async function ProjetPage({
           .join(" · ")}
       </p>
 
-      {project.status === "labellise" && (
-        <p style={{ display: "flex", alignItems: "center", gap: 10, margin: "16px 0 0" }}>
-          <LabelWFG hauteur={38} sansFond />
-          <strong>Projet labellisé WeFilmGood</strong>
-        </p>
-      )}
-
-      {!isOwner && nombreFiches > 0 && (
-        <details className={fichesStyles.bouton}>
-          <summary>
-            {nombreFiches > 1 ? "Fiches de lecture" : "Fiche de lecture"}
-            <span
-              className={fichesStyles.pastille}
-              aria-label={`${nombreFiches} lecture${nombreFiches > 1 ? "s" : ""}`}
-            >
-              {nombreFiches}
-            </span>
-            {fichesLecture.length === 0 && <span className={fichesStyles.cadenas}>privée{nombreFiches > 1 ? "s" : ""}</span>}
-          </summary>
-
-          {fichesLecture.length === 0 ? (
-            <p className={fichesStyles.explication}>
-              {nombreFiches > 1
-                ? `Ce projet a été lu ${nombreFiches} fois par les lecteurs de WeFilmGood.`
-                : "Ce projet a été lu par un lecteur de WeFilmGood."}{" "}
-              Les fiches de lecture sont confidentielles. Pour {nombreFiches > 1 ? "les" : "la"} lire,
-              demandez-{nombreFiches > 1 ? "les" : "la"} à l&apos;auteur avec le
-              formulaire <a href="#contacter">Contacter l&apos;auteur</a> en bas de page,
-              ou écrivez à WeFilmGood.
-            </p>
-          ) : (
-            <>
-              <p className={fichesStyles.explication}>
-                Vous voyez ces fiches parce que vous êtes administratrice. Les autres
-                membres ne voient que leur nombre.
-              </p>
-              <ListeFiches fiches={fichesLecture} />
-            </>
-          )}
-        </details>
-      )}
-
       {(videopitch?.videopitch_fr || videopitch?.videopitch_en) && (
         <VideopitchLecteur
           fr={videopitch.videopitch_fr}
@@ -270,42 +227,12 @@ export default async function ProjetPage({
         />
       )}
 
-      {(isOwner || estAdmin) && (
-        <div className={formStyles.remplissage}>
-          <div className={formStyles.remplissageEntete}>
-            <strong>Qui porte ce projet&nbsp;?</strong>
-          </div>
-
-          <p style={{ margin: "12px 0 0" }}>
-            <Link href={`/membres/${project.owner_id}`}>
-              {auteur?.display_name ?? auteur?.full_name ?? "L'auteur"}
-            </Link>{" "}
-            <span className={formStyles.hint}>— auteur du projet</span>
-          </p>
-
-          {(talents ?? []).length > 0 ? (
-            <ul style={{ listStyle: "none", padding: 0, margin: "10px 0 0" }}>
-              {(talents ?? []).map((t) => (
-                <li key={t.id} style={{ marginTop: 6 }}>
-                  {t.profile_id ? (
-                    <Link href={`/membres/${t.profile_id}`}>{t.invited_email}</Link>
-                  ) : (
-                    <a href={`mailto:${t.invited_email}`}>{t.invited_email}</a>
-                  )}{" "}
-                  <span className={formStyles.hint}>
-                    — {t.role?.label_fr ?? "rôle non précisé"}
-                    {t.profile_id ? "" : " · pas encore inscrit"}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={formStyles.hint} style={{ margin: "10px 0 0" }}>
-              Aucun autre talent n&apos;est rattaché à ce projet.
-            </p>
-          )}
-        </div>
-      )}
+      <CadreEquipe
+        projectId={project.id}
+        equipe={equipe}
+        nombreFiches={nombreFiches}
+        peutLireFiches={isOwner || !!estAdmin}
+      />
 
       {(isOwner || estAdmin) && etatLecture && (
         <EtatDeLecture etat={etatLecture.etat} deposeLe={etatLecture.depose_le} />
@@ -419,25 +346,6 @@ export default async function ProjetPage({
         </>
       )}
 
-      {isOwner && fichesLecture.length > 0 && (
-        <>
-          <h2 style={{ marginTop: 48, fontWeight: 400, fontSize: 16 }}>
-            Fiches de lecture
-          </h2>
-          <p className={formStyles.hint}>
-            {fichesLecture.length === 1
-              ? "Une lecture a été faite sur ce projet."
-              : `${fichesLecture.length} lectures ont été faites sur ce projet, de la plus récente à la plus ancienne.`}
-          </p>
-          <p className={formStyles.hint}>
-            Vos fiches de lecture sont confidentielles : seuls vous et l&apos;équipe
-            WeFilmGood les lisez. Les producteurs voient seulement combien de lectures ont
-            été faites, et peuvent vous les demander.
-          </p>
-          <ListeFiches fiches={fichesLecture} />
-        </>
-      )}
-
       {isOwner && (
         <>
           <h2 style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
@@ -510,46 +418,3 @@ export default async function ProjetPage({
   );
 }
 
-type FicheAffichee = {
-  cle: string;
-  date: string | null;
-  note: number | null;
-  contenu: string | null;
-  avis: string | null;
-};
-
-function ListeFiches({ fiches }: { fiches: FicheAffichee[] }) {
-  return (
-    <>
-      {fiches.map((f, i) => (
-        <details key={f.cle} open={i === 0} className={fichesStyles.fiche}>
-          <summary>
-            {f.date
-              ? new Date(f.date).toLocaleDateString("fr-FR", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })
-              : "Date inconnue"}
-            {f.note !== null && (
-              <span style={{ fontWeight: 400 }}>
-                {" — "}
-                {f.note}/200
-                {f.note > 150 && " · labellisé"}
-              </span>
-            )}
-          </summary>
-          {f.contenu && <p style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>{f.contenu}</p>}
-          {f.avis && (
-            <>
-              <p className={formStyles.hint} style={{ marginTop: 16, marginBottom: 4 }}>
-                Avis WeFilmGood
-              </p>
-              <p style={{ whiteSpace: "pre-wrap", margin: 0 }}>{f.avis}</p>
-            </>
-          )}
-        </details>
-      ))}
-    </>
-  );
-}
