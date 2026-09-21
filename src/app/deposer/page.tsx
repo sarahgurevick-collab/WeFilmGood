@@ -36,7 +36,7 @@ export default async function DeposerPage({
     .order("position", { ascending: true });
 
   return (
-    <PageShell eyebrow="Dépôt de projet" title="Déposez votre projet" nav="deposer" connecte>
+    <PageShell eyebrow="Fiche projet" title="Fiche projet" nav="deposer" connecte>
       <form className={formStyles.form} action={createProject} encType="multipart/form-data">
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
@@ -103,7 +103,7 @@ export default async function DeposerPage({
         </label>
 
         <button type="submit" className={formStyles.submit}>
-          Envoyer
+          Créer ma fiche projet
         </button>
       </form>
     </PageShell>

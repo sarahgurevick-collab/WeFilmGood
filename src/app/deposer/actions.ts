@@ -108,10 +108,10 @@ export async function createProject(formData: FormData) {
   if (user.email) {
     await envoyerEmail({
       to: [{ email: user.email }],
-      subject: `Projet "${title}" bien reçu`,
+      subject: `Votre fiche projet « ${title} » est créée`,
       htmlContent: `
         <p>Bonjour,</p>
-        <p>Votre projet <strong>${echapper(title)}</strong> a bien été déposé sur WeFilmGood. Il est en attente de lecture.</p>
+        <p>Votre fiche projet <strong>${echapper(title)}</strong> est créée sur WeFilmGood. Vous pouvez la compléter ou la modifier à tout moment depuis la page de votre projet.</p>
       `,
     });
   }
