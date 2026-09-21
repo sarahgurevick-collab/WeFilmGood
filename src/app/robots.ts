@@ -17,7 +17,8 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       disallow: [
-        "/projets", // pitchothèque, fiches projet et liens de partage
+        "/pitchotheque",
+        "/projets", // fiches projet et liens de partage
         "/profil",
         "/lecteur",
         "/admin",

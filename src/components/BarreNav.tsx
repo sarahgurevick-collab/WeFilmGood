@@ -26,7 +26,7 @@ export default async function BarreNav({
     messagesNonLus = typeof data === "number" ? data : 0;
   }
   const onglets = [
-    { cle: "pitchotheque", href: "/projets", label: "Pitchothèque" },
+    { cle: "pitchotheque", href: "/pitchotheque", label: "Pitchothèque" },
     { cle: "deposer", href: "/deposer", label: "Fiche projet" },
     ...(connecte ? [{ cle: "messages", href: "/mes-messages", label: "Messages" }] as const : []),
     connecte

@@ -58,7 +58,7 @@ export default async function Home() {
             {count} projet{count > 1 ? "s" : ""} dans la pitchothèque
           </p>
         ) : null}
-        <Link href="/projets" className={styles.mobileBouton}>
+        <Link href="/pitchotheque" className={styles.mobileBouton}>
           Voir les projets
         </Link>
       </div>

@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Finder from "@/components/Finder";
-import { peutVoirLeNuage } from "./actions";
+import { peutVoirLeNuage } from "../projets/actions";
 import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
-import styles from "./projets.module.css";
+import styles from "../projets/projets.module.css";
 import { createClient } from "@/lib/supabase/server";
 
 type Projet = {
@@ -38,7 +38,7 @@ export default async function ProjetsPage({
   // Les vignettes proviennent parfois de films ou d'images trouvées en
   // ligne : la pitchothèque n'est pas exposée aux visiteurs de passage.
   if (!user) {
-    redirect("/connexion?next=/projets");
+    redirect("/connexion?next=/pitchotheque");
   }
 
   const adherent = await peutVoirLeNuage();

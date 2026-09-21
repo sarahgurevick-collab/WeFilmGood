@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Une adresse facile à retenir et à donner : app.wefilmgood.com/pitchotheque.
+  // La Pitchothèque vit à app.wefilmgood.com/pitchotheque ; l'ancienne
+  // adresse /projets y renvoie (les fiches restent sous /projets/<id>).
   async redirects() {
-    return [{ source: "/pitchotheque", destination: "/projets", permanent: false }];
+    return [{ source: "/projets", destination: "/pitchotheque", permanent: true }];
   },
 };
 
