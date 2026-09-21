@@ -44,7 +44,7 @@ export default async function ParcoursPage() {
             name="biofilmo"
             rows={6}
             defaultValue={profil?.biofilmo ?? ""}
-            placeholder="Pas d'expérience dans le cinéma ? Ce n'est pas ce qu'on vous demande ici. Plombier, boat people, quinze ans de prison : ce sont ces expériences de vie qui nourrissent l'écriture — parfois douloureuses, toujours précieuses. Racontez la vôtre."
+            placeholder="Pas d'expérience dans le cinéma ? Aucune importance. Ce qui a de la valeur, c'est votre expérience de la vie. Joyeuse, parfois douloureuse, toujours précieuse. Racontez la vôtre ici."
           />
         </label>
         <label className={formStyles.field}>
