@@ -1,39 +1,95 @@
-/* La question des prix : OUI / NON en deux boutons ; le détail n'apparaît
-   que si OUI est coché. Pas de required sur le détail : un champ caché
-   mais requis bloquerait l'envoi sans rien dire. */
-.ouiNon {
+/* La question des prix, avec l'interrupteur de WFG 1 (le même que celui
+   des langues du videopitch) : une piste rouge cerclée de noir, le texte
+   d'un côté, le rond de l'autre. NON : piste grise, rond à gauche.
+   OUI : piste rouge, rond à droite. Le détail n'apparaît que sur OUI. */
+.question {
   display: flex;
-  gap: 10px;
-}
-
-.ouiNon label {
-  position: relative;
-  padding: 10px 22px;
-  border: 1px solid var(--bordure);
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 700;
+  align-items: center;
+  gap: 18px;
+  font-size: 14px;
   cursor: pointer;
   user-select: none;
 }
 
-.ouiNon input {
+.interrupteur {
+  position: relative;
+  flex-shrink: 0;
+  width: 96px;
+  height: 40px;
+  border: 3px solid #000;
+  border-radius: 999px;
+  background: #9a9a9a;
+  color: #fff;
+  transition: background 200ms ease;
+}
+
+.interrupteur input {
   position: absolute;
   inset: 0;
   opacity: 0;
+  margin: 0;
   cursor: pointer;
 }
 
-.ouiNon label:has(input:checked) {
-  border-color: var(--fg);
-  background: var(--fg);
-  color: var(--bg);
+.texte {
+  position: absolute;
+  top: 50%;
+  left: 44px;
+  transform: translateY(-50%);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  transition: left 200ms ease;
+}
+
+.rond {
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border: 3px solid #9a9a9a;
+  border-radius: 50%;
+  background: #fff;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: left 200ms ease;
+}
+
+.interrupteur:has(input:checked) {
+  background: #da2c25;
+}
+
+.interrupteur:has(input:checked) .texte {
+  left: 16px;
+}
+
+.interrupteur:has(input:checked) .rond {
+  left: calc(100% - 30px);
+}
+
+.interrupteur:has(input:focus-visible) {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
 }
 
 .prix {
   display: none;
 }
 
-.formulaire:has(input[name="has_awards"][value="oui"]:checked) .prix {
+.formulaire:has(input[name="has_awards"]:checked) .prix {
   display: flex;
+}
+
+.oui {
+  display: none;
+}
+
+.interrupteur:has(input:checked) .non {
+  display: none;
+}
+
+.interrupteur:has(input:checked) .oui {
+  display: inline;
 }

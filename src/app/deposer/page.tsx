@@ -103,19 +103,17 @@ export default async function DeposerPage({
           </span>
         </label>
 
-        <div className={formStyles.field}>
+        <label className={styles.question}>
           <span>Votre projet a-t-il eu des prix ?</span>
-          <div className={styles.ouiNon}>
-            <label>
-              <input type="radio" name="has_awards" value="oui" required />
-              Oui
-            </label>
-            <label>
-              <input type="radio" name="has_awards" value="non" required />
-              Non
-            </label>
-          </div>
-        </div>
+          <span className={styles.interrupteur}>
+            <input type="checkbox" name="has_awards" value="oui" />
+            <span className={styles.texte} aria-hidden="true">
+              <span className={styles.non}>NON</span>
+              <span className={styles.oui}>OUI</span>
+            </span>
+            <span className={styles.rond} aria-hidden="true" />
+          </span>
+        </label>
         <label className={`${formStyles.field} ${styles.prix}`}>
           <span>Lesquels ?</span>
           <textarea name="awards_detail" rows={3} placeholder="Festival, année, prix obtenu…" />
