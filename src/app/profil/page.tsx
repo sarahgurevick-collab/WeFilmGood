@@ -107,14 +107,6 @@ export default async function ProfilPage({
         })}
       </div>
 
-      <div className={styles.actions}>
-        {prochain && (
-          <Link href={`/profil/${prochain.cle}`} className={styles.bouton}>
-            {bienvenue ? `Commencer par « ${prochain.titre} »` : `Continuer : ${prochain.titre}`}
-          </Link>
-        )}
-      </div>
-
       <div className={styles.compte}>
         <form action="/deconnexion" method="post">
           <button type="submit" className={formStyles.submit}>

@@ -22,8 +22,8 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     cle: "gouts",
     numero: 3,
     titre: "Mieux vous connaître",
-    resume: "Genres de prédilection.",
-    duree: "1 minute · facultatif",
+    resume: "Genres de prédilection · votre portrait chinois, vingt questions « si j'étais… ».",
+    duree: "5 minutes · facultatif",
   },
 ];
 
@@ -39,9 +39,9 @@ export type Completion = {
 };
 
 /**
- * Où en est le profil. Huit repères comptent pour la jauge : catégorie,
+ * Où en est le profil. Neuf repères comptent pour la jauge : catégorie,
  * ville, pays, biofilmographie, référence, au moins un métier, au moins
- * une langue, au moins un genre. Le témoignage n'y entre pas — retiré du
+ * une langue, au moins un genre, au moins dix réponses au portrait chinois. Le témoignage n'y entre pas — retiré du
  * parcours de complétion, à réintégrer plus tard ailleurs sur le site.
  */
 export async function calculerCompletion(
@@ -52,7 +52,7 @@ export async function calculerCompletion(
     await Promise.all([
       supabase
         .from("profiles")
-        .select("full_name, first_name, category, validation_status, city, country, biofilmo, website")
+        .select("full_name, first_name, category, validation_status, city, country, biofilmo, website, personality_answers")
         .eq("id", userId)
         .maybeSingle(),
       supabase
@@ -70,6 +70,7 @@ export async function calculerCompletion(
         .eq("profile_id", userId),
     ]);
 
+  const portrait = Object.keys((profil?.personality_answers as object | null) ?? {}).length;
   const reperes = [
     !!profil?.category,
     !!profil?.city,
@@ -79,6 +80,7 @@ export async function calculerCompletion(
     (metiers ?? 0) > 0,
     (langues ?? 0) > 0,
     (genres ?? 0) > 0,
+    portrait >= 10,
   ];
   const pourcent = Math.round((reperes.filter(Boolean).length / reperes.length) * 100);
 
@@ -87,7 +89,7 @@ export async function calculerCompletion(
     fait: {
       identite: !!profil?.category,
       parcours: !!profil?.biofilmo || !!profil?.website || (metiers ?? 0) > 0,
-      gouts: (genres ?? 0) > 0,
+      gouts: (genres ?? 0) > 0 || portrait > 0,
     },
     profil: profil
       ? {

@@ -350,6 +350,23 @@
   background: var(--bg);
 }
 
+/* Le portrait chinois : vingt questions, chacune une liste et un champ libre. */
+.portrait {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding-top: 8px;
+  border-top: 1px solid var(--bordure-douce);
+}
+
+.portraitTitre {
+  margin: 16px 0 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
 .pied {
   display: flex;
   align-items: center;

@@ -185,7 +185,12 @@ export async function saveParcours(formData: FormData) {
   redirect("/profil?enregistre=1");
 }
 
-/** Bloc 3 — Vos goûts : genres de prédilection. */
+/**
+ * Bloc 3 — Mieux vous connaître : genres de prédilection et portrait
+ * chinois. Rien n'est obligatoire. Une réponse libre l'emporte sur la
+ * liste et s'enregistre « autre:… », en minuscules, comme les réponses
+ * reprises de WFG 1 — c'est ce qui permet de rapprocher deux membres.
+ */
 export async function saveGouts(formData: FormData) {
   const { supabase, user } = await requireUser("/profil/gouts");
 
@@ -197,6 +202,19 @@ export async function saveGouts(formData: FormData) {
       .from("profile_genres")
       .insert(genres.map((genre_slug) => ({ profile_id: user.id, genre_slug })));
   }
+
+  const { data: questions } = await supabase.from("personality_questions").select("key");
+  const reponses: Record<string, string> = {};
+  for (const { key } of questions ?? []) {
+    const libre = texte(formData, `q_${key}_autre`);
+    const liste = texte(formData, `q_${key}`);
+    if (libre) reponses[key] = "autre:" + libre.toLowerCase().slice(0, 200);
+    else if (liste) reponses[key] = liste;
+  }
+  await supabase
+    .from("profiles")
+    .update({ personality_answers: reponses, updated_at: new Date().toISOString() })
+    .eq("id", user.id);
 
   revalidatePath("/profil");
   redirect("/profil?enregistre=1");
