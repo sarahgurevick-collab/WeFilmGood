@@ -15,10 +15,10 @@ export async function rateReport(formData: FormData) {
   const stars = Number(formData.get("stars"));
 
   if (!user) {
-    redirect(`/connexion?next=/projets/${projectId}/fiche-lecture`);
+    redirect(`/connexion?next=/projet/${projectId}/fiche-lecture`);
   }
   if (!Number.isInteger(stars) || stars < 1 || stars > 5) {
-    redirect(`/projets/${projectId}/fiche-lecture`);
+    redirect(`/projet/${projectId}/fiche-lecture`);
   }
 
   await supabase.from("reading_report_ratings").insert({
@@ -27,5 +27,5 @@ export async function rateReport(formData: FormData) {
     stars,
   });
 
-  revalidatePath(`/projets/${projectId}/fiche-lecture`);
+  revalidatePath(`/projet/${projectId}/fiche-lecture`);
 }

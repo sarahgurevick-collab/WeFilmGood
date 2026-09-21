@@ -22,7 +22,7 @@ export default async function MenuPage() {
   return (
     <PageShell eyebrow="Navigation" title="Menu">
       <nav className={formStyles.form}>
-        <Link href="/deposer">Créer une fiche projet</Link>
+        <Link href="/projet">Créer une fiche projet</Link>
         <Link href="/pitchotheque">Pitchothèque</Link>
 
         {user ? (

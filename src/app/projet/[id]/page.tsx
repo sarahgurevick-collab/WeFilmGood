@@ -57,7 +57,7 @@ export default async function ProjetPage({
   // décide d'émettre. On redirige avant d'interroger la base, sinon le
   // visiteur reçoit une page « introuvable » au lieu d'une invitation.
   if (!user) {
-    redirect(`/connexion?next=/projets/${id}`);
+    redirect(`/connexion?next=/projet/${id}`);
   }
 
   const { data: project } = await supabase
@@ -243,7 +243,7 @@ export default async function ProjetPage({
         <div className={formStyles.remplissage}>
           <div className={formStyles.remplissageEntete}>
             <strong>Fiche remplie à {taux} %</strong>
-            <Link href={`/projets/${project.id}/modifier`}>Modifier ma fiche</Link>
+            <Link href={`/projet/${project.id}/modifier`}>Modifier ma fiche</Link>
           </div>
           <div className={formStyles.jauge} role="img" aria-label={`Fiche remplie à ${taux} pour cent`}>
             <span style={{ width: `${taux}%` }} />
@@ -371,7 +371,7 @@ export default async function ProjetPage({
           </form>
 
           <p className={formStyles.linkRow} style={{ marginTop: 40 }}>
-            <Link href={`/projets/${project.id}/fiche-lecture`}>
+            <Link href={`/projet/${project.id}/fiche-lecture`}>
               Voir la fiche de lecture de mon projet
             </Link>
           </p>
@@ -409,7 +409,7 @@ export default async function ProjetPage({
             </form>
           ) : (
             <p className={formStyles.hint}>
-              <Link href={`/connexion?next=/projets/${project.id}`}>Connectez-vous</Link> pour
+              <Link href={`/connexion?next=/projet/${project.id}`}>Connectez-vous</Link> pour
               contacter l&apos;auteur de ce projet.
             </p>
           )}

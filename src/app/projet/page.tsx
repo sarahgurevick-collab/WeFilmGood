@@ -28,7 +28,7 @@ export default async function DeposerPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/connexion?next=/deposer");
+    redirect("/connexion?next=/projet");
   }
 
   const { data: genres } = await supabase

@@ -18,7 +18,7 @@ export async function createProject(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/connexion?next=/deposer");
+    redirect("/connexion?next=/projet");
   }
 
   const title = (formData.get("title") as string)?.trim();
@@ -32,17 +32,17 @@ export async function createProject(formData: FormData) {
   const vignette = formData.get("vignette") as File | null;
 
   if (!title) {
-    redirect("/deposer?erreur=" + encodeURIComponent("Le titre est obligatoire."));
+    redirect("/projet?erreur=" + encodeURIComponent("Le titre est obligatoire."));
   }
   if (format && !FORMATS.includes(format)) {
-    redirect("/deposer?erreur=" + encodeURIComponent("Format de projet invalide."));
+    redirect("/projet?erreur=" + encodeURIComponent("Format de projet invalide."));
   }
   if (file && file.size > 0 && file.type !== "application/pdf") {
-    redirect("/deposer?erreur=" + encodeURIComponent("Le scénario doit être un fichier PDF."));
+    redirect("/projet?erreur=" + encodeURIComponent("Le scénario doit être un fichier PDF."));
   }
   if (vignette && vignette.size > 0 && !IMAGES.includes(vignette.type)) {
     redirect(
-      "/deposer?erreur=" + encodeURIComponent("La vignette doit être une image JPG ou PNG."),
+      "/projet?erreur=" + encodeURIComponent("La vignette doit être une image JPG ou PNG."),
     );
   }
 
@@ -64,7 +64,7 @@ export async function createProject(formData: FormData) {
 
   if (error || !project) {
     redirect(
-      "/deposer?erreur=" +
+      "/projet?erreur=" +
         encodeURIComponent(error?.message ?? "Une erreur est survenue, réessaie."),
     );
   }
@@ -120,5 +120,5 @@ export async function createProject(formData: FormData) {
     });
   }
 
-  redirect("/deposer/merci");
+  redirect("/projet/merci");
 }

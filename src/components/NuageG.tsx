@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Pacifico } from "next/font/google";
 import { ENGAGEMENTS } from "@/lib/engagements";
-import type { MotCle } from "@/app/projets/actions";
+import type { MotCle } from "@/app/pitchotheque/actions";
 import styles from "./NuageG.module.css";
 
 /**

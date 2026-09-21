@@ -39,7 +39,7 @@ export default async function ModifierProjetPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect(`/connexion?next=/projets/${id}/modifier`);
+  if (!user) redirect(`/connexion?next=/projet/${id}/modifier`);
 
   const [{ data: projet }, { data: genres }, { data: admin }] = await Promise.all([
     supabase
@@ -56,7 +56,7 @@ export default async function ModifierProjetPage({
   // La base refuserait l'écriture de toute façon ; on évite surtout
   // d'afficher un formulaire qui ne servirait à rien.
   const peutModifier = projet.owner_id === user.id || admin === true;
-  if (!peutModifier) redirect(`/projets/${id}`);
+  if (!peutModifier) redirect(`/projet/${id}`);
 
   const pourAutrui = admin === true && projet.owner_id !== user.id;
 

@@ -18,7 +18,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: [
         "/pitchotheque",
-        "/projets", // fiches projet et liens de partage
+        "/projet", // fiches projet et liens de partage
         "/profil",
         "/lecteur",
         "/admin",

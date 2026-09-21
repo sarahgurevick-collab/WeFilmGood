@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { nuagePublic } from "@/app/projets/actions";
+import { nuagePublic } from "@/app/pitchotheque/actions";
 import styles from "./NuageAccueil.module.css";
 
 /**

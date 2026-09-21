@@ -27,7 +27,7 @@ export default async function BarreNav({
   }
   const onglets = [
     { cle: "pitchotheque", href: "/pitchotheque", label: "Pitchothèque" },
-    { cle: "deposer", href: "/deposer", label: "Fiche projet" },
+    { cle: "deposer", href: "/projet", label: "Fiche projet" },
     ...(connecte ? [{ cle: "messages", href: "/mes-messages", label: "Messages" }] as const : []),
     connecte
       ? { cle: "profil", href: "/profil", label: "Profil" }

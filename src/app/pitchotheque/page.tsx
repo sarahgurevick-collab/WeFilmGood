@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Finder from "@/components/Finder";
-import { peutVoirLeNuage } from "../projets/actions";
+import { peutVoirLeNuage } from "./actions";
 import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
-import styles from "../projets/projets.module.css";
+import styles from "./projets.module.css";
 import { createClient } from "@/lib/supabase/server";
 
 type Projet = {
@@ -100,7 +100,7 @@ export default async function ProjetsPage({
       {!projects || projects.length === 0 ? (
         <p className={formStyles.hint}>
           Aucun projet public pour l&apos;instant.{" "}
-          <Link href="/deposer">Déposez le vôtre</Link>.
+          <Link href="/projet">Déposez le vôtre</Link>.
         </p>
       ) : (
         <>
@@ -115,7 +115,7 @@ export default async function ProjetsPage({
               const vignette = vignetteDe(p);
               return (
                 <li key={p.id}>
-                  <Link href={`/projets/${p.id}`} className={styles.carte}>
+                  <Link href={`/projet/${p.id}`} className={styles.carte}>
                     <div className={styles.vignette}>
                       {vignette ? (
                         // eslint-disable-next-line @next/next/no-img-element

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { compterRecherche, type DecompteRecherche } from "@/app/projets/actions";
+import { compterRecherche, type DecompteRecherche } from "@/app/pitchotheque/actions";
 import styles from "./RechercheAccueil.module.css";
 
 /**

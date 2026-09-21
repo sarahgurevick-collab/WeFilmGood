@@ -173,7 +173,7 @@ export default async function ProjetsEnAttentePage() {
                   <span className={formStyles.hint}>{p.author_email}</span>
                 </td>
                 <td>
-                  <Link href={`/projets/${p.project_id}`}>{p.title}</Link>
+                  <Link href={`/projet/${p.project_id}`}>{p.title}</Link>
                   <ScenarioLink projectId={p.project_id} />
                   <br />
                   <span className={formStyles.hint}>

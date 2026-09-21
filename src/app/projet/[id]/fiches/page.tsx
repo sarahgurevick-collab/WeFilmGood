@@ -22,7 +22,7 @@ export default async function FichesDuProjetPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect(`/connexion?next=/projets/${id}/fiches`);
+  if (!user) redirect(`/connexion?next=/projet/${id}/fiches`);
 
   const { data: projet } = await supabase
     .from("projects")
@@ -39,7 +39,7 @@ export default async function FichesDuProjetPage({
         <p className={formStyles.hint}>
           Les fiches de lecture sont confidentielles : seuls l&apos;auteur du projet et
           l&apos;équipe WeFilmGood peuvent les lire.{" "}
-          <Link href={`/projets/${id}`}>Retour au projet</Link>
+          <Link href={`/projet/${id}`}>Retour au projet</Link>
         </p>
       ) : (
         <>

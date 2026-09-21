@@ -28,10 +28,10 @@ export async function modifierProjet(formData: FormData) {
   } = await supabase.auth.getUser();
 
   const id = formData.get("project_id") as string;
-  if (!user) redirect(`/connexion?next=/projets/${id}/modifier`);
+  if (!user) redirect(`/connexion?next=/projet/${id}/modifier`);
 
   const echec = (message: string) =>
-    redirect(`/projets/${id}/modifier?erreur=${encodeURIComponent(message)}`);
+    redirect(`/projet/${id}/modifier?erreur=${encodeURIComponent(message)}`);
 
   const title = (formData.get("title") as string)?.trim();
   const logline = (formData.get("logline") as string)?.trim();
@@ -104,6 +104,6 @@ export async function modifierProjet(formData: FormData) {
     }
   }
 
-  revalidatePath(`/projets/${id}`);
-  redirect(`/projets/${id}`);
+  revalidatePath(`/projet/${id}`);
+  redirect(`/projet/${id}`);
 }

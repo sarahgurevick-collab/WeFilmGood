@@ -18,7 +18,7 @@ export async function setShareLink(formData: FormData) {
   const actif = formData.get("actif") === "1";
 
   if (!user) {
-    redirect(`/connexion?next=/projets/${projectId}`);
+    redirect(`/connexion?next=/projet/${projectId}`);
   }
 
   await supabase.rpc("set_project_share_token", {
@@ -26,7 +26,7 @@ export async function setShareLink(formData: FormData) {
     p_actif: actif,
   });
 
-  revalidatePath(`/projets/${projectId}`);
+  revalidatePath(`/projet/${projectId}`);
 }
 
 /** Écrit à l'auteur d'un projet. Le message part toujours ; l'auteur ne pourra le lire que si son adhésion est active. */
@@ -41,10 +41,10 @@ export async function contacterAuteur(formData: FormData) {
   const body = (formData.get("body") as string)?.trim();
 
   if (!user) {
-    redirect(`/connexion?next=/projets/${projectId}`);
+    redirect(`/connexion?next=/projet/${projectId}`);
   }
   if (!body) {
-    redirect(`/projets/${projectId}?message=vide`);
+    redirect(`/projet/${projectId}?message=vide`);
   }
 
   await supabase.from("project_messages").insert({
@@ -75,7 +75,7 @@ export async function contacterAuteur(formData: FormData) {
     });
   }
 
-  revalidatePath(`/projets/${projectId}`);
-  redirect(`/projets/${projectId}?message=envoye`);
+  revalidatePath(`/projet/${projectId}`);
+  redirect(`/projet/${projectId}?message=envoye`);
 }
 

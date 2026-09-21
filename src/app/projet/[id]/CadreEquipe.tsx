@@ -70,7 +70,7 @@ export default function CadreEquipe({
         <p className={styles.fiches}>
           {peutLireFiches ? (
             <a
-              href={`/projets/${projectId}/fiches`}
+              href={`/projet/${projectId}/fiches`}
               target="_blank"
               rel="noopener"
               title="Ouvrir les fiches de lecture dans un nouvel onglet"

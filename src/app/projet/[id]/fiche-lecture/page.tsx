@@ -29,7 +29,7 @@ export default async function FicheLecturePage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/connexion?next=/projets/${id}/fiche-lecture`);
+    redirect(`/connexion?next=/projet/${id}/fiche-lecture`);
   }
 
   // La fonction ne renvoie la fiche qu'au titulaire du projet, et
@@ -46,7 +46,7 @@ export default async function FicheLecturePage({
       <PageShell eyebrow="Fiche de lecture" title="Pas encore disponible">
         <p className={formStyles.hint}>
           Aucune fiche de lecture validée pour ce projet pour l&apos;instant.{" "}
-          <Link href={`/projets/${id}`}>Retour au projet</Link>.
+          <Link href={`/projet/${id}`}>Retour au projet</Link>.
         </p>
       </PageShell>
     );
@@ -98,7 +98,7 @@ export default async function FicheLecturePage({
       )}
 
       <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
-        <Link href={`/projets/${id}`}>Retour au projet</Link>
+        <Link href={`/projet/${id}`}>Retour au projet</Link>
       </p>
     </PageShell>
   );

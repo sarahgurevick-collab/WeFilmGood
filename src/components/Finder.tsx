@@ -7,11 +7,11 @@ import {
   rechercherProjets,
   type MotCle,
   type ProjetTrouve,
-} from "@/app/projets/actions";
+} from "@/app/pitchotheque/actions";
 import LabelWFG from "./LabelWFG";
 import NuageG from "./NuageG";
 import styles from "./Finder.module.css";
-import projetsStyles from "@/app/projets/projets.module.css";
+import projetsStyles from "@/app/pitchotheque/projets.module.css";
 
 const PAS = 20;
 const MIN = 20;
@@ -235,7 +235,7 @@ export default function Finder({ adherent = false }: { adherent?: boolean }) {
               <ul className={projetsStyles.grille}>
                 {resultats.map((p) => (
                   <li key={p.id}>
-                    <Link href={`/projets/${p.id}`} className={projetsStyles.carte}>
+                    <Link href={`/projet/${p.id}`} className={projetsStyles.carte}>
                       <div className={projetsStyles.vignette}>
                         {p.vignette ? (
                           // eslint-disable-next-line @next/next/no-img-element

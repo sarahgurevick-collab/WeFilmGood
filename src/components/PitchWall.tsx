@@ -72,7 +72,7 @@ export default function PitchWall({ pitches }: { pitches: Pitch[] }) {
         return (
           <TuileEntree
             key={pitch?.id ?? `slot-${i}`}
-            href={pitch?.id ? `/projets/${pitch.id}` : `/succes/${i % 6}`}
+            href={pitch?.id ? `/projet/${pitch.id}` : `/succes/${i % 6}`}
             className={styles.tile}
             style={style}
           >
