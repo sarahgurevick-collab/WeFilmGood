@@ -24,22 +24,20 @@ export default function VideopitchLecteur({
   return (
     <div className={styles.lecteur}>
       {fr && en && (
-        <div className={styles.langues} role="group" aria-label="Langue du videopitch">
-          <button
-            type="button"
-            aria-pressed={langue === "fr"}
-            onClick={() => setLangue("fr")}
-          >
-            Français
-          </button>
-          <button
-            type="button"
-            aria-pressed={langue === "en"}
-            onClick={() => setLangue("en")}
-          >
-            English
-          </button>
-        </div>
+        // L'interrupteur de WFG 1 : rouge, le texte d'un côté, le rond de
+        // l'autre. Il affiche la langue en cours ; un clic passe à l'autre.
+        <button
+          type="button"
+          role="switch"
+          aria-checked={langue === "en"}
+          aria-label="Videopitch en anglais"
+          title={langue === "fr" ? "Voir la version anglaise" : "Voir la version française"}
+          className={`${styles.interrupteur} ${langue === "en" ? styles.anglais : ""}`}
+          onClick={() => setLangue(langue === "fr" ? "en" : "fr")}
+        >
+          <span className={styles.texte}>{langue === "fr" ? "FR" : "EN"}</span>
+          <span className={styles.rond} aria-hidden="true" />
+        </button>
       )}
       <div className={styles.ecran}>
         <iframe

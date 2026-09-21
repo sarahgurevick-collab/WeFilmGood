@@ -24,27 +24,55 @@
   border: 0;
 }
 
-/* Français / English : deux boutons accolés, celui en cours est plein. */
-.langues {
-  display: inline-flex;
+/* L'interrupteur de langue, repris de WFG 1 : une piste rouge cerclée
+   de noir, le texte en blanc, un rond blanc qui glisse d'un bout à
+   l'autre. En français, le rond est à droite ; en anglais, à gauche. */
+.interrupteur {
+  position: relative;
   align-self: flex-start;
-  border: 1px solid var(--bordure-forte);
+  width: 96px;
+  height: 40px;
+  padding: 0;
+  border: 3px solid #000;
   border-radius: 999px;
-  overflow: hidden;
-}
-
-.langues button {
-  padding: 6px 16px;
-  border: none;
-  background: none;
-  color: var(--fg);
-  font: inherit;
-  font-size: 14px;
-  font-weight: 600;
+  background: #da2c25;
+  color: #fff;
   cursor: pointer;
 }
 
-.langues button[aria-pressed="true"] {
-  background: var(--fg);
-  color: var(--bg);
+.texte {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition: left 200ms ease;
+}
+
+.rond {
+  position: absolute;
+  top: 50%;
+  left: calc(100% - 30px);
+  width: 24px;
+  height: 24px;
+  border: 3px solid #9a9a9a;
+  border-radius: 50%;
+  background: #fff;
+  transform: translateY(-50%);
+  transition: left 200ms ease;
+}
+
+.anglais .texte {
+  left: 44px;
+}
+
+.anglais .rond {
+  left: 4px;
+}
+
+.interrupteur:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 3px;
 }
