@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import formStyles from "@/components/form.module.css";
+import { PAYS } from "@/lib/pays";
 import { createClient } from "@/lib/supabase/server";
 import BlocProfil from "../BlocProfil";
 import { saveIdentite } from "../actions";
@@ -63,11 +64,18 @@ export default async function IdentitePage() {
         <div className={styles.row}>
           <label className={formStyles.field}>
             <span>Ville</span>
-            <input type="text" name="city" defaultValue={profil?.city ?? ""} placeholder="Paris" />
+            <input type="text" name="city" defaultValue={profil?.city ?? ""} autoComplete="off" />
           </label>
           <label className={formStyles.field}>
             <span>Pays</span>
-            <input type="text" name="country" defaultValue={profil?.country ?? ""} placeholder="France" />
+            <select name="country" defaultValue={profil?.country ?? ""} autoComplete="off">
+              <option value="">Choisir un pays</option>
+              {PAYS.map((pays) => (
+                <option key={pays} value={pays}>
+                  {pays}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
 
