@@ -273,7 +273,7 @@ export default async function ProjetPage({
       {(isOwner || estAdmin) && (
         <div className={formStyles.remplissage}>
           <div className={formStyles.remplissageEntete}>
-            <strong>Qui porte ce projet</strong>
+            <strong>Qui porte ce projet&nbsp;?</strong>
           </div>
 
           <p style={{ margin: "12px 0 0" }}>
