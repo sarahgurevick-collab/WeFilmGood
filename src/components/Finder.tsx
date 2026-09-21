@@ -8,6 +8,7 @@ import {
   type MotCle,
   type ProjetTrouve,
 } from "@/app/projets/actions";
+import LabelWFG from "./LabelWFG";
 import NuageG from "./NuageG";
 import styles from "./Finder.module.css";
 import projetsStyles from "@/app/projets/projets.module.css";
@@ -243,7 +244,9 @@ export default function Finder({ adherent = false }: { adherent?: boolean }) {
                           <span className={projetsStyles.sansImage}>Sans vignette</span>
                         )}
                         {p.status === "labellise" && (
-                          <span className={projetsStyles.label}>Labellisé</span>
+                          <span className={projetsStyles.label}>
+                            <LabelWFG hauteur={22} sansFond />
+                          </span>
                         )}
                       </div>
                       <div className={projetsStyles.legende}>

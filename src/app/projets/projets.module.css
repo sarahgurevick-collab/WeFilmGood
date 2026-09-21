@@ -51,6 +51,9 @@
   left: 10px;
   display: block;
   line-height: 0;
+  /* Logo sans pastille : une ombre discrète le garde lisible sur les
+     vignettes sombres. */
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
 }
 
 .legende {
@@ -73,4 +76,19 @@
   color: var(--dim);
   line-height: 1.5;
   margin: 8px 0 0;
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+  font-size: 14px;
+  color: var(--dim);
+}
+
+.pagination a {
+  color: var(--fg);
+  font-weight: 700;
 }
