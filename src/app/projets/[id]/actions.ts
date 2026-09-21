@@ -79,17 +79,3 @@ export async function contacterAuteur(formData: FormData) {
   redirect(`/projets/${projectId}?message=envoye`);
 }
 
-/** L'auteur montre ses fiches de lecture à tous les membres, ou les rend de nouveau privées. */
-export async function setFichesVisibles(formData: FormData) {
-  const supabase = await createClient();
-  const projectId = formData.get("project_id") as string;
-  const visibles = formData.get("visibles") === "1";
-
-  // La règle d'accès de la table ne laisse modifier un projet qu'à son auteur.
-  await supabase
-    .from("projects")
-    .update({ fiches_lecture_visibles: visibles })
-    .eq("id", projectId);
-
-  revalidatePath(`/projets/${projectId}`);
-}

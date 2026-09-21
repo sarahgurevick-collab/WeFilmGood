@@ -6,7 +6,7 @@ import VideopitchLecteur from "@/components/VideopitchLecteur";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
-import { contacterAuteur, setFichesVisibles, setShareLink } from "./actions";
+import { contacterAuteur, setShareLink } from "./actions";
 import fichesStyles from "./fiches.module.css";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
@@ -132,8 +132,8 @@ export default async function ProjetPage({
   }[];
 
   // Les deux sources réunies, de la plus récente à la plus ancienne. La
-  // base ne les renvoie qu'à l'auteur, à l'administration, ou à tous les
-  // membres si l'auteur a choisi de les montrer.
+  // base ne les renvoie qu'à l'auteur et à l'administration : c'est aussi
+  // le travail de WeFilmGood, qui ne doit pas être copié.
   const fichesLecture = [
     ...fichesHeritees.map((f) => ({
       cle: `h${f.legacy_review_id}`,
@@ -157,13 +157,6 @@ export default async function ProjetPage({
   });
   const nombreFiches = sansNombre ? fichesLecture.length : Number(nombreBrut ?? 0);
 
-  // À part, pour que la fiche s'affiche même si la colonne manque encore.
-  const { data: reglageFiches } = await supabase
-    .from("projects")
-    .select("fiches_lecture_visibles")
-    .eq("id", id)
-    .maybeSingle<{ fiches_lecture_visibles: boolean }>();
-  const fichesVisibles = reglageFiches?.fiches_lecture_visibles ?? false;
 
   const etatFiche = {
     titre: project.title,
@@ -250,21 +243,19 @@ export default async function ProjetPage({
           {fichesLecture.length === 0 ? (
             <p className={fichesStyles.explication}>
               {nombreFiches > 1
-                ? `Ce projet a été lu ${nombreFiches} fois par les lecteurs de WeFilmGood. L'auteur a choisi de garder ses fiches de lecture privées.`
-                : "Ce projet a été lu par un lecteur de WeFilmGood. L'auteur a choisi de garder sa fiche de lecture privée."}{" "}
-              Pour {nombreFiches > 1 ? "les" : "la"} lire, demandez-{nombreFiches > 1 ? "les" : "la"} à l&apos;auteur avec
-              le formulaire <a href="#contacter">Contacter l&apos;auteur</a> en bas de page, ou
-              écrivez à WeFilmGood.
+                ? `Ce projet a été lu ${nombreFiches} fois par les lecteurs de WeFilmGood.`
+                : "Ce projet a été lu par un lecteur de WeFilmGood."}{" "}
+              Les fiches de lecture sont confidentielles. Pour {nombreFiches > 1 ? "les" : "la"} lire,
+              demandez-{nombreFiches > 1 ? "les" : "la"} à l&apos;auteur avec le
+              formulaire <a href="#contacter">Contacter l&apos;auteur</a> en bas de page,
+              ou écrivez à WeFilmGood.
             </p>
           ) : (
             <>
-              {!fichesVisibles && estAdmin && (
-                <p className={fichesStyles.explication}>
-                  Vous voyez ces fiches parce que vous êtes administratrice. Les autres
-                  membres ne voient que leur nombre, tant que l&apos;auteur ne les a pas
-                  rendues visibles.
-                </p>
-              )}
+              <p className={fichesStyles.explication}>
+                Vous voyez ces fiches parce que vous êtes administratrice. Les autres
+                membres ne voient que leur nombre.
+              </p>
               <ListeFiches fiches={fichesLecture} />
             </>
           )}
@@ -439,21 +430,10 @@ export default async function ProjetPage({
               : `${fichesLecture.length} lectures ont été faites sur ce projet, de la plus récente à la plus ancienne.`}
           </p>
           <p className={formStyles.hint}>
-            {fichesVisibles
-              ? "Vos fiches de lecture sont visibles par tous les membres de WeFilmGood, y compris les producteurs. Le nom du lecteur n'apparaît jamais."
-              : `Vos fiches de lecture sont privées : seuls vous et l'équipe WeFilmGood les lisez. Les producteurs voient seulement qu'il en existe ${fichesLecture.length === 1 ? "une" : fichesLecture.length}, et peuvent vous les demander.`}
+            Vos fiches de lecture sont confidentielles : seuls vous et l&apos;équipe
+            WeFilmGood les lisez. Les producteurs voient seulement combien de lectures ont
+            été faites, et peuvent vous les demander.
           </p>
-          <form action={setFichesVisibles}>
-            <input type="hidden" name="project_id" value={project.id} />
-            <input type="hidden" name="visibles" value={fichesVisibles ? "0" : "1"} />
-            <button type="submit" className={formStyles.submit}>
-              {fichesVisibles
-                ? "Rendre mes fiches de lecture privées"
-                : fichesLecture.length > 1
-                  ? "Rendre mes fiches de lecture visibles"
-                  : "Rendre ma fiche de lecture visible"}
-            </button>
-          </form>
           <ListeFiches fiches={fichesLecture} />
         </>
       )}
