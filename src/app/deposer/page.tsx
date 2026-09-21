@@ -34,14 +34,15 @@ export default async function DeposerPage({
     supabase.from("genres").select("slug, label_fr").order("position", { ascending: true }),
     supabase
       .from("profile_private_details")
-      .select("address, postal_code, phone, birthdate")
+      .select("address, postal_code")
       .eq("profile_id", user.id)
       .maybeSingle(),
   ]);
 
-  // Les coordonnées ne sont pas demandées à l'inscription : c'est ici, au
-  // premier dépôt, qu'elles servent. Une fois données, on ne les redemande pas.
-  const coordonneesManquantes = !prive?.address || !prive?.phone;
+  // L'adresse postale n'est pas demandée à l'inscription : c'est ici, au
+  // premier dépôt, qu'elle sert. Une fois donnée, on ne la redemande pas.
+  // (Le téléphone est demandé au profil ; la date de naissance, jamais.)
+  const coordonneesManquantes = !prive?.address;
 
   return (
     <PageShell eyebrow="Dépôt de projet" title="Déposez votre projet" nav="deposer" connecte>
@@ -113,9 +114,9 @@ export default async function DeposerPage({
         {coordonneesManquantes && (
           <>
             <div className={formStyles.field} style={{ marginTop: 16 }}>
-              <span>Vos coordonnées</span>
+              <span>Votre adresse postale</span>
               <span className={formStyles.hint}>
-                Demandées une seule fois, pour ce premier dépôt. Visibles uniquement par
+                Demandée une seule fois, pour ce premier dépôt. Visible uniquement par
                 l&apos;administration de WeFilmGood.
               </span>
             </div>
@@ -126,14 +127,6 @@ export default async function DeposerPage({
             <label className={formStyles.field}>
               <span>Code postal</span>
               <input type="text" name="postal_code" required defaultValue={prive?.postal_code ?? ""} autoComplete="postal-code" />
-            </label>
-            <label className={formStyles.field}>
-              <span>Téléphone (avec indicatif)</span>
-              <input type="tel" name="phone" required defaultValue={prive?.phone ?? ""} placeholder="+33 6 12 34 56 78" autoComplete="tel" />
-            </label>
-            <label className={formStyles.field}>
-              <span>Date de naissance</span>
-              <input type="date" name="birthdate" defaultValue={prive?.birthdate ?? ""} autoComplete="bday" />
             </label>
           </>
         )}

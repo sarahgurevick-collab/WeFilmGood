@@ -107,12 +107,6 @@ export default async function ProfilPage({
         })}
       </div>
 
-      <div className={styles.encart}>
-        <strong>Adresse postale, date de naissance, téléphone :</strong> on ne vous les
-        demande pas ici. Ils vous seront demandés une seule fois, au moment du premier
-        dépôt de projet, quand ils servent vraiment.
-      </div>
-
       <div className={styles.actions}>
         <Link href="/projets" className={styles.lienDiscret}>
           {bienvenue ? "Plus tard, aller à la Pitchothèque" : "Aller à la Pitchothèque"}
