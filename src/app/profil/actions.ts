@@ -48,13 +48,32 @@ export async function saveIdentite(formData: FormData) {
     redirect("/profil/identite?erreur=" + encodeURIComponent("Le pays est obligatoire."));
   }
 
+  // Un producteur ou un talent doit prouver au moins une expérience sur
+  // un film : sans référence, pas de profil producteur. L'administration
+  // juge ensuite sur cette référence. Un auteur n'a rien à prouver.
+  const website = texte(formData, "website");
+  const doitProuver = category === "producteur" || category === "talent";
+  if (doitProuver && !website) {
+    redirect(
+      "/profil/identite?erreur=" +
+        encodeURIComponent(
+          "La référence professionnelle est obligatoire pour un producteur ou un autre talent.",
+        ),
+    );
+  }
+
   // La fonction pose aussi le statut de validation : un producteur ou un
   // talent passe en attente, un auteur n'en a pas besoin.
   await supabase.rpc("choisir_categorie", { p_category: category });
 
   await supabase
     .from("profiles")
-    .update({ city, country, updated_at: new Date().toISOString() })
+    .update({
+      city,
+      country,
+      ...(doitProuver ? { website } : {}),
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", user.id);
 
   revalidatePath("/profil");

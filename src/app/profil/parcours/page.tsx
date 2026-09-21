@@ -114,7 +114,7 @@ export default async function ParcoursPage({
         </div>
 
         <label className={formStyles.field}>
-          <span>Votre référence professionnelle, si vous en avez une</span>
+          <span>{demandeReference ? "Votre référence professionnelle" : "Votre référence professionnelle, si vous en avez une"}</span>
           <input
             type="url"
             name="website"

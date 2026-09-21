@@ -7,7 +7,7 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     cle: "identite",
     numero: 1,
     titre: "Qui êtes-vous ?",
-    resume: "Auteur, producteur ou talent · votre ville et votre pays.",
+    resume: "Auteur, producteur ou talent · votre référence professionnelle (producteurs et talents) · votre ville et votre pays.",
     duree: "2 minutes · nécessaire pour déposer un projet",
   },
   {
