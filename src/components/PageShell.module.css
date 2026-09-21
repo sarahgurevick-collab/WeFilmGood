@@ -5,16 +5,15 @@
 }
 
 .main {
-  max-width: 420px;
+  /* Large sur grand écran : le contenu occupe l'espace au lieu de rester
+     dans une colonne étroite au milieu. Sur téléphone, la largeur est celle
+     de l'écran moins les marges (voir plus bas). */
+  max-width: 1440px;
   width: 100%;
   margin: 0 auto;
-  padding: 110px 24px 96px;
+  padding: 110px 32px 96px;
   text-transform: none;
   letter-spacing: normal;
-}
-
-.wide {
-  max-width: 760px;
 }
 
 .eyebrow {

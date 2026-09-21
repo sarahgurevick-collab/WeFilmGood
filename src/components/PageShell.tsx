@@ -9,7 +9,6 @@ export default async function PageShell({
   eyebrow,
   title,
   apresTitre,
-  wide = false,
   theme = "sombre",
   nav,
   connecte = false,
@@ -20,7 +19,6 @@ export default async function PageShell({
   title?: string;
   /** Posé juste après le titre, dans la même ligne (ex. le label d'un projet). */
   apresTitre?: ReactNode;
-  wide?: boolean;
   /** "clair" pour les pages qui se lisent longuement ou qui doivent respirer. */
   theme?: "sombre" | "clair";
   /** Onglet à marquer comme actif dans la barre de navigation. */
@@ -40,7 +38,7 @@ export default async function PageShell({
       ) : (
         <BarreNav actif={nav} connecte={connecte} />
       )}
-      <main className={`${styles.main} ${wide ? styles.wide : ""}`}>
+      <main className={styles.main}>
         {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
         {title && (
           <h1 className={styles.title}>

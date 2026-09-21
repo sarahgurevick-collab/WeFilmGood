@@ -14,7 +14,6 @@ export default async function CguvPage() {
     <PageShell
       eyebrow="Mentions légales"
       title={doc?.title ?? "Conditions Générales d'Utilisation et de Vente"}
-      wide
       theme="clair"
     >
       {doc?.content ? (

@@ -26,7 +26,7 @@ export default async function AdminPage() {
     .returns<{ code: string; redeemed_at: string; profile: { full_name: string | null } | null }[]>();
 
   return (
-    <PageShell eyebrow="Administration" title="Codes lecteurs" wide>
+    <PageShell eyebrow="Administration" title="Codes lecteurs">
       <p className={formStyles.linkRow} style={{ marginBottom: 24 }}>
         <Link href="/admin/projets-en-attente">Projets en attente et fiches à valider</Link>
         {" · "}

@@ -39,7 +39,6 @@ export default async function FestivalsResidencesPage() {
       eyebrow="WeFilmGood"
       title="Festivals & Résidences"
       theme="clair"
-      wide
       enTeteAnime
       connecte={!!user}
     >

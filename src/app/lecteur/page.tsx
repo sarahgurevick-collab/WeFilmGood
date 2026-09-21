@@ -62,7 +62,7 @@ export default async function LecteurPage() {
   const enAttente = (assignments ?? []).filter((a) => a.status === "proposee").length;
 
   return (
-    <PageShell eyebrow="Espace lecteur" title="Mes lectures" wide theme="clair">
+    <PageShell eyebrow="Espace lecteur" title="Mes lectures" theme="clair">
       {enLecture ? (
         <div className={formStyles.field}>
           <span>Ma disponibilité</span>

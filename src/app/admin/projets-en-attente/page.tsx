@@ -142,7 +142,7 @@ export default async function ProjetsEnAttentePage() {
     .returns<PaidReport[]>();
 
   return (
-    <PageShell eyebrow="Administration" title="Projets en attente" wide>
+    <PageShell eyebrow="Administration" title="Projets en attente">
       <p className={formStyles.hint}>
         Tableau de bord des projets reçus : sans lecteur attribué, en cours de
         lecture, ou avec une fiche en attente de validation définitive.

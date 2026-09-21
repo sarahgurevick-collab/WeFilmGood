@@ -51,7 +51,7 @@ export default async function ProfilsPage() {
     .slice(0, 60);
 
   return (
-    <PageShell eyebrow="Administration" title="Profils récents" wide>
+    <PageShell eyebrow="Administration" title="Profils récents">
       <p className={formStyles.hint}>
         Le métier principal suppose au moins une expérience professionnelle sur
         un film. Un profil qui fournit une référence est présumé valable :

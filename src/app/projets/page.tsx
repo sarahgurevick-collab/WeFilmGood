@@ -94,7 +94,7 @@ export default async function ProjetsPage({
   };
 
   return (
-    <PageShell title="Pitchothèque" wide nav="pitchotheque" connecte={!!user}>
+    <PageShell title="Pitchothèque" nav="pitchotheque" connecte={!!user}>
       <Finder adherent={adherent} />
 
       {!projects || projects.length === 0 ? (

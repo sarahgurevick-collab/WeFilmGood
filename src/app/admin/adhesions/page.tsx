@@ -72,7 +72,7 @@ export default async function AdminAdhesionsPage({
     (adhesions ?? []).find((a) => a.profile_id === profileId) ?? null;
 
   return (
-    <PageShell eyebrow="Administration" title="Adhésions" wide>
+    <PageShell eyebrow="Administration" title="Adhésions">
       <p className={formStyles.linkRow} style={{ marginBottom: 24 }}>
         <Link href="/admin">Codes lecteurs</Link>
         {" · "}

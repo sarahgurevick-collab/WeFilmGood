@@ -58,7 +58,7 @@ export default async function FicheAdminPage({
   const score = publication?.score ?? report.score ?? 0;
 
   return (
-    <PageShell eyebrow="Fiche de lecture" title={report.project?.title ?? "Projet"} wide>
+    <PageShell eyebrow="Fiche de lecture" title={report.project?.title ?? "Projet"}>
       <p className={formStyles.hint}>
         Rendue par {report.reader?.full_name ?? "—"} le{" "}
         {new Date(report.submitted_at).toLocaleDateString("fr-FR")} · note du lecteur{" "}
