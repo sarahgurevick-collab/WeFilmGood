@@ -6,7 +6,8 @@ import VideopitchLecteur from "@/components/VideopitchLecteur";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
-import { contacterAuteur, setShareLink } from "./actions";
+import { contacterAuteur, setFichesVisibles, setShareLink } from "./actions";
+import fichesStyles from "./fiches.module.css";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";
@@ -117,7 +118,52 @@ export default async function ProjetPage({
   const { data: fichesLectureBrut } = await supabase.rpc("get_legacy_reading_reports", {
     p_project_id: id,
   });
-  const fichesLecture = (fichesLectureBrut ?? []) as FicheLecture[];
+  const fichesHeritees = (fichesLectureBrut ?? []) as FicheLecture[];
+
+  // Les fiches rendues sur WFG 2, sans le prénom du lecteur.
+  const { data: fichesPublieesBrut } = await supabase.rpc("fiches_lecture_publiees", {
+    p_project_id: id,
+  });
+  const fichesPubliees = (fichesPublieesBrut ?? []) as {
+    report_id: string;
+    content: string | null;
+    score: number | null;
+    submitted_at: string | null;
+  }[];
+
+  // Les deux sources réunies, de la plus récente à la plus ancienne. La
+  // base ne les renvoie qu'à l'auteur, à l'administration, ou à tous les
+  // membres si l'auteur a choisi de les montrer.
+  const fichesLecture = [
+    ...fichesHeritees.map((f) => ({
+      cle: `h${f.legacy_review_id}`,
+      date: f.read_at,
+      note: f.final_mark,
+      contenu: f.content,
+      avis: f.wfg_review,
+    })),
+    ...fichesPubliees.map((f) => ({
+      cle: `p${f.report_id}`,
+      date: f.submitted_at,
+      note: f.score,
+      contenu: f.content,
+      avis: null as string | null,
+    })),
+  ].sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
+
+  // Le nombre de fiches, que tout membre peut connaître — sans leur contenu.
+  const { data: nombreBrut, error: sansNombre } = await supabase.rpc("nombre_fiches_lecture", {
+    p_project_id: id,
+  });
+  const nombreFiches = sansNombre ? fichesLecture.length : Number(nombreBrut ?? 0);
+
+  // À part, pour que la fiche s'affiche même si la colonne manque encore.
+  const { data: reglageFiches } = await supabase
+    .from("projects")
+    .select("fiches_lecture_visibles")
+    .eq("id", id)
+    .maybeSingle<{ fiches_lecture_visibles: boolean }>();
+  const fichesVisibles = reglageFiches?.fiches_lecture_visibles ?? false;
 
   const etatFiche = {
     titre: project.title,
@@ -186,6 +232,43 @@ export default async function ProjetPage({
           <LabelWFG hauteur={38} sansFond />
           <strong>Projet labellisé WeFilmGood</strong>
         </p>
+      )}
+
+      {!isOwner && nombreFiches > 0 && (
+        <details className={fichesStyles.bouton}>
+          <summary>
+            {nombreFiches > 1 ? "Fiches de lecture" : "Fiche de lecture"}
+            <span
+              className={fichesStyles.pastille}
+              aria-label={`${nombreFiches} lecture${nombreFiches > 1 ? "s" : ""}`}
+            >
+              {nombreFiches}
+            </span>
+            {fichesLecture.length === 0 && <span className={fichesStyles.cadenas}>privée{nombreFiches > 1 ? "s" : ""}</span>}
+          </summary>
+
+          {fichesLecture.length === 0 ? (
+            <p className={fichesStyles.explication}>
+              {nombreFiches > 1
+                ? `Ce projet a été lu ${nombreFiches} fois par les lecteurs de WeFilmGood. L'auteur a choisi de garder ses fiches de lecture privées.`
+                : "Ce projet a été lu par un lecteur de WeFilmGood. L'auteur a choisi de garder sa fiche de lecture privée."}{" "}
+              Pour {nombreFiches > 1 ? "les" : "la"} lire, demandez-{nombreFiches > 1 ? "les" : "la"} à l&apos;auteur avec
+              le formulaire <a href="#contacter">Contacter l&apos;auteur</a> en bas de page, ou
+              écrivez à WeFilmGood.
+            </p>
+          ) : (
+            <>
+              {!fichesVisibles && estAdmin && (
+                <p className={fichesStyles.explication}>
+                  Vous voyez ces fiches parce que vous êtes administratrice. Les autres
+                  membres ne voient que leur nombre, tant que l&apos;auteur ne les a pas
+                  rendues visibles.
+                </p>
+              )}
+              <ListeFiches fiches={fichesLecture} />
+            </>
+          )}
+        </details>
       )}
 
       {(videopitch?.videopitch_fr || videopitch?.videopitch_en) && (
@@ -345,7 +428,7 @@ export default async function ProjetPage({
         </>
       )}
 
-      {fichesLecture.length > 0 && (
+      {isOwner && fichesLecture.length > 0 && (
         <>
           <h2 style={{ marginTop: 48, fontWeight: 400, fontSize: 16 }}>
             Fiches de lecture
@@ -355,46 +438,23 @@ export default async function ProjetPage({
               ? "Une lecture a été faite sur ce projet."
               : `${fichesLecture.length} lectures ont été faites sur ce projet, de la plus récente à la plus ancienne.`}
           </p>
-          {fichesLecture.map((f, i) => (
-            <details
-              key={f.legacy_review_id}
-              open={i === 0}
-              style={{
-                marginTop: 16,
-                padding: "12px 16px",
-                border: "1px solid #e5e5e5",
-                borderRadius: 10,
-              }}
-            >
-              <summary style={{ cursor: "pointer", fontWeight: 600 }}>
-                {f.read_at
-                  ? new Date(f.read_at).toLocaleDateString("fr-FR", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })
-                  : "Date inconnue"}
-                {f.final_mark !== null && (
-                  <span style={{ fontWeight: 400 }}>
-                    {" — "}
-                    {f.final_mark}/200
-                    {f.final_mark > 150 && " · labellisé"}
-                  </span>
-                )}
-              </summary>
-              {f.content && (
-                <p style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>{f.content}</p>
-              )}
-              {f.wfg_review && (
-                <>
-                  <p className={formStyles.hint} style={{ marginTop: 16, marginBottom: 4 }}>
-                    Avis WeFilmGood
-                  </p>
-                  <p style={{ whiteSpace: "pre-wrap", margin: 0 }}>{f.wfg_review}</p>
-                </>
-              )}
-            </details>
-          ))}
+          <p className={formStyles.hint}>
+            {fichesVisibles
+              ? "Vos fiches de lecture sont visibles par tous les membres de WeFilmGood, y compris les producteurs. Le nom du lecteur n'apparaît jamais."
+              : `Vos fiches de lecture sont privées : seuls vous et l'équipe WeFilmGood les lisez. Les producteurs voient seulement qu'il en existe ${fichesLecture.length === 1 ? "une" : fichesLecture.length}, et peuvent vous les demander.`}
+          </p>
+          <form action={setFichesVisibles}>
+            <input type="hidden" name="project_id" value={project.id} />
+            <input type="hidden" name="visibles" value={fichesVisibles ? "0" : "1"} />
+            <button type="submit" className={formStyles.submit}>
+              {fichesVisibles
+                ? "Rendre mes fiches de lecture privées"
+                : fichesLecture.length > 1
+                  ? "Rendre mes fiches de lecture visibles"
+                  : "Rendre ma fiche de lecture visible"}
+            </button>
+          </form>
+          <ListeFiches fiches={fichesLecture} />
         </>
       )}
 
@@ -431,7 +491,7 @@ export default async function ProjetPage({
 
       {!isOwner && (
         <>
-          <h2 style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
+          <h2 id="contacter" style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
             Contacter l&apos;auteur
           </h2>
 
@@ -467,5 +527,49 @@ export default async function ProjetPage({
         </>
       )}
     </PageShell>
+  );
+}
+
+type FicheAffichee = {
+  cle: string;
+  date: string | null;
+  note: number | null;
+  contenu: string | null;
+  avis: string | null;
+};
+
+function ListeFiches({ fiches }: { fiches: FicheAffichee[] }) {
+  return (
+    <>
+      {fiches.map((f, i) => (
+        <details key={f.cle} open={i === 0} className={fichesStyles.fiche}>
+          <summary>
+            {f.date
+              ? new Date(f.date).toLocaleDateString("fr-FR", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })
+              : "Date inconnue"}
+            {f.note !== null && (
+              <span style={{ fontWeight: 400 }}>
+                {" — "}
+                {f.note}/200
+                {f.note > 150 && " · labellisé"}
+              </span>
+            )}
+          </summary>
+          {f.contenu && <p style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>{f.contenu}</p>}
+          {f.avis && (
+            <>
+              <p className={formStyles.hint} style={{ marginTop: 16, marginBottom: 4 }}>
+                Avis WeFilmGood
+              </p>
+              <p style={{ whiteSpace: "pre-wrap", margin: 0 }}>{f.avis}</p>
+            </>
+          )}
+        </details>
+      ))}
+    </>
   );
 }

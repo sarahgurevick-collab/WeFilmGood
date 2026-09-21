@@ -1,0 +1,65 @@
+/* Le bouton « Fiches de lecture », avec le nombre de lectures en pastille. */
+.bouton {
+  margin-top: 20px;
+}
+
+.bouton > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border: 1px solid var(--bordure-forte);
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.bouton > summary::-webkit-details-marker {
+  display: none;
+}
+
+.bouton > summary:hover {
+  border-color: var(--fg);
+}
+
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cadenas {
+  font-size: 14px;
+  color: var(--dim);
+  font-weight: 400;
+}
+
+.explication {
+  max-width: 640px;
+  margin: 12px 0 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--rouge-wfg);
+  color: var(--dim);
+  font-size: 14px;
+}
+
+.fiche {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+}
+
+.fiche > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
