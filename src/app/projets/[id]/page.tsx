@@ -2,6 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import LabelWFG from "@/components/LabelWFG";
+import VideopitchLecteur from "@/components/VideopitchLecteur";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
@@ -153,6 +154,14 @@ export default async function ProjetPage({
       }[]
     >();
 
+  // À part : si les colonnes n'existent pas encore dans la base, la
+  // fiche s'affiche quand même, sans videopitch.
+  const { data: videopitch } = await supabase
+    .from("projects")
+    .select("videopitch_fr, videopitch_en")
+    .eq("id", id)
+    .maybeSingle<{ videopitch_fr: string | null; videopitch_en: string | null }>();
+
   const { data: motsCles } = await supabase
     .from("project_keywords")
     .select("keyword:keywords(label_fr)")
@@ -177,6 +186,14 @@ export default async function ProjetPage({
           <LabelWFG hauteur={38} sansFond />
           <strong>Projet labellisé WeFilmGood</strong>
         </p>
+      )}
+
+      {(videopitch?.videopitch_fr || videopitch?.videopitch_en) && (
+        <VideopitchLecteur
+          fr={videopitch.videopitch_fr}
+          en={videopitch.videopitch_en}
+          titre={project.title}
+        />
       )}
 
       {(isOwner || estAdmin) && (
