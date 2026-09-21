@@ -171,9 +171,12 @@ function disposer(mots: MotCle[], unite: number, mesure: Mesure) {
 export default function NuageG({
   mots,
   onChoisir,
+  icone = false,
 }: {
   mots: MotCle[];
-  onChoisir: (label: string) => void;
+  onChoisir?: (label: string) => void;
+  /** Le petit G de la barre de recherche : un simple dessin, rien de cliquable. */
+  icone?: boolean;
 }) {
   // La police manuscrite doit être chargée avant de mesurer les mots :
   // on recalcule le G une fois qu'elle est là.
@@ -218,6 +221,22 @@ export default function NuageG({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mots, policePrete]);
 
+  if (icone) {
+    return (
+      <svg
+        viewBox={`0 0 ${TAILLE} ${TAILLE}`}
+        className={`${styles.icone} ${manuscrite.className}`}
+        aria-hidden="true"
+      >
+        {places.map((p) => (
+          <text key={p.mot.label} x={p.x} y={p.y} fontSize={p.taille} fill={p.couleur}>
+            {affiche(p.mot.label)}
+          </text>
+        ))}
+      </svg>
+    );
+  }
+
   return (
     <svg
       viewBox={`0 0 ${TAILLE} ${TAILLE}`}
@@ -235,11 +254,11 @@ export default function NuageG({
           className={styles.mot}
           role="button"
           tabIndex={0}
-          onClick={() => onChoisir(p.mot.label)}
+          onClick={() => onChoisir?.(p.mot.label)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
               e.preventDefault();
-              onChoisir(p.mot.label);
+              onChoisir?.(p.mot.label);
             }
           }}
         >

@@ -142,3 +142,30 @@
   cursor: pointer;
   text-decoration: underline;
 }
+
+/* Le petit G à droite de la recherche : il ouvre le nuage en dessous. */
+.iconeG {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  padding: 3px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: none;
+  cursor: pointer;
+  transition: transform 150ms ease, border-color 150ms ease;
+}
+
+.iconeG:hover {
+  transform: scale(1.08);
+}
+
+.iconeGOuverte {
+  border-color: var(--bordure-forte);
+}
+
+.iconeGLettre {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--rouge-wfg);
+}

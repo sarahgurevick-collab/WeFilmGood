@@ -18,6 +18,8 @@ const MAX = 200;
 const DEFAUT = 80;
 // En dessous, trop peu de mots pour dessiner le G : on les liste.
 const G_MINIMUM = 20;
+// Le petit G de la barre : peu de mots, pour que la lettre se lise.
+const ICONE_MOTS = 30;
 
 export default function Finder({ adherent = false }: { adherent?: boolean }) {
   const [requete, setRequete] = useState("");
@@ -26,11 +28,9 @@ export default function Finder({ adherent = false }: { adherent?: boolean }) {
   const [enCours, setEnCours] = useState(false);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Le nuage s'affiche tant qu'on n'a rien tapé — c'est là qu'on a
-  // besoin d'idées — et se rouvre à la demande quand une recherche ne
-  // donne rien. Il n'a pas de bouton dédié : on le referme par sa croix.
+  // Le nuage est fermé en arrivant : un petit G à droite de la
+  // recherche l'ouvre en grand en dessous, et le referme.
   const [nuageDemande, setNuageDemande] = useState(false);
-  const [nuageEcarte, setNuageEcarte] = useState(false);
   // Combien de mots le nuage affiche : l'adhérent l'ajuste au + et au -,
   // et son choix le suit d'une visite à l'autre.
   const [combien, setCombien] = useState(DEFAUT);
@@ -59,8 +59,7 @@ export default function Finder({ adherent = false }: { adherent?: boolean }) {
   const [nuageEnCours, setNuageEnCours] = useState(false);
   const minuteurNuage = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const vide = !requete.trim();
-  const nuageAffiche = adherent && ((vide && !nuageEcarte) || nuageDemande);
+  const nuageAffiche = adherent && nuageDemande;
 
   // Recherche de projets, avec un léger délai pour ne pas interroger à
   // chaque frappe.
@@ -91,7 +90,8 @@ export default function Finder({ adherent = false }: { adherent?: boolean }) {
   // jamais figé sur une liste générique une fois qu'on cherche quelque
   // chose de précis.
   useEffect(() => {
-    if (!nuageAffiche) return;
+    // Chargé même fermé : le petit G de la barre est dessiné avec.
+    if (!adherent) return;
     if (minuteurNuage.current) clearTimeout(minuteurNuage.current);
 
     setNuageEnCours(true);
@@ -104,7 +104,7 @@ export default function Finder({ adherent = false }: { adherent?: boolean }) {
     return () => {
       if (minuteurNuage.current) clearTimeout(minuteurNuage.current);
     };
-  }, [requete, nuageAffiche, combien]);
+  }, [requete, adherent, combien]);
 
   // La liste est triée par ressemblance, pas par popularité : la
   // référence de taille doit être le mot le PLUS fréquent de la liste,
@@ -127,6 +127,22 @@ export default function Finder({ adherent = false }: { adherent?: boolean }) {
           value={requete}
           onChange={(e) => setRequete(e.target.value)}
         />
+        {adherent && (
+          <button
+            type="button"
+            className={`${styles.iconeG} ${nuageAffiche ? styles.iconeGOuverte : ""}`}
+            onClick={() => setNuageDemande((v) => !v)}
+            aria-expanded={nuageAffiche}
+            aria-label={nuageAffiche ? "Fermer les mots-clés" : "Ouvrir les mots-clés"}
+            title={nuageAffiche ? "Fermer les mots-clés" : "Explorer les mots-clés"}
+          >
+            {nuage && nuage.length >= G_MINIMUM ? (
+              <NuageG mots={nuage.slice(0, ICONE_MOTS)} icone />
+            ) : (
+              <span className={styles.iconeGLettre}>G</span>
+            )}
+          </button>
+        )}
       </div>
 
       {nuageAffiche && (
@@ -136,7 +152,6 @@ export default function Finder({ adherent = false }: { adherent?: boolean }) {
             className={styles.fermerNuage}
             onClick={() => {
               setNuageDemande(false);
-              setNuageEcarte(true);
             }}
             aria-label="Fermer les mots-clés"
             title="Fermer les mots-clés"
