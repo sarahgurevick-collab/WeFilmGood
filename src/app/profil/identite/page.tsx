@@ -30,8 +30,9 @@ export default async function IdentitePage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/connexion?next=/profil/identite");
 
-  const [{ data: profil }, { data: langues }, { data: toutesLangues }] = await Promise.all([
+  const [{ data: profil }, { data: prive }, { data: langues }, { data: toutesLangues }] = await Promise.all([
     supabase.from("profiles").select("category, city, country, website").eq("id", user.id).maybeSingle(),
+    supabase.from("profile_private_details").select("phone").eq("profile_id", user.id).maybeSingle(),
     supabase.from("profile_languages").select("language_code").eq("profile_id", user.id),
     supabase.from("languages").select("code, label_fr").order("position"),
   ]);
@@ -89,7 +90,32 @@ export default async function IdentitePage({
           </div>
         </div>
 
-        <div className={styles.row}>
+        <fieldset className={styles.cadreAdmin}>
+          <legend className={styles.cadreAdminTitre}>Réservé à l&apos;administration</legend>
+          <p className={formStyles.hint}>
+            Ces informations ne sont jamais montrées aux autres membres. Elles servent à
+            l&apos;administration de WeFilmGood pour vous joindre.
+          </p>
+
+          <div className={styles.row}>
+            <div className={formStyles.field}>
+              <span>Adresse email</span>
+              <p className={styles.valeurFixe}>{user.email}</p>
+            </div>
+            <label className={formStyles.field}>
+              <span>Téléphone (avec indicatif)</span>
+              <input
+                type="tel"
+                name="phone"
+                required
+                defaultValue={prive?.phone ?? ""}
+                placeholder="+33 6 12 34 56 78"
+                autoComplete="tel"
+              />
+            </label>
+          </div>
+
+          <div className={styles.row}>
           <label className={formStyles.field}>
             <span>Ville</span>
             <input type="text" name="city" required defaultValue={profil?.city ?? ""} autoComplete="off" />
@@ -107,7 +133,9 @@ export default async function IdentitePage({
               ))}
             </select>
           </label>
-        </div>
+          </div>
+
+        </fieldset>
 
         <div className={styles.pied}>
           <Link href="/profil" className={styles.lienDiscret}>

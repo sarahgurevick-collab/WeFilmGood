@@ -35,18 +35,16 @@ export default async function ProfilMembrePage({
 
   const { data: membre } = await supabase
     .from("profiles")
-    .select("id, full_name, display_name, bio, city, country, website")
+    .select("id, full_name, display_name, bio, website")
     .eq("id", id)
     .maybeSingle<Membre>();
 
   if (!membre) notFound();
 
   const nom = membre.display_name ?? membre.full_name ?? "Membre";
-  const lieu = [membre.city, membre.country].filter(Boolean).join(", ");
 
   return (
     <PageShell eyebrow="Membre" title={nom}>
-      {lieu && <p className={formStyles.hint}>{lieu}</p>}
 
       {membre.bio ? (
         <p style={{ marginTop: 24, whiteSpace: "pre-wrap" }}>{membre.bio}</p>

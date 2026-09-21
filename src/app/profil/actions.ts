@@ -25,8 +25,8 @@ const texte = (formData: FormData, cle: string) =>
   (formData.get(cle) as string)?.trim() || null;
 
 /**
- * Bloc 1 — Qui êtes-vous ? : catégorie, langues, ville, pays, tous
- * obligatoires ; et la référence professionnelle, obligatoire pour un
+ * Bloc 1 — Qui êtes-vous ? : catégorie, langues, téléphone, ville, pays,
+ * tous obligatoires ; et la référence professionnelle, obligatoire pour un
  * producteur ou un talent (masquée pour un auteur).
  * Les métiers ont été retirés de ce bloc (reportés à plus tard) : cette
  * action ne touche donc plus profile_roles, pour ne pas effacer les
@@ -48,6 +48,11 @@ export async function saveIdentite(formData: FormData) {
   }
   if (!country) {
     redirect("/profil/identite?erreur=" + encodeURIComponent("Le pays est obligatoire."));
+  }
+
+  const phone = texte(formData, "phone");
+  if (!phone) {
+    redirect("/profil/identite?erreur=" + encodeURIComponent("Le téléphone est obligatoire."));
   }
 
   const languages = formData.getAll("languages").map(String);
@@ -84,6 +89,12 @@ export async function saveIdentite(formData: FormData) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
+
+  // Le téléphone est réservé à l'administration : il vit dans la table
+  // privée, jamais sur le profil visible des membres.
+  await supabase
+    .from("profile_private_details")
+    .upsert({ profile_id: user.id, phone, updated_at: new Date().toISOString() });
 
   await supabase.from("profile_languages").delete().eq("profile_id", user.id);
   await supabase

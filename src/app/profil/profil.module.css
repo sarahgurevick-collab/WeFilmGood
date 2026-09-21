@@ -318,6 +318,38 @@
   display: none;
 }
 
+/* Le cadre des informations réservées à l'administration : email,
+   téléphone, ville, pays. Jamais montrées aux autres membres. */
+.cadreAdmin {
+  margin: 0;
+  padding: 18px 20px 22px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 14px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.cadreAdminTitre {
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.valeurFixe {
+  margin: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--dim);
+  background: var(--bg);
+}
+
 .pied {
   display: flex;
   align-items: center;
