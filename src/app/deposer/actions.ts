@@ -44,17 +44,6 @@ export async function createProject(formData: FormData) {
     );
   }
 
-  // Adresse postale demandée au premier dépôt seulement (voir la page).
-  const address = (formData.get("address") as string)?.trim();
-  if (address) {
-    await supabase.from("profile_private_details").upsert({
-      profile_id: user.id,
-      address,
-      postal_code: (formData.get("postal_code") as string)?.trim() || null,
-      updated_at: new Date().toISOString(),
-    });
-  }
-
   const { data: project, error } = await supabase
     .from("projects")
     .insert({

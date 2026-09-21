@@ -30,19 +30,10 @@ export default async function DeposerPage({
     redirect("/connexion?next=/deposer");
   }
 
-  const [{ data: genres }, { data: prive }] = await Promise.all([
-    supabase.from("genres").select("slug, label_fr").order("position", { ascending: true }),
-    supabase
-      .from("profile_private_details")
-      .select("address, postal_code")
-      .eq("profile_id", user.id)
-      .maybeSingle(),
-  ]);
-
-  // L'adresse postale n'est pas demandée à l'inscription : c'est ici, au
-  // premier dépôt, qu'elle sert. Une fois donnée, on ne la redemande pas.
-  // (Le téléphone est demandé au profil ; la date de naissance, jamais.)
-  const coordonneesManquantes = !prive?.address;
+  const { data: genres } = await supabase
+    .from("genres")
+    .select("slug, label_fr")
+    .order("position", { ascending: true });
 
   return (
     <PageShell eyebrow="Dépôt de projet" title="Déposez votre projet" nav="deposer" connecte>
@@ -110,26 +101,6 @@ export default async function DeposerPage({
             pitchothèque. N&apos;y faites figurer ni votre nom ni le titre.
           </span>
         </label>
-
-        {coordonneesManquantes && (
-          <>
-            <div className={formStyles.field} style={{ marginTop: 16 }}>
-              <span>Votre adresse postale</span>
-              <span className={formStyles.hint}>
-                Demandée une seule fois, pour ce premier dépôt. Visible uniquement par
-                l&apos;administration de WeFilmGood.
-              </span>
-            </div>
-            <label className={formStyles.field}>
-              <span>Adresse</span>
-              <input type="text" name="address" required defaultValue={prive?.address ?? ""} autoComplete="street-address" />
-            </label>
-            <label className={formStyles.field}>
-              <span>Code postal</span>
-              <input type="text" name="postal_code" required defaultValue={prive?.postal_code ?? ""} autoComplete="postal-code" />
-            </label>
-          </>
-        )}
 
         <button type="submit" className={formStyles.submit}>
           Envoyer
