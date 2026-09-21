@@ -89,7 +89,7 @@ export default async function DeposerPage({
           <span>Scénario (PDF)</span>
           <input type="file" name="scenario" accept="application/pdf" />
           <span className={formStyles.hint}>
-            Confidentiel : seuls vous, le lecteur qui en sera chargé et
+            Confidentiel : seuls vous, les lecteurs qui en seront chargés et
             l&apos;administration y auront accès.
           </span>
         </label>
