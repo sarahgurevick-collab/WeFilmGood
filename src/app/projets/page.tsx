@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Finder from "@/components/Finder";
@@ -16,6 +17,8 @@ type Projet = {
   genre: { label_fr: string } | null;
   files: { storage_path: string; kind: string }[];
 };
+
+export const metadata: Metadata = { title: "Pitchothèque — WeFilmGood" };
 
 const PAR_PAGE = 60;
 
@@ -91,7 +94,7 @@ export default async function ProjetsPage({
   };
 
   return (
-    <PageShell eyebrow="Pitchothèque" title="Projets" wide nav="pitchotheque" connecte={!!user}>
+    <PageShell title="Pitchothèque" wide nav="pitchotheque" connecte={!!user}>
       <Finder adherent={adherent} />
 
       {!projects || projects.length === 0 ? (
