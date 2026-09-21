@@ -31,7 +31,7 @@ export default async function IdentitePage({
   if (!user) redirect("/connexion?next=/profil/identite");
 
   const [{ data: profil }, { data: langues }, { data: toutesLangues }] = await Promise.all([
-    supabase.from("profiles").select("category, city, country").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("category, city, country, website").eq("id", user.id).maybeSingle(),
     supabase.from("profile_languages").select("language_code").eq("profile_id", user.id),
     supabase.from("languages").select("code, label_fr").order("position"),
   ]);
@@ -39,7 +39,7 @@ export default async function IdentitePage({
 
   return (
     <BlocProfil actif="identite">
-      <form className={formStyles.form} action={saveIdentite} style={{ marginTop: 24 }}>
+      <form className={`${formStyles.form} ${styles.formulaireIdentite}`} action={saveIdentite} style={{ marginTop: 24 }}>
         {erreur && <p className={formStyles.error}>{erreur}</p>}
         <div className={formStyles.field}>
           <span>Je suis…</span>
@@ -59,6 +59,23 @@ export default async function IdentitePage({
             ))}
           </div>
         </div>
+
+        {/* Masqué par CSS quand « Auteur » est coché : un auteur n'a rien à prouver. */}
+        <label className={`${formStyles.field} ${styles.reference}`}>
+          <span>Votre référence professionnelle</span>
+          <input
+            type="url"
+            name="website"
+            defaultValue={profil?.website ?? ""}
+            placeholder="https://www.imdb.com/name/…"
+          />
+          <span className={formStyles.hint}>
+            Obligatoire pour un producteur ou un autre talent : votre page IMDb, votre Vimeo
+            ou votre site — de quoi montrer au moins une expérience sur un film, un court
+            métrage ou un clip. C&apos;est sur cette référence que l&apos;administration
+            valide votre profil.
+          </span>
+        </label>
 
         <div className={formStyles.field}>
           <span>Langues parlées</span>

@@ -25,7 +25,9 @@ const texte = (formData: FormData, cle: string) =>
   (formData.get(cle) as string)?.trim() || null;
 
 /**
- * Bloc 1 — Qui êtes-vous ? : catégorie, langues, ville, pays, tous obligatoires.
+ * Bloc 1 — Qui êtes-vous ? : catégorie, langues, ville, pays, tous
+ * obligatoires ; et la référence professionnelle, obligatoire pour un
+ * producteur ou un talent (masquée pour un auteur).
  * Les métiers ont été retirés de ce bloc (reportés à plus tard) : cette
  * action ne touche donc plus profile_roles, pour ne pas effacer les
  * métiers déjà attribués (import de WFG 1, invitation lecteur…) à
@@ -55,13 +57,32 @@ export async function saveIdentite(formData: FormData) {
     );
   }
 
+  // Un producteur ou un talent doit prouver au moins une expérience sur
+  // un film : sans référence, pas de profil producteur. L'administration
+  // juge ensuite sur cette référence. Un auteur n'a rien à prouver.
+  const website = texte(formData, "website");
+  const doitProuver = category === "producteur" || category === "talent";
+  if (doitProuver && !website) {
+    redirect(
+      "/profil/identite?erreur=" +
+        encodeURIComponent(
+          "La référence professionnelle est obligatoire pour un producteur ou un autre talent.",
+        ),
+    );
+  }
+
   // La fonction pose aussi le statut de validation : un producteur ou un
   // talent passe en attente, un auteur n'en a pas besoin.
   await supabase.rpc("choisir_categorie", { p_category: category });
 
   await supabase
     .from("profiles")
-    .update({ city, country, updated_at: new Date().toISOString() })
+    .update({
+      city,
+      country,
+      ...(doitProuver ? { website } : {}),
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", user.id);
 
   await supabase.from("profile_languages").delete().eq("profile_id", user.id);
