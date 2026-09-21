@@ -22,3 +22,15 @@
   width: 100%;
   height: 100%;
 }
+
+/* Au survol, le mot grossit sur place. */
+.mot {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: fill 150ms ease, transform 150ms ease;
+}
+
+.mot:hover,
+.mot:focus-visible {
+  transform: scale(1.3);
+}

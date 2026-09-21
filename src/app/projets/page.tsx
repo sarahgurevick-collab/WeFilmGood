@@ -102,7 +102,9 @@ export default async function ProjetsPage({
       ) : (
         <>
           <p className={formStyles.hint}>
-            {total.toLocaleString("fr-FR")} projet{total > 1 ? "s" : ""} dans la pitchothèque.
+            {total > projects.length
+              ? `Projets ${((page - 1) * PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * PAR_PAGE + projects.length).toLocaleString("fr-FR")} sur ${total.toLocaleString("fr-FR")} dans la pitchothèque.`
+              : `${total.toLocaleString("fr-FR")} projet${total > 1 ? "s" : ""} dans la pitchothèque.`}
           </p>
 
           <ul className={styles.grille}>

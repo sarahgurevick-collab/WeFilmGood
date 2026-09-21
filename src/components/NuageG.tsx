@@ -112,60 +112,84 @@ type Mesure = (texte: string, taille: number) => number;
 /** « comédie dramatique » s'écrit « Comédie dramatique » dans le G. */
 const affiche = (label: string) => label.charAt(0).toLocaleUpperCase("fr-FR") + label.slice(1);
 
+// Trois tailles d'écriture, selon le rang du mot : les plus utilisés
+// (les 8 premiers %), les suivants (jusqu'à 30 %), puis tous les autres.
+const PALIERS = [
+  { jusqua: 0.08, taille: 1.9 },
+  { jusqua: 0.3, taille: 1.3 },
+  { jusqua: 1, taille: 0.85 },
+];
+
 /**
- * Remplit le G ligne après ligne. Toutes les lignes ont la même hauteur,
- * comme sur une page d'écriture ; ce sont les mots qui changent de
- * taille selon leur fréquence. Chaque mot garde sa forme naturelle : on
- * joue seulement sur les espaces pour centrer la ligne dans le G.
+ * Remplit le G ligne après ligne. Chaque ligne a la hauteur d'un palier :
+ * les mots les plus utilisés ont leurs propres lignes, plus hautes, et
+ * ressortent nettement. Les lignes des trois paliers sont mêlées pour que
+ * les gros mots se répartissent sur toute la lettre. Chaque mot garde sa
+ * forme naturelle : on joue seulement sur les espaces.
  */
 function disposer(mots: MotCle[], unite: number, mesure: Mesure) {
-  const max = Math.max(1, ...mots.map((m) => m.effectif));
-  const min = Math.min(...mots.map((m) => m.effectif));
-  const tailleDe = (m: MotCle) =>
-    unite * (0.72 + 0.38 * (max === min ? 0.5 : (m.effectif - min) / (max - min)));
-
-  // L'ordre de passage est mêlé (toujours de la même façon) pour que les
-  // grands mots se répartissent sur toute la lettre.
   const alea = hasard(11);
-  const file = [...mots].sort(() => alea() - 0.5);
+  // Les mots arrivent triés du plus au moins utilisé.
+  const files = PALIERS.map(() => [] as MotCle[]);
+  mots.forEach((m, i) => {
+    files[PALIERS.findIndex((p) => i / mots.length < p.jusqua)].push(m);
+  });
+  for (const f of files) f.sort(() => alea() - 0.5);
 
   const places: Place[] = [];
-  const espace = unite * 0.28;
   let derniereCouleur = -1;
+  let y = CY - R;
 
-  for (let y = CY - R; y + unite <= CY + R && file.length; y += unite) {
-    for (const [a, b] of segmentsBande(y, y + unite)) {
+  while (files.some((f) => f.length)) {
+    // Le palier de la ligne : tiré au sort, en proportion de ce qu'il
+    // reste à placer dans chacun.
+    const poids = files.map((f, i) => f.length * PALIERS[i].taille);
+    let t = alea() * poids.reduce((x, n) => x + n, 0);
+    let palier = 0;
+    while (t > poids[palier] || !files[palier].length) {
+      t -= poids[palier];
+      palier++;
+    }
+    const taille = unite * PALIERS[palier].taille;
+    const hauteur = taille * 1.12;
+    if (y + hauteur > CY + R) break;
+    const espace = taille * 0.28;
+
+    for (const [a, b] of segmentsBande(y, y + hauteur)) {
       const largeurSeg = b - a;
       const ligne: { mot: MotCle; taille: number; largeur: number }[] = [];
       let occupe = 0;
-      for (;;) {
-        const reste = largeurSeg - occupe - (ligne.length ? espace : 0);
-        const idx = file.findIndex((m) => mesure(m.label, tailleDe(m)) <= reste);
-        if (idx < 0) break;
-        const [mot] = file.splice(idx, 1);
-        const taille = tailleDe(mot);
-        const largeur = mesure(mot.label, taille);
-        occupe += largeur + (ligne.length ? espace : 0);
-        ligne.push({ mot, taille, largeur });
+      // D'abord les mots du palier ; s'il reste de la place, des mots
+      // plus petits sur la même ligne.
+      for (let q = palier; q < files.length; q++) {
+        const tq = unite * PALIERS[q].taille;
+        for (;;) {
+          const reste = largeurSeg - occupe - (ligne.length ? espace : 0);
+          const idx = files[q].findIndex((m) => mesure(m.label, tq) <= reste);
+          if (idx < 0) break;
+          const [mot] = files[q].splice(idx, 1);
+          const largeur = mesure(mot.label, tq);
+          occupe += largeur + (ligne.length ? espace : 0);
+          ligne.push({ mot, taille: tq, largeur });
+        }
       }
       if (!ligne.length) continue;
 
-      // Le reste de place se répartit en partie entre les mots, le
-      // surplus de part et d'autre : la ligne reste compacte.
       const libre = largeurSeg - occupe;
       const entreMots = ligne.length > 1 ? Math.min(libre * 0.5, espace) / (ligne.length - 1) : 0;
       let x = a + (libre - entreMots * (ligne.length - 1)) / 2;
-      for (const { mot, taille, largeur } of ligne) {
+      for (const { mot, taille: tm, largeur } of ligne) {
         let c = Math.floor(alea() * COULEURS.length);
         if (c === derniereCouleur) c = (c + 1) % COULEURS.length;
         derniereCouleur = c;
-        places.push({ mot, x, y: y + unite * 0.78, taille, couleur: COULEURS[c] });
+        places.push({ mot, x, y: y + hauteur * 0.74, taille: tm, couleur: COULEURS[c] });
         x += largeur + espace + entreMots;
       }
     }
+    y += hauteur;
   }
 
-  return { places, tousPlaces: file.length === 0 };
+  return { places, tousPlaces: files.every((f) => !f.length) };
 }
 
 export default function NuageG({
@@ -209,15 +233,19 @@ export default function NuageG({
       return (l * taille) / 100;
     };
 
+    // La recherche par proximité renvoie les mots dans l'ordre de
+    // ressemblance : la taille, elle, suit la fréquence.
+    const tries = [...mots].sort((x, y) => y.effectif - x.effectif);
+
     // La plus grande écriture qui fait tenir tous les mots dans le G.
     let bas = 10;
     let haut = 140;
     for (let k = 0; k < 16; k++) {
       const milieu = (bas + haut) / 2;
-      if (disposer(mots, milieu, mesure).tousPlaces) bas = milieu;
+      if (disposer(tries, milieu, mesure).tousPlaces) bas = milieu;
       else haut = milieu;
     }
-    return disposer(mots, bas, mesure).places;
+    return disposer(tries, bas, mesure).places;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mots, policePrete]);
 
