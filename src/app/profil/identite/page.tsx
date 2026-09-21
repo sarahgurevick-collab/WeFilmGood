@@ -9,7 +9,7 @@ import styles from "../profil.module.css";
 const CATEGORIES = [
   { value: "auteur", label: "Auteur", hint: "J'écris. Profil actif immédiatement." },
   { value: "producteur", label: "Producteur", hint: "Validation par un administrateur." },
-  { value: "talent", label: "Autre talent", hint: "Réalisation, jeu, image, montage, musique…" },
+  { value: "talent", label: "Autre talent", hint: "Réalisation, jeu, image, montage, musique… Validation par un administrateur." },
 ];
 
 export default async function IdentitePage() {
