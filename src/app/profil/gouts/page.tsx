@@ -13,14 +13,10 @@ export default async function GoutsPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/connexion?next=/profil/gouts");
 
-  const [{ data: langues }, { data: genresChoisis }, { data: toutesLangues }, { data: tousGenres }] =
-    await Promise.all([
-      supabase.from("profile_languages").select("language_code").eq("profile_id", user.id),
-      supabase.from("profile_genres").select("genre_slug").eq("profile_id", user.id),
-      supabase.from("languages").select("code, label_fr").order("position"),
-      supabase.from("genres").select("slug, label_fr").order("position"),
-    ]);
-  const aLangue = (code: string) => (langues ?? []).some((l) => l.language_code === code);
+  const [{ data: genresChoisis }, { data: tousGenres }] = await Promise.all([
+    supabase.from("profile_genres").select("genre_slug").eq("profile_id", user.id),
+    supabase.from("genres").select("slug, label_fr").order("position"),
+  ]);
   const aGenre = (slug: string) => (genresChoisis ?? []).some((g) => g.genre_slug === slug);
 
   return (
@@ -30,18 +26,6 @@ export default async function GoutsPage() {
       </p>
 
       <form className={formStyles.form} action={saveGouts} style={{ marginTop: 24 }}>
-        <div className={formStyles.field}>
-          <span>Langues parlées</span>
-          <div className={formStyles.roles}>
-            {(toutesLangues ?? []).map((l) => (
-              <label key={l.code} className={formStyles.role}>
-                <input type="checkbox" name="languages" value={l.code} defaultChecked={aLangue(l.code)} />
-                {l.label_fr}
-              </label>
-            ))}
-          </div>
-        </div>
-
         <div className={formStyles.field}>
           <span>Mes genres de prédilection</span>
           <div className={formStyles.roles}>

@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-export type Bloc = "identite" | "parcours" | "gouts" | "temoignage";
+export type Bloc = "identite" | "parcours" | "gouts";
 
 export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; duree: string }[] = [
   {
@@ -14,21 +14,15 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     cle: "parcours",
     numero: 2,
     titre: "Votre parcours",
-    resume: "Biofilmographie · votre référence professionnelle (site, IMDb, page) · votre agent.",
+    resume:
+      "Biofilmographie · vos métiers · langues parlées · votre référence professionnelle · votre agent.",
     duree: "3 minutes · facultatif",
   },
   {
     cle: "gouts",
     numero: 3,
-    titre: "Vos goûts",
-    resume: "Langues parlées · genres de prédilection.",
-    duree: "2 minutes · facultatif",
-  },
-  {
-    cle: "temoignage",
-    numero: 4,
-    titre: "Votre témoignage",
-    resume: "Un mot sur WeFilmGood, à rendre public ou non.",
+    titre: "Mieux vous connaître",
+    resume: "Genres de prédilection.",
     duree: "1 minute · facultatif",
   },
 ];
@@ -45,34 +39,36 @@ export type Completion = {
 };
 
 /**
- * Où en est le profil. Sept repères comptent pour la jauge : catégorie,
- * ville, pays, biofilmographie, référence, au moins une langue, au
- * moins un genre. Le témoignage n'entre pas dans le compte : il ne dit
- * rien du profil, et personne ne doit se sentir obligé d'en écrire un.
- * Les métiers n'y entrent plus non plus : retirés du bloc 1, reportés
- * à plus tard.
+ * Où en est le profil. Huit repères comptent pour la jauge : catégorie,
+ * ville, pays, biofilmographie, référence, au moins un métier, au moins
+ * une langue, au moins un genre. Le témoignage n'y entre pas — retiré du
+ * parcours de complétion, à réintégrer plus tard ailleurs sur le site.
  */
 export async function calculerCompletion(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<Completion> {
-  const [{ data: profil }, { count: langues }, { count: genres }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select(
-        "full_name, first_name, category, validation_status, city, country, biofilmo, website, testimonial",
-      )
-      .eq("id", userId)
-      .maybeSingle(),
-    supabase
-      .from("profile_languages")
-      .select("language_code", { count: "exact", head: true })
-      .eq("profile_id", userId),
-    supabase
-      .from("profile_genres")
-      .select("genre_slug", { count: "exact", head: true })
-      .eq("profile_id", userId),
-  ]);
+  const [{ data: profil }, { count: metiers }, { count: langues }, { count: genres }] =
+    await Promise.all([
+      supabase
+        .from("profiles")
+        .select("full_name, first_name, category, validation_status, city, country, biofilmo, website")
+        .eq("id", userId)
+        .maybeSingle(),
+      supabase
+        .from("profile_roles")
+        .select("role_slug", { count: "exact", head: true })
+        .eq("profile_id", userId)
+        .neq("role_slug", "lecteur"),
+      supabase
+        .from("profile_languages")
+        .select("language_code", { count: "exact", head: true })
+        .eq("profile_id", userId),
+      supabase
+        .from("profile_genres")
+        .select("genre_slug", { count: "exact", head: true })
+        .eq("profile_id", userId),
+    ]);
 
   const reperes = [
     !!profil?.category,
@@ -80,6 +76,7 @@ export async function calculerCompletion(
     !!profil?.country,
     !!profil?.biofilmo,
     !!profil?.website,
+    (metiers ?? 0) > 0,
     (langues ?? 0) > 0,
     (genres ?? 0) > 0,
   ];
@@ -89,9 +86,8 @@ export async function calculerCompletion(
     pourcent,
     fait: {
       identite: !!profil?.category,
-      parcours: !!profil?.biofilmo || !!profil?.website,
-      gouts: (langues ?? 0) > 0 && (genres ?? 0) > 0,
-      temoignage: !!profil?.testimonial,
+      parcours: !!profil?.biofilmo || !!profil?.website || (metiers ?? 0) > 0 || (langues ?? 0) > 0,
+      gouts: (genres ?? 0) > 0,
     },
     profil: profil
       ? {

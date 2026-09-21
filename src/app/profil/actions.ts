@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { metiersPourCategorie } from "./metiers";
 
 const RESEAUX = ["vimeo", "linkedin", "viadeo", "instagram"];
 const CATEGORIES = ["auteur", "producteur", "talent"];
@@ -52,7 +53,12 @@ export async function saveIdentite(formData: FormData) {
   redirect("/profil?enregistre=1");
 }
 
-/** Bloc 2 — Votre parcours : biofilmographie, référence, agent, réseaux. */
+/**
+ * Bloc 2 — Votre parcours : biofilmographie, métiers, langues, référence,
+ * agent, réseaux. Les métiers proposés dépendent de la catégorie choisie
+ * en bloc 1 ; on ne retient que ceux du bon groupe, même si le formulaire
+ * a été manipulé pour en envoyer d'autres.
+ */
 export async function saveParcours(formData: FormData) {
   const { supabase, user } = await requireUser("/profil/parcours");
 
@@ -65,6 +71,36 @@ export async function saveParcours(formData: FormData) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
+
+  const { data: profil } = await supabase
+    .from("profiles")
+    .select("category")
+    .eq("id", user.id)
+    .maybeSingle();
+  const autorises = metiersPourCategorie(profil?.category);
+  if (autorises.length) {
+    const roles = formData.getAll("roles").map(String).filter((r) => autorises.includes(r));
+    // Le rôle lecteur ne se choisit pas ici : il vient d'une invitation de
+    // l'administrateur et ne doit pas pouvoir être retiré ni ajouté.
+    await supabase
+      .from("profile_roles")
+      .delete()
+      .eq("profile_id", user.id)
+      .neq("role_slug", "lecteur");
+    if (roles.length) {
+      await supabase
+        .from("profile_roles")
+        .insert(roles.map((role_slug) => ({ profile_id: user.id, role_slug })));
+    }
+  }
+
+  const languages = formData.getAll("languages").map(String);
+  await supabase.from("profile_languages").delete().eq("profile_id", user.id);
+  if (languages.length) {
+    await supabase
+      .from("profile_languages")
+      .insert(languages.map((language_code) => ({ profile_id: user.id, language_code })));
+  }
 
   for (const reseau of RESEAUX) {
     const url = texte(formData, `social_${reseau}`);
@@ -85,19 +121,11 @@ export async function saveParcours(formData: FormData) {
   redirect("/profil?enregistre=1");
 }
 
-/** Bloc 3 — Vos goûts : langues, genres. */
+/** Bloc 3 — Vos goûts : genres de prédilection. */
 export async function saveGouts(formData: FormData) {
   const { supabase, user } = await requireUser("/profil/gouts");
 
-  const languages = formData.getAll("languages").map(String);
   const genres = formData.getAll("genres").map(String);
-
-  await supabase.from("profile_languages").delete().eq("profile_id", user.id);
-  if (languages.length) {
-    await supabase
-      .from("profile_languages")
-      .insert(languages.map((language_code) => ({ profile_id: user.id, language_code })));
-  }
 
   await supabase.from("profile_genres").delete().eq("profile_id", user.id);
   if (genres.length) {
@@ -110,9 +138,15 @@ export async function saveGouts(formData: FormData) {
   redirect("/profil?enregistre=1");
 }
 
-/** Bloc 4 — Votre témoignage. */
+/**
+ * Le témoignage a été retiré du parcours de complétion du profil (les
+ * nouveaux membres ne connaissent pas encore assez la plateforme pour
+ * en parler) : plus aucune page n'appelle cette action aujourd'hui.
+ * On la garde, ainsi que les colonnes testimonial* et /temoignages,
+ * pour une réintégration à décider plus tard.
+ */
 export async function saveTestimonial(formData: FormData) {
-  const { supabase, user } = await requireUser("/profil/temoignage");
+  const { supabase, user } = await requireUser();
 
   await supabase
     .from("profiles")

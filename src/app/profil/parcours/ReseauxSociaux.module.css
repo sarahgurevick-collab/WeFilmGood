@@ -1,0 +1,61 @@
+.ligne {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nom {
+  width: 92px;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.url {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.retirer {
+  flex-shrink: 0;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--dim);
+  padding: 0 4px;
+}
+
+.retirer:hover {
+  color: var(--fg);
+}
+
+.ajout {
+  display: flex;
+  gap: 8px;
+}
+
+.ajout select {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.boutonAjouter {
+  flex-shrink: 0;
+  padding: 0 16px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--surface);
+  color: var(--fg);
+}
+
+.boutonAjouter:disabled {
+  color: var(--dim);
+  cursor: not-allowed;
+}
+
+@media (max-width: 620px) {
+  .nom {
+    width: 76px;
+  }
+}
