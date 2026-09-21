@@ -1,13 +1,8 @@
 import Link from "next/link";
 import AuthCard from "@/components/AuthCard";
 import formStyles from "@/components/form.module.css";
+import styles from "./inscription.module.css";
 import { signUp } from "./actions";
-
-const CATEGORIES = [
-  { value: "auteur", label: "Auteur", hint: "J'écris. Aucun pré-requis, profil actif immédiatement." },
-  { value: "producteur", label: "Producteur", hint: "Validation par un administrateur." },
-  { value: "talent", label: "Autre Talent", hint: "Réalisation, jeu, image, montage, musique… Validation par un administrateur." },
-];
 
 export default async function InscriptionPage({
   searchParams,
@@ -39,39 +34,34 @@ export default async function InscriptionPage({
         <input type="hidden" name="next" value={nextPath} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
-        <div className={formStyles.field}>
-          <span>Je suis…</span>
-          <div className={formStyles.options}>
-            {CATEGORIES.map((c, i) => (
-              <label key={c.value} className={formStyles.option}>
-                <input
-                  type="radio"
-                  name="category"
-                  value={c.value}
-                  required
-                  defaultChecked={i === 0}
-                />
-                <span className={formStyles.optionLabel}>{c.label}</span>
-                <span className={formStyles.optionHint}>{c.hint}</span>
-              </label>
-            ))}
-          </div>
+        <div>
+          <p className={styles.accroche}>Trois champs, c&apos;est tout.</p>
+          <p className={formStyles.hint}>
+            Vous compléterez votre profil après avoir activé votre compte.
+          </p>
         </div>
 
+        <div className={styles.rangee}>
+          <label className={formStyles.field}>
+            <span>Prénom</span>
+            <input type="text" name="first_name" required autoComplete="given-name" placeholder="Jeanne" />
+          </label>
+          <label className={formStyles.field}>
+            <span>Nom</span>
+            <input type="text" name="last_name" required autoComplete="family-name" placeholder="Dupont" />
+          </label>
+        </div>
         <label className={formStyles.field}>
-          <span>Nom complet</span>
-          <input type="text" name="full_name" required autoComplete="name" placeholder="Jeanne Dupont" />
-        </label>
-        <label className={formStyles.field}>
-          <span>Email</span>
+          <span>Adresse email</span>
           <input
             type="email"
             name="email"
             required
             autoComplete="email"
-            placeholder="vous@exemple.com"
+            placeholder="jeanne@exemple.com"
           />
         </label>
+
         <label className={formStyles.checkline}>
           <input type="checkbox" name="cgu" value="1" required />
           <span>

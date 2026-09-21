@@ -44,6 +44,20 @@ export async function createProject(formData: FormData) {
     );
   }
 
+  // Coordonnées demandées au premier dépôt seulement (voir la page).
+  const address = (formData.get("address") as string)?.trim();
+  const phone = (formData.get("phone") as string)?.trim();
+  if (address || phone) {
+    await supabase.from("profile_private_details").upsert({
+      profile_id: user.id,
+      address: address || null,
+      postal_code: (formData.get("postal_code") as string)?.trim() || null,
+      phone: phone || null,
+      birthdate: (formData.get("birthdate") as string)?.trim() || null,
+      updated_at: new Date().toISOString(),
+    });
+  }
+
   const { data: project, error } = await supabase
     .from("projects")
     .insert({

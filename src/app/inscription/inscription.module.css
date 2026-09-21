@@ -1,0 +1,22 @@
+.accroche {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.rangee {
+  display: flex;
+  gap: 12px;
+}
+
+.rangee > * {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 620px) {
+  .rangee {
+    flex-direction: column;
+    gap: 22px;
+  }
+}

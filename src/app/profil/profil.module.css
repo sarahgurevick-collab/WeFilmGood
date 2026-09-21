@@ -1,11 +1,303 @@
+/* ---- Sommaire (étape 2) ---- */
+
+.surtitre {
+  margin: 0 0 8px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 11px;
+}
+
+.titre {
+  margin: 0 0 8px;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-transform: none;
+}
+
+.chapeau {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--dim);
+}
+
+.entete {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 28px;
+}
+
+.jaugeCarte {
+  width: 300px;
+  flex-shrink: 0;
+  padding: 18px 20px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.jaugeLigne {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.jaugeLigne strong {
+  color: var(--rouge-wfg);
+}
+
+.jauge {
+  margin: 10px 0;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--bordure-douce);
+  overflow: hidden;
+}
+
+.jauge span {
+  display: block;
+  height: 100%;
+  background: var(--rouge-wfg);
+}
+
+.jaugeTexte {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--dim);
+}
+
+.grille {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.carte,
+.carteActive {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 16px;
+  color: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.carte:hover,
+.carteActive:hover {
+  border-color: var(--fg);
+}
+
+.carteActive {
+  border: 2px solid var(--rouge-wfg);
+}
+
+.carteEntete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.carteTitre {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.numero,
+.numeroFait {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  border: 2px solid var(--bordure);
+  color: var(--dim);
+}
+
+.numeroFait {
+  border-color: var(--rouge-wfg);
+  background: var(--rouge-wfg);
+  color: #fff;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rouge-wfg);
+  background: rgba(218, 44, 37, 0.1);
+  padding: 5px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.badgeFait {
+  composes: badge;
+  color: var(--succes);
+  background: transparent;
+  border: 1px solid var(--succes-bordure);
+}
+
+.carteTexte {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+}
+
+.carteMeta {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.encart {
+  margin-top: 24px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--bordure-douce);
+  background: var(--surface);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--dim);
+}
+
+.encart strong {
+  color: var(--fg);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.lienDiscret {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.bouton {
+  display: inline-block;
+  padding: 0 28px;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 12px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.ok {
+  font-size: 12px;
+  color: var(--succes);
+  border: 1px solid var(--succes-bordure);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 24px;
+}
+
+.compte {
+  margin-top: 64px;
+  padding-top: 32px;
+  border-top: 1px solid var(--bordure-douce);
+}
+
 .section {
-  margin: 56px 0 6px;
+  margin: 40px 0 6px;
   font-weight: 600;
   font-size: 17px;
 }
 
-.section:first-of-type {
-  margin-top: 40px;
+/* ---- Un bloc ---- */
+
+.disposition {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+}
+
+.menu {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: sticky;
+  top: 110px;
+}
+
+.retour {
+  font-size: 13px;
+  color: var(--dim);
+  margin-bottom: 14px;
+}
+
+.menuItem,
+.menuItemActif {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dim);
+}
+
+.menuItemActif {
+  font-weight: 800;
+  color: var(--fg);
+  background: rgba(218, 44, 37, 0.08);
+}
+
+.menuItem .numero,
+.menuItemActif .numero,
+.menuItem .numeroFait,
+.menuItemActif .numeroFait {
+  width: 26px;
+  height: 26px;
+  font-size: 13px;
+}
+
+.menuItemActif .numero {
+  border-color: var(--rouge-wfg);
+  background: var(--rouge-wfg);
+  color: #fff;
+}
+
+.menuNote {
+  margin: 22px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--dim);
+}
+
+.colonne {
+  flex: 1;
+  min-width: 0;
+  max-width: 720px;
 }
 
 .row {
@@ -18,16 +310,65 @@
   min-width: 0;
 }
 
-.ok {
-  font-size: 12px;
-  color: var(--succes);
-  border: 1px solid var(--succes-bordure);
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin: 0 0 24px;
+.pied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--bordure-douce);
 }
 
-@media (max-width: 620px) {
+@media (max-width: 860px) {
+  .entete {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .jaugeCarte {
+    width: auto;
+  }
+
+  .grille {
+    grid-template-columns: 1fr;
+  }
+
+  .disposition {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .menu {
+    width: auto;
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .retour {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+
+  .menuItem,
+  .menuItemActif {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .menuNote {
+    display: none;
+  }
+
+  .actions,
+  .pied {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    text-align: center;
+  }
+
   .row {
     flex-direction: column;
     gap: 26px;

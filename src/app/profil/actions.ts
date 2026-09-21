@@ -5,16 +5,16 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
 const RESEAUX = ["vimeo", "linkedin", "viadeo", "instagram"];
-const GENRES_PERSONNE = ["homme", "femme", "autre"];
+const CATEGORIES = ["auteur", "producteur", "talent"];
 
-async function requireUser() {
+async function requireUser(retour = "/profil") {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/connexion?next=/profil");
+    redirect(`/connexion?next=${encodeURIComponent(retour)}`);
   }
 
   return { supabase, user };
@@ -23,23 +23,17 @@ async function requireUser() {
 const texte = (formData: FormData, cle: string) =>
   (formData.get(cle) as string)?.trim() || null;
 
-export async function savePrivateDetails(formData: FormData) {
-  const { supabase, user } = await requireUser();
+/** Bloc 1 — Qui êtes-vous ? : catégorie, métiers, ville, pays. */
+export async function saveIdentite(formData: FormData) {
+  const { supabase, user } = await requireUser("/profil/identite");
 
-  const gender = texte(formData, "gender");
+  const category = texte(formData, "category");
+  if (category && CATEGORIES.includes(category)) {
+    // La fonction pose aussi le statut de validation : un producteur ou
+    // un talent passe en attente, un auteur n'en a pas besoin.
+    await supabase.rpc("choisir_categorie", { p_category: category });
+  }
 
-  await supabase.from("profile_private_details").upsert({
-    profile_id: user.id,
-    address: texte(formData, "address"),
-    postal_code: texte(formData, "postal_code"),
-    phone: texte(formData, "phone"),
-    birthdate: texte(formData, "birthdate"),
-    gender: gender && GENRES_PERSONNE.includes(gender) ? gender : null,
-    updated_at: new Date().toISOString(),
-  });
-
-  // Ville et pays restent sur le profil : ils sont publics, contrairement
-  // au reste de cette section.
   await supabase
     .from("profiles")
     .update({
@@ -49,12 +43,27 @@ export async function savePrivateDetails(formData: FormData) {
     })
     .eq("id", user.id);
 
+  // Le rôle lecteur ne se choisit pas : il vient d'une invitation de
+  // l'administrateur et ne doit pas pouvoir être retiré ni ajouté ici.
+  const roles = formData.getAll("roles").map(String);
+  await supabase
+    .from("profile_roles")
+    .delete()
+    .eq("profile_id", user.id)
+    .neq("role_slug", "lecteur");
+  if (roles.length) {
+    await supabase
+      .from("profile_roles")
+      .insert(roles.map((role_slug) => ({ profile_id: user.id, role_slug })));
+  }
+
   revalidatePath("/profil");
   redirect("/profil?enregistre=1");
 }
 
-export async function savePublicInfo(formData: FormData) {
-  const { supabase, user } = await requireUser();
+/** Bloc 2 — Votre parcours : biofilmographie, référence, agent, réseaux. */
+export async function saveParcours(formData: FormData) {
+  const { supabase, user } = await requireUser("/profil/parcours");
 
   await supabase
     .from("profiles")
@@ -85,42 +94,12 @@ export async function savePublicInfo(formData: FormData) {
   redirect("/profil?enregistre=1");
 }
 
-export async function saveTestimonial(formData: FormData) {
-  const { supabase, user } = await requireUser();
+/** Bloc 3 — Vos goûts : langues, genres. */
+export async function saveGouts(formData: FormData) {
+  const { supabase, user } = await requireUser("/profil/gouts");
 
-  await supabase
-    .from("profiles")
-    .update({
-      testimonial: texte(formData, "testimonial"),
-      testimonial_is_public: formData.get("testimonial_is_public") === "1",
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", user.id);
-
-  revalidatePath("/profil");
-  revalidatePath("/temoignages");
-  redirect("/profil?enregistre=1");
-}
-
-export async function saveKeywords(formData: FormData) {
-  const { supabase, user } = await requireUser();
-
-  const roles = formData.getAll("roles").map(String);
   const languages = formData.getAll("languages").map(String);
   const genres = formData.getAll("genres").map(String);
-
-  // Le rôle lecteur ne se choisit pas : il vient d'une invitation de
-  // l'administrateur et ne doit pas pouvoir être retiré ni ajouté ici.
-  await supabase
-    .from("profile_roles")
-    .delete()
-    .eq("profile_id", user.id)
-    .neq("role_slug", "lecteur");
-  if (roles.length) {
-    await supabase
-      .from("profile_roles")
-      .insert(roles.map((role_slug) => ({ profile_id: user.id, role_slug })));
-  }
 
   await supabase.from("profile_languages").delete().eq("profile_id", user.id);
   if (languages.length) {
@@ -137,6 +116,24 @@ export async function saveKeywords(formData: FormData) {
   }
 
   revalidatePath("/profil");
+  redirect("/profil?enregistre=1");
+}
+
+/** Bloc 4 — Votre témoignage. */
+export async function saveTestimonial(formData: FormData) {
+  const { supabase, user } = await requireUser("/profil/temoignage");
+
+  await supabase
+    .from("profiles")
+    .update({
+      testimonial: texte(formData, "testimonial"),
+      testimonial_is_public: formData.get("testimonial_is_public") === "1",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+
+  revalidatePath("/profil");
+  revalidatePath("/temoignages");
   redirect("/profil?enregistre=1");
 }
 
