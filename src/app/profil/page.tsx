@@ -108,9 +108,6 @@ export default async function ProfilPage({
       </div>
 
       <div className={styles.actions}>
-        <Link href="/projets" className={styles.lienDiscret}>
-          {bienvenue ? "Plus tard, aller à la Pitchothèque" : "Aller à la Pitchothèque"}
-        </Link>
         {prochain && (
           <Link href={`/profil/${prochain.cle}`} className={styles.bouton}>
             {bienvenue ? `Commencer par « ${prochain.titre} »` : `Continuer : ${prochain.titre}`}
