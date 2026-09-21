@@ -1,7 +1,6 @@
 .entete {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 20px;
   margin-bottom: 24px;
 }
@@ -18,7 +17,7 @@
   width: 88px;
   height: 88px;
   border-radius: 10px;
-  flex-shrink: 0;
+  margin: 0 auto;
 }
 
 .logoContenu {
@@ -32,6 +31,6 @@
 .logoCannes {
   width: 220px;
   height: auto;
-  margin-top: 24px;
+  margin: 24px auto 0;
   display: block;
 }
