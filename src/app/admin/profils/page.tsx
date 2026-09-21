@@ -30,6 +30,7 @@ type Membre = {
  *
  * Un profil qui a fourni une référence est présumé valable — vert. Le
  * clic ne sert qu'à écarter une référence factice, qui passe au rouge.
+ * Les auteurs ne sont pas concernés : aucune validation pour eux.
  */
 export default async function ProfilsPage() {
   const supabase = await createClient();
@@ -53,9 +54,13 @@ export default async function ProfilsPage() {
   return (
     <PageShell eyebrow="Administration" title="Profils récents">
       <p className={formStyles.hint}>
-        Le métier principal suppose au moins une expérience professionnelle sur
-        un film. Un profil qui fournit une référence est présumé valable :
-        cliquez seulement pour écarter une référence factice.
+        Les <strong>auteurs</strong> n&apos;ont pas de validation : leur profil est actif
+        dès l&apos;inscription. Pour les <strong>producteurs et autres talents</strong>,
+        le métier suppose au moins une expérience sur un film, prouvée par la
+        référence fournie (page IMDb, Vimeo, site). S&apos;il y a une référence, le profil
+        est validé d&apos;office : vous n&apos;avez rien à faire. Ne cliquez sur
+        «&nbsp;Validé&nbsp;» que si la référence est fausse, pour la refuser — un second
+        clic la rétablit. Sans référence, le profil reste en attente.
       </p>
 
       <div className={adminStyles.tableWrap}>
@@ -74,6 +79,8 @@ export default async function ProfilsPage() {
             {membres.map((m) => {
               const site = siteDe.get(m.profile_id) ?? null;
               const refusee = m.validation_status === "refusee";
+              // Un auteur n'a rien à prouver : pas de validation pour lui.
+              const sansValidation = m.category === "auteur" || m.validation_status === "non_requise";
 
               return (
                 <tr key={m.profile_id}>
@@ -96,7 +103,9 @@ export default async function ProfilsPage() {
                   </td>
                   <td>{new Date(m.created_at).toLocaleDateString("fr-FR")}</td>
                   <td>
-                    {site ? (
+                    {sansValidation ? (
+                      <span className={formStyles.hint}>sans objet (auteur)</span>
+                    ) : site ? (
                       <form action={basculerValidation}>
                         <input type="hidden" name="profile_id" value={m.profile_id} />
                         <input
@@ -117,7 +126,7 @@ export default async function ProfilsPage() {
                         </button>
                       </form>
                     ) : (
-                      <span className={formStyles.hint}>en attente</span>
+                      <span className={formStyles.hint}>en attente — pas de référence</span>
                     )}
                   </td>
                   <td>
