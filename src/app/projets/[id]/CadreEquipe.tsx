@@ -61,7 +61,8 @@ export default function CadreEquipe({
       <OngletsCadre
         onglets={[
           ...(videopitch ? [{ cle: "videopitch", titre: "Videopitch", contenu: videopitch }] : []),
-          { cle: "equipe", titre: "Mon équipe", contenu: equipeListe },
+          // Seul sur son projet, l'auteur n'a pas d'« équipe ».
+          { cle: "equipe", titre: equipe.length > 1 ? "Mon équipe" : "L'auteur", contenu: equipeListe },
         ]}
       />
 
