@@ -28,15 +28,19 @@ export default async function ParcoursPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/connexion?next=/profil/parcours");
 
-  const [{ data: profil }, { data: liens }, { data: metiers }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("category, biofilmo, agent_name")
-      .eq("id", user.id)
-      .maybeSingle(),
-    supabase.from("profile_social_links").select("network, url").eq("profile_id", user.id),
-    supabase.from("profile_roles").select("role_slug").eq("profile_id", user.id),
-  ]);
+  const [{ data: profil }, { data: liens }, { data: metiers }, { data: genresChoisis }, { data: tousGenres }] =
+    await Promise.all([
+      supabase
+        .from("profiles")
+        .select("category, biofilmo, agent_name")
+        .eq("id", user.id)
+        .maybeSingle(),
+      supabase.from("profile_social_links").select("network, url").eq("profile_id", user.id),
+      supabase.from("profile_roles").select("role_slug").eq("profile_id", user.id),
+      supabase.from("profile_genres").select("genre_slug").eq("profile_id", user.id),
+      supabase.from("genres").select("slug, label_fr").order("position"),
+    ]);
+  const aGenre = (slug: string) => (genresChoisis ?? []).some((g) => g.genre_slug === slug);
   const valeursReseaux = Object.fromEntries((liens ?? []).map((l) => [l.network, l.url]));
   // Les métiers proposés dépendent de la catégorie choisie en bloc 1 :
   // quatre métiers d'écriture pour un auteur, les métiers du plateau et
@@ -91,6 +95,18 @@ export default async function ParcoursPage({
             proposés ici.
           </p>
         )}
+
+        <div className={formStyles.field}>
+          <span>Mes genres de prédilection</span>
+          <div className={formStyles.roles}>
+            {(tousGenres ?? []).map((g) => (
+              <label key={g.slug} className={formStyles.role}>
+                <input type="checkbox" name="genres" value={g.slug} defaultChecked={aGenre(g.slug)} />
+                {g.label_fr}
+              </label>
+            ))}
+          </div>
+        </div>
 
         <label className={formStyles.field}>
           <span>Nom de votre agent, si vous en avez un</span>

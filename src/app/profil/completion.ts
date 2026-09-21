@@ -15,14 +15,14 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     numero: 2,
     titre: "Votre parcours",
     resume:
-      "Biofilmographie · vos autres compétences · votre agent · vos réseaux.",
+      "Biofilmographie · vos autres compétences · vos genres de prédilection · votre agent · vos réseaux.",
     duree: "3 minutes · facultatif",
   },
   {
     cle: "gouts",
     numero: 3,
     titre: "Mieux vous connaître",
-    resume: "Genres de prédilection · votre portrait chinois, vingt questions « si j'étais… ».",
+    resume: "Votre portrait chinois : vingt questions « si j'étais… ».",
     duree: "5 minutes · facultatif",
   },
 ];
@@ -88,8 +88,8 @@ export async function calculerCompletion(
     pourcent,
     fait: {
       identite: !!profil?.category,
-      parcours: !!profil?.biofilmo || !!profil?.website || (metiers ?? 0) > 0,
-      gouts: (genres ?? 0) > 0 || portrait > 0,
+      parcours: !!profil?.biofilmo || !!profil?.website || (metiers ?? 0) > 0 || (genres ?? 0) > 0,
+      gouts: portrait > 0,
     },
     profil: profil
       ? {

@@ -107,7 +107,7 @@ export async function saveIdentite(formData: FormData) {
 
 /**
  * Bloc 2 — Votre parcours : la biofilmographie est obligatoire, le reste
- * (compétences, agent, réseaux) facultatif. La référence professionnelle
+ * (compétences, genres, agent, réseaux) facultatif. La référence professionnelle
  * se demande en bloc 1, pas ici. Les
  * métiers proposés dépendent de la catégorie choisie en bloc 1 ; on ne
  * retient que ceux du bon groupe, même si le formulaire a été manipulé
@@ -153,6 +153,14 @@ export async function saveParcours(formData: FormData) {
     }
   }
 
+  const genres = formData.getAll("genres").map(String);
+  await supabase.from("profile_genres").delete().eq("profile_id", user.id);
+  if (genres.length) {
+    await supabase
+      .from("profile_genres")
+      .insert(genres.map((genre_slug) => ({ profile_id: user.id, genre_slug })));
+  }
+
   for (const reseau of RESEAUX) {
     const url = texte(formData, `social_${reseau}`);
     if (url) {
@@ -173,22 +181,12 @@ export async function saveParcours(formData: FormData) {
 }
 
 /**
- * Bloc 3 — Mieux vous connaître : genres de prédilection et portrait
- * chinois. Rien n'est obligatoire. Une réponse libre l'emporte sur la
+ * Bloc 3 — Mieux vous connaître : le portrait chinois, rien d'obligatoire. Une réponse libre l'emporte sur la
  * liste et s'enregistre « autre:… », en minuscules, comme les réponses
  * reprises de WFG 1 — c'est ce qui permet de rapprocher deux membres.
  */
 export async function saveGouts(formData: FormData) {
   const { supabase, user } = await requireUser("/profil/gouts");
-
-  const genres = formData.getAll("genres").map(String);
-
-  await supabase.from("profile_genres").delete().eq("profile_id", user.id);
-  if (genres.length) {
-    await supabase
-      .from("profile_genres")
-      .insert(genres.map((genre_slug) => ({ profile_id: user.id, genre_slug })));
-  }
 
   const { data: questions } = await supabase.from("personality_questions").select("key");
   const reponses: Record<string, string> = {};
