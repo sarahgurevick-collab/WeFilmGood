@@ -106,10 +106,9 @@ export async function saveIdentite(formData: FormData) {
 }
 
 /**
- * Bloc 2 — Votre parcours : la biofilmographie est obligatoire pour tous,
- * la référence professionnelle l'est pour un producteur ou un talent —
- * c'est sur elle que l'administration juge son profil. Métiers, agent,
- * réseaux restent facultatifs. Les
+ * Bloc 2 — Votre parcours : la biofilmographie est obligatoire, le reste
+ * (compétences, agent, réseaux) facultatif. La référence professionnelle
+ * se demande en bloc 1, pas ici. Les
  * métiers proposés dépendent de la catégorie choisie en bloc 1 ; on ne
  * retient que ceux du bon groupe, même si le formulaire a été manipulé
  * pour en envoyer d'autres.
@@ -128,22 +127,10 @@ export async function saveParcours(formData: FormData) {
     .eq("id", user.id)
     .maybeSingle();
 
-  const website = texte(formData, "website");
-  const doitProuver = profil?.category === "producteur" || profil?.category === "talent";
-  if (doitProuver && !website) {
-    redirect(
-      "/profil/parcours?erreur=" +
-        encodeURIComponent(
-          "La référence professionnelle est obligatoire pour un producteur ou un autre talent.",
-        ),
-    );
-  }
-
   await supabase
     .from("profiles")
     .update({
       biofilmo,
-      website,
       agent_name: texte(formData, "agent_name"),
       updated_at: new Date().toISOString(),
     })

@@ -31,18 +31,13 @@ export default async function ParcoursPage({
   const [{ data: profil }, { data: liens }, { data: metiers }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("category, biofilmo, website, agent_name")
+      .select("category, biofilmo, agent_name")
       .eq("id", user.id)
       .maybeSingle(),
     supabase.from("profile_social_links").select("network, url").eq("profile_id", user.id),
     supabase.from("profile_roles").select("role_slug").eq("profile_id", user.id),
   ]);
   const valeursReseaux = Object.fromEntries((liens ?? []).map((l) => [l.network, l.url]));
-  // Un auteur n'a pas à prouver une expérience professionnelle du cinéma —
-  // c'est justement ce qu'on lui dit dans la biofilmographie. Cette
-  // indication ne s'adresse qu'aux producteurs et aux autres talents.
-  const demandeReference = profil?.category === "producteur" || profil?.category === "talent";
-
   // Les métiers proposés dépendent de la catégorie choisie en bloc 1 :
   // quatre métiers d'écriture pour un auteur, les métiers du plateau et
   // de la fabrication pour un producteur ou un autre talent. On les
@@ -97,23 +92,6 @@ export default async function ParcoursPage({
           </p>
         )}
 
-        <label className={formStyles.field}>
-          <span>{demandeReference ? "Votre référence professionnelle" : "Votre référence professionnelle, si vous en avez une"}</span>
-          <input
-            type="url"
-            name="website"
-            required={demandeReference}
-            defaultValue={profil?.website ?? ""}
-            placeholder="https://www.imdb.com/name/…"
-          />
-          {demandeReference && (
-            <span className={formStyles.hint}>
-              Obligatoire : votre page IMDb, votre Vimeo ou votre site personnel — de quoi
-              montrer au moins une expérience sur un film, un court métrage ou un clip.
-              C&apos;est sur cette référence que l&apos;administration valide votre profil.
-            </span>
-          )}
-        </label>
         <label className={formStyles.field}>
           <span>Nom de votre agent, si vous en avez un</span>
           <input type="text" name="agent_name" defaultValue={profil?.agent_name ?? ""} />

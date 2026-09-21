@@ -15,7 +15,7 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     numero: 2,
     titre: "Votre parcours",
     resume:
-      "Biofilmographie · vos métiers · votre référence professionnelle · votre agent.",
+      "Biofilmographie · vos autres compétences · votre agent · vos réseaux.",
     duree: "3 minutes · facultatif",
   },
   {
