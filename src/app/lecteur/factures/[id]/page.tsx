@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
+import { noterFacture } from "./actions";
 import styles from "./facture.module.css";
 
 type Facture = {
@@ -10,6 +11,7 @@ type Facture = {
   tarif_cents: number;
   created_at: string;
   reader_id: string;
+  note: string | null;
 };
 
 type Ligne = { id: string; submitted_at: string; project: { title: string } | null };
@@ -35,7 +37,7 @@ export default async function FacturePage({
 
   const { data: facture } = await supabase
     .from("reader_invoices")
-    .select("id, numero, tarif_cents, created_at, reader_id")
+    .select("id, numero, tarif_cents, created_at, reader_id, note")
     .eq("id", id)
     .maybeSingle<Facture>();
 
@@ -55,9 +57,9 @@ export default async function FacturePage({
       .maybeSingle<{ full_name: string | null; city: string | null; country: string | null }>(),
     supabase
       .from("profile_private_details")
-      .select("address, postal_code, phone")
+      .select("address, postal_code")
       .eq("profile_id", facture.reader_id)
-      .maybeSingle<{ address: string | null; postal_code: string | null; phone: string | null }>(),
+      .maybeSingle<{ address: string | null; postal_code: string | null }>(),
   ]);
 
   const nb = (lignes ?? []).length;
@@ -85,12 +87,6 @@ export default async function FacturePage({
             <>
               <br />
               {profil.country}
-            </>
-          )}
-          {prive?.phone && (
-            <>
-              <br />
-              {prive.phone}
             </>
           )}
         </div>
@@ -143,6 +139,29 @@ export default async function FacturePage({
         </tfoot>
       </table>
 
+      {facture.note && <p className={styles.note}>{facture.note}</p>}
+
+      <div className={styles.horsImpression}>
+        <form action={noterFacture}>
+          <input type="hidden" name="facture_id" value={facture.id} />
+          <label className={formStyles.field}>
+            <span>Complément d&apos;information (facultatif)</span>
+            <textarea name="note" rows={3} defaultValue={facture.note ?? ""} />
+            <span className={formStyles.hint}>
+              Ce texte figurera sur la facture. Enregistrez-le avant de
+              l&apos;imprimer ou de l&apos;enregistrer en PDF.
+            </span>
+          </label>
+          <button type="submit" className={formStyles.submit}>
+            Enregistrer le complément
+          </button>
+        </form>
+
+        <p className={formStyles.hint} style={{ marginTop: 20 }}>
+          Pour obtenir le PDF : imprimez cette page et choisissez
+          «&nbsp;Enregistrer au format PDF&nbsp;» comme destination.
+        </p>
+      </div>
     </PageShell>
   );
 }

@@ -39,3 +39,24 @@
     padding: 40px 16px calc(96px + env(safe-area-inset-bottom));
   }
 }
+
+/* À l'impression — c'est ainsi qu'un lecteur récupère sa facture en PDF —
+   seul le contenu compte : ni barre de navigation, ni fond sombre. */
+@media print {
+  .page {
+    background: #fff;
+    color: #000;
+    min-height: auto;
+  }
+
+  .page nav,
+  .page header {
+    display: none !important;
+  }
+
+  .main {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+}

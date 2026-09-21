@@ -40,3 +40,24 @@
     margin-top: 0;
   }
 }
+
+.note {
+  margin: 20px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid #e5e5e5;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+/* Le formulaire et les explications n'ont pas à figurer sur le papier. */
+.horsImpression {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px dashed #d5d5d5;
+}
+
+@media print {
+  .horsImpression {
+    display: none;
+  }
+}
