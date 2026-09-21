@@ -7,7 +7,7 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     cle: "identite",
     numero: 1,
     titre: "Qui êtes-vous ?",
-    resume: "Auteur, producteur ou talent · vos métiers · votre ville et votre pays.",
+    resume: "Auteur, producteur ou talent · votre ville et votre pays.",
     duree: "2 minutes · nécessaire pour déposer un projet",
   },
   {
@@ -45,43 +45,37 @@ export type Completion = {
 };
 
 /**
- * Où en est le profil. Huit repères comptent pour la jauge : catégorie,
- * au moins un métier, ville, pays, biofilmographie, référence, au moins
- * une langue, au moins un genre. Le témoignage n'entre pas dans le
- * compte : il ne dit rien du profil, et personne ne doit se sentir
- * obligé d'en écrire un.
+ * Où en est le profil. Sept repères comptent pour la jauge : catégorie,
+ * ville, pays, biofilmographie, référence, au moins une langue, au
+ * moins un genre. Le témoignage n'entre pas dans le compte : il ne dit
+ * rien du profil, et personne ne doit se sentir obligé d'en écrire un.
+ * Les métiers n'y entrent plus non plus : retirés du bloc 1, reportés
+ * à plus tard.
  */
 export async function calculerCompletion(
   supabase: SupabaseClient,
   userId: string,
 ): Promise<Completion> {
-  const [{ data: profil }, { count: metiers }, { count: langues }, { count: genres }] =
-    await Promise.all([
-      supabase
-        .from("profiles")
-        .select(
-          "full_name, first_name, category, validation_status, city, country, biofilmo, website, testimonial",
-        )
-        .eq("id", userId)
-        .maybeSingle(),
-      supabase
-        .from("profile_roles")
-        .select("role_slug", { count: "exact", head: true })
-        .eq("profile_id", userId)
-        .neq("role_slug", "lecteur"),
-      supabase
-        .from("profile_languages")
-        .select("language_code", { count: "exact", head: true })
-        .eq("profile_id", userId),
-      supabase
-        .from("profile_genres")
-        .select("genre_slug", { count: "exact", head: true })
-        .eq("profile_id", userId),
-    ]);
+  const [{ data: profil }, { count: langues }, { count: genres }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select(
+        "full_name, first_name, category, validation_status, city, country, biofilmo, website, testimonial",
+      )
+      .eq("id", userId)
+      .maybeSingle(),
+    supabase
+      .from("profile_languages")
+      .select("language_code", { count: "exact", head: true })
+      .eq("profile_id", userId),
+    supabase
+      .from("profile_genres")
+      .select("genre_slug", { count: "exact", head: true })
+      .eq("profile_id", userId),
+  ]);
 
   const reperes = [
     !!profil?.category,
-    (metiers ?? 0) > 0,
     !!profil?.city,
     !!profil?.country,
     !!profil?.biofilmo,
@@ -94,7 +88,7 @@ export async function calculerCompletion(
   return {
     pourcent,
     fait: {
-      identite: !!profil?.category && (metiers ?? 0) > 0,
+      identite: !!profil?.category,
       parcours: !!profil?.biofilmo || !!profil?.website,
       gouts: (langues ?? 0) > 0 && (genres ?? 0) > 0,
       temoignage: !!profil?.testimonial,

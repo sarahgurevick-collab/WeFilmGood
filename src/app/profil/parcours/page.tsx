@@ -23,13 +23,17 @@ export default async function ParcoursPage() {
   const [{ data: profil }, { data: liens }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("biofilmo, website, agent_name")
+      .select("category, biofilmo, website, agent_name")
       .eq("id", user.id)
       .maybeSingle(),
     supabase.from("profile_social_links").select("network, url").eq("profile_id", user.id),
   ]);
   const lienDe = (network: string) =>
     (liens ?? []).find((l) => l.network === network)?.url ?? "";
+  // Un auteur n'a pas à prouver une expérience professionnelle du cinéma —
+  // c'est justement ce qu'on lui dit dans la biofilmographie. Cette
+  // indication ne s'adresse qu'aux producteurs et aux autres talents.
+  const demandeReference = profil?.category === "producteur" || profil?.category === "talent";
 
   return (
     <BlocProfil actif="parcours">
@@ -48,18 +52,20 @@ export default async function ParcoursPage() {
           />
         </label>
         <label className={formStyles.field}>
-          <span>Votre référence professionnelle</span>
+          <span>Votre référence professionnelle, si vous en avez une</span>
           <input
             type="url"
             name="website"
             defaultValue={profil?.website ?? ""}
             placeholder="https://www.imdb.com/name/…"
           />
-          <span className={formStyles.hint}>
-            Votre page IMDb, votre Vimeo ou votre site personnel — de quoi montrer au
-            moins une expérience sur un film, un court métrage ou un clip. C&apos;est ce
-            qui distingue les professionnels sur la plateforme.
-          </span>
+          {demandeReference && (
+            <span className={formStyles.hint}>
+              Votre page IMDb, votre Vimeo ou votre site personnel — de quoi montrer au
+              moins une expérience sur un film, un court métrage ou un clip. C&apos;est ce
+              qui distingue les professionnels sur la plateforme.
+            </span>
+          )}
         </label>
         <label className={formStyles.field}>
           <span>Nom de votre agent</span>

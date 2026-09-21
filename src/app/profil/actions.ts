@@ -23,7 +23,12 @@ async function requireUser(retour = "/profil") {
 const texte = (formData: FormData, cle: string) =>
   (formData.get(cle) as string)?.trim() || null;
 
-/** Bloc 1 — Qui êtes-vous ? : catégorie, métiers, ville, pays. */
+/**
+ * Bloc 1 — Qui êtes-vous ? : catégorie, ville, pays. Les métiers ont été
+ * retirés de ce bloc (reportés à plus tard) : cette action ne touche donc
+ * plus profile_roles, pour ne pas effacer les métiers déjà attribués
+ * (import de WFG 1, invitation lecteur…) à chaque enregistrement.
+ */
 export async function saveIdentite(formData: FormData) {
   const { supabase, user } = await requireUser("/profil/identite");
 
@@ -42,20 +47,6 @@ export async function saveIdentite(formData: FormData) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
-
-  // Le rôle lecteur ne se choisit pas : il vient d'une invitation de
-  // l'administrateur et ne doit pas pouvoir être retiré ni ajouté ici.
-  const roles = formData.getAll("roles").map(String);
-  await supabase
-    .from("profile_roles")
-    .delete()
-    .eq("profile_id", user.id)
-    .neq("role_slug", "lecteur");
-  if (roles.length) {
-    await supabase
-      .from("profile_roles")
-      .insert(roles.map((role_slug) => ({ profile_id: user.id, role_slug })));
-  }
 
   revalidatePath("/profil");
   redirect("/profil?enregistre=1");

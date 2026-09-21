@@ -10,7 +10,7 @@ import styles from "../profil.module.css";
 const CATEGORIES = [
   { value: "auteur", label: "Auteur", hint: "J'écris. Profil actif immédiatement." },
   { value: "producteur", label: "Producteur", hint: "Validation par un administrateur." },
-  { value: "talent", label: "Autre talent", hint: "Réalisation, jeu, image, montage, musique… Validation par un administrateur." },
+  { value: "talent", label: "Autre talent", hint: "Validation par un administrateur." },
 ];
 
 export default async function IdentitePage() {
@@ -20,12 +20,11 @@ export default async function IdentitePage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/connexion?next=/profil/identite");
 
-  const [{ data: profil }, { data: metiers }, { data: tousMetiers }] = await Promise.all([
-    supabase.from("profiles").select("category, city, country").eq("id", user.id).maybeSingle(),
-    supabase.from("profile_roles").select("role_slug").eq("profile_id", user.id),
-    supabase.from("roles").select("slug, label_fr").eq("is_public", true).order("position"),
-  ]);
-  const aMetier = (slug: string) => (metiers ?? []).some((m) => m.role_slug === slug);
+  const { data: profil } = await supabase
+    .from("profiles")
+    .select("category, city, country")
+    .eq("id", user.id)
+    .maybeSingle();
 
   return (
     <BlocProfil actif="identite">
@@ -44,18 +43,6 @@ export default async function IdentitePage() {
                 />
                 <span className={formStyles.optionLabel}>{c.label}</span>
                 <span className={formStyles.optionHint}>{c.hint}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        <div className={formStyles.field}>
-          <span>Mes métiers (plusieurs choix possibles)</span>
-          <div className={formStyles.roles}>
-            {(tousMetiers ?? []).map((m) => (
-              <label key={m.slug} className={formStyles.role}>
-                <input type="checkbox" name="roles" value={m.slug} defaultChecked={aMetier(m.slug)} />
-                {m.label_fr}
               </label>
             ))}
           </div>
