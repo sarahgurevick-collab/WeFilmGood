@@ -8,6 +8,7 @@ import {
   type MotCle,
   type ProjetTrouve,
 } from "@/app/projets/actions";
+import NuageG from "./NuageG";
 import styles from "./Finder.module.css";
 import projetsStyles from "@/app/projets/projets.module.css";
 
@@ -15,6 +16,8 @@ const PAS = 20;
 const MIN = 20;
 const MAX = 200;
 const DEFAUT = 80;
+// En dessous, trop peu de mots pour dessiner le G : on les liste.
+const G_MINIMUM = 20;
 
 export default function Finder({ adherent = false }: { adherent?: boolean }) {
   const [requete, setRequete] = useState("");
@@ -172,6 +175,14 @@ export default function Finder({ adherent = false }: { adherent?: boolean }) {
             <p className={styles.indice}>Chargement…</p>
           ) : !nuage || nuage.length === 0 ? (
             <p className={styles.indice}>Aucun mot-clé pour l&apos;instant.</p>
+          ) : nuage.length >= G_MINIMUM ? (
+            <NuageG
+              mots={nuage}
+              onChoisir={(label) => {
+                setRequete(label);
+                setNuageDemande(false);
+              }}
+            />
           ) : (
             <div className={styles.motsCles}>
               {nuage.map((m) => (

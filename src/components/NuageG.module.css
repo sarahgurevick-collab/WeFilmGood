@@ -1,0 +1,18 @@
+.g {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.mot {
+  cursor: pointer;
+  transition: fill 150ms ease, opacity 150ms ease;
+}
+
+.mot:hover,
+.mot:focus-visible {
+  fill: var(--fg);
+  outline: none;
+}
