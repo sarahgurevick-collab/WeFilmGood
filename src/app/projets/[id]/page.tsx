@@ -219,19 +219,20 @@ export default async function ProjetPage({
           .join(" · ")}
       </p>
 
-      {(videopitch?.videopitch_fr || videopitch?.videopitch_en) && (
-        <VideopitchLecteur
-          fr={videopitch.videopitch_fr}
-          en={videopitch.videopitch_en}
-          titre={project.title}
-        />
-      )}
-
       <CadreEquipe
         projectId={project.id}
         equipe={equipe}
         nombreFiches={nombreFiches}
         peutLireFiches={isOwner || !!estAdmin}
+        videopitch={
+          videopitch?.videopitch_fr || videopitch?.videopitch_en ? (
+            <VideopitchLecteur
+              fr={videopitch.videopitch_fr}
+              en={videopitch.videopitch_en}
+              titre={project.title}
+            />
+          ) : undefined
+        }
       />
 
       {(isOwner || estAdmin) && etatLecture && (

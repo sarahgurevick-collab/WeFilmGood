@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
+import OngletsCadre from "./OngletsCadre";
 import styles from "./cadre.module.css";
 
 export type MembreEquipe = {
@@ -11,9 +13,9 @@ export type MembreEquipe = {
 };
 
 /**
- * Le cadre de la fiche projet, repris de WFG 1 : un onglet « Mon équipe »
- * posé sur la bordure, les talents en pastilles, et en pied de cadre le
- * nombre de fiches de lecture.
+ * Le cadre de la fiche projet, repris de WFG 1 : les onglets « Videopitch »
+ * et « Mon équipe » posés sur la bordure, les talents en pastilles, et en
+ * pied de cadre le nombre de fiches de lecture.
  *
  * Le nombre de lectures se voit de tous : plusieurs lectures montrent un
  * auteur qui travaille. Le contenu ne s'ouvre qu'à l'auteur et à
@@ -25,35 +27,43 @@ export default function CadreEquipe({
   equipe,
   nombreFiches,
   peutLireFiches,
+  videopitch,
 }: {
   projectId: string;
   equipe: MembreEquipe[];
   nombreFiches: number;
   peutLireFiches: boolean;
+  /** Le lecteur vidéo, s'il y a un videopitch : il devient le premier onglet. */
+  videopitch?: ReactNode;
 }) {
+  const equipeListe = (
+    <ul className={styles.equipe}>
+      {equipe.map((m) => (
+        <li key={m.cle} className={`${styles.pastille} ${m.enAttente ? styles.attente : ""}`}>
+          <span className={styles.nom}>{m.nom}</span>
+          {m.role && <strong className={styles.role}>{m.role}</strong>}
+          {m.enAttente ? (
+            <span className={styles.enAttente}>{m.enAttente}</span>
+          ) : (
+            m.profileId && (
+              <Link href={`/membres/${m.profileId}`} className={styles.voir}>
+                Voir le profil
+              </Link>
+            )
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+
   return (
     <section className={styles.cadre}>
-      <div className={styles.onglets}>
-        <span className={styles.onglet}>Mon équipe</span>
-      </div>
-
-      <ul className={styles.equipe}>
-        {equipe.map((m) => (
-          <li key={m.cle} className={`${styles.pastille} ${m.enAttente ? styles.attente : ""}`}>
-            <span className={styles.nom}>{m.nom}</span>
-            {m.role && <strong className={styles.role}>{m.role}</strong>}
-            {m.enAttente ? (
-              <span className={styles.enAttente}>{m.enAttente}</span>
-            ) : (
-              m.profileId && (
-                <Link href={`/membres/${m.profileId}`} className={styles.voir}>
-                  Voir le profil
-                </Link>
-              )
-            )}
-          </li>
-        ))}
-      </ul>
+      <OngletsCadre
+        onglets={[
+          ...(videopitch ? [{ cle: "videopitch", titre: "Videopitch", contenu: videopitch }] : []),
+          { cle: "equipe", titre: "Mon équipe", contenu: equipeListe },
+        ]}
+      />
 
       {nombreFiches > 0 && (
         <p className={styles.fiches}>

@@ -19,13 +19,23 @@
   gap: 12px;
 }
 
+/* Onglet inactif : plein rouge, texte blanc. Onglet actif : blanc,
+   texte rouge — comme sur WFG 1. */
 .onglet {
   padding: 6px 18px;
   border: 3px solid var(--rouge-wfg);
-  background: #fff;
-  color: var(--rouge-wfg);
+  background: var(--rouge-wfg);
+  color: #fff;
+  font: inherit;
   font-weight: 700;
   font-size: 17px;
+  cursor: pointer;
+}
+
+.ongletActif {
+  background: #fff;
+  color: var(--rouge-wfg);
+  cursor: default;
 }
 
 .equipe {
