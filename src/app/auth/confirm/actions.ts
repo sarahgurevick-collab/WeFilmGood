@@ -14,10 +14,23 @@ export async function confirmerLien(formData: FormData) {
   const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
 
   if (error) {
-    redirect(
-      "/connexion?erreur=" +
-        encodeURIComponent("Ce lien a déjà servi ou a expiré. Demandez-en un nouveau ci-dessous."),
-    );
+    // Le lien ne sert qu'une fois. Mais si ce même lien vient d'ouvrir
+    // une session dans ce navigateur — double clic, retour arrière,
+    // second onglet —, la personne est bien connectée : on l'emmène
+    // simplement où elle allait, sans lui reprocher un lien « déjà
+    // servi ». Une session plus ancienne, elle, ne prouve rien : le lien
+    // pouvait viser un autre compte.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const connexionRecente =
+      user?.last_sign_in_at && Date.now() - new Date(user.last_sign_in_at).getTime() < 120_000;
+    if (!connexionRecente) {
+      redirect(
+        "/connexion?erreur=" +
+          encodeURIComponent("Ce lien a déjà servi ou a expiré. Demandez-en un nouveau ci-dessous."),
+      );
+    }
   }
 
   // Une administratrice arrive pour travailler : sa première page est

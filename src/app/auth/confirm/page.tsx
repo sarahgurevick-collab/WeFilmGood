@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import AuthCard from "@/components/AuthCard";
 import formStyles from "@/components/form.module.css";
+import BoutonConfirmer from "./BoutonConfirmer";
 import { confirmerLien } from "./actions";
 
 /**
@@ -35,9 +36,7 @@ export default async function ConfirmPage({
             : "Bonjour ! Cliquez ci-dessous pour vous connecter."}
         </p>
 
-        <button type="submit" className={formStyles.submitWide}>
-          {inscription ? "Activer mon profil" : "Me connecter"}
-        </button>
+        <BoutonConfirmer libelle={inscription ? "Activer mon profil" : "Me connecter"} />
       </form>
     </AuthCard>
   );
