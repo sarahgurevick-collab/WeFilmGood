@@ -43,7 +43,7 @@ export default async function ProfilPage({
 
       <div className={styles.entete}>
         <div>
-          <p className={styles.surtitre}>{bienvenue ? "Étape 2 sur 2" : "Mon profil"}</p>
+          {bienvenue && <p className={styles.surtitre}>Étape 2 sur 2</p>}
           <h1 className={styles.titre}>
             {bienvenue
               ? `Bienvenue${prenom ? ` ${prenom}` : ""}, votre compte est activé.`
@@ -52,7 +52,7 @@ export default async function ProfilPage({
           <p className={styles.chapeau}>
             {pourcent === 100
               ? "Votre profil est complet. Vous pouvez le modifier quand vous voulez."
-              : "Complétez votre profil quand vous voulez : chaque bloc prend deux minutes, et vous pouvez déposer un projet dès maintenant."}
+              : "Complétez votre profil quand vous voulez : chaque bloc prend deux minutes."}
           </p>
           {profil?.category && (
             <p className={formStyles.hint} style={{ marginTop: 10 }}>
