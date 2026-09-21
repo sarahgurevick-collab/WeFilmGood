@@ -21,9 +21,13 @@ export default async function InscriptionPage({
     return (
       <AuthCard active="inscription" theme="clair">
         <p className={formStyles.hint}>
-          Un email de confirmation vient de vous être envoyé. Cliquez sur le
-          lien qu&apos;il contient pour activer votre profil, puis revenez vous{" "}
-          <Link href="/connexion">connecter</Link>.
+          Un email vient d&apos;être envoyé à <strong>{envoye}</strong>. Cliquez
+          sur le lien qu&apos;il contient : votre profil sera activé et vous
+          serez connecté.
+        </p>
+        <p className={formStyles.hint}>
+          Rien reçu après quelques minutes ? Regardez dans les indésirables, ou{" "}
+          <Link href="/inscription">recommencez</Link>.
         </p>
       </AuthCard>
     );
@@ -68,17 +72,6 @@ export default async function InscriptionPage({
             placeholder="vous@exemple.com"
           />
         </label>
-        <label className={formStyles.field}>
-          <span>Mot de passe</span>
-          <input
-            type="password"
-            name="password"
-            required
-            minLength={8}
-            autoComplete="new-password"
-          />
-        </label>
-
         <label className={formStyles.checkline}>
           <input type="checkbox" name="cgu" value="1" required />
           <span>
@@ -90,6 +83,10 @@ export default async function InscriptionPage({
         <button type="submit" className={formStyles.submitWide}>
           Créer mon profil
         </button>
+
+        <p className={formStyles.hint} style={{ textAlign: "center" }}>
+          Pas de mot de passe : vous recevrez un lien par email pour activer votre profil.
+        </p>
       </form>
     </AuthCard>
   );

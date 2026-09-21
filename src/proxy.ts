@@ -13,7 +13,6 @@ const CHEMINS_LECTEUR = [
   "/connexion",
   "/auth",
   "/lost-pwd",
-  "/nouveau-mot-de-passe",
   "/cguv",
 ];
 

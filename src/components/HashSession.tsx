@@ -36,7 +36,6 @@ export default function HashSession() {
     const refreshToken = params.get("refresh_token");
     if (!accessToken || !refreshToken) return;
 
-    const type = params.get("type");
     createClient()
       .auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
       .then(({ error: sessionError }) => {
@@ -45,7 +44,7 @@ export default function HashSession() {
           setError(sessionError.message);
           return;
         }
-        router.replace(type === "recovery" ? "/nouveau-mot-de-passe" : "/menu");
+        router.replace("/menu");
         router.refresh();
       });
   }, [router]);
@@ -55,7 +54,7 @@ export default function HashSession() {
   return (
     <div className={styles.banner} role="alert">
       {error}
-      <a href="/lost-pwd">Demander un nouveau lien</a>
+      <a href="/connexion">Demander un nouveau lien</a>
     </div>
   );
 }

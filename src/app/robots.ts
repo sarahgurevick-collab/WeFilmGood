@@ -23,7 +23,6 @@ export default function robots(): MetadataRoute.Robots {
         "/admin",
         "/auth",
         "/lost-pwd",
-        "/nouveau-mot-de-passe",
       ],
     },
   };

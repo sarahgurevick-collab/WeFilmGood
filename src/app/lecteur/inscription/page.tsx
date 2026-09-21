@@ -13,8 +13,9 @@ export default async function LecteurInscriptionPage({
     return (
       <PageShell eyebrow="Lecteurs" title="Vérifie ta boîte mail">
         <p className={formStyles.hint}>
-          Un email de confirmation vient de t&apos;être envoyé. Clique sur le
-          lien qu&apos;il contient pour activer ton compte.
+          Un email vient de t&apos;être envoyé. Clique sur le lien qu&apos;il
+          contient : ton compte sera activé et tu seras connecté. Rien reçu ?
+          Regarde dans les indésirables.
         </p>
       </PageShell>
     );
@@ -32,16 +33,6 @@ export default async function LecteurInscriptionPage({
         <label className={formStyles.field}>
           <span>Email</span>
           <input type="email" name="email" required autoComplete="email" />
-        </label>
-        <label className={formStyles.field}>
-          <span>Mot de passe</span>
-          <input
-            type="password"
-            name="password"
-            required
-            minLength={8}
-            autoComplete="new-password"
-          />
         </label>
         <label className={formStyles.field}>
           <span>Code secret</span>

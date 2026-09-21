@@ -6,16 +6,38 @@ import { signIn } from "./actions";
 export default async function ConnexionPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; erreur?: string }>;
+  searchParams: Promise<{ next?: string; erreur?: string; envoye?: string }>;
 }) {
-  const { next, erreur } = await searchParams;
+  const { next, erreur, envoye } = await searchParams;
   const nextPath = next ?? "/";
+
+  if (envoye) {
+    return (
+      <AuthCard active="connexion" theme="clair">
+        <p className={formStyles.hint}>
+          Si un compte existe pour <strong>{envoye}</strong>, un lien de connexion
+          vient d&apos;y être envoyé. Ouvrez votre boîte mail et cliquez sur le
+          lien : vous serez connecté.
+        </p>
+        <p className={formStyles.hint}>
+          Rien reçu après quelques minutes ? Regardez dans les indésirables, ou{" "}
+          <Link href="/connexion">recommencez</Link>. Pas encore de compte ?{" "}
+          <Link href="/inscription">Créez votre profil</Link>.
+        </p>
+      </AuthCard>
+    );
+  }
 
   return (
     <AuthCard active="connexion" theme="clair">
       <form className={formStyles.form} action={signIn}>
         <input type="hidden" name="next" value={nextPath} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
+
+        <p className={formStyles.hint}>
+          Plus besoin de mot de passe : indiquez votre adresse email, vous
+          recevrez un lien pour vous connecter.
+        </p>
 
         <label className={formStyles.field}>
           <span>Email</span>
@@ -27,18 +49,10 @@ export default async function ConnexionPage({
             placeholder="vous@exemple.com"
           />
         </label>
-        <label className={formStyles.field}>
-          <span>Mot de passe</span>
-          <input type="password" name="password" required autoComplete="current-password" />
-        </label>
 
         <button type="submit" className={formStyles.submitWide}>
-          Se connecter
+          Recevoir mon lien de connexion
         </button>
-
-        <p className={formStyles.linkRow} style={{ textAlign: "center" }}>
-          <Link href="/lost-pwd">Mot de passe oublié ?</Link>
-        </p>
       </form>
     </AuthCard>
   );
