@@ -9,32 +9,41 @@
   border-radius: 14px;
 }
 
+/* Les onglets sont posés sur la bordure, qui s'interrompt autour d'eux
+   (fond de page de part et d'autre), comme sur WFG 1. */
 .onglets {
   position: absolute;
-  top: -20px;
-  left: 0;
-  right: 0;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  justify-content: center;
   gap: 12px;
+  padding: 0 16px;
+  background: var(--bg);
+  white-space: nowrap;
 }
 
-/* Onglet inactif : plein rouge, texte blanc. Onglet actif : blanc,
-   texte rouge — comme sur WFG 1. */
+/* L'onglet à cliquer : blanc, texte rouge, bien visible. Celui qu'on
+   regarde : plein rouge. */
 .onglet {
   padding: 6px 18px;
   border: 3px solid var(--rouge-wfg);
-  background: var(--rouge-wfg);
-  color: #fff;
+  background: #fff;
+  color: var(--rouge-wfg);
   font: inherit;
   font-weight: 700;
   font-size: 17px;
   cursor: pointer;
 }
 
-.ongletActif {
-  background: #fff;
-  color: var(--rouge-wfg);
+.onglet:hover {
+  background: #fdecea;
+}
+
+.ongletActif,
+.ongletActif:hover {
+  background: var(--rouge-wfg);
+  color: #fff;
   cursor: default;
 }
 
