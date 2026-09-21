@@ -54,10 +54,6 @@ export default async function GoutsPage() {
             Le principe du portrait chinois consiste à définir une personne en l&apos;associant
             à des métaphores, à travers une série de questions rituelles.
           </p>
-          <p className={formStyles.hint}>
-            Vingt questions, aucune obligatoire. Choisissez dans la liste, ou écrivez votre
-            propre réponse à côté. Deux membres qui répondent la même chose se rapprochent.
-          </p>
 
           {((questions ?? []) as Question[]).map((q) => (
             <div key={q.key} className={formStyles.field}>
