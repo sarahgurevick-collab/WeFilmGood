@@ -50,6 +50,10 @@ export default async function GoutsPage() {
     <BlocProfil actif="gouts">
       <form className={formStyles.form} action={saveGouts} style={{ marginTop: 24 }}>
         <div className={styles.portrait}>
+          <p className={styles.portraitIntro}>
+            Le principe du portrait chinois consiste à définir une personne en l&apos;associant
+            à des métaphores, à travers une série de questions rituelles.
+          </p>
           <p className={formStyles.hint}>
             Vingt questions, aucune obligatoire. Choisissez dans la liste, ou écrivez votre
             propre réponse à côté. Deux membres qui répondent la même chose se rapprochent.

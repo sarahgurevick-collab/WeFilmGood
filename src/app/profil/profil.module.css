@@ -359,6 +359,12 @@
   border-top: 1px solid var(--bordure-douce);
 }
 
+.portraitIntro {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
 .portraitTitre {
   margin: 16px 0 0;
   font-size: 20px;
