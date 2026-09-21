@@ -52,7 +52,7 @@
 }
 
 .contenu {
-  max-width: 65ch;
+  max-width: none;
   font-size: 14px;
   color: var(--dim);
   text-transform: none;

@@ -74,7 +74,7 @@
 }
 
 .intro {
-  max-width: 60ch;
+  max-width: none;
   color: var(--dim);
   margin-bottom: 40px;
 }
