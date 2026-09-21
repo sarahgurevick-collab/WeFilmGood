@@ -34,13 +34,18 @@ export default async function ParcoursPage() {
   return (
     <BlocProfil actif="parcours">
       <p className={formStyles.hint}>
-        Visible par les membres connectés. Un champ laissé vide n&apos;apparaît pas.
+        Visible par les membres connectés.
       </p>
 
       <form className={formStyles.form} action={saveParcours} style={{ marginTop: 24 }}>
         <label className={formStyles.field}>
           <span>Biofilmographie</span>
-          <textarea name="biofilmo" rows={6} defaultValue={profil?.biofilmo ?? ""} />
+          <textarea
+            name="biofilmo"
+            rows={6}
+            defaultValue={profil?.biofilmo ?? ""}
+            placeholder="Pas d'expérience dans le cinéma ? Ce n'est pas ce qu'on vous demande ici. Plombier, boat people, quinze ans de prison : ce sont ces expériences de vie qui nourrissent l'écriture — parfois douloureuses, toujours précieuses. Racontez la vôtre."
+          />
         </label>
         <label className={formStyles.field}>
           <span>Votre référence professionnelle</span>
