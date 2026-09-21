@@ -1,0 +1,39 @@
+/* La question des prix : OUI / NON en deux boutons ; le détail n'apparaît
+   que si OUI est coché. Pas de required sur le détail : un champ caché
+   mais requis bloquerait l'envoi sans rien dire. */
+.ouiNon {
+  display: flex;
+  gap: 10px;
+}
+
+.ouiNon label {
+  position: relative;
+  padding: 10px 22px;
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ouiNon input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.ouiNon label:has(input:checked) {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.prix {
+  display: none;
+}
+
+.formulaire:has(input[name="has_awards"][value="oui"]:checked) .prix {
+  display: flex;
+}

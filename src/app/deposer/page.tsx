@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import ChampAvecCompteur from "@/components/ChampAvecCompteur";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
+import styles from "./deposer.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { createProject } from "./actions";
 
@@ -37,7 +38,7 @@ export default async function DeposerPage({
 
   return (
     <PageShell eyebrow="Fiche projet" title="Fiche projet" nav="deposer" connecte>
-      <form className={formStyles.form} action={createProject} encType="multipart/form-data">
+      <form className={`${formStyles.form} ${styles.formulaire}`} action={createProject} encType="multipart/form-data">
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
         <label className={formStyles.field}>
@@ -100,6 +101,24 @@ export default async function DeposerPage({
             C&apos;est l&apos;image qui représentera votre projet dans la
             pitchothèque. N&apos;y faites figurer ni votre nom ni le titre.
           </span>
+        </label>
+
+        <div className={formStyles.field}>
+          <span>Votre projet a-t-il eu des prix ?</span>
+          <div className={styles.ouiNon}>
+            <label>
+              <input type="radio" name="has_awards" value="oui" required />
+              Oui
+            </label>
+            <label>
+              <input type="radio" name="has_awards" value="non" required />
+              Non
+            </label>
+          </div>
+        </div>
+        <label className={`${formStyles.field} ${styles.prix}`}>
+          <span>Lesquels ?</span>
+          <textarea name="awards_detail" rows={3} placeholder="Festival, année, prix obtenu…" />
         </label>
 
         <button type="submit" className={formStyles.submit}>

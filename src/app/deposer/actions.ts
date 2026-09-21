@@ -26,6 +26,8 @@ export async function createProject(formData: FormData) {
   const synopsis = (formData.get("synopsis") as string)?.trim();
   const format = formData.get("format") as string;
   const genreSlug = (formData.get("genre_slug") as string)?.trim();
+  const hasAwards = formData.get("has_awards") === "oui";
+  const awardsDetail = hasAwards ? (formData.get("awards_detail") as string)?.trim() || null : null;
   const file = formData.get("scenario") as File | null;
   const vignette = formData.get("vignette") as File | null;
 
@@ -53,6 +55,8 @@ export async function createProject(formData: FormData) {
       synopsis: synopsis || null,
       format: format || null,
       genre_slug: genreSlug || null,
+      has_awards: hasAwards,
+      awards_detail: awardsDetail,
       status: "depose",
     })
     .select("id")
