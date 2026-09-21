@@ -79,7 +79,7 @@ export default async function ParcoursPage({
 
         {metiersAffiches.length > 0 ? (
           <div className={formStyles.field}>
-            <span>Mes métiers (plusieurs choix possibles)</span>
+            <span>Mes autres compétences (plusieurs choix possibles)</span>
             <div className={formStyles.roles}>
               {metiersAffiches.map((m) => (
                 <label key={m.slug} className={formStyles.role}>
