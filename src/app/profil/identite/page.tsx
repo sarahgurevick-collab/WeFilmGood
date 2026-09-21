@@ -13,7 +13,13 @@ const CATEGORIES = [
   { value: "talent", label: "Autre talent", hint: "Validation par un administrateur." },
 ];
 
-export default async function IdentitePage() {
+export default async function IdentitePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erreur?: string }>;
+}) {
+  const { erreur } = await searchParams;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -29,6 +35,7 @@ export default async function IdentitePage() {
   return (
     <BlocProfil actif="identite">
       <form className={formStyles.form} action={saveIdentite} style={{ marginTop: 24 }}>
+        {erreur && <p className={formStyles.error}>{erreur}</p>}
         <div className={formStyles.field}>
           <span>Je suis…</span>
           <div className={formStyles.options}>
@@ -51,12 +58,14 @@ export default async function IdentitePage() {
         <div className={styles.row}>
           <label className={formStyles.field}>
             <span>Ville</span>
-            <input type="text" name="city" defaultValue={profil?.city ?? ""} autoComplete="off" />
+            <input type="text" name="city" required defaultValue={profil?.city ?? ""} autoComplete="off" />
           </label>
           <label className={formStyles.field}>
             <span>Pays</span>
-            <select name="country" defaultValue={profil?.country ?? ""} autoComplete="off">
-              <option value="">Choisir un pays</option>
+            <select name="country" required defaultValue={profil?.country ?? ""} autoComplete="off">
+              <option value="" disabled>
+                Choisir un pays
+              </option>
               {PAYS.map((pays) => (
                 <option key={pays} value={pays}>
                   {pays}

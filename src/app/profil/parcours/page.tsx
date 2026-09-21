@@ -15,7 +15,13 @@ const RESEAUX = [
   { slug: "instagram", label: "Instagram" },
 ];
 
-export default async function ParcoursPage() {
+export default async function ParcoursPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ erreur?: string }>;
+}) {
+  const { erreur } = await searchParams;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -62,11 +68,14 @@ export default async function ParcoursPage() {
       </p>
 
       <form className={formStyles.form} action={saveParcours} style={{ marginTop: 24 }}>
+        {erreur && <p className={formStyles.error}>{erreur}</p>}
+
         <label className={formStyles.field}>
           <span>Biofilmographie</span>
           <textarea
             name="biofilmo"
             rows={6}
+            required
             defaultValue={profil?.biofilmo ?? ""}
             placeholder="Pas d'expérience dans le cinéma ? Aucune importance. Ce qui a de la valeur, c'est votre expérience de la vie. Joyeuse, parfois douloureuse, toujours précieuse. Racontez la vôtre ici."
           />

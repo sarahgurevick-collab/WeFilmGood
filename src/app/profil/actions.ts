@@ -25,28 +25,36 @@ const texte = (formData: FormData, cle: string) =>
   (formData.get(cle) as string)?.trim() || null;
 
 /**
- * Bloc 1 — Qui êtes-vous ? : catégorie, ville, pays. Les métiers ont été
- * retirés de ce bloc (reportés à plus tard) : cette action ne touche donc
- * plus profile_roles, pour ne pas effacer les métiers déjà attribués
- * (import de WFG 1, invitation lecteur…) à chaque enregistrement.
+ * Bloc 1 — Qui êtes-vous ? : catégorie, ville, pays, tous obligatoires.
+ * Les métiers ont été retirés de ce bloc (reportés à plus tard) : cette
+ * action ne touche donc plus profile_roles, pour ne pas effacer les
+ * métiers déjà attribués (import de WFG 1, invitation lecteur…) à
+ * chaque enregistrement.
  */
 export async function saveIdentite(formData: FormData) {
   const { supabase, user } = await requireUser("/profil/identite");
 
   const category = texte(formData, "category");
-  if (category && CATEGORIES.includes(category)) {
-    // La fonction pose aussi le statut de validation : un producteur ou
-    // un talent passe en attente, un auteur n'en a pas besoin.
-    await supabase.rpc("choisir_categorie", { p_category: category });
+  const city = texte(formData, "city");
+  const country = texte(formData, "country");
+
+  if (!category || !CATEGORIES.includes(category)) {
+    redirect("/profil/identite?erreur=" + encodeURIComponent("Choisissez qui vous êtes."));
   }
+  if (!city) {
+    redirect("/profil/identite?erreur=" + encodeURIComponent("La ville est obligatoire."));
+  }
+  if (!country) {
+    redirect("/profil/identite?erreur=" + encodeURIComponent("Le pays est obligatoire."));
+  }
+
+  // La fonction pose aussi le statut de validation : un producteur ou un
+  // talent passe en attente, un auteur n'en a pas besoin.
+  await supabase.rpc("choisir_categorie", { p_category: category });
 
   await supabase
     .from("profiles")
-    .update({
-      city: texte(formData, "city"),
-      country: texte(formData, "country"),
-      updated_at: new Date().toISOString(),
-    })
+    .update({ city, country, updated_at: new Date().toISOString() })
     .eq("id", user.id);
 
   revalidatePath("/profil");
@@ -54,18 +62,24 @@ export async function saveIdentite(formData: FormData) {
 }
 
 /**
- * Bloc 2 — Votre parcours : biofilmographie, métiers, langues, référence,
- * agent, réseaux. Les métiers proposés dépendent de la catégorie choisie
- * en bloc 1 ; on ne retient que ceux du bon groupe, même si le formulaire
- * a été manipulé pour en envoyer d'autres.
+ * Bloc 2 — Votre parcours : seule la biofilmographie est obligatoire.
+ * Métiers, langues, référence, agent, réseaux restent facultatifs. Les
+ * métiers proposés dépendent de la catégorie choisie en bloc 1 ; on ne
+ * retient que ceux du bon groupe, même si le formulaire a été manipulé
+ * pour en envoyer d'autres.
  */
 export async function saveParcours(formData: FormData) {
   const { supabase, user } = await requireUser("/profil/parcours");
 
+  const biofilmo = texte(formData, "biofilmo");
+  if (!biofilmo) {
+    redirect("/profil/parcours?erreur=" + encodeURIComponent("La biofilmographie est obligatoire."));
+  }
+
   await supabase
     .from("profiles")
     .update({
-      biofilmo: texte(formData, "biofilmo"),
+      biofilmo,
       website: texte(formData, "website"),
       agent_name: texte(formData, "agent_name"),
       updated_at: new Date().toISOString(),
