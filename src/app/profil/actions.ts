@@ -25,7 +25,7 @@ const texte = (formData: FormData, cle: string) =>
   (formData.get(cle) as string)?.trim() || null;
 
 /**
- * Bloc 1 — Qui êtes-vous ? : catégorie, ville, pays, tous obligatoires.
+ * Bloc 1 — Qui êtes-vous ? : catégorie, langues, ville, pays, tous obligatoires.
  * Les métiers ont été retirés de ce bloc (reportés à plus tard) : cette
  * action ne touche donc plus profile_roles, pour ne pas effacer les
  * métiers déjà attribués (import de WFG 1, invitation lecteur…) à
@@ -48,17 +48,10 @@ export async function saveIdentite(formData: FormData) {
     redirect("/profil/identite?erreur=" + encodeURIComponent("Le pays est obligatoire."));
   }
 
-  // Un producteur ou un talent doit prouver au moins une expérience sur
-  // un film : sans référence, pas de profil producteur. L'administration
-  // juge ensuite sur cette référence. Un auteur n'a rien à prouver.
-  const website = texte(formData, "website");
-  const doitProuver = category === "producteur" || category === "talent";
-  if (doitProuver && !website) {
+  const languages = formData.getAll("languages").map(String);
+  if (!languages.length) {
     redirect(
-      "/profil/identite?erreur=" +
-        encodeURIComponent(
-          "La référence professionnelle est obligatoire pour un producteur ou un autre talent.",
-        ),
+      "/profil/identite?erreur=" + encodeURIComponent("Indiquez au moins une langue parlée."),
     );
   }
 
@@ -68,21 +61,23 @@ export async function saveIdentite(formData: FormData) {
 
   await supabase
     .from("profiles")
-    .update({
-      city,
-      country,
-      ...(doitProuver ? { website } : {}),
-      updated_at: new Date().toISOString(),
-    })
+    .update({ city, country, updated_at: new Date().toISOString() })
     .eq("id", user.id);
+
+  await supabase.from("profile_languages").delete().eq("profile_id", user.id);
+  await supabase
+    .from("profile_languages")
+    .insert(languages.map((language_code) => ({ profile_id: user.id, language_code })));
 
   revalidatePath("/profil");
   redirect("/profil?enregistre=1");
 }
 
 /**
- * Bloc 2 — Votre parcours : seule la biofilmographie est obligatoire.
- * Métiers, langues, référence, agent, réseaux restent facultatifs. Les
+ * Bloc 2 — Votre parcours : la biofilmographie est obligatoire pour tous,
+ * la référence professionnelle l'est pour un producteur ou un talent —
+ * c'est sur elle que l'administration juge son profil. Métiers, agent,
+ * réseaux restent facultatifs. Les
  * métiers proposés dépendent de la catégorie choisie en bloc 1 ; on ne
  * retient que ceux du bon groupe, même si le formulaire a été manipulé
  * pour en envoyer d'autres.
@@ -95,21 +90,33 @@ export async function saveParcours(formData: FormData) {
     redirect("/profil/parcours?erreur=" + encodeURIComponent("La biofilmographie est obligatoire."));
   }
 
-  await supabase
-    .from("profiles")
-    .update({
-      biofilmo,
-      website: texte(formData, "website"),
-      agent_name: texte(formData, "agent_name"),
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", user.id);
-
   const { data: profil } = await supabase
     .from("profiles")
     .select("category")
     .eq("id", user.id)
     .maybeSingle();
+
+  const website = texte(formData, "website");
+  const doitProuver = profil?.category === "producteur" || profil?.category === "talent";
+  if (doitProuver && !website) {
+    redirect(
+      "/profil/parcours?erreur=" +
+        encodeURIComponent(
+          "La référence professionnelle est obligatoire pour un producteur ou un autre talent.",
+        ),
+    );
+  }
+
+  await supabase
+    .from("profiles")
+    .update({
+      biofilmo,
+      website,
+      agent_name: texte(formData, "agent_name"),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+
   const autorises = metiersPourCategorie(profil?.category);
   if (autorises.length) {
     const roles = formData.getAll("roles").map(String).filter((r) => autorises.includes(r));
@@ -125,14 +132,6 @@ export async function saveParcours(formData: FormData) {
         .from("profile_roles")
         .insert(roles.map((role_slug) => ({ profile_id: user.id, role_slug })));
     }
-  }
-
-  const languages = formData.getAll("languages").map(String);
-  await supabase.from("profile_languages").delete().eq("profile_id", user.id);
-  if (languages.length) {
-    await supabase
-      .from("profile_languages")
-      .insert(languages.map((language_code) => ({ profile_id: user.id, language_code })));
   }
 
   for (const reseau of RESEAUX) {

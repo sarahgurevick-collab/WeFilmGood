@@ -7,7 +7,7 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     cle: "identite",
     numero: 1,
     titre: "Qui êtes-vous ?",
-    resume: "Auteur, producteur ou talent · votre référence professionnelle (producteurs et talents) · votre ville et votre pays.",
+    resume: "Auteur, producteur ou talent · langues parlées · votre ville et votre pays.",
     duree: "2 minutes · nécessaire pour déposer un projet",
   },
   {
@@ -15,7 +15,7 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     numero: 2,
     titre: "Votre parcours",
     resume:
-      "Biofilmographie · vos métiers · langues parlées · votre référence professionnelle · votre agent.",
+      "Biofilmographie · vos métiers · votre référence professionnelle · votre agent.",
     duree: "3 minutes · facultatif",
   },
   {
@@ -86,7 +86,7 @@ export async function calculerCompletion(
     pourcent,
     fait: {
       identite: !!profil?.category,
-      parcours: !!profil?.biofilmo || !!profil?.website || (metiers ?? 0) > 0 || (langues ?? 0) > 0,
+      parcours: !!profil?.biofilmo || !!profil?.website || (metiers ?? 0) > 0,
       gouts: (genres ?? 0) > 0,
     },
     profil: profil

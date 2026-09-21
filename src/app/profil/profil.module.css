@@ -310,14 +310,6 @@
   min-width: 0;
 }
 
-/* Le champ référence ne concerne que producteurs et talents : quand
-   « Auteur » est coché, il disparaît. Pas de required dessus — un champ
-   caché mais requis bloquerait l'envoi sans rien dire ; c'est le serveur
-   qui vérifie. */
-.formulaireIdentite:has(input[name="category"][value="auteur"]:checked) .reference {
-  display: none;
-}
-
 .pied {
   display: flex;
   align-items: center;

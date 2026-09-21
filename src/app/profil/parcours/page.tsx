@@ -28,19 +28,15 @@ export default async function ParcoursPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/connexion?next=/profil/parcours");
 
-  const [{ data: profil }, { data: liens }, { data: metiers }, { data: langues }, { data: toutesLangues }] =
-    await Promise.all([
-      supabase
-        .from("profiles")
-        .select("category, biofilmo, website, agent_name")
-        .eq("id", user.id)
-        .maybeSingle(),
-      supabase.from("profile_social_links").select("network, url").eq("profile_id", user.id),
-      supabase.from("profile_roles").select("role_slug").eq("profile_id", user.id),
-      supabase.from("profile_languages").select("language_code").eq("profile_id", user.id),
-      supabase.from("languages").select("code, label_fr").order("position"),
-    ]);
-  const aLangue = (code: string) => (langues ?? []).some((l) => l.language_code === code);
+  const [{ data: profil }, { data: liens }, { data: metiers }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("category, biofilmo, website, agent_name")
+      .eq("id", user.id)
+      .maybeSingle(),
+    supabase.from("profile_social_links").select("network, url").eq("profile_id", user.id),
+    supabase.from("profile_roles").select("role_slug").eq("profile_id", user.id),
+  ]);
   const valeursReseaux = Object.fromEntries((liens ?? []).map((l) => [l.network, l.url]));
   // Un auteur n'a pas à prouver une expérience professionnelle du cinéma —
   // c'est justement ce qu'on lui dit dans la biofilmographie. Cette
@@ -101,31 +97,20 @@ export default async function ParcoursPage({
           </p>
         )}
 
-        <div className={formStyles.field}>
-          <span>Langues parlées</span>
-          <div className={formStyles.roles}>
-            {(toutesLangues ?? []).map((l) => (
-              <label key={l.code} className={formStyles.role}>
-                <input type="checkbox" name="languages" value={l.code} defaultChecked={aLangue(l.code)} />
-                {l.label_fr}
-              </label>
-            ))}
-          </div>
-        </div>
-
         <label className={formStyles.field}>
           <span>{demandeReference ? "Votre référence professionnelle" : "Votre référence professionnelle, si vous en avez une"}</span>
           <input
             type="url"
             name="website"
+            required={demandeReference}
             defaultValue={profil?.website ?? ""}
             placeholder="https://www.imdb.com/name/…"
           />
           {demandeReference && (
             <span className={formStyles.hint}>
-              Votre page IMDb, votre Vimeo ou votre site personnel — de quoi montrer au
-              moins une expérience sur un film, un court métrage ou un clip. C&apos;est ce
-              qui distingue les professionnels sur la plateforme.
+              Obligatoire : votre page IMDb, votre Vimeo ou votre site personnel — de quoi
+              montrer au moins une expérience sur un film, un court métrage ou un clip.
+              C&apos;est sur cette référence que l&apos;administration valide votre profil.
             </span>
           )}
         </label>
