@@ -41,7 +41,10 @@ export async function createProject(formData: FormData) {
   const scenario = formData.get("scenario") as File | null;
 
   if (!title) echec("Le titre est obligatoire.");
-  if (format && !FORMATS.includes(format)) echec("Format de projet invalide.");
+  if (!logline) echec("La tagline est obligatoire.");
+  if (!format) echec("Le format est obligatoire.");
+  if (!genreSlug) echec("Le genre principal est obligatoire.");
+  if (!FORMATS.includes(format)) echec("Format de projet invalide.");
   if (budgetRange && !VALEURS_BUDGET.includes(budgetRange)) echec("Budget estimé invalide.");
   if (targetAudience && !VALEURS_AUDIENCE.includes(targetAudience)) echec("Audience ciblée invalide.");
   if (scenario && scenario.size > 0 && scenario.type !== "application/pdf") {

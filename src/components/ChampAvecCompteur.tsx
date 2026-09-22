@@ -19,6 +19,7 @@ export default function ChampAvecCompteur({
   limite,
   lignes = 3,
   valeurInitiale = "",
+  requis = false,
 }: {
   nom: string;
   libelle: string;
@@ -26,18 +27,23 @@ export default function ChampAvecCompteur({
   limite: number;
   lignes?: number;
   valeurInitiale?: string;
+  requis?: boolean;
 }) {
   const [valeur, setValeur] = useState(valeurInitiale);
   const restants = limite - valeur.length;
 
   return (
     <label className={formStyles.field}>
-      <span>{libelle}</span>
+      <span>
+        {libelle}
+        {requis ? " *" : ""}
+      </span>
       <textarea
         name={nom}
         rows={lignes}
         maxLength={limite}
         placeholder={indication}
+        required={requis}
         value={valeur}
         onChange={(e) => setValeur(e.target.value)}
       />

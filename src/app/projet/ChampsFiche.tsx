@@ -49,9 +49,10 @@ export type ValeursFiche = {
  * deposer.module.css : c'est elle qui n'affiche le détail des prix que
  * sur OUI.
  *
- * Seul le titre est marqué d'un astérisque : c'est le seul champ que la
- * création exige. Tout le reste peut venir plus tard, mais une fiche
- * mieux remplie est mieux mise en avant par le site.
+ * Quatre champs portent l'astérisque des éléments essentiels : le titre,
+ * le format, le genre principal et la tagline. Sans eux, pas de fiche.
+ * Tout le reste peut venir plus tard, mais une fiche mieux remplie est
+ * mieux mise en avant par le site.
  */
 export default function ChampsFiche({
   valeurs,
@@ -75,10 +76,10 @@ export default function ChampsFiche({
           bas dans le formulaire. */}
       <div className={styles.groupe}>
         <label className={formStyles.field}>
-          <span>Format</span>
-          <select name="format" defaultValue={valeurs?.format ?? ""}>
-            <option value="" disabled={!valeurs}>
-              {valeurs ? "Non précisé" : "Choisir un format"}
+          <span>Format *</span>
+          <select name="format" required defaultValue={valeurs?.format ?? ""}>
+            <option value="" disabled>
+              Choisir un format
             </option>
             {FORMATS.map((f) => (
               <option key={f.value} value={f.value}>
@@ -88,10 +89,10 @@ export default function ChampsFiche({
           </select>
         </label>
         <label className={formStyles.field}>
-          <span>Genre principal</span>
-          <select name="genre_slug" defaultValue={valeurs?.genre_slug ?? ""}>
-            <option value="" disabled={!valeurs}>
-              {valeurs ? "Non précisé" : "Choisir un genre"}
+          <span>Genre principal *</span>
+          <select name="genre_slug" required defaultValue={valeurs?.genre_slug ?? ""}>
+            <option value="" disabled>
+              Choisir un genre
             </option>
             {genres.map((g) => (
               <option key={g.slug} value={g.slug}>
@@ -131,6 +132,7 @@ export default function ChampsFiche({
         limite={300}
         lignes={3}
         valeurInitiale={valeurs?.logline ?? ""}
+        requis
       />
       <ChampAvecCompteur
         nom="synopsis"
