@@ -1,7 +1,7 @@
-/* La question des prix, avec l'interrupteur de WFG 1 (le même que celui
-   des langues du videopitch) : une piste rouge cerclée de noir, le texte
-   d'un côté, le rond de l'autre. NON : piste grise, rond à gauche.
-   OUI : piste rouge, rond à droite. Le détail n'apparaît que sur OUI. */
+/* La question des prix : un interrupteur sans texte — le code couleur
+   (gris/rouge) et la position du rond suffisent, et le détail des prix
+   qui s'ouvre sur OUI le confirme. Sans texte à traduire, il n'y a rien
+   à faire quand la plateforme passera à la traduction automatique. */
 .question {
   display: flex;
   align-items: center;
@@ -14,12 +14,11 @@
 .interrupteur {
   position: relative;
   flex-shrink: 0;
-  width: 96px;
-  height: 40px;
+  width: 52px;
+  height: 30px;
   border: 3px solid #000;
   border-radius: 999px;
   background: #9a9a9a;
-  color: #fff;
   transition: background 200ms ease;
 }
 
@@ -31,25 +30,12 @@
   cursor: pointer;
 }
 
-.texte {
-  position: absolute;
-  top: 50%;
-  left: 44px;
-  transform: translateY(-50%);
-  font-size: 17px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  pointer-events: none;
-  transition: left 200ms ease;
-}
-
 .rond {
   position: absolute;
   top: 50%;
-  left: 4px;
-  width: 24px;
-  height: 24px;
-  border: 3px solid #9a9a9a;
+  left: 3px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: #fff;
   transform: translateY(-50%);
@@ -61,12 +47,8 @@
   background: #da2c25;
 }
 
-.interrupteur:has(input:checked) .texte {
-  left: 16px;
-}
-
 .interrupteur:has(input:checked) .rond {
-  left: calc(100% - 30px);
+  left: calc(100% - 21px);
 }
 
 .interrupteur:has(input:focus-visible) {
@@ -80,18 +62,6 @@
 
 .formulaire:has(input[name="has_awards"]:checked) .prix {
   display: flex;
-}
-
-.oui {
-  display: none;
-}
-
-.interrupteur:has(input:checked) .non {
-  display: none;
-}
-
-.interrupteur:has(input:checked) .oui {
-  display: inline;
 }
 
 /* Le groupe des quatre menus déroulants — format, genre, budget,

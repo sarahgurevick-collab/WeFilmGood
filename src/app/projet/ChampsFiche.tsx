@@ -145,10 +145,6 @@ export default function ChampsFiche({
         <span>Votre projet a-t-il eu des prix ?</span>
         <span className={styles.interrupteur}>
           <input type="checkbox" name="has_awards" value="oui" defaultChecked={valeurs?.has_awards ?? false} />
-          <span className={styles.texte} aria-hidden="true">
-            <span className={styles.non}>NON</span>
-            <span className={styles.oui}>OUI</span>
-          </span>
           <span className={styles.rond} aria-hidden="true" />
         </span>
       </label>
