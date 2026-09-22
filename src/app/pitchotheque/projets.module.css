@@ -51,11 +51,84 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.4s var(--ease);
+  transform-origin: 50% 50%;
+  transition: transform 0.6s var(--ease), filter 0.6s var(--ease);
 }
 
-.carte:hover .vignette img {
-  transform: scale(1.04);
+/* L'effet « Live Photo » de l'iPhone, au survol : l'image s'anime un
+   court instant — elle s'approche en glissant, respire, puis se pose,
+   un peu plus proche et plus lumineuse. Comme une photo qui bouge
+   quand on la touche. Une fois l'animation jouée, elle reste posée
+   tant que la souris est dessus. */
+@keyframes live {
+  0% {
+    transform: scale(1) translate(0, 0);
+    filter: brightness(1) saturate(1);
+  }
+  18% {
+    transform: scale(1.09) translate(-1.2%, -0.6%);
+    filter: brightness(1.06) saturate(1.1);
+  }
+  45% {
+    transform: scale(1.12) translate(1%, 0.5%);
+    filter: brightness(1.08) saturate(1.15);
+  }
+  72% {
+    transform: scale(1.08) translate(-0.4%, 0.2%);
+    filter: brightness(1.05) saturate(1.1);
+  }
+  100% {
+    transform: scale(1.06) translate(0, 0);
+    filter: brightness(1.04) saturate(1.08);
+  }
+}
+
+.carte:hover .vignette img,
+.carte:focus-visible .vignette img {
+  animation: live 2.2s var(--ease) both;
+}
+
+/* Le petit rond « LIVE » de l'iPhone — des cercles concentriques, ronds
+   comme le logo — apparaît en haut à droite pendant l'effet. */
+.live {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.live svg {
+  width: 14px;
+  height: 14px;
+}
+
+.carte:hover .live,
+.carte:focus-visible .live {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Pour qui a demandé à son système de limiter les animations : le
+   simple rapprochement d'avant, sans mouvement. */
+@media (prefers-reduced-motion: reduce) {
+  .carte:hover .vignette img,
+  .carte:focus-visible .vignette img {
+    animation: none;
+    transform: scale(1.04);
+  }
 }
 
 .sansImage {
