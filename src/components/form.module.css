@@ -199,6 +199,23 @@
   opacity: 0.85;
 }
 
+/* Rouge WFG, comme sur l'ancien site ; au clic il blanchit, le contour reste rouge. */
+.rouge {
+  background: var(--rouge-wfg);
+  border-color: var(--rouge-wfg);
+  color: #fff;
+  transition:
+    opacity 0.2s ease,
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.rouge:active {
+  background: #fff;
+  color: var(--rouge-wfg);
+  opacity: 1;
+}
+
 .error {
   font-size: 12px;
   color: var(--erreur);

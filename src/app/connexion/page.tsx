@@ -13,7 +13,7 @@ export default async function ConnexionPage({
 
   if (envoye) {
     return (
-      <AuthCard active="connexion" theme="clair">
+      <AuthCard active="connexion">
         <p className={formStyles.hint}>
           Si un compte existe pour <strong>{envoye}</strong>, un lien de connexion
           vient d&apos;y être envoyé. Ouvrez votre boîte mail et cliquez sur le
@@ -29,7 +29,7 @@ export default async function ConnexionPage({
   }
 
   return (
-    <AuthCard active="connexion" theme="clair">
+    <AuthCard active="connexion">
       <form className={formStyles.form} action={signIn}>
         <input type="hidden" name="next" value={nextPath} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
@@ -50,7 +50,7 @@ export default async function ConnexionPage({
           />
         </label>
 
-        <button type="submit" className={formStyles.submitWide}>
+        <button type="submit" className={`${formStyles.submitWide} ${formStyles.rouge}`}>
           Recevoir mon lien de connexion
         </button>
       </form>
