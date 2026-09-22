@@ -25,3 +25,7 @@ where legacy_id = '2142' and genre_legacy = 'Expérimental';
 update public.projects
 set logline = 'De la naissance d''un bébé on suit l''existence humaine en sautant d''une vie à l''autre, en utilisant un procédé visuel, une main en touchant une autre.'
 where legacy_id = '2142';
+
+-- 22/09/2026 — « Lady Thatcher » (WFG 1 n° 3697) : comédie.
+update public.projects set genre_slug = 'comedie'
+where legacy_id = '3697' and genre_legacy = 'Expérimental';
