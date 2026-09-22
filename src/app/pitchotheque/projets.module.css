@@ -115,7 +115,10 @@
   font-weight: 700;
 }
 
-/* ---- Recherche avancée : le bouton rouge de WFG 1, qui se déplie ---- */
+/* ---- Recherche avancée : le bouton rouge de WFG 1, qui se déplie ----
+   Fermé, c'est un bouton rouge. Ouvert, le cadre rouge entoure les
+   menus et le titre se pose sur son bord supérieur, avec le rond ⊖
+   pour refermer : la présentation de WFG 1. */
 
 .avancee {
   margin: 0 0 28px;
@@ -145,6 +148,17 @@
   filter: brightness(0.92);
 }
 
+.avanceeLoupe {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.avanceeFermer {
+  display: none;
+  font-size: 22px;
+  line-height: 1;
+}
+
 .avanceePastille {
   display: inline-flex;
   align-items: center;
@@ -158,14 +172,43 @@
   font-size: 12px;
 }
 
+/* Ouvert : le cadre, et le titre sur son bord. */
+.avancee[open] {
+  margin-top: 12px;
+  padding: 0 20px 20px;
+  border: 1px solid var(--rouge-wfg);
+  border-radius: 14px;
+}
+
+.avancee[open] .avanceeBouton {
+  height: auto;
+  margin: -14px 0 0 4px;
+  padding: 0 10px;
+  border-radius: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 19px;
+  font-weight: 400;
+}
+
+.avancee[open] .avanceeBouton:hover {
+  filter: none;
+}
+
+.avancee[open] .avanceeFermer {
+  display: inline;
+}
+
+.avancee[open] .avanceePastille {
+  background: var(--rouge-wfg);
+  color: #fff;
+}
+
 .avanceePanneau {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px 24px;
-  margin-top: 14px;
-  padding: 20px;
-  border: 1px solid var(--rouge-wfg);
-  border-radius: 14px;
+  margin-top: 18px;
 }
 
 .avanceeActions {
