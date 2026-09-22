@@ -58,7 +58,7 @@ export default function ReseauxSociaux({
               className={styles.retirer}
               aria-label={`Retirer ${reseau.label}`}
             >
-              ×
+              ⊖
             </button>
           </div>
         );

@@ -31,7 +31,9 @@
   border-radius: 12px;
 }
 
-/* Croix de fermeture : seul moyen de refermer le nuage, le bouton
+/* Le rond ⊖ pour refermer — jamais une croix : le logo est rond, et
+   c'est le même signe partout sur le site (nuage, contact, réseaux,
+   recherche avancée). Seul moyen de refermer le nuage, le bouton
    permanent de la barre de recherche ayant été retiré. */
 .fermerNuage {
   position: absolute;
@@ -41,7 +43,7 @@
   border: none;
   padding: 0 4px;
   line-height: 1;
-  font-size: 26px;
+  font-size: 28px;
   color: #e2231a;
   cursor: pointer;
 }
@@ -50,7 +52,7 @@
   opacity: 0.7;
 }
 
-/* Le titre et le réglage +/- sur une même ligne, la croix de fermeture
+/* Le titre et le réglage +/- sur une même ligne, le rond de fermeture
    gardant son coin en haut à droite. */
 .nuageEntete {
   display: flex;

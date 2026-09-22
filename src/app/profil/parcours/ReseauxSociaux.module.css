@@ -16,9 +16,10 @@
   min-width: 0;
 }
 
+/* Le rond ⊖ pour retirer une ligne, comme partout sur le site — jamais une croix. */
 .retirer {
   flex-shrink: 0;
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1;
   color: var(--dim);
   padding: 0 4px;
