@@ -1,4 +1,5 @@
 import AvantageAdhesion from "@/components/AvantageAdhesion";
+import ChoixCredits from "@/components/ChoixCredits";
 import PageShell from "@/components/PageShell";
 import SelecteurAdhesion from "@/components/SelecteurAdhesion";
 import { createClient } from "@/lib/supabase/server";
@@ -22,9 +23,7 @@ export default async function AdhesionPage() {
               La Pitchothèque et le Finder — pour savoir combien de projets
               répondent à vos envies.
             </AvantageAdhesion>
-            <AvantageAdhesion icone="oeil">
-              1 projet / mois (random)
-            </AvantageAdhesion>
+            <AvantageAdhesion icone="oeil">1 crédit par semaine (random)</AvantageAdhesion>
           </ul>,
 
           <ul key="50" className={styles.avantages}>
@@ -37,13 +36,10 @@ export default async function AdhesionPage() {
               portés par les projets, avec leurs chiffres, à ouvrir aussi large
               que vous voulez
             </AvantageAdhesion>
-            <AvantageAdhesion icone="oeil">
-              1 projet / mois (random)
-            </AvantageAdhesion>
-            <AvantageAdhesion icone="nuage">1 projet</AvantageAdhesion>
-            <AvantageAdhesion icone="oeil">
-              5 projets par mois (random)
-            </AvantageAdhesion>
+            <AvantageAdhesion icone="oeil">1 crédit par semaine (random)</AvantageAdhesion>
+            <li>
+              <ChoixCredits />
+            </li>
           </ul>,
 
           <ul key="500" className={styles.avantages}>
