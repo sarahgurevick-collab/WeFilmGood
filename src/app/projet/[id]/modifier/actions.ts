@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { chargerProjetAModifier } from "../../blocs";
-import { LIEUX } from "@/lib/lieux";
 import { AUDIENCES, BUDGETS } from "../../ChampsFiche";
 
 const FORMATS = ["long_metrage", "court_metrage", "serie", "immersif_360_vr"];
@@ -22,7 +21,7 @@ const VALEURS_AUDIENCE = AUDIENCES.map((a) => a.value);
  */
 export async function modifierProjet(formData: FormData) {
   const id = formData.get("project_id") as string;
-  const { supabase, projet } = await chargerProjetAModifier(id, "fiche");
+  const { supabase } = await chargerProjetAModifier(id, "fiche");
 
   const echec: (message: string) => never = (message) =>
     redirect(`/projet/${id}/modifier?erreur=${encodeURIComponent(message)}`);
@@ -34,9 +33,6 @@ export async function modifierProjet(formData: FormData) {
   const genreSlug = (formData.get("genre_slug") as string)?.trim();
   const budgetRange = formData.get("budget_range") as string;
   const targetAudience = formData.get("target_audience") as string;
-  const country = (formData.get("country") as string)?.trim();
-  // Un lieu hérité de WFG 1 absent de la liste reste acceptable, tel quel.
-  const lieuActuel = projet.country;
   const hasAwards = formData.get("has_awards") === "oui";
   const awardsDetail = hasAwards ? (formData.get("awards_detail") as string)?.trim() || null : null;
 
@@ -47,7 +43,6 @@ export async function modifierProjet(formData: FormData) {
   if (!FORMATS.includes(format)) echec("Format de projet invalide.");
   if (budgetRange && !VALEURS_BUDGET.includes(budgetRange)) echec("Budget estimé invalide.");
   if (targetAudience && !VALEURS_AUDIENCE.includes(targetAudience)) echec("Audience ciblée invalide.");
-  if (country && !LIEUX.includes(country) && country !== lieuActuel) echec("Lieu de l'histoire invalide.");
 
   const { error } = await supabase
     .from("projects")
@@ -59,7 +54,6 @@ export async function modifierProjet(formData: FormData) {
       genre_slug: genreSlug || null,
       budget_range: budgetRange || null,
       target_audience: targetAudience || null,
-      country: country || null,
       has_awards: hasAwards,
       awards_detail: awardsDetail,
       updated_at: new Date().toISOString(),

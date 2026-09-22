@@ -267,7 +267,6 @@ export default async function ProjetPage({
           project.genre?.label_fr,
           FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
           project.language,
-          project.country,
           project.budget_range ? BUDGET_LISIBLE[project.budget_range] : null,
           project.target_audience ? AUDIENCE_LISIBLE[project.target_audience] : null,
         ]

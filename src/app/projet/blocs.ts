@@ -15,7 +15,7 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     numero: 1,
     titre: "La fiche",
     resume:
-      "Le titre · la tagline · la logline · le format, le genre, le budget, l'audience et le lieu de l'histoire · les prix reçus.",
+      "Le titre · la tagline · la logline · le format, le genre, le budget et l'audience · les prix reçus.",
     duree: "5 minutes · c'est elle qui crée le projet",
   },
   {
@@ -50,7 +50,7 @@ const arrondi = (n: number, total: number) => (total === 0 ? 0 : Math.round((n /
  * (`pourcent`, qui monte jusqu'à 100 % seulement quand tout y est —
  * une fiche mieux remplie est mieux mise en avant par le site).
  *
- *  - la fiche : tagline, logline, format, genre, budget, audience, lieu ;
+ *  - la fiche : tagline, logline, format, genre, budget, audience ;
  *  - les documents : l'image de présentation, le Moodboard, le scénario ;
  *  - les personnages : jusqu'à trois, au-delà desquels le pourcentage
  *    plafonne — un producteur n'a pas besoin d'une liste plus longue
@@ -63,7 +63,7 @@ export async function etatDesBlocs(
   const [{ data: projet }, { data: fichiers }, { count: personnages }] = await Promise.all([
     supabase
       .from("projects")
-      .select("logline, synopsis, format, genre_slug, budget_range, target_audience, country")
+      .select("logline, synopsis, format, genre_slug, budget_range, target_audience")
       .eq("id", projectId)
       .maybeSingle(),
     supabase.from("project_files").select("kind").eq("project_id", projectId),
@@ -86,7 +86,6 @@ export async function etatDesBlocs(
     !!projet?.genre_slug,
     !!projet?.budget_range,
     !!projet?.target_audience,
-    !!projet?.country,
   ];
 
   return {
@@ -113,7 +112,6 @@ export type ProjetAModifier = {
   genre_slug: string | null;
   budget_range: string | null;
   target_audience: string | null;
-  country: string | null;
   has_awards: boolean;
   awards_detail: string | null;
 };
@@ -136,7 +134,7 @@ export async function chargerProjetAModifier(id: string, cle: Bloc) {
     supabase
       .from("projects")
       .select(
-        "id, owner_id, title, logline, synopsis, format, genre_slug, budget_range, target_audience, country, has_awards, awards_detail",
+        "id, owner_id, title, logline, synopsis, format, genre_slug, budget_range, target_audience, has_awards, awards_detail",
       )
       .eq("id", id)
       .maybeSingle<ProjetAModifier>(),

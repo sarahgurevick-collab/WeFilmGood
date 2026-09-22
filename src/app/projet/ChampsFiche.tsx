@@ -1,6 +1,5 @@
 import ChampAvecCompteur from "@/components/ChampAvecCompteur";
 import formStyles from "@/components/form.module.css";
-import { LIEUX } from "@/lib/lieux";
 import styles from "./deposer.module.css";
 
 // Un documentaire ou un film d'animation n'est pas un format : selon sa
@@ -40,7 +39,6 @@ export type ValeursFiche = {
   genre_slug: string | null;
   budget_range: string | null;
   target_audience: string | null;
-  country: string | null;
   has_awards: boolean;
   awards_detail: string | null;
 };
@@ -70,9 +68,11 @@ export default function ChampsFiche({
         <input type="text" name="title" required defaultValue={valeurs?.title ?? ""} />
       </label>
 
-      {/* Format, genre, budget, audience et lieu de l'histoire : une seule
-          décision d'ensemble, groupée juste sous le titre plutôt que cinq
-          champs isolés plus bas dans le formulaire. */}
+      {/* Format, genre, budget et audience : une seule décision d'ensemble,
+          groupée juste sous le titre plutôt que quatre champs isolés plus
+          bas dans le formulaire. Pas de « lieu de l'histoire » : sur WFG 2,
+          ce sont les mots-clés générés qui s'en chargent, bien mieux que la
+          liste manuelle de WFG 1 (décision de Sarah, 22/09/2026). */}
       <div className={styles.groupe}>
         <label className={formStyles.field}>
           <span>Format *</span>
@@ -118,22 +118,6 @@ export default function ChampsFiche({
             {AUDIENCES.map((a) => (
               <option key={a.value} value={a.value}>
                 {a.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={formStyles.field}>
-          <span>Lieu de l&apos;histoire</span>
-          <select name="country" defaultValue={valeurs?.country ?? ""}>
-            <option value="">Non précisé</option>
-            {/* Un lieu hérité de WFG 1 qui ne serait plus dans la liste
-                reste proposé, pour ne pas le perdre à l'enregistrement. */}
-            {valeurs?.country && !LIEUX.includes(valeurs.country) && (
-              <option value={valeurs.country}>{valeurs.country}</option>
-            )}
-            {LIEUX.map((lieu) => (
-              <option key={lieu} value={lieu}>
-                {lieu}
               </option>
             ))}
           </select>
