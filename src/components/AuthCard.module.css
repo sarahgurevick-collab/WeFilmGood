@@ -1,24 +1,25 @@
+/* Cadre calé en haut, pas centré : il ne bouge pas d'une page à l'autre. */
 .page {
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 48px 16px;
+  padding: 64px 16px 48px;
   background: var(--bg);
   color: var(--fg);
 }
 
 /*
- * Même hauteur pour la connexion et l'inscription : on passe d'un onglet à
- * l'autre sans que le cadre saute. La hauteur est celle de l'inscription,
- * la plus longue ; le contenu plus court se centre dedans.
+ * Même hauteur pour la connexion et l'inscription, avec une marge pour la
+ * plus longue : onglets, logo et bouton restent à la même place d'un écran
+ * à l'autre.
  */
 .card {
   display: flex;
   flex-direction: column;
   width: 100%;
   max-width: 420px;
-  min-height: 660px;
+  min-height: 720px;
   border: 1px solid var(--bordure-douce);
   border-radius: 20px;
   padding: 36px 32px 32px;
@@ -36,8 +37,16 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: 16px;
+}
+
+/* Le formulaire prend la hauteur restante et pousse son bouton tout en bas. */
+.contenu > form {
+  flex: 1;
+}
+
+.contenu > form > button[type="submit"] {
+  margin-top: auto;
 }
 
 .brand {
@@ -70,7 +79,7 @@
   border: 1px solid var(--bordure-douce);
   border-radius: 999px;
   padding: 4px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .tab,

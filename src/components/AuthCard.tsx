@@ -24,11 +24,6 @@ export default function AuthCard({
   return (
     <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
       <div className={`${styles.card} ${carteClaire ? `clair ${styles.carteClaire}` : ""}`}>
-        <Link href="/" className={styles.brand}>
-          <LogoComplet hauteur={48} />
-          <span className={styles.tagline}>The best stories wherever they are</span>
-        </Link>
-
         <nav className={styles.tabs}>
           <Link
             href="/connexion"
@@ -43,6 +38,11 @@ export default function AuthCard({
             Créer un profil
           </Link>
         </nav>
+
+        <Link href="/" className={styles.brand}>
+          <LogoComplet hauteur={48} />
+          <span className={styles.tagline}>The best stories wherever they are</span>
+        </Link>
 
         <div className={styles.contenu}>{children}</div>
       </div>
