@@ -23,7 +23,7 @@ export default async function AdhesionPage() {
               La Pitchothèque et le Finder — pour savoir combien de projets
               répondent à vos envies.
             </AvantageAdhesion>
-            <AvantageAdhesion icone="oeil">1 crédit par semaine (random)</AvantageAdhesion>
+            <AvantageAdhesion icone="oeil">Focus de la semaine : 1 projet à découvrir</AvantageAdhesion>
           </ul>,
 
           <ul key="50" className={styles.avantages}>
