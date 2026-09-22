@@ -62,7 +62,7 @@ export default async function BlocProjet({
           <p className={profilStyles.menuNote}>
             {projet
               ? "Chaque bloc s'enregistre seul. Vous pouvez partir et revenir quand vous voulez."
-              : "Les illustrations et les personnages s'ouvrent dès que la fiche est créée."}
+              : "Les documents et les personnages s'ouvrent dès que la fiche est créée."}
           </p>
         </aside>
 

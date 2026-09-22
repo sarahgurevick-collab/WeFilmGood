@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
       { source: "/projets/:path*", destination: "/projet/:path*", permanent: true },
       { source: "/deposer", destination: "/projet", permanent: true },
       { source: "/deposer/:path*", destination: "/projet/:path*", permanent: true },
+      // Le bloc 2 de la fiche s'appelait « illustrations » pendant une journée.
+      { source: "/projet/:id/illustrations", destination: "/projet/:id/documents", permanent: true },
     ];
   },
 };

@@ -7,7 +7,7 @@ import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../deposer.module.css";
 import { modifierProjet } from "./actions";
 
-/** Bloc 1 d'une fiche existante : titre, tagline, logline, format, genre, prix, scénario. */
+/** Bloc 1 d'une fiche existante : titre, tagline, logline, format, genre, budget, audience, prix. */
 export default async function ModifierProjetPage({
   params,
   searchParams,
@@ -19,17 +19,7 @@ export default async function ModifierProjetPage({
   const { erreur } = await searchParams;
   const { supabase, projet, pourAutrui } = await chargerProjetAModifier(id, "fiche");
 
-  const [{ data: genres }, { data: scenario }] = await Promise.all([
-    supabase.from("genres").select("slug, label_fr").order("position"),
-    supabase
-      .from("project_files")
-      .select("original_name")
-      .eq("project_id", id)
-      .eq("kind", "scenario")
-      .order("uploaded_at", { ascending: false })
-      .limit(1)
-      .maybeSingle<{ original_name: string | null }>(),
-  ]);
+  const { data: genres } = await supabase.from("genres").select("slug, label_fr").order("position");
 
   return (
     <BlocProjet actif="fiche" projet={projet}>
@@ -48,11 +38,7 @@ export default async function ModifierProjetPage({
         <input type="hidden" name="project_id" value={projet.id} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
-        <ChampsFiche
-          valeurs={projet}
-          genres={genres ?? []}
-          scenarioActuel={scenario?.original_name ?? null}
-        />
+        <ChampsFiche valeurs={projet} genres={genres ?? []} />
 
         <div className={profilStyles.pied}>
           <Link href={`/projet/${id}`} className={profilStyles.lienDiscret}>

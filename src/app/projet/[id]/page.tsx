@@ -434,7 +434,7 @@ export default async function ProjetPage({
 
       {moodboard.length > 0 && (
         <>
-          <h2 className={presentation.section}>Mood board</h2>
+          <h2 className={presentation.section}>Moodboard</h2>
           <ul className={presentation.moodboard}>
             {moodboard.map((m) =>
               urls.get(m.storage_path) ? (

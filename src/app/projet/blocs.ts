@@ -4,10 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 
 /**
  * La fiche projet se remplit en trois blocs, comme le profil : la fiche
- * elle-même, ses illustrations, ses personnages. Le premier crée le
+ * elle-même, ses documents, ses personnages. Le premier crée le
  * projet ; les deux autres s'ouvrent ensuite, quand l'auteur veut.
  */
-export type Bloc = "fiche" | "illustrations" | "personnages";
+export type Bloc = "fiche" | "documents" | "personnages";
 
 export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; duree: string }[] = [
   {
@@ -15,15 +15,15 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     numero: 1,
     titre: "La fiche",
     resume:
-      "Le titre · la tagline · la logline · le format, le genre, le budget et l'audience · les prix reçus · le scénario.",
+      "Le titre · la tagline · la logline · le format, le genre, le budget et l'audience · les prix reçus.",
     duree: "5 minutes · c'est elle qui crée le projet",
   },
   {
-    cle: "illustrations",
+    cle: "documents",
     numero: 2,
-    titre: "Les illustrations",
+    titre: "Documents",
     resume:
-      "L'image de présentation, celle qui représente votre projet dans la pitchothèque · un mood board, visible sur la fiche seulement.",
+      "L'image de présentation, celle qui représente votre projet dans la pitchothèque · le Moodboard, visible sur la fiche seulement · le scénario en PDF.",
     duree: "3 minutes · facultatif",
   },
   {
@@ -50,9 +50,8 @@ const arrondi = (n: number, total: number) => (total === 0 ? 0 : Math.round((n /
  * (`pourcent`, qui monte jusqu'à 100 % seulement quand tout y est —
  * une fiche mieux remplie est mieux mise en avant par le site).
  *
- *  - la fiche : tagline, logline, format, genre, budget, audience,
- *    scénario — sept éléments ;
- *  - les illustrations : l'image de présentation, puis le mood board ;
+ *  - la fiche : tagline, logline, format, genre, budget, audience ;
+ *  - les documents : l'image de présentation, le Moodboard, le scénario ;
  *  - les personnages : jusqu'à trois, au-delà desquels le pourcentage
  *    plafonne — un producteur n'a pas besoin d'une liste plus longue
  *    pour se faire une idée du casting.
@@ -87,18 +86,17 @@ export async function etatDesBlocs(
     !!projet?.genre_slug,
     !!projet?.budget_range,
     !!projet?.target_audience,
-    aScenario,
   ];
 
   return {
     fait: {
       fiche: !!projet?.logline?.trim() && !!projet?.synopsis?.trim(),
-      illustrations: aVignette,
+      documents: aVignette,
       personnages: nombrePersonnages > 0,
     },
     pourcent: {
       fiche: arrondi(criteresFiche.filter(Boolean).length, criteresFiche.length),
-      illustrations: arrondi([aVignette, aMoodboard].filter(Boolean).length, 2),
+      documents: arrondi([aVignette, aMoodboard, aScenario].filter(Boolean).length, 3),
       personnages: arrondi(Math.min(nombrePersonnages, 3), 3),
     },
   };

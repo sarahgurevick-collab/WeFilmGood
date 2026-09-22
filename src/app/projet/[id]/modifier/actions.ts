@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { chargerProjetAModifier } from "../../blocs";
-import { deposerScenario } from "../fichiers";
 import { AUDIENCES, BUDGETS } from "../../ChampsFiche";
 
 const FORMATS = ["long_metrage", "court_metrage", "serie", "immersif_360_vr"];
@@ -22,7 +21,7 @@ const VALEURS_AUDIENCE = AUDIENCES.map((a) => a.value);
  */
 export async function modifierProjet(formData: FormData) {
   const id = formData.get("project_id") as string;
-  const { supabase, projet } = await chargerProjetAModifier(id, "fiche");
+  const { supabase } = await chargerProjetAModifier(id, "fiche");
 
   const echec: (message: string) => never = (message) =>
     redirect(`/projet/${id}/modifier?erreur=${encodeURIComponent(message)}`);
@@ -36,7 +35,6 @@ export async function modifierProjet(formData: FormData) {
   const targetAudience = formData.get("target_audience") as string;
   const hasAwards = formData.get("has_awards") === "oui";
   const awardsDetail = hasAwards ? (formData.get("awards_detail") as string)?.trim() || null : null;
-  const scenario = formData.get("scenario") as File | null;
 
   if (!title) echec("Le titre est obligatoire.");
   if (!logline) echec("La tagline est obligatoire.");
@@ -45,9 +43,6 @@ export async function modifierProjet(formData: FormData) {
   if (!FORMATS.includes(format)) echec("Format de projet invalide.");
   if (budgetRange && !VALEURS_BUDGET.includes(budgetRange)) echec("Budget estimé invalide.");
   if (targetAudience && !VALEURS_AUDIENCE.includes(targetAudience)) echec("Audience ciblée invalide.");
-  if (scenario && scenario.size > 0 && scenario.type !== "application/pdf") {
-    echec("Le scénario doit être un fichier PDF.");
-  }
 
   const { error } = await supabase
     .from("projects")
@@ -66,13 +61,6 @@ export async function modifierProjet(formData: FormData) {
     .eq("id", id);
 
   if (error) echec(error.message);
-
-  if (scenario && scenario.size > 0) {
-    const depose = await deposerScenario(supabase, projet.owner_id, id, scenario);
-    if (!depose) {
-      echec("La fiche est enregistrée, mais le scénario n'a pas pu l'être. Réessayez, ou écrivez-nous.");
-    }
-  }
 
   revalidatePath(`/projet/${id}`);
   redirect(`/projet/${id}?enregistre=1`);

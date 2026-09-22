@@ -3,18 +3,19 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { chargerProjetAModifier } from "../../blocs";
-import { IMAGES, MAX_MOODBOARD, deposerImage, retirerImages } from "../fichiers";
+import { IMAGES, MAX_MOODBOARD, deposerImage, deposerScenario, retirerImages } from "../fichiers";
 
 /**
  * Bloc 2 — enregistre l'image de présentation (une seule : la nouvelle
- * remplace l'ancienne) et ajoute des images au mood board.
+ * remplace l'ancienne), ajoute des photos au Moodboard, et dépose le
+ * scénario en PDF.
  */
-export async function enregistrerIllustrations(formData: FormData) {
+export async function enregistrerDocuments(formData: FormData) {
   const id = formData.get("project_id") as string;
-  const { supabase, projet } = await chargerProjetAModifier(id, "illustrations");
+  const { supabase, projet } = await chargerProjetAModifier(id, "documents");
 
   const echec: (message: string) => never = (message) =>
-    redirect(`/projet/${id}/illustrations?erreur=${encodeURIComponent(message)}`);
+    redirect(`/projet/${id}/documents?erreur=${encodeURIComponent(message)}`);
 
   const vignette = formData.get("vignette") as File | null;
   const moodboard = (formData.getAll("moodboard") as (File | string)[]).filter(
@@ -25,7 +26,11 @@ export async function enregistrerIllustrations(formData: FormData) {
     echec("L'image de présentation doit être un JPG ou un PNG.");
   }
   if (moodboard.some((f) => !IMAGES.includes(f.type))) {
-    echec("Le mood board n'accepte que des images JPG ou PNG.");
+    echec("Le Moodboard n'accepte que des photos JPG ou PNG.");
+  }
+  const scenario = formData.get("scenario") as File | null;
+  if (scenario && scenario.size > 0 && scenario.type !== "application/pdf") {
+    echec("Le scénario doit être un fichier PDF.");
   }
 
   const { count: existantes } = await supabase
@@ -34,7 +39,7 @@ export async function enregistrerIllustrations(formData: FormData) {
     .eq("project_id", id)
     .eq("kind", "moodboard");
   if ((existantes ?? 0) + moodboard.length > MAX_MOODBOARD) {
-    echec(`Le mood board tient en ${MAX_MOODBOARD} images au plus.`);
+    echec(`Le Moodboard tient en ${MAX_MOODBOARD} photos au plus.`);
   }
 
   if (vignette && vignette.size > 0) {
@@ -72,7 +77,7 @@ export async function enregistrerIllustrations(formData: FormData) {
   for (const image of moodboard) {
     const chemin = await deposerImage(supabase, projet.owner_id, id, image, "moodboard");
     if (!chemin) {
-      echec("Une image du mood board n'a pas pu être enregistrée. Réessayez, ou écrivez-nous.");
+      echec("Une photo du Moodboard n'a pas pu être enregistrée. Réessayez, ou écrivez-nous.");
     }
     await supabase.from("project_files").insert({
       project_id: id,
@@ -82,15 +87,20 @@ export async function enregistrerIllustrations(formData: FormData) {
     });
   }
 
+  if (scenario && scenario.size > 0) {
+    const depose = await deposerScenario(supabase, projet.owner_id, id, scenario);
+    if (!depose) echec("Le scénario n'a pas pu être enregistré. Réessayez, ou écrivez-nous.");
+  }
+
   revalidatePath(`/projet/${id}`);
-  redirect(`/projet/${id}/illustrations?enregistre=1`);
+  redirect(`/projet/${id}/documents?enregistre=1`);
 }
 
-/** Retire une image du mood board (ou la vignette). Jamais le scénario. */
+/** Retire une photo du Moodboard (ou la vignette). Jamais le scénario. */
 export async function retirerImage(formData: FormData) {
   const id = formData.get("project_id") as string;
   const fileId = formData.get("file_id") as string;
-  const { supabase } = await chargerProjetAModifier(id, "illustrations");
+  const { supabase } = await chargerProjetAModifier(id, "documents");
 
   const { data: fichier } = await supabase
     .from("project_files")
@@ -105,5 +115,5 @@ export async function retirerImage(formData: FormData) {
   }
 
   revalidatePath(`/projet/${id}`);
-  redirect(`/projet/${id}/illustrations`);
+  redirect(`/projet/${id}/documents`);
 }

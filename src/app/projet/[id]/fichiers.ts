@@ -8,7 +8,7 @@ import { alleger } from "@/lib/image";
  * été refusé — l'appelant prévient alors l'auteur, au lieu de se taire.
  */
 export const IMAGES = ["image/jpeg", "image/png", "image/webp"];
-export const MAX_MOODBOARD = 8;
+export const MAX_MOODBOARD = 10;
 
 const BUCKET_IMAGES = "project-media";
 

@@ -9,7 +9,7 @@ import styles from "./deposer.module.css";
 
 /**
  * Bloc 1 d'une nouvelle fiche : la fiche elle-même. C'est elle qui crée
- * le projet ; les illustrations et les personnages viennent ensuite.
+ * le projet ; les documents et les personnages viennent ensuite.
  */
 export default async function NouvelleFichePage({
   searchParams,

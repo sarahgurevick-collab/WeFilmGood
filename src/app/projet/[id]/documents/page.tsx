@@ -5,15 +5,16 @@ import BlocProjet from "../../BlocProjet";
 import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { MAX_MOODBOARD, signerImages } from "../fichiers";
-import { enregistrerIllustrations, retirerImage } from "./actions";
+import { enregistrerDocuments, retirerImage } from "./actions";
 
-type Fichier = { id: string; kind: string; storage_path: string };
+type Fichier = { id: string; kind: string; storage_path: string; original_name: string | null };
 
 /**
- * Bloc 2 : l'image de présentation — celle de la pitchothèque — et le
- * mood board, qui n'apparaît que sur la fiche.
+ * Bloc 2 : les documents. L'image de présentation — celle de la
+ * pitchothèque —, le Moodboard, qui n'apparaît que sur la fiche, et le
+ * scénario en PDF, confidentiel.
  */
-export default async function IllustrationsPage({
+export default async function DocumentsPage({
   params,
   searchParams,
 }: {
@@ -22,18 +23,18 @@ export default async function IllustrationsPage({
 }) {
   const { id } = await params;
   const { erreur, cree, enregistre } = await searchParams;
-  const { supabase, projet, pourAutrui } = await chargerProjetAModifier(id, "illustrations");
+  const { supabase, projet, pourAutrui } = await chargerProjetAModifier(id, "documents");
 
   const { data: fichiers } = await supabase
     .from("project_files")
-    .select("id, kind, storage_path")
+    .select("id, kind, storage_path, original_name")
     .eq("project_id", id)
-    .in("kind", ["vignette", "moodboard"])
     .order("uploaded_at", { ascending: true })
     .returns<Fichier[]>();
 
   const vignette = (fichiers ?? []).filter((f) => f.kind === "vignette").at(-1) ?? null;
   const moodboard = (fichiers ?? []).filter((f) => f.kind === "moodboard");
+  const scenario = (fichiers ?? []).filter((f) => f.kind === "scenario").at(-1) ?? null;
   const urls = await signerImages(supabase, [
     vignette?.storage_path,
     ...moodboard.map((m) => m.storage_path),
@@ -41,14 +42,14 @@ export default async function IllustrationsPage({
   const accept = "image/jpeg,image/png,image/webp";
 
   return (
-    <BlocProjet actif="illustrations" projet={projet}>
+    <BlocProjet actif="documents" projet={projet}>
       {cree && (
         <p className={profilStyles.ok}>
-          Votre fiche « {projet.title} » est créée. Passons aux illustrations — ou plus tard, si
-          vous préférez : tout est déjà enregistré.
+          Votre fiche « {projet.title} » est créée. Passons aux documents — ou plus tard, si vous
+          préférez : tout est déjà enregistré.
         </p>
       )}
-      {enregistre && <p className={profilStyles.ok}>Illustrations enregistrées.</p>}
+      {enregistre && <p className={profilStyles.ok}>Documents enregistrés.</p>}
       {pourAutrui && (
         <p className={formStyles.avertissement}>
           Vous modifiez la fiche d&apos;un autre membre, en tant qu&apos;administratrice.
@@ -57,7 +58,7 @@ export default async function IllustrationsPage({
 
       <form
         className={formStyles.form}
-        action={enregistrerIllustrations}
+        action={enregistrerDocuments}
         encType="multipart/form-data"
         style={{ marginTop: 16 }}
       >
@@ -83,11 +84,12 @@ export default async function IllustrationsPage({
           </span>
         </label>
 
-        <h2 className={styles.sousTitre}>Le mood board</h2>
+        <h2 className={styles.sousTitre}>Moodboard</h2>
         <p className={formStyles.hint}>
-          Des images d&apos;ambiance — références, lumières, lieux, visages — qui donnent le ton
-          de votre film. Il n&apos;apparaît que sur la fiche projet, jamais dans la
-          pitchothèque. Jusqu&apos;à {MAX_MOODBOARD} images.
+          Des images d&apos;ambiance — références de films qui vous ont inspirés, lumières,
+          lieux, visages — qui donnent le ton de votre film. Vous pouvez uploader{" "}
+          {MAX_MOODBOARD} photos maximum. Le Moodboard peut être consulté par les lecteurs en
+          validant la case au moment du dépôt du projet à la lecture.
         </p>
         {moodboard.length > 0 && (
           <ul className={styles.grilleImages}>
@@ -110,7 +112,7 @@ export default async function IllustrationsPage({
         )}
         {moodboard.length < MAX_MOODBOARD ? (
           <label className={formStyles.field}>
-            <span>{moodboard.length ? "Ajouter des images" : "Choisir des images"}</span>
+            <span>{moodboard.length ? "Ajouter des photos" : "Choisir des photos"}</span>
             <input type="file" name="moodboard" accept={accept} multiple />
             <span className={formStyles.hint}>
               Vous pouvez en choisir plusieurs à la fois — encore{" "}
@@ -119,9 +121,25 @@ export default async function IllustrationsPage({
           </label>
         ) : (
           <p className={formStyles.hint}>
-            Votre mood board est complet. Retirez une image pour en ajouter une autre.
+            Votre Moodboard est complet. Retirez une photo pour en ajouter une autre.
           </p>
         )}
+
+        <h2 className={styles.sousTitre}>Le scénario</h2>
+        <label className={formStyles.field}>
+          <span>{scenario ? "Remplacer le scénario (PDF)" : "Scénario (PDF)"}</span>
+          <input type="file" name="scenario" accept="application/pdf" />
+          <span className={formStyles.hint}>
+            {scenario && (
+              <>
+                Fichier actuel : <strong>{scenario.original_name ?? "scénario.pdf"}</strong>.
+                Laissez vide pour le conserver.{" "}
+              </>
+            )}
+            Confidentiel : seuls vous, les lecteurs qui en seront chargés et
+            l&apos;administration y auront accès.
+          </span>
+        </label>
 
         <div className={profilStyles.pied}>
           <Link href={`/projet/${id}`} className={profilStyles.lienDiscret}>

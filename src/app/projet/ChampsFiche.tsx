@@ -57,12 +57,9 @@ export type ValeursFiche = {
 export default function ChampsFiche({
   valeurs,
   genres,
-  scenarioActuel,
 }: {
   valeurs: ValeursFiche | null;
   genres: { slug: string; label_fr: string }[];
-  /** Nom du scénario déjà déposé, s'il y en a un. */
-  scenarioActuel?: string | null;
 }) {
   return (
     <>
@@ -160,19 +157,6 @@ export default function ChampsFiche({
         />
       </label>
 
-      <label className={formStyles.field}>
-        <span>{scenarioActuel ? "Remplacer le scénario (PDF)" : "Scénario (PDF)"}</span>
-        <input type="file" name="scenario" accept="application/pdf" />
-        <span className={formStyles.hint}>
-          {scenarioActuel && (
-            <>
-              Fichier actuel : <strong>{scenarioActuel}</strong>. Laissez vide pour le conserver.{" "}
-            </>
-          )}
-          Confidentiel : seuls vous, les lecteurs qui en seront chargés et l&apos;administration y
-          auront accès.
-        </span>
-      </label>
     </>
   );
 }
