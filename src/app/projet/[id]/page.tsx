@@ -12,6 +12,10 @@ import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";
+import profilStyles from "@/app/profil/profil.module.css";
+import { BLOCS, etatDesBlocs, hrefBloc } from "../blocs";
+import { signerImages } from "./fichiers";
+import presentation from "./presentation.module.css";
 
 const FORMATS_LISIBLES: Record<string, string> = {
   long_metrage: "Long métrage",
@@ -33,7 +37,23 @@ type Project = {
   legacy_id: string | null;
   genre_slug: string | null;
   share_code: string | null;
+  has_awards: boolean;
+  awards_detail: string | null;
   genre: { label_fr: string } | null;
+};
+
+const INITIALE = (nom: string) => nom.trim().charAt(0).toUpperCase() || "?";
+
+const PERSONNAGE_LISIBLE: Record<string, string> = {
+  principal: "Personnage principal",
+  secondaire: "Personnage secondaire",
+  homme: "Homme",
+  femme: "Femme",
+  autre: "Autre",
+  enfant: "Enfant",
+  adolescent: "Adolescent",
+  adulte: "Adulte",
+  senior: "Senior",
 };
 
 export default async function ProjetPage({
@@ -41,10 +61,10 @@ export default async function ProjetPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ message?: string }>;
+  searchParams: Promise<{ message?: string; enregistre?: string }>;
 }) {
   const { id } = await params;
-  const { message } = await searchParams;
+  const { message, enregistre } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -63,7 +83,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, synopsis, format, genre_slug, language, country, status, owner_id, share_code, legacy_id, genre:genres(label_fr)",
+      "id, title, logline, synopsis, format, genre_slug, language, country, status, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -86,9 +106,20 @@ export default async function ProjetPage({
 
   const { data: characters } = await supabase
     .from("characters")
-    .select("id, name, character_type, gender, age_range, biography")
+    .select("id, name, photo_path, character_type, gender, age_range, biography")
     .eq("project_id", id)
-    .order("position", { ascending: true });
+    .order("position", { ascending: true })
+    .returns<
+      {
+        id: string;
+        name: string;
+        photo_path: string | null;
+        character_type: string | null;
+        gender: string | null;
+        age_range: string | null;
+        biography: string | null;
+      }[]
+    >();
 
   const { data: estAdmin } = await supabase.rpc("is_admin");
 
@@ -102,9 +133,21 @@ export default async function ProjetPage({
 
   const { data: fichiers } = await supabase
     .from("project_files")
-    .select("kind")
+    .select("id, kind, storage_path")
     .eq("project_id", id)
-    .returns<{ kind: string }[]>();
+    .order("uploaded_at", { ascending: true })
+    .returns<{ id: string; kind: string; storage_path: string }[]>();
+
+  // L'image de présentation (la dernière déposée), le mood board et les
+  // portraits : le stockage est privé, on signe les adresses pour une heure.
+  const vignette = (fichiers ?? []).filter((f) => f.kind === "vignette").at(-1) ?? null;
+  const moodboard = (fichiers ?? []).filter((f) => f.kind === "moodboard");
+  const urls = await signerImages(supabase, [
+    vignette?.storage_path,
+    ...moodboard.map((m) => m.storage_path),
+    ...(characters ?? []).map((c) => c.photo_path),
+  ]);
+  const urlVignette = vignette ? (urls.get(vignette.storage_path) ?? null) : null;
 
   const etatFiche = {
     titre: project.title,
@@ -112,11 +155,14 @@ export default async function ProjetPage({
     logline: project.synopsis,
     genre: project.genre_slug,
     format: project.format,
-    aUneVignette: (fichiers ?? []).some((f) => f.kind === "vignette"),
+    aUneVignette: !!vignette,
     aUnScenario: (fichiers ?? []).some((f) => f.kind === "scenario"),
+    nombrePersonnages: (characters ?? []).length,
   };
   const taux = tauxDeRemplissage(etatFiche);
   const aFaire = prochaineAction(etatFiche);
+  const fait = isOwner || estAdmin ? await etatDesBlocs(supabase, id) : null;
+  const prochainBloc = fait ? (BLOCS.find((b) => !fait[b.cle]) ?? null) : null;
 
   const { data: auteur } = await supabase
     .from("profiles")
@@ -208,6 +254,8 @@ export default async function ProjetPage({
         ) : undefined
       }
     >
+      {enregistre && <p className={profilStyles.ok}>Modifications enregistrées.</p>}
+
       <p className={formStyles.hint}>
         {[
           project.genre?.label_fr,
@@ -218,6 +266,12 @@ export default async function ProjetPage({
           .filter(Boolean)
           .join(" · ")}
       </p>
+
+      {urlVignette && (
+        <div className={presentation.hero}>
+          <img src={urlVignette} alt="" />
+        </div>
+      )}
 
       <CadreEquipe
         projectId={project.id}
@@ -243,7 +297,6 @@ export default async function ProjetPage({
         <div className={formStyles.remplissage}>
           <div className={formStyles.remplissageEntete}>
             <strong>Fiche remplie à {taux} %</strong>
-            <Link href={`/projet/${project.id}/modifier`}>Modifier ma fiche</Link>
           </div>
           <div className={formStyles.jauge} role="img" aria-label={`Fiche remplie à ${taux} pour cent`}>
             <span style={{ width: `${taux}%` }} />
@@ -267,6 +320,37 @@ export default async function ProjetPage({
               résultat.
             </p>
           )}
+
+          {/* Les trois blocs de la fiche, comme ceux du profil : chacun
+              s'ouvre et s'enregistre seul. */}
+          <div className={presentation.blocs}>
+            {BLOCS.map((b) => {
+              const estFait = fait?.[b.cle] ?? false;
+              const estProchain = prochainBloc?.cle === b.cle;
+              return (
+                <Link
+                  key={b.cle}
+                  href={hrefBloc(project.id, b.cle)}
+                  className={estProchain ? profilStyles.carteActive : profilStyles.carte}
+                >
+                  <div className={profilStyles.carteEntete}>
+                    <span className={profilStyles.carteTitre}>
+                      <span className={estFait ? profilStyles.numeroFait : profilStyles.numero}>
+                        {estFait ? "✓" : b.numero}
+                      </span>
+                      {b.titre}
+                    </span>
+                    {estFait ? (
+                      <span className={profilStyles.badgeFait}>Fait</span>
+                    ) : estProchain ? (
+                      <span className={profilStyles.badge}>À faire</span>
+                    ) : null}
+                  </div>
+                  <p className={profilStyles.carteTexte}>{b.resume}</p>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -299,6 +383,13 @@ export default async function ProjetPage({
       {project.logline && <p style={{ marginTop: 24 }}>{project.logline}</p>}
       {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
 
+      {project.has_awards && (
+        <p className={presentation.prix}>
+          <strong>Projet primé</strong>
+          {project.awards_detail}
+        </p>
+      )}
+
       {(motsCles ?? []).length > 0 && (
         <ul
           style={{
@@ -330,19 +421,48 @@ export default async function ProjetPage({
         </ul>
       )}
 
+      {moodboard.length > 0 && (
+        <>
+          <h2 className={presentation.section}>Mood board</h2>
+          <ul className={presentation.moodboard}>
+            {moodboard.map((m) =>
+              urls.get(m.storage_path) ? (
+                <li key={m.id}>
+                  <img src={urls.get(m.storage_path)} alt="" loading="lazy" />
+                </li>
+              ) : null,
+            )}
+          </ul>
+        </>
+      )}
+
       {(characters ?? []).length > 0 && (
         <>
-          <h2 style={{ marginTop: 48, fontWeight: 400, fontSize: 16 }}>Personnages</h2>
-          <ul style={{ listStyle: "none", padding: 0, margin: "16px 0 0" }}>
-            {(characters ?? []).map((c) => (
-              <li key={c.id} style={{ marginBottom: 20 }}>
-                <strong>{c.name}</strong>
-                <p className={formStyles.hint}>
-                  {[c.character_type, c.gender, c.age_range].filter(Boolean).join(" · ")}
-                </p>
-                {c.biography && <p className={formStyles.hint}>{c.biography}</p>}
-              </li>
-            ))}
+          <h2 className={presentation.section}>Personnages</h2>
+          <ul className={presentation.personnages}>
+            {(characters ?? []).map((c) => {
+              const portrait = c.photo_path ? urls.get(c.photo_path) : null;
+              return (
+                <li key={c.id} className={presentation.personnage}>
+                  <span className={presentation.portrait} aria-hidden="true">
+                    {portrait ? <img src={portrait} alt="" loading="lazy" /> : INITIALE(c.name)}
+                  </span>
+                  <div>
+                    <strong>{c.name}</strong>
+                    <p className={formStyles.hint}>
+                      {[
+                        PERSONNAGE_LISIBLE[c.character_type ?? ""],
+                        PERSONNAGE_LISIBLE[c.gender ?? ""],
+                        PERSONNAGE_LISIBLE[c.age_range ?? ""],
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                    {c.biography && <p className={formStyles.hint}>{c.biography}</p>}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </>
       )}

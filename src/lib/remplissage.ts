@@ -5,10 +5,12 @@
  * Sur l'ancienne plateforme, les fiches bien remplies remontaient dans
  * la pitchothèque, et les auteurs le savaient : il y avait un enjeu à
  * soigner sa fiche. Le classement y pesait surtout le videopitch (+18
- * points sur 51) et les fiches personnages (+11), deux choses que
- * WeFilmGood 2 ne permet pas encore de saisir. Les poids ci-dessous ne
- * portent donc que sur ce qu'un auteur peut réellement remplir
- * aujourd'hui ; ils s'étendront quand ces écrans existeront.
+ * points sur 51) et les fiches personnages (+11). Les personnages se
+ * saisissent désormais (bloc 3 de la fiche) et comptent ici ; le
+ * videopitch attend encore son écran de dépôt.
+ *
+ * Les mêmes poids sont repris dans la base, fonction « pitchotheque »
+ * (migration 0058) : les deux doivent évoluer ensemble.
  *
  * Une seule action est proposée à la fois : les auteurs ne lisent pas
  * les listes, ni les tutoriels. On les prend par la main, marche après
@@ -22,6 +24,7 @@ export type EtatFiche = {
   format: string | null;
   aUneVignette: boolean;
   aUnScenario: boolean;
+  nombrePersonnages: number;
 };
 
 type Critere = {
@@ -68,6 +71,12 @@ export function criteres(f: EtatFiche): Critere[] {
       poids: 10,
       rempli: (f.format ?? "").trim().length > 0,
       manque: "Le format — long métrage, court métrage, série…",
+    },
+    {
+      cle: "personnages",
+      poids: 10,
+      rempli: f.nombrePersonnages > 0,
+      manque: "Vos personnages — c'est par eux qu'un producteur imagine le film.",
     },
   ];
 }

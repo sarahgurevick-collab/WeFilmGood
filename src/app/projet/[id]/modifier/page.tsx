@@ -1,30 +1,13 @@
-import { notFound, redirect } from "next/navigation";
-import ChampAvecCompteur from "@/components/ChampAvecCompteur";
-import PageShell from "@/components/PageShell";
+import Link from "next/link";
 import formStyles from "@/components/form.module.css";
-import { createClient } from "@/lib/supabase/server";
+import profilStyles from "@/app/profil/profil.module.css";
+import BlocProjet from "../../BlocProjet";
+import ChampsFiche from "../../ChampsFiche";
+import { chargerProjetAModifier } from "../../blocs";
+import styles from "../../deposer.module.css";
 import { modifierProjet } from "./actions";
 
-// Un documentaire ou un film d'animation n'est pas un format : selon sa
-// durée, c'est un long ou un court métrage. Les quatre valeurs ci-dessous
-// sont les seules utilisées, ici comme sur l'ancienne plateforme.
-const FORMATS = [
-  { value: "long_metrage", label: "Long métrage" },
-  { value: "court_metrage", label: "Court métrage" },
-  { value: "serie", label: "Série" },
-  { value: "immersif_360_vr", label: "Format immersif (360/VR)" },
-];
-
-type Projet = {
-  id: string;
-  owner_id: string;
-  title: string;
-  logline: string | null;
-  synopsis: string | null;
-  format: string | null;
-  genre_slug: string | null;
-};
-
+/** Bloc 1 d'une fiche existante : titre, tagline, logline, format, genre, prix, scénario. */
 export default async function ModifierProjetPage({
   params,
   searchParams,
@@ -34,114 +17,52 @@ export default async function ModifierProjetPage({
 }) {
   const { id } = await params;
   const { erreur } = await searchParams;
-  const supabase = await createClient();
+  const { supabase, projet, pourAutrui } = await chargerProjetAModifier(id, "fiche");
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect(`/connexion?next=/projet/${id}/modifier`);
-
-  const [{ data: projet }, { data: genres }, { data: admin }] = await Promise.all([
-    supabase
-      .from("projects")
-      .select("id, owner_id, title, logline, synopsis, format, genre_slug")
-      .eq("id", id)
-      .maybeSingle<Projet>(),
+  const [{ data: genres }, { data: scenario }] = await Promise.all([
     supabase.from("genres").select("slug, label_fr").order("position"),
-    supabase.rpc("is_admin"),
+    supabase
+      .from("project_files")
+      .select("original_name")
+      .eq("project_id", id)
+      .eq("kind", "scenario")
+      .order("uploaded_at", { ascending: false })
+      .limit(1)
+      .maybeSingle<{ original_name: string | null }>(),
   ]);
 
-  if (!projet) notFound();
-
-  // La base refuserait l'écriture de toute façon ; on évite surtout
-  // d'afficher un formulaire qui ne servirait à rien.
-  const peutModifier = projet.owner_id === user.id || admin === true;
-  if (!peutModifier) redirect(`/projet/${id}`);
-
-  const pourAutrui = admin === true && projet.owner_id !== user.id;
-
   return (
-    <PageShell eyebrow="Projet" title={`Modifier « ${projet.title} »`}>
+    <BlocProjet actif="fiche" projet={projet}>
       {pourAutrui && (
         <p className={formStyles.avertissement}>
-          Vous modifiez la fiche d&apos;un autre membre, en tant
-          qu&apos;administratrice.
+          Vous modifiez la fiche d&apos;un autre membre, en tant qu&apos;administratrice.
         </p>
       )}
 
-      <form className={formStyles.form} action={modifierProjet} encType="multipart/form-data">
+      <form
+        className={`${formStyles.form} ${styles.formulaire}`}
+        action={modifierProjet}
+        encType="multipart/form-data"
+        style={{ marginTop: 24 }}
+      >
         <input type="hidden" name="project_id" value={projet.id} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
-        <label className={formStyles.field}>
-          <span>Titre</span>
-          <input type="text" name="title" required defaultValue={projet.title} />
-        </label>
-
-        <ChampAvecCompteur
-          nom="logline"
-          libelle="Tagline"
-          indication="Votre phrase d'accroche — une ou deux phrases courtes"
-          limite={300}
-          lignes={3}
-          valeurInitiale={projet.logline ?? ""}
-        />
-        <ChampAvecCompteur
-          nom="synopsis"
-          libelle="Logline"
-          indication="Un petit résumé de l'histoire, en quelques phrases"
-          limite={600}
-          lignes={6}
-          valeurInitiale={projet.synopsis ?? ""}
+        <ChampsFiche
+          valeurs={projet}
+          genres={genres ?? []}
+          scenarioActuel={scenario?.original_name ?? null}
         />
 
-        <label className={formStyles.field}>
-          <span>Format</span>
-          <select name="format" defaultValue={projet.format ?? ""}>
-            <option value="">Non précisé</option>
-            {FORMATS.map((f) => (
-              <option key={f.value} value={f.value}>
-                {f.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className={formStyles.field}>
-          <span>Genre principal</span>
-          <select name="genre_slug" defaultValue={projet.genre_slug ?? ""}>
-            <option value="">Non précisé</option>
-            {(genres ?? []).map((g) => (
-              <option key={g.slug} value={g.slug}>
-                {g.label_fr}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className={formStyles.field}>
-          <span>Remplacer la vignette (JPG ou PNG, format 16/9)</span>
-          <input type="file" name="vignette" accept="image/jpeg,image/png" />
-          <span className={formStyles.hint}>
-            Laissez vide pour conserver l&apos;image actuelle. Inutile de la
-            compresser : nous nous en chargeons.
-          </span>
-        </label>
-
-        <label className={formStyles.field}>
-          <span>Remplacer le scénario (PDF)</span>
-          <input type="file" name="scenario" accept="application/pdf" />
-          <span className={formStyles.hint}>
-            Laissez vide pour conserver le fichier actuel. Confidentiel : seuls
-            vous, le lecteur chargé de votre projet et l&apos;administration y
-            ont accès.
-          </span>
-        </label>
-
-        <button type="submit" className={formStyles.submit}>
-          Enregistrer
-        </button>
+        <div className={profilStyles.pied}>
+          <Link href={`/projet/${id}`} className={profilStyles.lienDiscret}>
+            Annuler
+          </Link>
+          <button type="submit" className={formStyles.submit}>
+            Enregistrer
+          </button>
+        </div>
       </form>
-    </PageShell>
+    </BlocProjet>
   );
 }

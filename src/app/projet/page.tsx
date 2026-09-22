@@ -1,22 +1,17 @@
 import { redirect } from "next/navigation";
-import ChampAvecCompteur from "@/components/ChampAvecCompteur";
-import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
-import styles from "./deposer.module.css";
+import profilStyles from "@/app/profil/profil.module.css";
 import { createClient } from "@/lib/supabase/server";
+import BlocProjet from "./BlocProjet";
+import ChampsFiche from "./ChampsFiche";
 import { createProject } from "./actions";
+import styles from "./deposer.module.css";
 
-// Un documentaire ou un film d'animation n'est pas un format : selon sa
-// durée, c'est un long ou un court métrage. Les quatre valeurs ci-dessous
-// sont les seules utilisées, ici comme sur l'ancienne plateforme.
-const FORMATS = [
-  { value: "long_metrage", label: "Long métrage" },
-  { value: "court_metrage", label: "Court métrage" },
-  { value: "serie", label: "Série" },
-  { value: "immersif_360_vr", label: "Format immersif (360/VR)" },
-];
-
-export default async function DeposerPage({
+/**
+ * Bloc 1 d'une nouvelle fiche : la fiche elle-même. C'est elle qui crée
+ * le projet ; les illustrations et les personnages viennent ensuite.
+ */
+export default async function NouvelleFichePage({
   searchParams,
 }: {
   searchParams: Promise<{ erreur?: string }>;
@@ -26,10 +21,7 @@ export default async function DeposerPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/connexion?next=/projet");
-  }
+  if (!user) redirect("/connexion?next=/projet");
 
   const { data: genres } = await supabase
     .from("genres")
@@ -37,92 +29,23 @@ export default async function DeposerPage({
     .order("position", { ascending: true });
 
   return (
-    <PageShell eyebrow="Fiche projet" title="Fiche projet" nav="deposer" connecte>
-      <form className={`${formStyles.form} ${styles.formulaire}`} action={createProject} encType="multipart/form-data">
+    <BlocProjet actif="fiche" projet={null}>
+      <p className={profilStyles.chapeau}>
+        Le titre suffit pour créer la fiche. Le reste peut venir plus tard — mais une fiche
+        complète est mieux placée dans la pitchothèque.
+      </p>
+      <form
+        className={`${formStyles.form} ${styles.formulaire}`}
+        action={createProject}
+        encType="multipart/form-data"
+        style={{ marginTop: 24 }}
+      >
         {erreur && <p className={formStyles.error}>{erreur}</p>}
-
-        <label className={formStyles.field}>
-          <span>Titre</span>
-          <input type="text" name="title" required />
-        </label>
-        <ChampAvecCompteur
-          nom="logline"
-          libelle="Tagline"
-          indication="Votre phrase d'accroche — une ou deux phrases courtes"
-          limite={300}
-          lignes={3}
-        />
-        <ChampAvecCompteur
-          nom="synopsis"
-          libelle="Logline"
-          indication="Un petit résumé de l'histoire, en quelques phrases"
-          limite={600}
-          lignes={6}
-        />
-        <label className={formStyles.field}>
-          <span>Format</span>
-          <select name="format" defaultValue="">
-            <option value="" disabled>
-              Choisir un format
-            </option>
-            {FORMATS.map((f) => (
-              <option key={f.value} value={f.value}>
-                {f.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={formStyles.field}>
-          <span>Genre principal</span>
-          <select name="genre_slug" defaultValue="">
-            <option value="" disabled>
-              Choisir un genre
-            </option>
-            {(genres ?? []).map((g) => (
-              <option key={g.slug} value={g.slug}>
-                {g.label_fr}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={formStyles.field}>
-          <span>Scénario (PDF)</span>
-          <input type="file" name="scenario" accept="application/pdf" />
-          <span className={formStyles.hint}>
-            Confidentiel : seuls vous, les lecteurs qui en seront chargés et
-            l&apos;administration y auront accès.
-          </span>
-        </label>
-
-        <label className={formStyles.field}>
-          <span>Vignette de présentation (JPG ou PNG, format 16/9)</span>
-          <input type="file" name="vignette" accept="image/jpeg,image/png" />
-          <span className={formStyles.hint}>
-            C&apos;est l&apos;image qui représentera votre projet dans la
-            pitchothèque. N&apos;y faites figurer ni votre nom ni le titre.
-          </span>
-        </label>
-
-        <label className={styles.question}>
-          <span>Votre projet a-t-il eu des prix ?</span>
-          <span className={styles.interrupteur}>
-            <input type="checkbox" name="has_awards" value="oui" />
-            <span className={styles.texte} aria-hidden="true">
-              <span className={styles.non}>NON</span>
-              <span className={styles.oui}>OUI</span>
-            </span>
-            <span className={styles.rond} aria-hidden="true" />
-          </span>
-        </label>
-        <label className={`${formStyles.field} ${styles.prix}`}>
-          <span>Lesquels ?</span>
-          <textarea name="awards_detail" rows={3} placeholder="Festival, année, prix obtenu…" />
-        </label>
-
+        <ChampsFiche valeurs={null} genres={genres ?? []} />
         <button type="submit" className={formStyles.submit}>
           Créer ma fiche projet
         </button>
       </form>
-    </PageShell>
+    </BlocProjet>
   );
 }

@@ -1,16 +1,18 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { alleger } from "@/lib/image";
 import { createClient } from "@/lib/supabase/server";
 import { echapper, envoyerEmail } from "@/lib/brevo";
+import { deposerScenario } from "./[id]/fichiers";
 
 // Un documentaire ou un film d'animation n'est pas un format : selon sa
 // durée, c'est un long ou un court métrage.
 const FORMATS = ["long_metrage", "court_metrage", "serie", "immersif_360_vr"];
 
-const IMAGES = ["image/jpeg", "image/png"];
-
+/**
+ * Bloc 1 — crée la fiche. Une fois le projet créé, on enchaîne sur le
+ * bloc 2, les illustrations : la vignette ne se dépose plus ici.
+ */
 export async function createProject(formData: FormData) {
   const supabase = await createClient();
   const {
@@ -21,6 +23,9 @@ export async function createProject(formData: FormData) {
     redirect("/connexion?next=/projet");
   }
 
+  const echec: (message: string) => never = (message) =>
+    redirect("/projet?erreur=" + encodeURIComponent(message));
+
   const title = (formData.get("title") as string)?.trim();
   const logline = (formData.get("logline") as string)?.trim();
   const synopsis = (formData.get("synopsis") as string)?.trim();
@@ -28,22 +33,12 @@ export async function createProject(formData: FormData) {
   const genreSlug = (formData.get("genre_slug") as string)?.trim();
   const hasAwards = formData.get("has_awards") === "oui";
   const awardsDetail = hasAwards ? (formData.get("awards_detail") as string)?.trim() || null : null;
-  const file = formData.get("scenario") as File | null;
-  const vignette = formData.get("vignette") as File | null;
+  const scenario = formData.get("scenario") as File | null;
 
-  if (!title) {
-    redirect("/projet?erreur=" + encodeURIComponent("Le titre est obligatoire."));
-  }
-  if (format && !FORMATS.includes(format)) {
-    redirect("/projet?erreur=" + encodeURIComponent("Format de projet invalide."));
-  }
-  if (file && file.size > 0 && file.type !== "application/pdf") {
-    redirect("/projet?erreur=" + encodeURIComponent("Le scénario doit être un fichier PDF."));
-  }
-  if (vignette && vignette.size > 0 && !IMAGES.includes(vignette.type)) {
-    redirect(
-      "/projet?erreur=" + encodeURIComponent("La vignette doit être une image JPG ou PNG."),
-    );
+  if (!title) echec("Le titre est obligatoire.");
+  if (format && !FORMATS.includes(format)) echec("Format de projet invalide.");
+  if (scenario && scenario.size > 0 && scenario.type !== "application/pdf") {
+    echec("Le scénario doit être un fichier PDF.");
   }
 
   const { data: project, error } = await supabase
@@ -63,49 +58,17 @@ export async function createProject(formData: FormData) {
     .single();
 
   if (error || !project) {
-    redirect(
-      "/projet?erreur=" +
-        encodeURIComponent(error?.message ?? "Une erreur est survenue, réessaie."),
-    );
+    echec(error?.message ?? "Une erreur est survenue, réessayez.");
   }
 
-  if (file && file.size > 0) {
-    const path = `${user.id}/${Date.now()}-${file.name}`;
-    const { error: uploadError } = await supabase.storage
-      .from("scenarios")
-      .upload(path, file, { contentType: "application/pdf" });
-
-    if (!uploadError) {
-      await supabase.from("project_files").insert({
-        project_id: project.id,
-        storage_path: path,
-        kind: "scenario",
-        original_name: file.name,
-      });
-    }
-    // Le projet est déjà créé : un échec d'upload n'annule pas le dépôt,
-    // l'auteur pourra rajouter le fichier depuis son profil.
-  }
-
-  // La vignette part dans un espace public : c'est elle qui illustre la
-  // pitchothèque, contrairement au scénario qui reste confidentiel.
-  if (vignette && vignette.size > 0) {
-    // Allégée avant d'être stockée : les auteurs déposent des photos de
-    // 15 à 20 Mo pour une vignette affichée à 400 pixels. Transparent
-    // pour eux, rien à régler.
-    const image = await alleger(vignette);
-    const path = `${user.id}/${project.id}-${Date.now()}`;
-    const { error: uploadError } = await supabase.storage
-      .from("project-media")
-      .upload(path, image.donnees, { contentType: image.type });
-
-    if (!uploadError) {
-      await supabase.from("project_files").insert({
-        project_id: project.id,
-        storage_path: path,
-        kind: "vignette",
-        original_name: vignette.name,
-      });
+  // Le projet est déjà créé : un échec d'envoi n'annule pas la fiche,
+  // l'auteur pourra redéposer le fichier depuis le bloc 1.
+  let avertissement: string | null = null;
+  if (scenario && scenario.size > 0) {
+    const depose = await deposerScenario(supabase, user.id, project.id, scenario);
+    if (!depose) {
+      avertissement =
+        "Votre fiche est créée, mais le scénario n'a pas pu être enregistré. Vous pourrez le redéposer depuis le bloc « La fiche ».";
     }
   }
 
@@ -115,10 +78,13 @@ export async function createProject(formData: FormData) {
       subject: `Votre fiche projet « ${title} » est créée`,
       htmlContent: `
         <p>Bonjour,</p>
-        <p>Votre fiche projet <strong>${echapper(title)}</strong> est créée sur WeFilmGood. Vous pouvez la compléter ou la modifier à tout moment depuis la page de votre projet.</p>
+        <p>Votre fiche projet <strong>${echapper(title)}</strong> est créée sur WeFilmGood. Vous pouvez la compléter ou la modifier à tout moment depuis la page de votre projet : ses illustrations, ses personnages.</p>
       `,
     });
   }
 
-  redirect("/projet/merci");
+  redirect(
+    `/projet/${project.id}/illustrations?cree=1` +
+      (avertissement ? `&erreur=${encodeURIComponent(avertissement)}` : ""),
+  );
 }
