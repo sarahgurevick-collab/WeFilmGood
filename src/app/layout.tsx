@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import BoutonContact from "@/components/BoutonContact";
 import EnregistrerServiceWorker from "@/components/EnregistrerServiceWorker";
+import InviterInstallation from "@/components/InviterInstallation";
 import Traduction from "@/components/Traduction";
 import "./globals.css";
 
@@ -36,6 +37,7 @@ export default function RootLayout({
         <BoutonContact />
         <Traduction />
         <EnregistrerServiceWorker />
+        <InviterInstallation />
       </body>
     </html>
   );
