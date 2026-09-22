@@ -67,12 +67,6 @@ export default function ChoixCredits() {
           )}
         </div>
       </div>
-
-      <p className={styles.regle}>
-        Chaque semaine, l&apos;un ou l&apos;autre. Les crédits d&apos;une semaine ne se gardent
-        pas : ce qui n&apos;est pas utilisé est perdu, et la semaine suivante en apporte de
-        nouveaux.
-      </p>
     </div>
   );
 }
