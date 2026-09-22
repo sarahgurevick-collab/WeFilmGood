@@ -8,9 +8,17 @@
   color: var(--fg);
 }
 
+/*
+ * Même hauteur pour la connexion et l'inscription : on passe d'un onglet à
+ * l'autre sans que le cadre saute. La hauteur est celle de l'inscription,
+ * la plus longue ; le contenu plus court se centre dedans.
+ */
 .card {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   max-width: 420px;
+  min-height: 660px;
   border: 1px solid var(--bordure-douce);
   border-radius: 20px;
   padding: 36px 32px 32px;
@@ -22,6 +30,14 @@
   background: var(--bg);
   color: var(--fg);
   border-color: var(--bg);
+}
+
+.contenu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
 }
 
 .brand {
@@ -85,6 +101,7 @@
 
 @media (max-width: 620px) {
   .card {
+    min-height: 0;
     padding: 28px 22px 26px;
   }
 }

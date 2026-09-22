@@ -44,7 +44,7 @@ export default function AuthCard({
           </Link>
         </nav>
 
-        {children}
+        <div className={styles.contenu}>{children}</div>
       </div>
     </div>
   );
