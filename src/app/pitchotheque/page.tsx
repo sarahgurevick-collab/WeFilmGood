@@ -38,17 +38,21 @@ export default async function ProjetsPage({
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Les vignettes proviennent parfois de films ou d'images trouvées en
-  // ligne : la pitchothèque n'est pas exposée aux visiteurs de passage.
-  if (!user) {
-    redirect("/connexion?next=/pitchotheque");
-  }
-
-  const adherent = await peutVoirLeNuage();
   const params = await searchParams;
   const page = Math.max(1, Math.floor(Number(params.page)) || 1);
   const filtres = lireFiltres(params);
   const nbFiltres = nombreDeFiltres(filtres);
+
+  // Les vignettes proviennent parfois de films ou d'images trouvées en
+  // ligne : la pitchothèque n'est pas exposée aux visiteurs de passage.
+  // Un producteur qui reçoit une recherche filtrée par mail est invité à
+  // se connecter, ou à créer un compte, et retrouve ensuite la liste
+  // filtrée telle qu'on la lui a envoyée — filtres et page compris.
+  if (!user) {
+    redirect(`/connexion?next=${encodeURIComponent(adresse(filtres, page))}`);
+  }
+
+  const adherent = await peutVoirLeNuage();
 
   const [{ data: genres }, { data: langues }] = await Promise.all([
     supabase.from("genres").select("slug, label_fr").order("position"),
