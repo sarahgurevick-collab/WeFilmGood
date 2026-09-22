@@ -123,8 +123,15 @@ async function importerProjets() {
   const parLegacyId = new Map(projets.map((p) => [p.legacy_id, p]));
 
   const existants = await toutLire(() =>
-    supabase.from("project_files").select("project_id, kind").in("kind", ["vignette", "moodboard"]).order("id"),
+    supabase
+      .from("project_files")
+      .select("project_id, kind, legacy_id")
+      .in("kind", ["vignette", "moodboard"])
+      .order("id"),
   );
+  // Un fichier de l'export déjà posé (vignette ou Moodboard) ne se
+  // repose jamais : on le reconnaît à son legacy_id « dossier/fichier ».
+  const dejaPoses = new Set(existants.map((f) => f.legacy_id).filter(Boolean));
   const dejaVignette = new Set(
     (existants ?? []).filter((f) => f.kind === "vignette").map((f) => f.project_id),
   );
@@ -146,6 +153,7 @@ async function importerProjets() {
       const trouve = fichier.match(NOM_FICHIER_PROJET);
       const projet = trouve ? parLegacyId.get(trouve[1]) : undefined;
       if (!projet) { nProjetsSansCorrespondance++; continue; }
+      if (dejaPoses.has(`${dossier}/${fichier}`)) continue;
 
       const moodboardActuel = moodboardCompte.get(projet.id) ?? 0;
       const estVignette = !dejaVignette.has(projet.id);
