@@ -29,6 +29,9 @@ export default async function AdhesionPage() {
               que vous voulez
             </AvantageAdhesion>
             <AvantageAdhesion icone="oeil">Focus de la semaine : 1 projet à découvrir</AvantageAdhesion>
+            <AvantageAdhesion>
+              Jeu Ciné-Fusion : provoquer le hasard cinématographique.
+            </AvantageAdhesion>
           </ul>,
 
           <ul key="50" className={styles.avantages}>
