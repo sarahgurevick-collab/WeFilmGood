@@ -87,22 +87,23 @@ export default async function AdminAdhesionsPage({
       </p>
 
       <form method="get" style={{ marginTop: 24, marginBottom: 8 }}>
-        <input
-          type="search"
-          name="q"
-          defaultValue={recherche}
-          placeholder="Chercher un membre par nom…"
-          style={{
-            width: "100%",
-            maxWidth: 360,
-            padding: "10px 14px",
-            borderRadius: 10,
-            border: "1px solid var(--bordure)",
-            background: "transparent",
-            color: "inherit",
-            fontSize: 14,
-          }}
-        />
+        <span className={formStyles.recherche} style={{ maxWidth: 360 }}>
+          <input
+            type="search"
+            name="q"
+            defaultValue={recherche}
+            placeholder="Chercher un membre par nom…"
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              borderRadius: 10,
+              border: "1px solid var(--bordure)",
+              background: "transparent",
+              color: "inherit",
+              fontSize: 14,
+            }}
+          />
+        </span>
       </form>
 
       <table className={adminStyles.table}>

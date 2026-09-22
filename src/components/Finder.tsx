@@ -9,6 +9,7 @@ import {
   type ProjetTrouve,
 } from "@/app/pitchotheque/actions";
 import { AUCUN, type Filtres } from "@/app/pitchotheque/filtres";
+import formStyles from "./form.module.css";
 import LabelWFG from "./LabelWFG";
 import NuageG from "./NuageG";
 import styles from "./Finder.module.css";
@@ -130,13 +131,15 @@ export default function Finder({
   return (
     <div className={styles.zone}>
       <div className={styles.barre}>
-        <input
-          type="search"
-          className={styles.champ}
-          placeholder="Chercher un projet, un thème, un mot-clé…"
-          value={requete}
-          onChange={(e) => setRequete(e.target.value)}
-        />
+        <span className={`${formStyles.recherche} ${styles.champZone}`}>
+          <input
+            type="search"
+            className={styles.champ}
+            placeholder="Chercher un projet, un thème, un mot-clé…"
+            value={requete}
+            onChange={(e) => setRequete(e.target.value)}
+          />
+        </span>
         {adherent && (
           <button
             type="button"

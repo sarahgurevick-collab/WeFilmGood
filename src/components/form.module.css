@@ -284,3 +284,39 @@
   font-size: 14px;
   line-height: 1.6;
 }
+
+/* La loupe, à chaque champ de recherche du site — la même partout :
+   envelopper le champ dans .recherche, la loupe se pose à gauche dans
+   le champ. .loupe est le même dessin, seul, pour un bouton. */
+.recherche {
+  position: relative;
+  display: block;
+}
+
+.recherche::before,
+.loupe {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8a8a' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cline x1='15.5' y1='15.5' x2='21' y2='21'/%3E%3C/svg%3E")
+    no-repeat center / contain;
+}
+
+.recherche::before {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.recherche input {
+  width: 100%;
+  padding-left: 42px !important;
+}
+
+/* Sur fond rouge (bouton), la loupe est blanche. */
+.loupeBlanche {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cline x1='15.5' y1='15.5' x2='21' y2='21'/%3E%3C/svg%3E");
+}

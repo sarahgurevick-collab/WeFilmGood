@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { compterRecherche, type DecompteRecherche } from "@/app/pitchotheque/actions";
+import formStyles from "./form.module.css";
 import styles from "./RechercheAccueil.module.css";
 
 /**
@@ -43,14 +44,16 @@ export default function RechercheAccueil() {
 
   return (
     <div className={styles.zone}>
-      <input
-        type="search"
-        className={styles.champ}
-        placeholder="Trouvez des projets, des talents, des personnages"
-        value={requete}
-        onChange={(e) => setRequete(e.target.value)}
-        aria-label="Chercher dans la plateforme"
-      />
+      <span className={formStyles.recherche}>
+        <input
+          type="search"
+          className={styles.champ}
+          placeholder="Trouvez des projets, des talents, des personnages"
+          value={requete}
+          onChange={(e) => setRequete(e.target.value)}
+          aria-label="Chercher dans la plateforme"
+        />
+      </span>
 
       {requete.trim() && (
         <div className={styles.reponse} aria-live="polite">
