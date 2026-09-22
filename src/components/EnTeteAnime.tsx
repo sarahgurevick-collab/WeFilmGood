@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { DUREE_ENGAGEMENT, ENGAGEMENTS } from "@/lib/engagements";
+import { DUREE_ENGAGEMENT, ENGAGEMENTS, ROUGE_WFG } from "@/lib/engagements";
 import styles from "./EnTeteAnime.module.css";
 
 const ETATS = ENGAGEMENTS;
@@ -17,6 +17,11 @@ const ELEMENTS_MENU = [
   { label: "Festivals & Résidences", href: "/festivals-residences" },
   { label: "Témoignages", href: "/temoignages" },
   { label: "Adhésion", href: "/adhesion" },
+  // Encore un concept, pas un jeu construit : « Ciné » reste fixe en
+  // rouge WeFilmGood, « Fusion » suit la même horloge que le logo — les
+  // trois couleurs des engagements, Planet, Humanity, Education. Un
+  // battement sur quatre, les deux mots sont au rouge : la fusion.
+  { label: "CinéFusion", href: "/cinefusion", special: true },
 ];
 
 /**
@@ -106,7 +111,14 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
               {ELEMENTS_MENU.map((el) => (
                 <li key={el.href}>
                   <Link href={el.href} onClick={() => setMenuOuvert(false)}>
-                    {el.label}
+                    {"special" in el && el.special ? (
+                      <>
+                        <span style={{ color: ROUGE_WFG }}>Ciné</span>
+                        <span style={{ color: ETATS[index].couleur }}>Fusion</span>
+                      </>
+                    ) : (
+                      el.label
+                    )}
                   </Link>
                 </li>
               ))}
