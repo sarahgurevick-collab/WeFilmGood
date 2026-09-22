@@ -11,16 +11,19 @@ import styles from "./AuthCard.module.css";
 export default function AuthCard({
   active,
   theme = "sombre",
+  carteClaire = false,
   children,
 }: {
   active: "connexion" | "inscription";
   /** "clair" pour un fond blanc. */
   theme?: "sombre" | "clair";
+  /** true pour une carte blanche posée sur le fond noir. */
+  carteClaire?: boolean;
   children: ReactNode;
 }) {
   return (
     <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
-      <div className={styles.card}>
+      <div className={`${styles.card} ${carteClaire ? `clair ${styles.carteClaire}` : ""}`}>
         <Link href="/" className={styles.brand}>
           <LogoComplet hauteur={48} />
           <span className={styles.tagline}>The best stories wherever they are</span>

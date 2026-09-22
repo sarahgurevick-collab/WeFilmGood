@@ -18,6 +18,12 @@
   letter-spacing: normal;
 }
 
+.carteClaire {
+  background: var(--bg);
+  color: var(--fg);
+  border-color: var(--bg);
+}
+
 .brand {
   display: flex;
   flex-direction: column;
