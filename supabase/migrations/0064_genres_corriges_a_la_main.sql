@@ -29,3 +29,7 @@ where legacy_id = '2142';
 -- 22/09/2026 — « Lady Thatcher » (WFG 1 n° 3697) : comédie.
 update public.projects set genre_slug = 'comedie'
 where legacy_id = '3697' and genre_legacy = 'Expérimental';
+
+-- 22/09/2026 — « Myrihandes » (WFG 1 n° 857) : film fantastique.
+update public.projects set genre_slug = 'horreur_scifi_fantastique'
+where legacy_id = '857' and genre_legacy = 'Adaptation';
