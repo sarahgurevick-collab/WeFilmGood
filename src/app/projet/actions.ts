@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { echapper, envoyerEmail } from "@/lib/brevo";
+import { LIEUX } from "@/lib/lieux";
 import { AUDIENCES, BUDGETS } from "./ChampsFiche";
 
 // Un documentaire ou un film d'animation n'est pas un format : selon sa
@@ -35,6 +36,8 @@ export async function createProject(formData: FormData) {
   const genreSlug = (formData.get("genre_slug") as string)?.trim();
   const budgetRange = formData.get("budget_range") as string;
   const targetAudience = formData.get("target_audience") as string;
+  const country = (formData.get("country") as string)?.trim();
+  const lieuActuel = null;
   const hasAwards = formData.get("has_awards") === "oui";
   const awardsDetail = hasAwards ? (formData.get("awards_detail") as string)?.trim() || null : null;
 
@@ -45,6 +48,7 @@ export async function createProject(formData: FormData) {
   if (!FORMATS.includes(format)) echec("Format de projet invalide.");
   if (budgetRange && !VALEURS_BUDGET.includes(budgetRange)) echec("Budget estimé invalide.");
   if (targetAudience && !VALEURS_AUDIENCE.includes(targetAudience)) echec("Audience ciblée invalide.");
+  if (country && !LIEUX.includes(country) && country !== lieuActuel) echec("Lieu de l'histoire invalide.");
 
   const { data: project, error } = await supabase
     .from("projects")
@@ -57,6 +61,7 @@ export async function createProject(formData: FormData) {
       genre_slug: genreSlug || null,
       budget_range: budgetRange || null,
       target_audience: targetAudience || null,
+      country: country || null,
       has_awards: hasAwards,
       awards_detail: awardsDetail,
       status: "depose",

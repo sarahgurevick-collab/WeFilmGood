@@ -33,3 +33,7 @@ where legacy_id = '3697' and genre_legacy = 'Expérimental';
 -- 22/09/2026 — « Myrihandes » (WFG 1 n° 857) : film fantastique.
 update public.projects set genre_slug = 'horreur_scifi_fantastique'
 where legacy_id = '857' and genre_legacy = 'Adaptation';
+
+-- 22/09/2026 — « Myrihandes » (WFG 1 n° 857) : lieu de l'histoire
+-- imaginaire (changé par Sarah sur WFG 1 après la copie de la base).
+update public.projects set country = 'Lieu imaginaire' where legacy_id = '857';
