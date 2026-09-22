@@ -11,3 +11,7 @@
 -- 22/09/2026 — « A Oût : le rêve d'une nuit B » (WFG 1 n° 1965) : biopic.
 update public.projects set genre_slug = 'biopic'
 where legacy_id = '1965' and genre_legacy = 'Expérimental';
+
+-- 22/09/2026 — « Chrome » (WFG 1 n° 1996) : science-fiction.
+update public.projects set genre_slug = 'horreur_scifi_fantastique'
+where legacy_id = '1996' and genre_legacy = 'Expérimental';
