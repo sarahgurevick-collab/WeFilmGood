@@ -1,4 +1,5 @@
 .compteur {
+  position: relative;
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -30,4 +31,15 @@
 .grand .label {
   max-width: 16ch;
   line-height: 1.4;
+}
+
+.pop {
+  display: inline-block;
+  animation: pop 0.45s ease-out;
+}
+
+@keyframes pop {
+  40% {
+    transform: scale(1.35);
+  }
 }

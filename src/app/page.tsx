@@ -83,7 +83,7 @@ export default async function Home() {
         </div>
 
         <div className={styles.hero}>
-          <Compteur valeur={10} label="ans" />
+          <Compteur valeur={10} label="ans" feuArtifice />
         </div>
 
         <div className={styles.statsBar}>

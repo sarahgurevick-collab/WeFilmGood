@@ -1,0 +1,47 @@
+.scene {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.etincelle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--couleur);
+  box-shadow: 0 0 6px 1px var(--couleur);
+  opacity: 0;
+  transform: translate(var(--x), var(--y));
+  animation: eclat 1.4s cubic-bezier(0.15, 0.7, 0.3, 1) var(--delai) forwards;
+}
+
+@keyframes eclat {
+  0% {
+    opacity: 1;
+    transform: translate(var(--x), var(--y)) scale(1.4);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(calc(var(--x) + var(--dx)), calc(var(--y) + var(--dy)))
+      scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(var(--x) + var(--dx)),
+        calc(var(--y) + var(--dy) + 25px)
+      )
+      scale(0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene {
+    display: none;
+  }
+}
