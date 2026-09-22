@@ -15,11 +15,16 @@ export default async function InscriptionPage({
 
   if (envoye) {
     return (
-      <AuthCard active="inscription" carteClaire>
+      <AuthCard active="inscription" carteClaire sansOnglets>
         <p className={formStyles.hint}>
           Un email vient d&apos;être envoyé à <strong>{envoye}</strong>. Cliquez
           sur le lien qu&apos;il contient : votre profil sera activé et vous
           serez connecté.
+        </p>
+        <p className={formStyles.hint}>
+          Il vous suffit d&apos;ajouter ce lien à l&apos;écran d&apos;accueil de votre
+          téléphone pour accéder au site comme une app, bien plus pratique pour
+          les messages et regarder les videopitchs n&apos;importe où.
         </p>
         <p className={formStyles.hint}>
           Rien reçu après quelques minutes ? Regardez dans les indésirables, ou{" "}
