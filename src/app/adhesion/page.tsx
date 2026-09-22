@@ -45,6 +45,9 @@ export default async function AdhesionPage() {
             <li>
               <ChoixCredits />
             </li>
+            <AvantageAdhesion>
+              10 fiches projets (sans analyse du document PDF)
+            </AvantageAdhesion>
           </ul>,
 
           <ul key="500" className={styles.avantages}>
