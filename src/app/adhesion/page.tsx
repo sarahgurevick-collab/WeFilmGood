@@ -36,7 +36,7 @@ export default async function AdhesionPage() {
               portés par les projets, avec leurs chiffres, à ouvrir aussi large
               que vous voulez
             </AvantageAdhesion>
-            <AvantageAdhesion icone="oeil">1 crédit par semaine (random)</AvantageAdhesion>
+            <AvantageAdhesion icone="oeil">Focus de la semaine : 1 projet à découvrir</AvantageAdhesion>
             <li>
               <ChoixCredits />
             </li>
