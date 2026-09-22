@@ -15,3 +15,7 @@ where legacy_id = '1965' and genre_legacy = 'Expérimental';
 -- 22/09/2026 — « Chrome » (WFG 1 n° 1996) : science-fiction.
 update public.projects set genre_slug = 'horreur_scifi_fantastique'
 where legacy_id = '1996' and genre_legacy = 'Expérimental';
+
+-- 22/09/2026 — « Hand in Hand » (WFG 1 n° 2142) : documentaire.
+update public.projects set genre_slug = 'documentaire'
+where legacy_id = '2142' and genre_legacy = 'Expérimental';
