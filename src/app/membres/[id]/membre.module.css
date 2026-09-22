@@ -1,0 +1,23 @@
+/* La photo du membre : ronde, comme le logo WeFilmGood. */
+.photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 140px;
+  height: 140px;
+  margin: -16px 0 8px;
+  border-radius: 50%;
+  border: 1px solid var(--bordure-douce);
+  background: var(--surface);
+  overflow: hidden;
+  color: var(--dim);
+  font-size: 48px;
+  font-weight: 800;
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

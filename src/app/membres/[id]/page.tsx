@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
+import styles from "./membre.module.css";
 
 type Membre = {
   id: string;
@@ -11,6 +12,7 @@ type Membre = {
   city: string | null;
   country: string | null;
   website: string | null;
+  avatar_url: string | null;
 };
 
 /**
@@ -35,7 +37,7 @@ export default async function ProfilMembrePage({
 
   const { data: membre } = await supabase
     .from("profiles")
-    .select("id, full_name, display_name, biofilmo, website")
+    .select("id, full_name, display_name, biofilmo, website, avatar_url")
     .eq("id", id)
     .maybeSingle<Membre>();
 
@@ -45,6 +47,15 @@ export default async function ProfilMembrePage({
 
   return (
     <PageShell eyebrow="Membre" title={nom}>
+      {/* La photo, ronde comme le logo. Sans photo, l'initiale. */}
+      <div className={styles.photo} aria-hidden="true">
+        {membre.avatar_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={membre.avatar_url} alt="" />
+        ) : (
+          <span>{nom.trim().charAt(0).toUpperCase()}</span>
+        )}
+      </div>
 
       {membre.biofilmo ? (
         <p style={{ marginTop: 24, whiteSpace: "pre-wrap" }}>{membre.biofilmo}</p>
