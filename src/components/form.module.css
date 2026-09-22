@@ -199,6 +199,14 @@
   opacity: 0.85;
 }
 
+/* Phrase + bouton, poussés en bas du formulaire : même place d'un écran à l'autre. */
+.pied {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 /* Rouge WFG, comme sur l'ancien site ; au clic il blanchit, le contour reste rouge. */
 .rouge {
   background: var(--rouge-wfg);

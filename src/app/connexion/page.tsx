@@ -34,11 +34,6 @@ export default async function ConnexionPage({
         <input type="hidden" name="next" value={nextPath} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
-        <p className={formStyles.hint}>
-          Plus besoin de mot de passe : indiquez votre adresse email, vous
-          recevrez un lien pour vous connecter.
-        </p>
-
         <label className={formStyles.field}>
           <span>Email</span>
           <input
@@ -50,9 +45,14 @@ export default async function ConnexionPage({
           />
         </label>
 
-        <button type="submit" className={`${formStyles.submitWide} ${formStyles.rouge}`}>
-          Recevoir mon lien de connexion
-        </button>
+        <div className={formStyles.pied}>
+          <p className={formStyles.hint} style={{ textAlign: "center" }}>
+            Pas de mot de passe : vous recevrez un lien par email pour vous connecter.
+          </p>
+          <button type="submit" className={`${formStyles.submitWide} ${formStyles.rouge}`}>
+            Recevoir mon lien de connexion
+          </button>
+        </div>
       </form>
     </AuthCard>
   );
