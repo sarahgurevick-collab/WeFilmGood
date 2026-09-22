@@ -23,6 +23,11 @@ export default async function AdhesionPage() {
               La Pitchothèque et le Finder — pour savoir combien de projets
               répondent à vos envies.
             </AvantageAdhesion>
+            <AvantageAdhesion icone="motscles">
+              Le nuage de mots-clés — les {motsCles.toLocaleString("fr-FR")} thèmes
+              portés par les projets, avec leurs chiffres, à ouvrir aussi large
+              que vous voulez
+            </AvantageAdhesion>
             <AvantageAdhesion icone="oeil">Focus de la semaine : 1 projet à découvrir</AvantageAdhesion>
           </ul>,
 
