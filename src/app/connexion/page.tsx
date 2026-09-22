@@ -35,6 +35,15 @@ export default async function ConnexionPage({
         <input type="hidden" name="next" value={nextPath} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
+        <div>
+          <p className={formStyles.accroche}>WeFilmGood a 10 ans&nbsp;!</p>
+          <p className={formStyles.hint}>
+            Merci de votre confiance
+            <br />
+            Cliquer pour souffler les bougies&nbsp;!
+          </p>
+        </div>
+
         <label className={formStyles.field}>
           <span>Email</span>
           <input

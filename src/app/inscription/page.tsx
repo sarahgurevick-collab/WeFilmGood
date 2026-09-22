@@ -36,7 +36,7 @@ export default async function InscriptionPage({
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
         <div>
-          <p className={styles.accroche}>WeFilmGood a 10 ans&nbsp;!</p>
+          <p className={formStyles.accroche}>WeFilmGood a 10 ans&nbsp;!</p>
           <p className={formStyles.hint}>
             Merci de votre confiance
             <br />
