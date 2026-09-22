@@ -10,16 +10,16 @@
 }
 
 /*
- * Même hauteur pour la connexion et l'inscription, avec une marge pour la
- * plus longue : onglets, logo et bouton restent à la même place d'un écran
- * à l'autre.
+ * Hauteur fixe, identique pour la connexion et l'inscription : onglets, logo
+ * et bouton restent à la même place d'un écran à l'autre, et un texte ajouté
+ * au-dessus du bouton remplit l'espace libre sans le déplacer.
  */
 .card {
   display: flex;
   flex-direction: column;
   width: 100%;
   max-width: 420px;
-  min-height: 720px;
+  height: 720px;
   border: 1px solid var(--bordure-douce);
   border-radius: 20px;
   padding: 36px 32px 32px;
@@ -35,6 +35,7 @@
 
 .contenu {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -43,6 +44,7 @@
 /* Le formulaire prend la hauteur restante et pousse son bouton tout en bas. */
 .contenu > form {
   flex: 1;
+  min-height: 0;
 }
 
 .contenu > form > button[type="submit"] {
@@ -110,7 +112,7 @@
 
 @media (max-width: 620px) {
   .card {
-    min-height: 0;
+    height: auto;
     padding: 28px 22px 26px;
   }
 }
