@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import BoutonContact from "@/components/BoutonContact";
+import EnregistrerServiceWorker from "@/components/EnregistrerServiceWorker";
 import Traduction from "@/components/Traduction";
 import "./globals.css";
 
@@ -15,6 +16,14 @@ export const metadata: Metadata = {
   title: "WeFilmGood",
   description:
     "La plateforme de rencontres Auteurs — Producteurs de la Maison des Scénaristes.",
+  applicationName: "WeFilmGood",
+  // iPhone : l'application ouverte depuis l'écran d'accueil s'affiche en
+  // plein écran, avec son nom sous l'icône.
+  appleWebApp: { capable: true, title: "WeFilmGood", statusBarStyle: "black-translucent" },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -26,6 +35,7 @@ export default function RootLayout({
         {children}
         <BoutonContact />
         <Traduction />
+        <EnregistrerServiceWorker />
       </body>
     </html>
   );

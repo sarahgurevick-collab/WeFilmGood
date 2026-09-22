@@ -14,6 +14,13 @@ const CHEMINS_LECTEUR = [
   "/auth",
   "/lost-pwd",
   "/cguv",
+  // L'application installable (PWA) : manifeste, service worker et page
+  // hors ligne, sans données. Sans cette exception, le service worker
+  // d'un lecteur garderait en cache son espace privé au lieu de la page
+  // hors ligne.
+  "/manifest.webmanifest",
+  "/sw.js",
+  "/hors-ligne",
 ];
 
 /**
