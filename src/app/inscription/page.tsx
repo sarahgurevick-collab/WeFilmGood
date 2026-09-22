@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AuthCard from "@/components/AuthCard";
+import BoutonFeuArtifice from "@/components/BoutonFeuArtifice";
 import formStyles from "@/components/form.module.css";
 import styles from "./inscription.module.css";
 import { signUp } from "./actions";
@@ -76,9 +77,9 @@ export default async function InscriptionPage({
           <p className={formStyles.hint} style={{ textAlign: "center" }}>
             Pas de mot de passe : vous recevrez un lien par email pour activer votre profil.
           </p>
-          <button type="submit" className={`${formStyles.submitWide} ${formStyles.rouge}`}>
+          <BoutonFeuArtifice className={`${formStyles.submitWide} ${formStyles.rouge}`}>
             Créer mon profil
-          </button>
+          </BoutonFeuArtifice>
         </div>
       </form>
     </AuthCard>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AuthCard from "@/components/AuthCard";
+import BoutonFeuArtifice from "@/components/BoutonFeuArtifice";
 import formStyles from "@/components/form.module.css";
 import { signIn } from "./actions";
 
@@ -49,9 +50,9 @@ export default async function ConnexionPage({
           <p className={formStyles.hint} style={{ textAlign: "center" }}>
             Pas de mot de passe : vous recevrez un lien par email pour vous connecter.
           </p>
-          <button type="submit" className={`${formStyles.submitWide} ${formStyles.rouge}`}>
+          <BoutonFeuArtifice className={`${formStyles.submitWide} ${formStyles.rouge}`}>
             Recevoir mon lien de connexion
-          </button>
+          </BoutonFeuArtifice>
         </div>
       </form>
     </AuthCard>
