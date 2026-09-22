@@ -6,9 +6,9 @@ import styles from "./ChoixCredits.module.css";
 /**
  * Le choix de l'adhésion à 50 € : chaque semaine, soit le dépôt d'un
  * projet à la lecture, soit cinq crédits de recherche. Un seul
- * interrupteur — celui de WFG 1, piste rouge et rond blanc — où c'est
- * le logo dans la piste qui change : le nuage d'un côté, la loupe de
- * l'autre. Le texte à côté dit ce que le choix donne.
+ * interrupteur — celui de WFG 1, piste et rond blanc — où c'est le logo
+ * dans la piste qui change : le nuage sur fond rouge d'un côté, la loupe
+ * sur fond vert de l'autre. Le texte à côté dit ce que le choix donne.
  *
  * Le choix n'est pas encore enregistré : la page présente l'offre, le
  * paiement viendra avec HelloAsso.

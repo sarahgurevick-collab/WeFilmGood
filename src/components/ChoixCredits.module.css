@@ -10,8 +10,9 @@
   gap: 20px;
 }
 
-/* L'interrupteur de WFG 1 : piste rouge cerclée de noir, le logo d'un
-   côté, le rond blanc de l'autre. Ils échangent leur place au clic. */
+/* L'interrupteur de WFG 1 : piste cerclée de noir, le logo d'un côté,
+   le rond blanc de l'autre. Ils échangent leur place au clic. Rouge
+   pour le dépôt d'un projet, vert pour les crédits recherche. */
 .interrupteur {
   position: relative;
   flex-shrink: 0;
@@ -23,6 +24,11 @@
   background: #da2c25;
   color: #fff;
   cursor: pointer;
+  transition: background 200ms ease;
+}
+
+.cote {
+  background: #1d8a4a;
 }
 
 .interrupteur:focus-visible {
