@@ -7,7 +7,7 @@ type Membre = {
   id: string;
   full_name: string | null;
   display_name: string | null;
-  bio: string | null;
+  biofilmo: string | null;
   city: string | null;
   country: string | null;
   website: string | null;
@@ -35,7 +35,7 @@ export default async function ProfilMembrePage({
 
   const { data: membre } = await supabase
     .from("profiles")
-    .select("id, full_name, display_name, bio, website")
+    .select("id, full_name, display_name, biofilmo, website")
     .eq("id", id)
     .maybeSingle<Membre>();
 
@@ -46,8 +46,8 @@ export default async function ProfilMembrePage({
   return (
     <PageShell eyebrow="Membre" title={nom}>
 
-      {membre.bio ? (
-        <p style={{ marginTop: 24, whiteSpace: "pre-wrap" }}>{membre.bio}</p>
+      {membre.biofilmo ? (
+        <p style={{ marginTop: 24, whiteSpace: "pre-wrap" }}>{membre.biofilmo}</p>
       ) : (
         <p className={formStyles.hint} style={{ marginTop: 24 }}>
           Ce membre n&apos;a pas encore rédigé sa biographie.
