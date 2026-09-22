@@ -59,3 +59,21 @@
   letter-spacing: normal;
   line-height: 1.6;
 }
+
+/* Comment se passe le paiement : sous les paliers payants seulement. */
+.note {
+  max-width: 640px;
+  margin-top: 32px;
+  padding: 16px 18px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.note strong {
+  color: var(--fg);
+}

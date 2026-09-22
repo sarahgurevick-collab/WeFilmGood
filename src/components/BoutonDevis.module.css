@@ -1,0 +1,17 @@
+.bouton {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 0 26px;
+  height: 46px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bouton:hover {
+  filter: brightness(0.92);
+}

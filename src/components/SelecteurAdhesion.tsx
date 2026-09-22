@@ -3,12 +3,18 @@
 import { useState, type ReactNode } from "react";
 import styles from "./SelecteurAdhesion.module.css";
 
-const PALIERS = ["0€", "50€", "500€", "?€"];
+const PALIERS = ["0 €", "5 €", "50 €", "500 €", "Sur devis"];
+
+// Les paliers qui se paient en ligne, par HelloAsso (5, 50 et 500 €).
+const PAYANTS = [1, 2, 3];
 
 export default function SelecteurAdhesion({
   contenus,
+  notePaiement,
 }: {
   contenus: ReactNode[];
+  /** Affichée sous les paliers payants : comment se passe le paiement. */
+  notePaiement?: ReactNode;
 }) {
   const [choix, setChoix] = useState(0);
 
@@ -33,6 +39,10 @@ export default function SelecteurAdhesion({
       <div className={styles.contenu}>
         {contenus[choix] ?? "Contenu à venir."}
       </div>
+
+      {notePaiement && PAYANTS.includes(choix) && (
+        <div className={styles.note}>{notePaiement}</div>
+      )}
     </div>
   );
 }

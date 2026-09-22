@@ -1,4 +1,5 @@
 import AvantageAdhesion from "@/components/AvantageAdhesion";
+import BoutonDevis from "@/components/BoutonDevis";
 import ChoixCredits from "@/components/ChoixCredits";
 import PageShell from "@/components/PageShell";
 import SelecteurAdhesion from "@/components/SelecteurAdhesion";
@@ -17,6 +18,16 @@ export default async function AdhesionPage() {
   return (
     <PageShell eyebrow="WeFilmGood" title="Adhésion" enTeteAnime connecte={!!user}>
       <SelecteurAdhesion
+        notePaiement={
+          <p style={{ margin: 0 }}>
+            <strong>Le paiement passe par HelloAsso</strong>, la plateforme de paiement des
+            associations. Elle ne prend aucune commission à la Maison des Scénaristes : elle vit
+            des contributions volontaires de celles et ceux qui paient. Au moment de régler,
+            HelloAsso vous propose donc d&apos;ajouter une contribution pour son propre
+            fonctionnement, déjà remplie. Elle est facultative : vous pouvez la modifier ou la
+            mettre à zéro avant de valider. Elle ne revient pas à WeFilmGood.
+          </p>
+        }
         contenus={[
           <ul key="0" className={styles.avantages}>
             <AvantageAdhesion icone="loupe">
@@ -33,6 +44,8 @@ export default async function AdhesionPage() {
               Jeu Ciné-Fusion : provoquer le hasard cinématographique.
             </AvantageAdhesion>
           </ul>,
+
+          <p key="5" style={{ margin: 0 }}>Contenu à venir.</p>,
 
           <ul key="50" className={styles.avantages}>
             <AvantageAdhesion icone="loupe">
@@ -78,7 +91,14 @@ export default async function AdhesionPage() {
             </AvantageAdhesion>
           </ul>,
 
-          "Contenu à venir pour le sur-mesure.",
+          <div key="devis">
+            <p style={{ margin: "0 0 16px" }}>
+              Une formule sur mesure, pour une société de production, une école, un festival ou
+              un besoin particulier. Dites-nous ce que vous cherchez, on vous répond avec un
+              devis.
+            </p>
+            <BoutonDevis />
+          </div>,
         ]}
       />
     </PageShell>

@@ -1,13 +1,27 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { envoyerMessageContact } from "@/app/actions";
+import { EVENEMENT_CONTACT } from "./BoutonDevis";
 import styles from "./BoutonContact.module.css";
 
 type Etat = "ferme" | "ouvert" | "envoi" | "envoye" | "erreur";
 
 export default function BoutonContact() {
   const [etat, setEtat] = useState<Etat>("ferme");
+  // Un autre bouton du site (« Demander un devis ») peut ouvrir ce
+  // panneau avec un message déjà commencé.
+  const [prerempli, setPrerempli] = useState("");
+
+  useEffect(() => {
+    const ouvrir = (e: Event) => {
+      const message = (e as CustomEvent<{ message?: string }>).detail?.message ?? "";
+      setPrerempli(message);
+      setEtat("ouvert");
+    };
+    window.addEventListener(EVENEMENT_CONTACT, ouvrir);
+    return () => window.removeEventListener(EVENEMENT_CONTACT, ouvrir);
+  }, []);
 
   const envoyer = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -73,7 +87,15 @@ export default function BoutonContact() {
 
               <input type="text" name="nom" placeholder="Votre nom (facultatif)" />
               <input type="email" name="email" placeholder="Votre email" required />
-              <textarea name="message" placeholder="Votre message" rows={4} required />
+              <textarea
+                key={prerempli}
+                name="message"
+                placeholder="Votre message"
+                rows={4}
+                required
+                defaultValue={prerempli}
+                autoFocus={!!prerempli}
+              />
 
               {etat === "erreur" && (
                 <p className={styles.erreur}>
