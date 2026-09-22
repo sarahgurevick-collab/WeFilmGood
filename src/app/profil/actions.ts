@@ -25,7 +25,8 @@ const texte = (formData: FormData, cle: string) =>
   (formData.get(cle) as string)?.trim() || null;
 
 /**
- * Bloc 1 — Qui êtes-vous ? : catégorie, langues, téléphone, ville, pays,
+ * Bloc 1 — Qui êtes-vous ? : prénom et nom (le nom affiché partout — un
+ * nom de plume se met là), catégorie, langues, téléphone, ville, pays,
  * tous obligatoires ; et la référence professionnelle, obligatoire pour un
  * producteur ou un talent (masquée pour un auteur).
  * Les métiers ont été retirés de ce bloc (reportés à plus tard) : cette
@@ -36,10 +37,15 @@ const texte = (formData: FormData, cle: string) =>
 export async function saveIdentite(formData: FormData) {
   const { supabase, user } = await requireUser("/profil/identite");
 
+  const firstName = texte(formData, "first_name");
+  const lastName = texte(formData, "last_name");
   const category = texte(formData, "category");
   const city = texte(formData, "city");
   const country = texte(formData, "country");
 
+  if (!firstName || !lastName) {
+    redirect("/profil/identite?erreur=" + encodeURIComponent("Le prénom et le nom sont obligatoires."));
+  }
   if (!category || !CATEGORIES.includes(category)) {
     redirect("/profil/identite?erreur=" + encodeURIComponent("Choisissez qui vous êtes."));
   }
@@ -83,9 +89,16 @@ export async function saveIdentite(formData: FormData) {
   await supabase
     .from("profiles")
     .update({
+      first_name: firstName,
+      last_name: lastName,
+      full_name: `${firstName} ${lastName}`,
       city,
       country,
       ...(doitProuver ? { website } : {}),
+      // Le pseudonyme repris de WFG 1 s'efface ici : à partir de
+      // maintenant, c'est prénom et nom qui s'affichent — le membre
+      // vient de les voir, et de choisir de les garder (migration 0065).
+      display_name: null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);

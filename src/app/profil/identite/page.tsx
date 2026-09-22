@@ -31,7 +31,7 @@ export default async function IdentitePage({
   if (!user) redirect("/connexion?next=/profil/identite");
 
   const [{ data: profil }, { data: prive }, { data: langues }, { data: toutesLangues }] = await Promise.all([
-    supabase.from("profiles").select("category, city, country, website").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("category, city, country, website, display_name, full_name, first_name, last_name").eq("id", user.id).maybeSingle(),
     supabase.from("profile_private_details").select("phone").eq("profile_id", user.id).maybeSingle(),
     supabase.from("profile_languages").select("language_code").eq("profile_id", user.id),
     supabase.from("languages").select("code, label_fr").order("position"),
@@ -40,8 +40,48 @@ export default async function IdentitePage({
 
   return (
     <BlocProfil actif="identite">
+      {profil?.display_name && profil.display_name !== profil.full_name && (
+        <p className={formStyles.avertissement}>
+          Sur WeFilmGood 1, vous apparaissiez sous le nom « {profil.display_name} ». Nous
+          l&apos;avons gardé. Dès que vous enregistrez ce bloc, c&apos;est votre prénom et votre
+          nom qui s&apos;afficheront à la place. Pour continuer à signer
+          « {profil.display_name} », inscrivez-le ci-dessous comme prénom et nom.
+        </p>
+      )}
+
       <form className={`${formStyles.form} ${styles.formulaireIdentite}`} action={saveIdentite} style={{ marginTop: 24 }}>
         {erreur && <p className={formStyles.error}>{erreur}</p>}
+
+        {/* Le nom sous lequel le membre apparaît partout sur le site. Un
+            nom de plume se met ici, tel quel : il n'y a pas de case
+            « pseudonyme », et personne n'a besoin de l'état civil. */}
+        <div className={styles.row}>
+          <label className={formStyles.field}>
+            <span>Prénom</span>
+            <input
+              type="text"
+              name="first_name"
+              required
+              autoComplete="given-name"
+              defaultValue={profil?.first_name ?? ""}
+            />
+          </label>
+          <label className={formStyles.field}>
+            <span>Nom</span>
+            <input
+              type="text"
+              name="last_name"
+              required
+              autoComplete="family-name"
+              defaultValue={profil?.last_name ?? ""}
+            />
+          </label>
+        </div>
+        <p className={formStyles.hint} style={{ marginTop: -14 }}>
+          C&apos;est le nom que les autres membres voient. Si vous signez sous un nom de plume,
+          c&apos;est lui qu&apos;il faut mettre ici.
+        </p>
+
         <div className={formStyles.field}>
           <span>Je suis…</span>
           <div className={formStyles.options}>
