@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { AUCUN, parametresRpc, type Filtres } from "./filtres";
 
 export type ProjetTrouve = {
   id: string;
@@ -18,15 +19,20 @@ export type ResultatRecherche = {
 
 const LIMITE = 60;
 
-export async function rechercherProjets(requete: string): Promise<ResultatRecherche> {
+export async function rechercherProjets(
+  requete: string,
+  filtres: Filtres = AUCUN,
+): Promise<ResultatRecherche> {
   const q = requete.trim();
   if (!q) return { projets: [], total: 0 };
 
   const supabase = await createClient();
 
+  // Les filtres de la recherche avancée s'ajoutent au mot cherché.
   const { data: trouves } = await supabase.rpc("rechercher_projets", {
     q,
     p_limite: LIMITE,
+    ...parametresRpc(filtres),
   });
 
   const lignes = (trouves ?? []) as { id: string; score: number; total: number }[];

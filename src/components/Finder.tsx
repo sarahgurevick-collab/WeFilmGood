@@ -8,6 +8,7 @@ import {
   type MotCle,
   type ProjetTrouve,
 } from "@/app/pitchotheque/actions";
+import { AUCUN, type Filtres } from "@/app/pitchotheque/filtres";
 import LabelWFG from "./LabelWFG";
 import NuageG from "./NuageG";
 import styles from "./Finder.module.css";
@@ -22,7 +23,14 @@ const G_MINIMUM = 20;
 // Le petit G de la barre : peu de mots, pour que la lettre se lise.
 const ICONE_MOTS = 30;
 
-export default function Finder({ adherent = false }: { adherent?: boolean }) {
+export default function Finder({
+  adherent = false,
+  filtres = AUCUN,
+}: {
+  adherent?: boolean;
+  /** Les filtres de la recherche avancée, qui s'ajoutent au mot cherché. */
+  filtres?: Filtres;
+}) {
   const [requete, setRequete] = useState("");
   const [resultats, setResultats] = useState<ProjetTrouve[] | null>(null);
   const [total, setTotal] = useState(0);
@@ -76,7 +84,7 @@ export default function Finder({ adherent = false }: { adherent?: boolean }) {
 
     setEnCours(true);
     minuteur.current = setTimeout(async () => {
-      const { projets, total } = await rechercherProjets(q);
+      const { projets, total } = await rechercherProjets(q, filtres);
       setResultats(projets);
       setTotal(total);
       setEnCours(false);
@@ -85,7 +93,8 @@ export default function Finder({ adherent = false }: { adherent?: boolean }) {
     return () => {
       if (minuteur.current) clearTimeout(minuteur.current);
     };
-  }, [requete]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- les filtres sont comparés par valeur
+  }, [requete, filtres.format, filtres.genre, filtres.audience, filtres.budget, filtres.langue]);
 
   // Le nuage suit ce qui est tapé, tant qu'il est ouvert : il ne reste
   // jamais figé sur une liste générique une fois qu'on cherche quelque

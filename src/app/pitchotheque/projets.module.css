@@ -114,3 +114,78 @@
   color: var(--fg);
   font-weight: 700;
 }
+
+/* ---- Recherche avancée : le bouton rouge de WFG 1, qui se déplie ---- */
+
+.avancee {
+  margin: 0 0 28px;
+}
+
+.avanceeBouton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  height: 46px;
+  border-radius: 10px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.avanceeBouton::-webkit-details-marker {
+  display: none;
+}
+
+.avanceeBouton:hover {
+  filter: brightness(0.92);
+}
+
+.avanceePastille {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--rouge-wfg);
+  font-size: 12px;
+}
+
+.avanceePanneau {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
+  margin-top: 14px;
+  padding: 20px;
+  border: 1px solid var(--rouge-wfg);
+  border-radius: 14px;
+}
+
+.avanceeActions {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.avanceeActions a {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .avanceePanneau {
+    grid-template-columns: 1fr;
+  }
+}

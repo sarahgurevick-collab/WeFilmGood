@@ -8,6 +8,8 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
 import { createClient } from "@/lib/supabase/server";
+import RechercheAvancee from "./RechercheAvancee";
+import { adresse, lireFiltres, nombreDeFiltres, parametresRpc } from "./filtres";
 
 type Projet = {
   id: string;
@@ -29,7 +31,7 @@ const SELECTION =
 export default async function ProjetsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const supabase = await createClient();
   const {
@@ -43,13 +45,23 @@ export default async function ProjetsPage({
   }
 
   const adherent = await peutVoirLeNuage();
-  const page = Math.max(1, Math.floor(Number((await searchParams).page)) || 1);
+  const params = await searchParams;
+  const page = Math.max(1, Math.floor(Number(params.page)) || 1);
+  const filtres = lireFiltres(params);
+  const nbFiltres = nombreDeFiltres(filtres);
+
+  const [{ data: genres }, { data: langues }] = await Promise.all([
+    supabase.from("genres").select("slug, label_fr").order("position"),
+    supabase.from("languages").select("code, label_fr").order("position"),
+  ]);
 
   // L'ordre vient de la base (fonction « pitchotheque ») : labellisés
   // d'abord, puis par tranche de remplissage, tirés au sort chaque nuit.
+  // Les filtres de la recherche avancée s'appliquent avant l'ordre.
   const { data: ordre, error: sansOrdre } = await supabase.rpc("pitchotheque", {
     p_limite: PAR_PAGE,
     p_decalage: (page - 1) * PAR_PAGE,
+    ...parametresRpc(filtres),
   });
   const lignes = (ordre ?? []) as { id: string; total: number }[];
 
@@ -96,19 +108,32 @@ export default async function ProjetsPage({
 
   return (
     <PageShell title="Pitchothèque" nav="pitchotheque" connecte={!!user}>
-      <Finder adherent={adherent} />
+      <Finder adherent={adherent} filtres={filtres} />
+      <RechercheAvancee filtres={filtres} genres={genres ?? []} langues={langues ?? []} />
 
       {!projects || projects.length === 0 ? (
         <p className={formStyles.hint}>
-          Aucun projet public pour l&apos;instant.{" "}
-          <Link href="/projet">Déposez le vôtre</Link>.
+          {nbFiltres > 0 ? (
+            <>
+              Aucun projet ne correspond à ces filtres.{" "}
+              <Link href={adresse({ format: null, genre: null, audience: null, budget: null, langue: null })}>
+                Tout effacer
+              </Link>
+              .
+            </>
+          ) : (
+            <>
+              Aucun projet public pour l&apos;instant.{" "}
+              <Link href="/projet">Déposez le vôtre</Link>.
+            </>
+          )}
         </p>
       ) : (
         <>
           <p className={formStyles.hint}>
             {total > projects.length
-              ? `Projets ${((page - 1) * PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * PAR_PAGE + projects.length).toLocaleString("fr-FR")} sur ${total.toLocaleString("fr-FR")} dans la pitchothèque.`
-              : `${total.toLocaleString("fr-FR")} projet${total > 1 ? "s" : ""} dans la pitchothèque.`}
+              ? `Projets ${((page - 1) * PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * PAR_PAGE + projects.length).toLocaleString("fr-FR")} sur ${total.toLocaleString("fr-FR")} ${nbFiltres > 0 ? "correspondant à vos filtres" : "dans la pitchothèque"}.`
+              : `${total.toLocaleString("fr-FR")} projet${total > 1 ? "s" : ""} ${nbFiltres > 0 ? `correspond${total > 1 ? "ent" : ""} à vos filtres` : "dans la pitchothèque"}.`}
           </p>
 
           <ul className={styles.grille}>
@@ -146,7 +171,7 @@ export default async function ProjetsPage({
           {pages > 1 && (
             <nav className={styles.pagination} aria-label="Pages de la pitchothèque">
               {page > 1 ? (
-                <Link href={`/pitchotheque?page=${page - 1}`}>← Précédents</Link>
+                <Link href={adresse(filtres, page - 1)}>← Précédents</Link>
               ) : (
                 <span />
               )}
@@ -154,7 +179,7 @@ export default async function ProjetsPage({
                 Page {page} sur {pages}
               </span>
               {page < pages ? (
-                <Link href={`/pitchotheque?page=${page + 1}`}>Suivants →</Link>
+                <Link href={adresse(filtres, page + 1)}>Suivants →</Link>
               ) : (
                 <span />
               )}
