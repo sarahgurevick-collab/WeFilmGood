@@ -72,13 +72,13 @@ export default async function InscriptionPage({
           </span>
         </label>
 
-        <button type="submit" className={`${formStyles.submitWide} ${formStyles.rouge}`}>
-          Créer mon profil
-        </button>
-
         <p className={formStyles.hint} style={{ textAlign: "center" }}>
           Pas de mot de passe : vous recevrez un lien par email pour activer votre profil.
         </p>
+
+        <button type="submit" className={`${formStyles.submitWide} ${formStyles.rouge}`}>
+          Créer mon profil
+        </button>
       </form>
     </AuthCard>
   );
