@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import FeuArtifice from "@/components/FeuArtifice";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { verifierAdhesion } from "@/lib/adhesion-paiement";
 import { createClient } from "@/lib/supabase/server";
+import styles from "./retour.module.css";
 
 /**
  * Le retour de HelloAsso après le paiement. On ne croit pas l'adresse
@@ -37,14 +39,65 @@ export default async function RetourPaiementPage({
     console.error("retour HelloAsso", e);
   }
 
+  if (etat === "active") {
+    // Relue après la vérification : la date d'échéance vient d'être posée.
+    const { data: a } = await supabase
+      .from("memberships")
+      .select("expires_at, membership_plans(label)")
+      .eq("id", m.id)
+      .maybeSingle();
+    const offre = (a?.membership_plans as { label?: string } | null)?.label;
+    const echeance = a?.expires_at
+      ? new Date(a.expires_at).toLocaleDateString("fr-FR", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+      : null;
+
+    return (
+      <PageShell theme="clair" connecte>
+        <section className={styles.bravo}>
+          <div className={styles.pastille}>
+            <FeuArtifice />
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12.5l4.5 4.5L19 7.5" />
+            </svg>
+          </div>
+          <p className={styles.eyebrow}>Adhésion</p>
+          <h1 className={styles.titre}>
+            Merci, votre adhésion est <span className={styles.rouge}>active</span>
+          </h1>
+          <p className={styles.texte}>
+            Votre paiement est bien reçu. Un email de confirmation vous a été envoyé.
+          </p>
+          {(offre || echeance) && (
+            <dl className={styles.carte}>
+              {offre && (
+                <div>
+                  <dt>Formule</dt>
+                  <dd>{offre}</dd>
+                </div>
+              )}
+              {echeance && (
+                <div>
+                  <dt>Valable jusqu&apos;au</dt>
+                  <dd>{echeance}</dd>
+                </div>
+              )}
+            </dl>
+          )}
+          <Link href="/pitchotheque" className={formStyles.submit}>
+            Aller à la pitchothèque
+          </Link>
+        </section>
+      </PageShell>
+    );
+  }
+
   return (
-    <PageShell eyebrow="Adhésion" title={etat === "active" ? "Merci, votre adhésion est active" : "Paiement en cours de vérification"} theme="clair" connecte>
-      {etat === "active" ? (
-        <p className={formStyles.hint}>
-          Votre paiement est bien reçu. Votre adhésion vaut pour un an ; un email de confirmation
-          vous a été envoyé.
-        </p>
-      ) : erreur ? (
+    <PageShell eyebrow="Adhésion" title="Paiement en cours de vérification" theme="clair" connecte>
+      {erreur ? (
         <p className={formStyles.hint}>
           Le paiement n&apos;a pas abouti. Rien n&apos;a été débité. Vous pouvez réessayer depuis
           la page d&apos;adhésion.
@@ -56,9 +109,7 @@ export default async function RetourPaiementPage({
         </p>
       )}
       <p className={formStyles.linkRow} style={{ marginTop: 24 }}>
-        <Link href={etat === "active" ? "/pitchotheque" : "/adhesion"}>
-          {etat === "active" ? "Aller à la pitchothèque" : "Retour à l'adhésion"}
-        </Link>
+        <Link href="/adhesion">Retour à l&apos;adhésion</Link>
       </p>
     </PageShell>
   );

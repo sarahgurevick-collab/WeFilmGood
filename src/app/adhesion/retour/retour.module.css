@@ -1,0 +1,117 @@
+.bravo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 560px;
+  margin: 40px auto 0;
+  text-align: center;
+}
+
+/* Le rond rouge, en écho au logo, d'où partent les gerbes. */
+.pastille {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  background: var(--rouge-wfg);
+  animation: apparition 0.6s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.pastille svg {
+  width: 44px;
+  height: 44px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: trace 0.5s ease-out 0.35s forwards;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 11px;
+}
+
+.titre {
+  margin: 0;
+  font-family: inherit;
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+.rouge {
+  color: var(--rouge-wfg);
+}
+
+.texte {
+  margin: 0;
+  color: var(--dim);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.carte {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  width: 100%;
+  margin: 8px 0 10px;
+  padding: 18px 24px;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.12));
+  border-radius: 14px;
+}
+
+.carte dt {
+  color: var(--dim);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.carte dd {
+  margin: 4px 0 0;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+@keyframes apparition {
+  from {
+    transform: scale(0);
+  }
+}
+
+@keyframes trace {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .titre {
+    font-size: 24px;
+  }
+
+  .carte {
+    flex-direction: column;
+    gap: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pastille,
+  .pastille svg {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
