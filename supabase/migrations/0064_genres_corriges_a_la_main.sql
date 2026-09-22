@@ -19,3 +19,9 @@ where legacy_id = '1996' and genre_legacy = 'Expérimental';
 -- 22/09/2026 — « Hand in Hand » (WFG 1 n° 2142) : documentaire.
 update public.projects set genre_slug = 'documentaire'
 where legacy_id = '2142' and genre_legacy = 'Expérimental';
+
+-- 22/09/2026 — « Hand in Hand » (WFG 1 n° 2142) : la tagline reprise
+-- de WFG 1 était une erreur (une date de festival) ; Sarah la remplace.
+update public.projects
+set logline = 'De la naissance d''un bébé on suit l''existence humaine en sautant d''une vie à l''autre, en utilisant un procédé visuel, une main en touchant une autre.'
+where legacy_id = '2142';
