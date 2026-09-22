@@ -93,3 +93,22 @@
 .interrupteur:has(input:checked) .oui {
   display: inline;
 }
+
+/* Le groupe des quatre menus déroulants — format, genre, budget,
+   audience — juste sous le titre : une seule décision d'un coup d'œil,
+   au lieu de quatre champs isolés dans la longueur du formulaire. */
+.groupe {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+@media (max-width: 560px) {
+  .groupe {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,10 +1,32 @@
+/* Cinq projets par ligne sur grand écran, dix lignes par page (voir
+   PAR_PAGE dans page.tsx) — le nombre de colonnes se réduit sur les
+   écrans plus étroits plutôt que de laisser les cartes s'écraser. */
 .grille {
   list-style: none;
   padding: 0;
   margin: 28px 0 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 24px;
+}
+
+@media (max-width: 1100px) {
+  .grille {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .grille {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 460px) {
+  .grille {
+    grid-template-columns: 1fr;
+  }
 }
 
 .carte {

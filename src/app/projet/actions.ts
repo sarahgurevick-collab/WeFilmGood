@@ -4,10 +4,13 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { echapper, envoyerEmail } from "@/lib/brevo";
 import { deposerScenario } from "./[id]/fichiers";
+import { AUDIENCES, BUDGETS } from "./ChampsFiche";
 
 // Un documentaire ou un film d'animation n'est pas un format : selon sa
 // durée, c'est un long ou un court métrage.
 const FORMATS = ["long_metrage", "court_metrage", "serie", "immersif_360_vr"];
+const VALEURS_BUDGET = BUDGETS.map((b) => b.value);
+const VALEURS_AUDIENCE = AUDIENCES.map((a) => a.value);
 
 /**
  * Bloc 1 — crée la fiche. Une fois le projet créé, on enchaîne sur le
@@ -31,12 +34,16 @@ export async function createProject(formData: FormData) {
   const synopsis = (formData.get("synopsis") as string)?.trim();
   const format = formData.get("format") as string;
   const genreSlug = (formData.get("genre_slug") as string)?.trim();
+  const budgetRange = formData.get("budget_range") as string;
+  const targetAudience = formData.get("target_audience") as string;
   const hasAwards = formData.get("has_awards") === "oui";
   const awardsDetail = hasAwards ? (formData.get("awards_detail") as string)?.trim() || null : null;
   const scenario = formData.get("scenario") as File | null;
 
   if (!title) echec("Le titre est obligatoire.");
   if (format && !FORMATS.includes(format)) echec("Format de projet invalide.");
+  if (budgetRange && !VALEURS_BUDGET.includes(budgetRange)) echec("Budget estimé invalide.");
+  if (targetAudience && !VALEURS_AUDIENCE.includes(targetAudience)) echec("Audience ciblée invalide.");
   if (scenario && scenario.size > 0 && scenario.type !== "application/pdf") {
     echec("Le scénario doit être un fichier PDF.");
   }
@@ -50,6 +57,8 @@ export async function createProject(formData: FormData) {
       synopsis: synopsis || null,
       format: format || null,
       genre_slug: genreSlug || null,
+      budget_range: budgetRange || null,
+      target_audience: targetAudience || null,
       has_awards: hasAwards,
       awards_detail: awardsDetail,
       status: "depose",

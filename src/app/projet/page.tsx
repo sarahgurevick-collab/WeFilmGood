@@ -31,8 +31,8 @@ export default async function NouvelleFichePage({
   return (
     <BlocProjet actif="fiche" projet={null}>
       <p className={profilStyles.chapeau}>
-        Le titre suffit pour créer la fiche. Le reste peut venir plus tard — mais une fiche
-        complète est mieux placée dans la pitchothèque.
+        Les éléments avec une * sont essentiels à la création de la fiche projet. Plus votre
+        fiche est soigneusement remplie, plus elle est mise en avant par le site.
       </p>
       <form
         className={`${formStyles.form} ${styles.formulaire}`}

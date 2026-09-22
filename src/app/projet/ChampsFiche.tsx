@@ -12,12 +12,33 @@ export const FORMATS = [
   { value: "immersif_360_vr", label: "Format immersif (360/VR)" },
 ];
 
+export const BUDGETS = [
+  { value: "moins_1m", label: "< 1 million €" },
+  { value: "1_3m", label: "1 à 3 millions €" },
+  { value: "3_5m", label: "3 à 5 millions €" },
+  { value: "5_10m", label: "5 à 10 millions €" },
+  { value: "plus_10m", label: "> 10 millions €" },
+];
+
+// « Public » veut dire deux choses sur le site : ici, c'est celui à qui
+// le film s'adresse, jamais la visibilité de la fiche.
+export const AUDIENCES = [
+  { value: "tous_publics", label: "Tous publics" },
+  { value: "jeune_public", label: "Jeune public" },
+  { value: "adultes", label: "Adultes" },
+  { value: "interdit_12", label: "Interdit aux moins de 12 ans" },
+  { value: "interdit_16", label: "Interdit aux moins de 16 ans" },
+  { value: "interdit_18", label: "Interdit aux moins de 18 ans" },
+];
+
 export type ValeursFiche = {
   title: string;
   logline: string | null;
   synopsis: string | null;
   format: string | null;
   genre_slug: string | null;
+  budget_range: string | null;
+  target_audience: string | null;
   has_awards: boolean;
   awards_detail: string | null;
 };
@@ -27,6 +48,10 @@ export type ValeursFiche = {
  * Le formulaire qui les entoure doit porter la classe `formulaire` de
  * deposer.module.css : c'est elle qui n'affiche le détail des prix que
  * sur OUI.
+ *
+ * Seul le titre est marqué d'un astérisque : c'est le seul champ que la
+ * création exige. Tout le reste peut venir plus tard, mais une fiche
+ * mieux remplie est mieux mise en avant par le site.
  */
 export default function ChampsFiche({
   valeurs,
@@ -41,9 +66,64 @@ export default function ChampsFiche({
   return (
     <>
       <label className={formStyles.field}>
-        <span>Titre</span>
+        <span>Titre *</span>
         <input type="text" name="title" required defaultValue={valeurs?.title ?? ""} />
       </label>
+
+      {/* Format, genre, budget et audience : une seule décision d'ensemble,
+          groupée juste sous le titre plutôt que quatre champs isolés plus
+          bas dans le formulaire. */}
+      <div className={styles.groupe}>
+        <label className={formStyles.field}>
+          <span>Format</span>
+          <select name="format" defaultValue={valeurs?.format ?? ""}>
+            <option value="" disabled={!valeurs}>
+              {valeurs ? "Non précisé" : "Choisir un format"}
+            </option>
+            {FORMATS.map((f) => (
+              <option key={f.value} value={f.value}>
+                {f.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className={formStyles.field}>
+          <span>Genre principal</span>
+          <select name="genre_slug" defaultValue={valeurs?.genre_slug ?? ""}>
+            <option value="" disabled={!valeurs}>
+              {valeurs ? "Non précisé" : "Choisir un genre"}
+            </option>
+            {genres.map((g) => (
+              <option key={g.slug} value={g.slug}>
+                {g.label_fr}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className={formStyles.field}>
+          <span>Budget estimé</span>
+          <select name="budget_range" defaultValue={valeurs?.budget_range ?? ""}>
+            <option value="">Non précisé</option>
+            {BUDGETS.map((b) => (
+              <option key={b.value} value={b.value}>
+                {b.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className={formStyles.field}>
+          <span>Audience ciblée</span>
+          <select name="target_audience" defaultValue={valeurs?.target_audience ?? ""}>
+            <option value="">Non précisé</option>
+            {AUDIENCES.map((a) => (
+              <option key={a.value} value={a.value}>
+                {a.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       <ChampAvecCompteur
         nom="logline"
         libelle="Tagline"
@@ -60,32 +140,6 @@ export default function ChampsFiche({
         lignes={6}
         valeurInitiale={valeurs?.synopsis ?? ""}
       />
-      <label className={formStyles.field}>
-        <span>Format</span>
-        <select name="format" defaultValue={valeurs?.format ?? ""}>
-          <option value="" disabled={!valeurs}>
-            {valeurs ? "Non précisé" : "Choisir un format"}
-          </option>
-          {FORMATS.map((f) => (
-            <option key={f.value} value={f.value}>
-              {f.label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className={formStyles.field}>
-        <span>Genre principal</span>
-        <select name="genre_slug" defaultValue={valeurs?.genre_slug ?? ""}>
-          <option value="" disabled={!valeurs}>
-            {valeurs ? "Non précisé" : "Choisir un genre"}
-          </option>
-          {genres.map((g) => (
-            <option key={g.slug} value={g.slug}>
-              {g.label_fr}
-            </option>
-          ))}
-        </select>
-      </label>
 
       <label className={styles.question}>
         <span>Votre projet a-t-il eu des prix ?</span>

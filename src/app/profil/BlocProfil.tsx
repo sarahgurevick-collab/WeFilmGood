@@ -52,7 +52,9 @@ export default async function BlocProfil({
         </aside>
 
         <div className={styles.colonne}>
-          <p className={styles.surtitre}>Bloc {bloc.numero} sur {BLOCS.length}</p>
+          <p className={styles.surtitre}>
+            Bloc {bloc.numero} sur {BLOCS.length} · {completion.pourcentBloc[actif]} %
+          </p>
           <h1 className={styles.titre}>{bloc.titre}</h1>
           {children}
         </div>

@@ -15,7 +15,7 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     numero: 1,
     titre: "La fiche",
     resume:
-      "Le titre · la tagline · la logline · le format et le genre · les prix reçus · le scénario.",
+      "Le titre · la tagline · la logline · le format, le genre, le budget et l'audience · les prix reçus · le scénario.",
     duree: "5 minutes · c'est elle qui crée le projet",
   },
   {
@@ -40,26 +40,67 @@ export function hrefBloc(projectId: string, cle: Bloc) {
 }
 
 export type Fait = Record<Bloc, boolean>;
+export type Pourcent = Record<Bloc, number>;
+
+const arrondi = (n: number, total: number) => (total === 0 ? 0 : Math.round((n / total) * 100));
 
 /**
- * Ce qui est déjà rempli, bloc par bloc. La fiche compte comme faite
- * dès qu'elle a sa tagline et sa logline ; les illustrations dès qu'il y
- * a une image de présentation ; les personnages dès qu'il y en a un.
+ * Où en est chaque bloc de la fiche : le badge ✓ du menu (`fait`, un
+ * minimum atteint) et le pourcentage affiché à côté de son titre
+ * (`pourcent`, qui monte jusqu'à 100 % seulement quand tout y est —
+ * une fiche mieux remplie est mieux mise en avant par le site).
+ *
+ *  - la fiche : tagline, logline, format, genre, budget, audience,
+ *    scénario — sept éléments ;
+ *  - les illustrations : l'image de présentation, puis le mood board ;
+ *  - les personnages : jusqu'à trois, au-delà desquels le pourcentage
+ *    plafonne — un producteur n'a pas besoin d'une liste plus longue
+ *    pour se faire une idée du casting.
  */
-export async function etatDesBlocs(supabase: SupabaseClient, projectId: string): Promise<Fait> {
+export async function etatDesBlocs(
+  supabase: SupabaseClient,
+  projectId: string,
+): Promise<{ fait: Fait; pourcent: Pourcent }> {
   const [{ data: projet }, { data: fichiers }, { count: personnages }] = await Promise.all([
-    supabase.from("projects").select("logline, synopsis").eq("id", projectId).maybeSingle(),
+    supabase
+      .from("projects")
+      .select("logline, synopsis, format, genre_slug, budget_range, target_audience")
+      .eq("id", projectId)
+      .maybeSingle(),
     supabase.from("project_files").select("kind").eq("project_id", projectId),
     supabase
       .from("characters")
       .select("id", { count: "exact", head: true })
       .eq("project_id", projectId),
   ]);
-  const genres = new Set((fichiers ?? []).map((f) => f.kind as string));
+
+  const genresFichiers = (fichiers ?? []).map((f) => f.kind as string);
+  const aVignette = genresFichiers.includes("vignette");
+  const aScenario = genresFichiers.includes("scenario");
+  const aMoodboard = genresFichiers.includes("moodboard");
+  const nombrePersonnages = personnages ?? 0;
+
+  const criteresFiche = [
+    !!projet?.logline?.trim(),
+    !!projet?.synopsis?.trim(),
+    !!projet?.format,
+    !!projet?.genre_slug,
+    !!projet?.budget_range,
+    !!projet?.target_audience,
+    aScenario,
+  ];
+
   return {
-    fiche: !!projet?.logline?.trim() && !!projet?.synopsis?.trim(),
-    illustrations: genres.has("vignette"),
-    personnages: (personnages ?? 0) > 0,
+    fait: {
+      fiche: !!projet?.logline?.trim() && !!projet?.synopsis?.trim(),
+      illustrations: aVignette,
+      personnages: nombrePersonnages > 0,
+    },
+    pourcent: {
+      fiche: arrondi(criteresFiche.filter(Boolean).length, criteresFiche.length),
+      illustrations: arrondi([aVignette, aMoodboard].filter(Boolean).length, 2),
+      personnages: arrondi(Math.min(nombrePersonnages, 3), 3),
+    },
   };
 }
 
@@ -71,6 +112,8 @@ export type ProjetAModifier = {
   synopsis: string | null;
   format: string | null;
   genre_slug: string | null;
+  budget_range: string | null;
+  target_audience: string | null;
   has_awards: boolean;
   awards_detail: string | null;
 };
@@ -92,7 +135,9 @@ export async function chargerProjetAModifier(id: string, cle: Bloc) {
   const [{ data: projet }, { data: admin }] = await Promise.all([
     supabase
       .from("projects")
-      .select("id, owner_id, title, logline, synopsis, format, genre_slug, has_awards, awards_detail")
+      .select(
+        "id, owner_id, title, logline, synopsis, format, genre_slug, budget_range, target_audience, has_awards, awards_detail",
+      )
       .eq("id", id)
       .maybeSingle<ProjetAModifier>(),
     supabase.rpc("is_admin"),

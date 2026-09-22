@@ -14,6 +14,7 @@ import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";
 import profilStyles from "@/app/profil/profil.module.css";
 import { BLOCS, etatDesBlocs, hrefBloc } from "../blocs";
+import { AUDIENCES, BUDGETS } from "../ChampsFiche";
 import { signerImages } from "./fichiers";
 import presentation from "./presentation.module.css";
 
@@ -36,11 +37,16 @@ type Project = {
   owner_id: string;
   legacy_id: string | null;
   genre_slug: string | null;
+  budget_range: string | null;
+  target_audience: string | null;
   share_code: string | null;
   has_awards: boolean;
   awards_detail: string | null;
   genre: { label_fr: string } | null;
 };
+
+const BUDGET_LISIBLE = Object.fromEntries(BUDGETS.map((b) => [b.value, b.label]));
+const AUDIENCE_LISIBLE = Object.fromEntries(AUDIENCES.map((a) => [a.value, a.label]));
 
 const INITIALE = (nom: string) => nom.trim().charAt(0).toUpperCase() || "?";
 
@@ -83,7 +89,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, synopsis, format, genre_slug, language, country, status, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
+      "id, title, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -161,8 +167,8 @@ export default async function ProjetPage({
   };
   const taux = tauxDeRemplissage(etatFiche);
   const aFaire = prochaineAction(etatFiche);
-  const fait = isOwner || estAdmin ? await etatDesBlocs(supabase, id) : null;
-  const prochainBloc = fait ? (BLOCS.find((b) => !fait[b.cle]) ?? null) : null;
+  const etatBlocs = isOwner || estAdmin ? await etatDesBlocs(supabase, id) : null;
+  const prochainBloc = etatBlocs ? (BLOCS.find((b) => !etatBlocs.fait[b.cle]) ?? null) : null;
 
   const { data: auteur } = await supabase
     .from("profiles")
@@ -262,6 +268,8 @@ export default async function ProjetPage({
           FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
           project.language,
           project.country,
+          project.budget_range ? BUDGET_LISIBLE[project.budget_range] : null,
+          project.target_audience ? AUDIENCE_LISIBLE[project.target_audience] : null,
         ]
           .filter(Boolean)
           .join(" · ")}
@@ -325,7 +333,8 @@ export default async function ProjetPage({
               s'ouvre et s'enregistre seul. */}
           <div className={presentation.blocs}>
             {BLOCS.map((b) => {
-              const estFait = fait?.[b.cle] ?? false;
+              const estFait = etatBlocs?.fait[b.cle] ?? false;
+              const pourcentBloc = etatBlocs?.pourcent[b.cle] ?? 0;
               const estProchain = prochainBloc?.cle === b.cle;
               return (
                 <Link
@@ -341,10 +350,12 @@ export default async function ProjetPage({
                       {b.titre}
                     </span>
                     {estFait ? (
-                      <span className={profilStyles.badgeFait}>Fait</span>
+                      <span className={profilStyles.badgeFait}>{pourcentBloc} %</span>
                     ) : estProchain ? (
                       <span className={profilStyles.badge}>À faire</span>
-                    ) : null}
+                    ) : (
+                      <span className={formStyles.hint}>{pourcentBloc} %</span>
+                    )}
                   </div>
                   <p className={profilStyles.carteTexte}>{b.resume}</p>
                 </Link>

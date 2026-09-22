@@ -22,8 +22,9 @@ export default async function BlocProjet({
   children: ReactNode;
 }) {
   const supabase = await createClient();
-  const fait = projet ? await etatDesBlocs(supabase, projet.id) : null;
+  const etat = projet ? await etatDesBlocs(supabase, projet.id) : null;
   const bloc = BLOCS.find((b) => b.cle === actif)!;
+  const pourcentActif = etat?.pourcent[actif] ?? 0;
 
   return (
     <PageShell theme="clair" nav="deposer" connecte>
@@ -33,7 +34,7 @@ export default async function BlocProjet({
             {projet ? "← Retour à la fiche" : "← Retour à la pitchothèque"}
           </Link>
           {BLOCS.map((b) => {
-            const estFait = fait?.[b.cle] ?? false;
+            const estFait = etat?.fait[b.cle] ?? false;
             const pastille = (
               <span className={estFait ? profilStyles.numeroFait : profilStyles.numero}>
                 {estFait ? "✓" : b.numero}
@@ -67,8 +68,9 @@ export default async function BlocProjet({
 
         <div className={profilStyles.colonne}>
           <p className={profilStyles.surtitre}>
-            {projet ? `« ${projet.title} »` : "Nouvelle fiche projet"} · bloc {bloc.numero} sur{" "}
+            {projet ? `« ${projet.title} »` : "Nouvelle fiche projet"} · Bloc {bloc.numero} sur{" "}
             {BLOCS.length}
+            {projet && ` · ${pourcentActif} %`}
           </p>
           <h1 className={profilStyles.titre}>{bloc.titre}</h1>
           {children}

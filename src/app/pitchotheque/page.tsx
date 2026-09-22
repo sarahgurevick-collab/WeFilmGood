@@ -20,7 +20,8 @@ type Projet = {
 
 export const metadata: Metadata = { title: "Pitchothèque — WeFilmGood" };
 
-const PAR_PAGE = 60;
+// Cinq projets par ligne, dix lignes.
+const PAR_PAGE = 50;
 
 const SELECTION =
   "id, title, logline, status, genre:genres(label_fr), files:project_files(storage_path, kind)";
@@ -145,7 +146,7 @@ export default async function ProjetsPage({
           {pages > 1 && (
             <nav className={styles.pagination} aria-label="Pages de la pitchothèque">
               {page > 1 ? (
-                <Link href={`/projets?page=${page - 1}`}>← Précédents</Link>
+                <Link href={`/pitchotheque?page=${page - 1}`}>← Précédents</Link>
               ) : (
                 <span />
               )}
@@ -153,7 +154,7 @@ export default async function ProjetsPage({
                 Page {page} sur {pages}
               </span>
               {page < pages ? (
-                <Link href={`/projets?page=${page + 1}`}>Suivants →</Link>
+                <Link href={`/pitchotheque?page=${page + 1}`}>Suivants →</Link>
               ) : (
                 <span />
               )}
