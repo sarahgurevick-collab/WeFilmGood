@@ -165,7 +165,7 @@ export default async function ProjetsPage({
                       )}
                       {p.status === "labellise" && (
                         <span className={styles.label}>
-                          <LabelWFG hauteur={22} sansFond />
+                          <LabelWFG hauteur={13} sansFond />
                         </span>
                       )}
                     </div>

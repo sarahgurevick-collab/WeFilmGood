@@ -267,7 +267,7 @@ export default function Finder({
                         )}
                         {p.status === "labellise" && (
                           <span className={projetsStyles.label}>
-                            <LabelWFG hauteur={22} sansFond />
+                            <LabelWFG hauteur={13} sansFond />
                           </span>
                         )}
                       </div>
