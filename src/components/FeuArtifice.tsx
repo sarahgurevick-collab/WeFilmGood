@@ -3,14 +3,16 @@ import styles from "./FeuArtifice.module.css";
 
 const COULEURS = ["var(--rouge-wfg)", "#ffd166", "#ffffff", "#ff8a5c"];
 
-/** Trois gerbes décalées dans le temps et l'espace autour du point d'origine. */
+/** Cinq gerbes décalées dans le temps et l'espace autour du point d'origine. */
 const GERBES = [
-  { x: 0, y: -10, delai: 0, rayon: 90 },
-  { x: -70, y: -45, delai: 0.35, rayon: 70 },
-  { x: 75, y: -35, delai: 0.7, rayon: 75 },
+  { x: 0, y: -10, delai: 0, rayon: 130 },
+  { x: -110, y: -60, delai: 0.3, rayon: 100 },
+  { x: 115, y: -50, delai: 0.55, rayon: 105 },
+  { x: -60, y: 50, delai: 0.85, rayon: 85 },
+  { x: 70, y: 55, delai: 1.1, rayon: 90 },
 ];
 
-const ETINCELLES = 22;
+const ETINCELLES = 30;
 
 /**
  * Éclats en CSS pur, joués une seule fois : chaque étincelle part du centre de

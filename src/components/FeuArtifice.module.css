@@ -9,15 +9,15 @@
 
 .etincelle {
   position: absolute;
-  width: 5px;
-  height: 5px;
-  margin: -2.5px 0 0 -2.5px;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
   border-radius: 50%;
   background: var(--couleur);
-  box-shadow: 0 0 6px 1px var(--couleur);
+  box-shadow: 0 0 8px 2px var(--couleur);
   opacity: 0;
   transform: translate(var(--x), var(--y));
-  animation: eclat 1.4s cubic-bezier(0.15, 0.7, 0.3, 1) var(--delai) forwards;
+  animation: eclat 1.7s cubic-bezier(0.15, 0.7, 0.3, 1) var(--delai) forwards;
 }
 
 @keyframes eclat {
@@ -34,7 +34,7 @@
     opacity: 0;
     transform: translate(
         calc(var(--x) + var(--dx)),
-        calc(var(--y) + var(--dy) + 25px)
+        calc(var(--y) + var(--dy) + 35px)
       )
       scale(0.4);
   }
