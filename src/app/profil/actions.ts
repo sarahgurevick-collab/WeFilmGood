@@ -95,9 +95,8 @@ export async function saveIdentite(formData: FormData) {
       city,
       country,
       ...(doitProuver ? { website } : {}),
-      // Le pseudonyme repris de WFG 1 s'efface ici : à partir de
-      // maintenant, c'est prénom et nom qui s'affichent — le membre
-      // vient de les voir, et de choisir de les garder (migration 0065).
+      // Pas de pseudonyme sur WFG 2 (migration 0065) : le nom affiché
+      // est toujours prénom et nom.
       display_name: null,
       updated_at: new Date().toISOString(),
     })

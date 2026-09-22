@@ -31,7 +31,7 @@ export default async function IdentitePage({
   if (!user) redirect("/connexion?next=/profil/identite");
 
   const [{ data: profil }, { data: prive }, { data: langues }, { data: toutesLangues }] = await Promise.all([
-    supabase.from("profiles").select("category, city, country, website, display_name, full_name, first_name, last_name").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("category, city, country, website, first_name, last_name").eq("id", user.id).maybeSingle(),
     supabase.from("profile_private_details").select("phone").eq("profile_id", user.id).maybeSingle(),
     supabase.from("profile_languages").select("language_code").eq("profile_id", user.id),
     supabase.from("languages").select("code, label_fr").order("position"),
@@ -40,15 +40,6 @@ export default async function IdentitePage({
 
   return (
     <BlocProfil actif="identite">
-      {profil?.display_name && profil.display_name !== profil.full_name && (
-        <p className={formStyles.avertissement}>
-          Sur WeFilmGood 1, vous apparaissiez sous le nom « {profil.display_name} ». Nous
-          l&apos;avons gardé. Dès que vous enregistrez ce bloc, c&apos;est votre prénom et votre
-          nom qui s&apos;afficheront à la place. Pour continuer à signer
-          « {profil.display_name} », inscrivez-le ci-dessous comme prénom et nom.
-        </p>
-      )}
-
       <form className={`${formStyles.form} ${styles.formulaireIdentite}`} action={saveIdentite} style={{ marginTop: 24 }}>
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
