@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import BoutonContact from "@/components/BoutonContact";
+import Traduction from "@/components/Traduction";
 import "./globals.css";
 
 const sans = Nunito({
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body>
         {children}
         <BoutonContact />
+        <Traduction />
       </body>
     </html>
   );

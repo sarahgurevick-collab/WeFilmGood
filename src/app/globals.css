@@ -77,3 +77,24 @@ a {
     font-size: 11px;
   }
 }
+
+/* Google Traduction : on cache sa barre en haut de page, son infobulle
+   et le surlignage qu'il pose au survol des phrases traduites. C'est le
+   rond « globe » (composant Traduction) qui sert d'interface. */
+.goog-te-banner-frame,
+.skiptranslate > iframe,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf {
+  display: none !important;
+}
+
+body {
+  top: 0 !important;
+}
+
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+}
