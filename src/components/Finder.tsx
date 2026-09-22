@@ -265,11 +265,6 @@ export default function Finder({
                         ) : (
                           <span className={projetsStyles.sansImage}>Sans vignette</span>
                         )}
-                        {p.status === "labellise" && (
-                          <span className={projetsStyles.label}>
-                            <LabelWFG hauteur={13} sansFond />
-                          </span>
-                        )}
                       </div>
                       <div className={projetsStyles.legende}>
                         <strong>{p.title}</strong>

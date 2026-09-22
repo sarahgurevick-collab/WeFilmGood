@@ -163,11 +163,6 @@ export default async function ProjetsPage({
                       ) : (
                         <span className={styles.sansImage}>Sans vignette</span>
                       )}
-                      {p.status === "labellise" && (
-                        <span className={styles.label}>
-                          <LabelWFG hauteur={13} sansFond />
-                        </span>
-                      )}
                     </div>
                     <div className={styles.legende}>
                       <strong>{p.title}</strong>

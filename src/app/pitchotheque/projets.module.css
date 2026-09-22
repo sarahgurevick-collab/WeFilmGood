@@ -138,20 +138,6 @@
   letter-spacing: 0.07em;
 }
 
-/* Le label n'est plus une pastille de texte mais le logo WeFilmGood,
-   qui porte lui-même son fond blanc et son ombre. */
-/* En tout petit (13 px de haut) : un signe discret, pas un bandeau. */
-.label {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  display: block;
-  line-height: 0;
-  /* Logo sans pastille : une ombre discrète le garde lisible sur les
-     vignettes sombres. */
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
-}
-
 .legende {
   margin-top: 12px;
 }
