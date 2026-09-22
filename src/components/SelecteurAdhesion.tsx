@@ -11,10 +11,13 @@ const PAYANTS = [1, 2, 3];
 export default function SelecteurAdhesion({
   contenus,
   notePaiement,
+  achats = [],
 }: {
   contenus: ReactNode[];
   /** Affichée sous les paliers payants : comment se passe le paiement. */
   notePaiement?: ReactNode;
+  /** Le bouton « Adhérer » de chaque palier, s'il se paie déjà en ligne. */
+  achats?: (ReactNode | null)[];
 }) {
   const [choix, setChoix] = useState(0);
 
@@ -39,6 +42,8 @@ export default function SelecteurAdhesion({
       <div className={styles.contenu}>
         {contenus[choix] ?? "Contenu à venir."}
       </div>
+
+      {achats[choix] && <div className={styles.achat}>{achats[choix]}</div>}
 
       {notePaiement && PAYANTS.includes(choix) && (
         <div className={styles.note}>{notePaiement}</div>

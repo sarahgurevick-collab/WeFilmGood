@@ -77,3 +77,7 @@
 .note strong {
   color: var(--fg);
 }
+
+.achat {
+  margin-top: 28px;
+}

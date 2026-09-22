@@ -3,21 +3,59 @@ import BoutonDevis from "@/components/BoutonDevis";
 import ChoixCredits from "@/components/ChoixCredits";
 import PageShell from "@/components/PageShell";
 import SelecteurAdhesion from "@/components/SelecteurAdhesion";
+import formStyles from "@/components/form.module.css";
+import { modeHelloAsso } from "@/lib/helloasso";
 import { createClient } from "@/lib/supabase/server";
+import { adherer } from "./actions";
 import styles from "./page.module.css";
 
-export default async function AdhesionPage() {
+export default async function AdhesionPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ paiement?: string }>;
+}) {
+  const { paiement } = await searchParams;
   const supabase = await createClient();
-  const [{ data: { user } }, { data: fonds }] = await Promise.all([
+  const [{ data: { user } }, { data: fonds }, { data: estAdmin }] = await Promise.all([
     supabase.auth.getUser(),
     supabase.rpc("compter_fonds"),
+    supabase.rpc("is_admin"),
   ]);
+
+  // En mode test (compte HelloAsso de test), le bouton n'apparaît qu'à
+  // l'administration : personne d'autre ne paie avec une fausse carte.
+  const test = modeHelloAsso() === "sandbox";
+  const peutPayer = !test || estAdmin === true;
+  const bouton = (plan: string, montant: string) =>
+    peutPayer ? (
+      <form action={adherer}>
+        <input type="hidden" name="plan" value={plan} />
+        <button type="submit" className={formStyles.submit}>
+          Adhérer — {montant}
+        </button>
+        {test && (
+          <p className={formStyles.hint} style={{ marginTop: 8 }}>
+            Mode test : paiement sur le compte HelloAsso de test, avec une fausse carte. Visible de
+            l&apos;administration seulement.
+          </p>
+        )}
+      </form>
+    ) : null;
   const motsCles =
     ((fonds ?? [])[0] as { mots_cles: number } | undefined)?.mots_cles ?? 0;
 
   return (
     <PageShell eyebrow="WeFilmGood" title="Adhésion" enTeteAnime connecte={!!user}>
+      {paiement === "erreur" && (
+        <p className={formStyles.error}>
+          Le paiement n&apos;a pas pu démarrer. Réessayez dans un instant, ou écrivez-nous.
+        </p>
+      )}
+      {paiement === "bientot" && (
+        <p className={formStyles.hint}>Le paiement en ligne ouvre très bientôt.</p>
+      )}
       <SelecteurAdhesion
+        achats={[null, null, bouton("palier_50", "50 €"), bouton("palier_500", "500 €"), null]}
         notePaiement={
           <p style={{ margin: 0 }}>
             <strong>Le paiement passe par HelloAsso</strong>, la plateforme de paiement des
