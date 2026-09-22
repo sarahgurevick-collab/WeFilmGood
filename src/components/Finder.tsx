@@ -10,7 +10,6 @@ import {
 } from "@/app/pitchotheque/actions";
 import { AUCUN, type Filtres } from "@/app/pitchotheque/filtres";
 import formStyles from "./form.module.css";
-import LabelWFG from "./LabelWFG";
 import NuageG from "./NuageG";
 import styles from "./Finder.module.css";
 import projetsStyles from "@/app/pitchotheque/projets.module.css";
