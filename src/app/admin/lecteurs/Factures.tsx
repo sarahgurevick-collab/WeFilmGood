@@ -102,7 +102,8 @@ export function versFactures(brutes: FactureBrute[] | null): FactureLecteur[] {
     id: f.id,
     numero: f.numero,
     date: f.created_at,
-    lecteur: (Array.isArray(f.lecteur) ? f.lecteur[0] : f.lecteur)?.full_name ?? null,
+    lecteur:
+      (Array.isArray(f.lecteur) ? f.lecteur[0] : f.lecteur)?.full_name ?? null,
     lecteurId: f.reader_id,
     fiches: f.fiches.length,
     montant: (f.fiches.length * f.tarif_cents) / 100,
