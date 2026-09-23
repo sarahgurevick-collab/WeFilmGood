@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   type CSSProperties,
   type KeyboardEvent,
@@ -80,6 +81,7 @@ export default function CarrouselSucces({ diapos }: { diapos: DiapoSucces[] }) {
   const ms = reduit ? 0 : DUREE_MS;
 
   const ids = useId();
+  const router = useRouter();
   // Les premières clés sont les places 0…visibles-1 ; les suivantes
   // continuent la numérotation.
   const graine = useRef(visibles);
@@ -237,7 +239,11 @@ export default function CarrouselSucces({ diapos }: { diapos: DiapoSucces[] }) {
                   aria-label={diapo.titre}
                   tabIndex={devant ? 0 : -1}
                   onMouseMove={() => setSurvol(col)}
-                  onClick={() => col > 0 && avancer(col)}
+                  onClick={() => {
+                    // Le panneau ouvert mène à sa fiche ; une lamelle s'ouvre.
+                    if (col > 0) avancer(col);
+                    else if (devant && diapo.href) router.push(diapo.href);
+                  }}
                   className={styles.carte}
                   style={{
                     width: largeur,

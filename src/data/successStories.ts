@@ -5,7 +5,7 @@ import type { DiapoSucces } from "@/components/CarrouselSucces";
  *
  * Tant qu'aucune vraie success story n'est prête, chaque panneau garde
  * un dégradé d'attente et renvoie vers sa fiche d'exemple (/succes/N).
- * Pour en publier une : remplacer le titre, la phrase, le lien, et
+ * Pour en publier une : remplacer le titre, la phrase, le lien (un clic sur le panneau ouvert y mène), et
  * ajouter `image` (l'affiche ou une photo du tournage) avec son `imageAlt`.
  */
 const DEGRADES = [
@@ -24,6 +24,5 @@ export const SUCCESS_STORIES: DiapoSucces[] = DEGRADES.map((fond, i) => ({
     "Ici, un projet repéré sur WeFilmGood et devenu film ou série : son affiche, son parcours, son équipe.",
   fond,
   marque: `Projet ${i + 1}`,
-  bouton: "Voir la fiche",
   href: `/succes/${i}`,
 }));
