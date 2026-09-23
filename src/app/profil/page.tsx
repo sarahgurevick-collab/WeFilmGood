@@ -38,7 +38,7 @@ export default async function ProfilPage({
   const prochain = BLOCS.find((b) => !fait[b.cle]) ?? null;
 
   return (
-    <PageShell theme="clair" nav="profil" connecte>
+    <PageShell nav="profil" connecte>
       {enregistre && <p className={styles.ok}>Modifications enregistrées.</p>}
 
       <div className={styles.entete}>
