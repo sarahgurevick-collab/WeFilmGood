@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Finder from "@/components/Finder";
+import VignetteEau from "@/components/VignetteEau";
 import { peutVoirLeNuage } from "./actions";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -9,6 +10,13 @@ import styles from "./projets.module.css";
 import { createClient } from "@/lib/supabase/server";
 import RechercheAvancee from "./RechercheAvancee";
 import { adresse, lireFiltres, nombreDeFiltres, parametresRpc } from "./filtres";
+
+/**
+ * Effet au survol des vignettes. « eau » : l'image ondule comme un reflet
+ * dans l'eau (essai du 23/09). « live » : l'effet Live Photo d'avant, gardé
+ * de côté — remettre « live » ici suffit pour y revenir.
+ */
+const EFFET_VIGNETTE: "eau" | "live" = "eau";
 
 type Projet = {
   id: string;
@@ -144,9 +152,14 @@ export default async function ProjetsPage({
               const vignette = vignetteDe(p);
               return (
                 <li key={p.id}>
-                  <Link href={`/projet/${p.id}`} className={styles.carte}>
+                  <Link
+                    href={`/projet/${p.id}`}
+                    className={`${styles.carte} ${EFFET_VIGNETTE === "eau" ? styles.eau : ""}`}
+                  >
                     <div className={styles.vignette}>
-                      {vignette ? (
+                      {vignette && EFFET_VIGNETTE === "eau" ? (
+                        <VignetteEau src={vignette} />
+                      ) : vignette ? (
                         <>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={vignette} alt="" loading="lazy" />

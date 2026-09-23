@@ -88,6 +88,13 @@
   animation: live 2.2s var(--ease) both;
 }
 
+/* Effet « eau » : l'image ne bouge plus, c'est l'ondulation qui l'anime. */
+.carte.eau:hover .vignette img,
+.carte.eau:focus-visible .vignette img {
+  animation: none;
+  transform: none;
+}
+
 /* Le petit rond « LIVE » de l'iPhone — des cercles concentriques, ronds
    comme le logo — apparaît en haut à droite pendant l'effet. */
 .live {

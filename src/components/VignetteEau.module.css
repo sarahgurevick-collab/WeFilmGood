@@ -1,0 +1,26 @@
+.racine {
+  position: absolute;
+  inset: 0;
+}
+
+.racine img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Posé exactement sur l'image, il apparaît en fondu : pas de saut. */
+.eau {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.eau.visible {
+  opacity: 1;
+}
