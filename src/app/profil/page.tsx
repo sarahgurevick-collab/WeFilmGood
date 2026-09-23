@@ -74,7 +74,6 @@ export default async function ProfilPage({
 
   // Le premier bloc pas encore fait est celui qu'on met en avant.
   const prochain = BLOCS.find((b) => !fait[b.cle]) ?? null;
-  const nbFaits = BLOCS.filter((b) => fait[b.cle]).length;
 
   type Libelle = { label_fr: string; position: number };
   const libelles = (lignes: unknown, champ: "roles" | "genres") =>
@@ -174,18 +173,14 @@ export default async function ProfilPage({
           </Link>
         </section>
 
-        {/* Le générique : les trois blocs, le prochain mis en avant. */}
+        {/* Les trois blocs, le prochain mis en avant. */}
         <section className={styles.generique} aria-label="Compléter mon profil">
           <div className={styles.generiqueEntete}>
-            <h2 className={styles.generiqueTitre}>Votre générique</h2>
-            <span className={styles.generiqueCompte}>
-              {nbFaits} sur {BLOCS.length}
-            </span>
+            <h2 className={styles.generiqueTitre}>Profil complété</h2>
+            <strong className={styles.generiqueCompte}>{pourcent} %</strong>
           </div>
-          <div className={styles.bobine} aria-hidden="true">
-            {BLOCS.map((b) => (
-              <span key={b.cle} className={fait[b.cle] ? styles.bobinePleine : undefined} />
-            ))}
+          <div className={styles.jauge} aria-hidden="true">
+            <span style={{ width: `${pourcent}%` }} />
           </div>
 
           {BLOCS.map((b) => {
@@ -208,7 +203,7 @@ export default async function ProfilPage({
                       : b.duree}
                   </span>
                 </span>
-                {estProchain && <span className={styles.etapeBouton}>Tourner la scène</span>}
+                {estProchain && <span className={styles.badge}>Commencer ici</span>}
               </Link>
             );
           })}
