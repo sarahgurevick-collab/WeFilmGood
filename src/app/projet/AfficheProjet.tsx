@@ -85,7 +85,7 @@ export default function AfficheProjet({
 
   return (
     <section className={styles.affiche} aria-label="Aperçu de la fiche">
-      <p className={styles.surtitre}>Ce que verront les producteurs</p>
+      <p className={styles.surtitre}>Ce que voient les producteurs</p>
 
       <div className={styles.image}>
         {vignette ? (
