@@ -1,0 +1,247 @@
+/* L'affiche du projet, à gauche des trois blocs (même esprit que celle du profil). */
+
+.affiche {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 18px;
+  background: var(--surface);
+  text-transform: none;
+}
+
+.surtitre {
+  margin: 0;
+  font-size: 11px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.image {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(120% 120% at 30% 20%, #3a3f44 0%, #1c1f22 60%, #0e1011 100%);
+  display: grid;
+  place-items: center;
+}
+
+.image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageVide {
+  font-size: 12px;
+  color: var(--dim);
+  font-style: italic;
+}
+
+.prime {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.titre {
+  margin: 4px 0 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.tagline {
+  margin: 0;
+  font-size: 15px;
+  font-style: italic;
+  line-height: 1.5;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+
+.pastilles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pastille {
+  font-size: 12px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--bordure-forte);
+  color: var(--fg);
+}
+
+.pastilleVide {
+  border-style: dashed;
+  color: var(--dim);
+  font-style: italic;
+}
+
+.logline {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--dim);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  /* L'affiche reste une affiche : au-delà, le texte se coupe. */
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Ce qui manque : en pointillés, en italique, en gris. */
+.manque {
+  color: var(--dim);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 13px;
+  text-decoration: underline dashed;
+  text-underline-offset: 4px;
+}
+
+a.manque:hover {
+  color: var(--fg);
+}
+
+/* ---- Le générique : les trois blocs, au-dessus du formulaire ---- */
+
+.generique {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.etape,
+.etapeActive,
+.etapeFermee {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 14px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--fg);
+  text-decoration: none;
+  text-transform: none;
+}
+
+.etape:hover {
+  border-color: var(--bordure-forte);
+}
+
+.etapeActive {
+  border: 2px solid var(--rouge-wfg);
+}
+
+.etapeFermee {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.etapeHaut {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.numero,
+.numeroFait {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--bordure-forte);
+  color: var(--dim);
+}
+
+.numeroFait {
+  border-color: var(--rouge-wfg);
+  background: var(--rouge-wfg);
+  color: #fff;
+}
+
+.barre {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bordure-forte);
+  overflow: hidden;
+}
+
+.barre span {
+  display: block;
+  height: 100%;
+  background: var(--rouge-wfg);
+}
+
+/* ---- Disposition : l'affiche à gauche, le reste à droite ---- */
+
+.scene {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.colonneAffiche {
+  position: sticky;
+  top: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.retour {
+  font-size: 13px;
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.retour:hover {
+  color: var(--fg);
+}
+
+.colonneFormulaire {
+  min-width: 0;
+  max-width: 720px;
+}
+
+@media (max-width: 900px) {
+  .scene {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .colonneAffiche {
+    position: static;
+  }
+}
+
+@media (max-width: 560px) {
+  .generique {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
