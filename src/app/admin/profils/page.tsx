@@ -56,7 +56,7 @@ export default async function ProfilsPage() {
     <PageShell
       avantTitre={<NavAdmin />}
      
-      title="Profils récents"
+      title="Profils"
       theme="clair"
     >
       <p className={formStyles.hint}>
