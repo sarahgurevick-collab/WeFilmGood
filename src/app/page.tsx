@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import BarreNav from "@/components/BarreNav";
+import CarrouselSucces from "@/components/CarrouselSucces";
 import Compteur from "@/components/Compteur";
 import EnTeteAnime from "@/components/EnTeteAnime";
 import HashSession from "@/components/HashSession";
@@ -8,16 +9,11 @@ import NuageAccueil from "@/components/NuageAccueil";
 import RechercheAccueil from "@/components/RechercheAccueil";
 import LogoComplet from "@/components/LogoComplet";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
-import TuileEntree from "@/components/TuileEntree";
+import { SUCCESS_STORIES } from "@/data/successStories";
 import { createClient } from "@/lib/supabase/server";
-import placeholders from "@/styles/placeholders.module.css";
 import styles from "./page.module.css";
 
 const DOTS = [0, 45, 90, 135, 180, 225, 270, 315];
-
-// Teintes des affiches placeholder : chacune renvoie vers une fiche
-// projet d'exemple de la même couleur, en attendant les vraies affiches.
-const AFFICHES_TEINTES = [0, 1, 2, 3, 4, 5, 0, 1];
 
 export default async function Home() {
   const supabase = await createClient();
@@ -113,15 +109,7 @@ export default async function Home() {
 
       <section className={styles.stories}>
         <h2 className={styles.storiesTitre}>Success stories</h2>
-        <div className={styles.affiches}>
-          {AFFICHES_TEINTES.map((teinte, i) => (
-            <TuileEntree
-              key={i}
-              href={`/succes/${teinte}`}
-              className={`${styles.affiche} ${placeholders[`ph${teinte}`]}`}
-            />
-          ))}
-        </div>
+        <CarrouselSucces diapos={SUCCESS_STORIES} />
       </section>
     </>
   );
