@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import adminStyles from "../admin.module.css";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { markReportPaid, reassignReader } from "./actions";
 import ScenarioLink from "./ScenarioLink";
@@ -131,6 +132,35 @@ export default async function ProjetsEnAttentePage() {
     .eq("status", "soumise")
     .order("submitted_at", { ascending: true })
     .returns<PendingReport[]>();
+
+  // Les fiches de WFG 1 rendues mais pas encore relues (statut 1, migration
+  // 0071). Elles se relisent sur l'ancien site jusqu'à la bascule : on les
+  // montre ici pour que la file d'attente soit complète.
+  const admin = createAdminClient();
+  const { data: ficheesWfg1 } = admin
+    ? await admin
+        .from("legacy_reading_reports")
+        .select("legacy_review_id, read_at, final_mark, reader_legacy_id, project:projects(id, title)")
+        .eq("statut", 1)
+        .order("read_at", { ascending: false })
+        .returns<
+          {
+            legacy_review_id: number;
+            read_at: string | null;
+            final_mark: number | null;
+            reader_legacy_id: number | null;
+            project: { id: string; title: string } | null;
+          }[]
+        >()
+    : { data: null };
+  const idsLecteursWfg1 = [
+    ...new Set((ficheesWfg1 ?? []).map((f) => f.reader_legacy_id).filter((id): id is number => id != null)),
+  ];
+  const { data: lecteursWfg1 } =
+    admin && idsLecteursWfg1.length
+      ? await admin.from("legacy_profiles").select("legacy_user_id, full_name").in("legacy_user_id", idsLecteursWfg1)
+      : { data: null };
+  const nomLecteurWfg1 = new Map((lecteursWfg1 ?? []).map((l) => [l.legacy_user_id, l.full_name]));
 
   const { data: paidReports } = await supabase
     .from("reading_reports")
@@ -264,7 +294,7 @@ export default async function ProjetsEnAttentePage() {
         <Link href="/admin/fiches">Voir toutes les fiches de lecture</Link>
       </p>
 
-      {(pendingReports ?? []).length === 0 ? (
+      {(pendingReports ?? []).length === 0 && (ficheesWfg1 ?? []).length === 0 ? (
         <p className={formStyles.hint}>Aucune fiche à valider.</p>
       ) : (
         <table className={adminStyles.table}>
@@ -291,6 +321,23 @@ export default async function ProjetsEnAttentePage() {
                   <Link href={`/admin/fiches/${r.id}`} className={adminStyles.linkButton}>
                     Ouvrir et publier
                   </Link>
+                </td>
+              </tr>
+            ))}
+            {(ficheesWfg1 ?? []).map((f) => (
+              <tr key={`wfg1-${f.legacy_review_id}`}>
+                <td>{f.project?.title ?? "—"}</td>
+                <td>
+                  {(f.reader_legacy_id != null && nomLecteurWfg1.get(f.reader_legacy_id)) || "—"}
+                </td>
+                <td>{f.final_mark ?? "—"} / 200</td>
+                <td>{f.read_at ? new Date(f.read_at).toLocaleDateString("fr-FR") : "—"}</td>
+                <td>
+                  {f.project && (
+                    <Link href={`/projet/${f.project.id}`} className={adminStyles.linkButton}>
+                      À relire sur WFG 1
+                    </Link>
+                  )}
                 </td>
               </tr>
             ))}

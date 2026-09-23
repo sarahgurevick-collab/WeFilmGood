@@ -29,6 +29,8 @@ type Heritee = {
   final_mark: number | null;
   author_rating: number | null;
   reader_legacy_id: number | null;
+  /** 0 attribuée non écrite, 1 rendue à relire, 2 vérifiée (migration 0071). */
+  statut?: number;
   project: {
     id: string;
     title: string;
@@ -98,6 +100,11 @@ export default async function TableauFichesPage({
       : brutes.split(",").map(Number).filter((a) => a >= PREMIERE_ANNEE && a <= anneeEnCours + 1)
   ).sort((a, b) => b - a);
 
+  // La colonne statut arrive avec la migration 0071 : tant qu'elle n'est
+  // pas appliquée, toutes les fiches reprises passent pour vérifiées.
+  const { error: sansStatut } = await admin.from("legacy_reading_reports").select("statut").limit(1);
+  const colonneStatut = sansStatut ? "" : ", statut";
+
   const parAnnee = await Promise.all(
     cochees.map((annee) => {
       const debut = `${annee}-01-01`;
@@ -106,7 +113,7 @@ export default async function TableauFichesPage({
         toutLire<Heritee>((a, b) =>
           admin
             .from("legacy_reading_reports")
-            .select(`legacy_review_id, read_at, content, final_mark, author_rating, reader_legacy_id, ${PROJET}`)
+            .select(`legacy_review_id, read_at, content, final_mark, author_rating, reader_legacy_id${colonneStatut}, ${PROJET}`)
             .gte("read_at", debut)
             .lt("read_at", fin)
             .order("read_at", { ascending: false })
@@ -126,7 +133,9 @@ export default async function TableauFichesPage({
       ]);
     }),
   );
-  const heritees = parAnnee.flatMap(([h]) => h);
+  // Les fiches attribuées mais jamais écrites (statut 0) sont vides : on
+  // ne les montre pas.
+  const heritees = parAnnee.flatMap(([h]) => h).filter((f) => f.statut !== 0);
   const rendues = parAnnee.flatMap(([, r]) => r);
 
   // Lecteurs de WFG 1 : leur ancien profil (nom, adresse), sinon leur
@@ -182,11 +191,13 @@ export default async function TableauFichesPage({
         projetId: f.project?.id ?? null,
         format: f.project?.format ?? null,
         langue: f.project?.language ?? null,
-        statut: "Vérifiée",
+        statut: f.statut === 1 ? "À valider" : "Vérifiée",
         note: f.final_mark,
         analyse: texteBrut(f.content, false),
         satisfaction: f.author_rating || null,
-        lienFiche: null,
+        // Relue sur WFG 1 jusqu'à la bascule : le A mène au projet, où
+        // l'administration lit la fiche.
+        lienFiche: f.statut === 1 && f.project ? `/projet/${f.project.id}` : null,
       };
     }),
     ...rendues.map((r) => {
