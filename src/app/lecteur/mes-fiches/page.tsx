@@ -59,7 +59,7 @@ export default async function MesFichesPage() {
       ? await service
           .from("legacy_reading_reports")
           .select(
-            "legacy_review_id, final_mark, read_at, project:projects(title)",
+            "legacy_review_id, final_mark, read_at, author_rating, project:projects(title)",
           )
           .eq("reader_legacy_id", moi.legacy_user_id)
           .eq("statut", 2)
@@ -69,6 +69,7 @@ export default async function MesFichesPage() {
               legacy_review_id: number;
               final_mark: number | null;
               read_at: string | null;
+              author_rating: number | null;
               project: { title: string } | null;
             }[]
           >()
@@ -162,6 +163,7 @@ export default async function MesFichesPage() {
                 <th>Projet</th>
                 <th>Lu le</th>
                 <th>Ma note</th>
+                <th>Satisfaction auteur</th>
               </tr>
             </thead>
             <tbody>
@@ -174,6 +176,7 @@ export default async function MesFichesPage() {
                       : "—"}
                   </td>
                   <td>{f.final_mark ?? "—"}</td>
+                  <td>{f.author_rating ? "★".repeat(f.author_rating) : "—"}</td>
                 </tr>
               ))}
             </tbody>

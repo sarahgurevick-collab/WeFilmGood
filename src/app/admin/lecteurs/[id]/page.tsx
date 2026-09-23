@@ -92,7 +92,7 @@ export default async function FicheLecteurPage({
         ? admin
             .from("legacy_reading_reports")
             .select(
-              "legacy_review_id, final_mark, read_at, statut, project:projects(id, title)",
+              "legacy_review_id, final_mark, read_at, statut, author_rating, project:projects(id, title)",
             )
             .eq("reader_legacy_id", profil.legacy_user_id)
             .neq("statut", 0)
@@ -216,6 +216,7 @@ export default async function FicheLecteurPage({
                 <th>Date</th>
                 <th>Projet</th>
                 <th>Note</th>
+                <th>Satisfaction auteur</th>
                 <th></th>
               </tr>
             </thead>
@@ -237,6 +238,7 @@ export default async function FicheLecteurPage({
                     )}
                   </td>
                   <td>{f.final_mark ?? "—"}</td>
+                  <td>{f.author_rating ? "★".repeat(f.author_rating) : "—"}</td>
                   <td>
                     <Link
                       href={`/admin/fiches/ancienne/${f.legacy_review_id}`}
