@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../admin.module.css";
 import { basculerValidation } from "./actions";
 import { prendreLaPlace } from "./prise-de-place";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type Membre = {
   profile_id: string;
@@ -38,16 +39,32 @@ export default async function ProfilsPage() {
   const { data: isAdmin } = await supabase.rpc("is_admin");
   if (!isAdmin) redirect("/");
 
-  const [{ data: membresBruts }, { data: sites }] = await Promise.all([
+  const [{ data: membresBruts }, { data: sites }, { data: lecteurs }] = await Promise.all([
     supabase.rpc("admin_list_users"),
     supabase
       .from("profiles")
       .select("id, website")
       .returns<{ id: string; website: string | null }[]>(),
+    supabase.from("profile_roles").select("profile_id").eq("role_slug", "lecteur"),
   ]);
+
+  // Ne restent que les nouveaux talents : ni les lecteurs, dont le profil
+  // n'est vu que d'eux-mêmes, ni les comptes repris de WFG 1 le 19/09
+  // (métadonnée imported_from), qui ne sont pas des inscriptions.
+  const exclus = new Set((lecteurs ?? []).map((l) => l.profile_id));
+  const service = createAdminClient();
+  if (service) {
+    for (let page = 1; ; page++) {
+      const { data } = await service.auth.admin.listUsers({ page, perPage: 1000 });
+      const comptes = data?.users ?? [];
+      for (const c of comptes) if (c.user_metadata?.imported_from) exclus.add(c.id);
+      if (comptes.length < 1000) break;
+    }
+  }
 
   const siteDe = new Map((sites ?? []).map((s) => [s.id, s.website]));
   const membres = ((membresBruts ?? []) as Membre[])
+    .filter((m) => !exclus.has(m.profile_id))
     .slice()
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
     .slice(0, 60);
