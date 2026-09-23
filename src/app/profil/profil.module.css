@@ -454,3 +454,244 @@
     gap: 26px;
   }
 }
+
+/* ---- Sommaire : l'affiche et le générique ---- */
+
+.scene {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.affiche {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 26px 24px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.afficheSurtitre {
+  margin: 0 0 4px;
+  font-size: 11px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* Ronde comme le logo. Sans photo, l'initiale sur le rouge WFG. */
+.affichePhoto {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.affichePhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.afficheNom {
+  margin: 6px 0 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+.afficheLigne {
+  margin: 0;
+  font-size: 14px;
+  color: var(--dim);
+  text-transform: none;
+}
+
+.afficheAttente {
+  margin: 0;
+  font-size: 12px;
+  color: var(--dim);
+  font-style: italic;
+}
+
+.pastilles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.pastille {
+  font-size: 12px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--bordure-forte);
+  color: var(--fg);
+  text-transform: none;
+}
+
+.replique {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--dim);
+  text-transform: none;
+}
+
+.replique em {
+  color: var(--fg);
+}
+
+/* Ce qui manque : en pointillés, et cliquable vers le bon bloc. */
+.manque {
+  color: var(--dim);
+  border-style: dashed;
+  text-decoration: none;
+  font-style: italic;
+}
+
+a.manque:hover {
+  color: var(--fg);
+}
+
+.afficheLien {
+  margin-top: auto;
+  padding-top: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.generique {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.generiqueEntete {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.generiqueTitre {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  text-transform: none;
+}
+
+.generiqueCompte {
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.bobine {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+
+.bobine span {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bordure-forte);
+}
+
+.bobine .bobinePleine {
+  background: var(--rouge-wfg);
+}
+
+.etape,
+.etapeActive {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--fg);
+  text-decoration: none;
+  transition: border-color 0.2s ease;
+}
+
+.etape:hover {
+  border-color: var(--bordure-forte);
+}
+
+.etapeActive {
+  border: 2px solid var(--rouge-wfg);
+}
+
+.etapeNumero,
+.etapeFaite {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  border: 1px solid var(--bordure-forte);
+  color: var(--dim);
+}
+
+.etapeFaite {
+  border-color: var(--rouge-wfg);
+  background: var(--rouge-wfg);
+  color: #fff;
+}
+
+.etapeTexte {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-transform: none;
+}
+
+.etapeTexte strong {
+  font-size: 15px;
+}
+
+.etapeTexte span {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.etapeBouton {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: none;
+}
+
+@media (max-width: 760px) {
+  .scene {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .etapeBouton {
+    display: none;
+  }
+}
