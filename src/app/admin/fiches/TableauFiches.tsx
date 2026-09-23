@@ -43,6 +43,8 @@ const COLONNES: { cle: Colonne; libelle: string }[] = [
   { cle: "note", libelle: "Note" },
 ];
 
+const TOUS_FORMATS = ["CM", "LM", "TV", "VR"];
+
 const formatCourt = (l: LigneFiche) => (l.format ? (FORMATS[l.format] ?? l.format) : "");
 
 function valeur(l: LigneFiche, c: Colonne): string | number {
@@ -58,18 +60,19 @@ function valeur(l: LigneFiche, c: Colonne): string | number {
   }
 }
 
-const sansAccents = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const sansAccents = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 export default function TableauFiches({ lignes }: { lignes: LigneFiche[] }) {
   const [recherche, setRecherche] = useState("");
-  const [format, setFormat] = useState<string | null>(null);
+  const [formats, setFormats] = useState<Set<string>>(new Set(TOUS_FORMATS));
   const [tri, setTri] = useState<{ colonne: Colonne; sens: 1 | -1 }>({ colonne: "date", sens: -1 });
   const [ouvertes, setOuvertes] = useState<Set<string>>(new Set());
 
   const affichees = useMemo(() => {
     const mots = sansAccents(recherche).split(/\s+/).filter(Boolean);
     const filtrees = lignes.filter((l) => {
-      if (format && formatCourt(l) !== format) return false;
+      // Les quatre cochés : tout passe, y compris les projets sans format.
+      if (formats.size < TOUS_FORMATS.length && !formats.has(formatCourt(l))) return false;
       if (mots.length === 0) return true;
       const texte = sansAccents(
         [l.lecteur, l.lecteurEmail, l.scenariste, l.titre, l.analyse, l.statut].join(" "),
@@ -82,7 +85,7 @@ export default function TableauFiches({ lignes }: { lignes: LigneFiche[] }) {
       const vb = valeur(b, colonne);
       return (va < vb ? -1 : va > vb ? 1 : 0) * sens;
     });
-  }, [lignes, recherche, format, tri]);
+  }, [lignes, recherche, formats, tri]);
 
   const trier = (colonne: Colonne) =>
     setTri((t) =>
@@ -119,16 +122,28 @@ export default function TableauFiches({ lignes }: { lignes: LigneFiche[] }) {
           onChange={(e) => setRecherche(e.target.value)}
         />
         <div className={styles.formats}>
-          {[null, "CM", "LM", "TV", "VR"].map((f) => (
-            <button
-              key={f ?? "tous"}
-              type="button"
-              className={format === f ? adminStyles.anneeActive : adminStyles.annee}
-              onClick={() => setFormat(f)}
-            >
-              {f ?? "Tous formats"}
-            </button>
-          ))}
+          {TOUS_FORMATS.map((f) => {
+            const coche = formats.has(f);
+            return (
+              <button
+                key={f}
+                type="button"
+                className={coche ? adminStyles.anneeActive : adminStyles.annee}
+                aria-pressed={coche}
+                onClick={() =>
+                  setFormats((actuels) => {
+                    const n = new Set(actuels);
+                    if (coche) n.delete(f);
+                    else n.add(f);
+                    return n;
+                  })
+                }
+              >
+                {coche ? "✓ " : ""}
+                {f}
+              </button>
+            );
+          })}
         </div>
       </div>
 

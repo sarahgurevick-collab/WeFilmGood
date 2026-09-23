@@ -12,9 +12,9 @@ import TableauFiches, { type LigneFiche } from "./TableauFiches";
  * rendues sur WFG 2 —, repris de la page « analysis-list-admin » de
  * l'ancien site, dont Sarah se sert très souvent.
  *
- * Une année à la fois, l'année en cours par défaut : les 5 800 fiches
+ * Les années se cochent, l'année en cours par défaut : les 5 800 fiches
  * d'un coup font une page lourde, et ce sont les deux dernières années
- * qui servent. « Tout afficher » reste possible.
+ * qui servent.
  *
  * Les fiches et les adresses des lecteurs ne sont lisibles qu'avec le
  * client à privilèges, ouvert ici seulement après la vérification admin.
@@ -82,7 +82,7 @@ async function toutLire<T>(
 export default async function TableauFichesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ annee?: string }>;
+  searchParams: Promise<{ annees?: string }>;
 }) {
   const supabase = await createClient();
   const { data: isAdmin } = await supabase.rpc("is_admin");
@@ -92,32 +92,43 @@ export default async function TableauFichesPage({
   if (!admin) redirect("/admin");
 
   const anneeEnCours = new Date().getFullYear();
-  const { annee: brute } = await searchParams;
-  const tout = brute === "tout";
-  const annee = tout ? null : Number(brute) || anneeEnCours;
-  const debut = annee ? `${annee}-01-01` : null;
-  const fin = annee ? `${annee + 1}-01-01` : null;
+  const { annees: brutes } = await searchParams;
+  const cochees = (
+    brutes === undefined
+      ? [anneeEnCours]
+      : brutes.split(",").map(Number).filter((a) => a >= PREMIERE_ANNEE && a <= anneeEnCours + 1)
+  ).sort((a, b) => b - a);
 
-  const [heritees, rendues] = await Promise.all([
-    toutLire<Heritee>((a, b) => {
-      let q = admin
-        .from("legacy_reading_reports")
-        .select(`legacy_review_id, read_at, content, final_mark, author_rating, reader_legacy_id, ${PROJET}`)
-        .order("read_at", { ascending: false })
-        .range(a, b);
-      if (debut && fin) q = q.gte("read_at", debut).lt("read_at", fin);
-      return q.returns<Heritee[]>();
+  const parAnnee = await Promise.all(
+    cochees.map((annee) => {
+      const debut = `${annee}-01-01`;
+      const fin = `${annee + 1}-01-01`;
+      return Promise.all([
+        toutLire<Heritee>((a, b) =>
+          admin
+            .from("legacy_reading_reports")
+            .select(`legacy_review_id, read_at, content, final_mark, author_rating, reader_legacy_id, ${PROJET}`)
+            .gte("read_at", debut)
+            .lt("read_at", fin)
+            .order("read_at", { ascending: false })
+            .range(a, b)
+            .returns<Heritee[]>(),
+        ),
+        toutLire<Rendue>((a, b) =>
+          admin
+            .from("reading_reports")
+            .select(`id, status, score, content, submitted_at, reader_id, ${PROJET}`)
+            .gte("submitted_at", debut)
+            .lt("submitted_at", fin)
+            .order("submitted_at", { ascending: false })
+            .range(a, b)
+            .returns<Rendue[]>(),
+        ),
+      ]);
     }),
-    toutLire<Rendue>((a, b) => {
-      let q = admin
-        .from("reading_reports")
-        .select(`id, status, score, content, submitted_at, reader_id, ${PROJET}`)
-        .order("submitted_at", { ascending: false })
-        .range(a, b);
-      if (debut && fin) q = q.gte("submitted_at", debut).lt("submitted_at", fin);
-      return q.returns<Rendue[]>();
-    }),
-  ]);
+  );
+  const heritees = parAnnee.flatMap(([h]) => h);
+  const rendues = parAnnee.flatMap(([, r]) => r);
 
   // Lecteurs de WFG 1 : leur ancien profil (nom, adresse), sinon leur
   // compte WFG 2 quand le profil repris a déjà été rattaché.
@@ -210,25 +221,31 @@ export default async function TableauFichesPage({
         nouveau site.
       </p>
 
-      <nav className={adminStyles.annees} aria-label="Année">
-        {annees.map((a) => (
-          <Link
-            key={a}
-            href={`/admin/fiches?annee=${a}`}
-            className={annee === a ? adminStyles.anneeActive : adminStyles.annee}
-          >
-            {a}
-          </Link>
-        ))}
-        <Link
-          href="/admin/fiches?annee=tout"
-          className={tout ? adminStyles.anneeActive : adminStyles.annee}
-        >
-          Tout afficher
-        </Link>
+      <nav className={adminStyles.annees} aria-label="Années">
+        {annees.map((a) => {
+          const cochee = cochees.includes(a);
+          const suivantes = cochee ? cochees.filter((c) => c !== a) : [...cochees, a];
+          return (
+            <Link
+              key={a}
+              href={`/admin/fiches?annees=${suivantes.sort((x, y) => y - x).join(",")}`}
+              className={cochee ? adminStyles.anneeActive : adminStyles.annee}
+              aria-pressed={cochee}
+            >
+              {cochee ? "✓ " : ""}
+              {a}
+            </Link>
+          );
+        })}
       </nav>
 
-      <TableauFiches lignes={lignes} />
+      {cochees.length === 0 ? (
+        <p className={formStyles.hint} style={{ marginTop: 24 }}>
+          Cochez une ou plusieurs années.
+        </p>
+      ) : (
+        <TableauFiches lignes={lignes} />
+      )}
     </PageShell>
   );
 }
