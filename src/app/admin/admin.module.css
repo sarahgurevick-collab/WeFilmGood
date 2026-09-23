@@ -256,3 +256,14 @@
   border-color: #e2231a;
   color: #e2231a;
 }
+
+/* Le texte d'une fiche de WFG 1, en lecture seule, dans un cadre d'éditeur. */
+.ficheTexte {
+  padding: 16px 18px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}

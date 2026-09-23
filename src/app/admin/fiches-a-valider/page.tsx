@@ -19,7 +19,7 @@ type PendingReport = {
   score: number | null;
   labellise: boolean;
   submitted_at: string;
-  project: { title: string } | null;
+  project: { id: string; title: string } | null;
   reader: { full_name: string | null } | null;
 };
 
@@ -27,7 +27,7 @@ type PaidReport = {
   id: string;
   payment_status: string;
   submitted_at: string;
-  project: { title: string } | null;
+  project: { id: string; title: string } | null;
   reader: { full_name: string | null } | null;
 };
 
@@ -39,7 +39,7 @@ export default async function FichesAValiderPage() {
   const { data: pendingReports } = await supabase
     .from("reading_reports")
     .select(
-      "id, score, labellise, submitted_at, project:projects(title), reader:profiles(full_name)",
+      "id, score, labellise, submitted_at, project:projects(id, title), reader:profiles(full_name)",
     )
     .eq("status", "soumise")
     .order("submitted_at", { ascending: true })
@@ -88,7 +88,7 @@ export default async function FichesAValiderPage() {
   const { data: paidReports } = await supabase
     .from("reading_reports")
     .select(
-      "id, payment_status, submitted_at, project:projects(title), reader:profiles(full_name)",
+      "id, payment_status, submitted_at, project:projects(id, title), reader:profiles(full_name)",
     )
     .eq("status", "validee_admin")
     .order("submitted_at", { ascending: false })
@@ -113,7 +113,15 @@ export default async function FichesAValiderPage() {
           <tbody>
             {(pendingReports ?? []).map((r) => (
               <tr key={r.id}>
-                <td>{r.project?.title ?? "—"}</td>
+                <td>
+                  {r.project ? (
+                    <Link href={`/projet/${r.project.id}`}>
+                      {r.project.title}
+                    </Link>
+                  ) : (
+                    "—"
+                  )}
+                </td>
                 <td>{r.reader?.full_name ?? "—"}</td>
                 <td>
                   {r.score ?? "—"} / 200
@@ -134,7 +142,15 @@ export default async function FichesAValiderPage() {
             ))}
             {(ficheesWfg1 ?? []).map((f) => (
               <tr key={`wfg1-${f.legacy_review_id}`}>
-                <td>{f.project?.title ?? "—"}</td>
+                <td>
+                  {f.project ? (
+                    <Link href={`/projet/${f.project.id}`}>
+                      {f.project.title}
+                    </Link>
+                  ) : (
+                    "—"
+                  )}
+                </td>
                 <td>
                   {(f.reader_legacy_id != null &&
                     nomLecteurWfg1.get(f.reader_legacy_id)) ||
@@ -147,14 +163,12 @@ export default async function FichesAValiderPage() {
                     : "—"}
                 </td>
                 <td>
-                  {f.project && (
-                    <Link
-                      href={`/projet/${f.project.id}`}
-                      className={adminStyles.linkButton}
-                    >
-                      À relire sur WFG 1
-                    </Link>
-                  )}
+                  <Link
+                    href={`/admin/fiches/ancienne/${f.legacy_review_id}`}
+                    className={adminStyles.linkButton}
+                  >
+                    À relire sur WFG 1
+                  </Link>
                 </td>
               </tr>
             ))}
@@ -180,7 +194,15 @@ export default async function FichesAValiderPage() {
           <tbody>
             {(paidReports ?? []).map((r) => (
               <tr key={r.id}>
-                <td>{r.project?.title ?? "—"}</td>
+                <td>
+                  {r.project ? (
+                    <Link href={`/projet/${r.project.id}`}>
+                      {r.project.title}
+                    </Link>
+                  ) : (
+                    "—"
+                  )}
+                </td>
                 <td>{r.reader?.full_name ?? "—"}</td>
                 <td>{new Date(r.submitted_at).toLocaleDateString("fr-FR")}</td>
                 <td>{r.payment_status === "payee" ? "Payée" : "Due"}</td>
