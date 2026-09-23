@@ -33,6 +33,11 @@
   border-color: var(--bg);
 }
 
+/* Pour un écran court (arrivée du lien) : pas de grand vide sous le bouton. */
+.card.compacte {
+  height: auto;
+}
+
 .contenu {
   flex: 1;
   min-height: 0;

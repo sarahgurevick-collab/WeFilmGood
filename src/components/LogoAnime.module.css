@@ -29,7 +29,7 @@
 /* Invisible, mais il occupe la place : la barre ne bouge plus. */
 .gabarit {
   visibility: hidden;
-  font-size: 12px;
+  font-size: var(--taille-mention, 12px);
   font-weight: 600;
   font-style: italic;
   white-space: nowrap;
@@ -39,7 +39,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  font-size: 12px;
+  font-size: var(--taille-mention, 12px);
   font-weight: 600;
   font-style: italic;
   white-space: nowrap;

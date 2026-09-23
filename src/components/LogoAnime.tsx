@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useState } from "react";
 import { DUREE_ENGAGEMENT, ENGAGEMENTS } from "@/lib/engagements";
 import styles from "./LogoAnime.module.css";
 
@@ -18,7 +18,18 @@ import styles from "./LogoAnime.module.css";
  */
 const RATIO = 1381 / 1113;
 
-export default function LogoAnime({ hauteur = 34 }: { hauteur?: number }) {
+export default function LogoAnime({
+  hauteur = 34,
+  tailleMention,
+  centre = false,
+}: {
+  hauteur?: number;
+  /** Taille du texte de l'engagement, en pixels (12 par défaut). */
+  tailleMention?: number;
+  /** true pour garder le dessin au milieu : la place de la mention est
+      aussi réservée à gauche. */
+  centre?: boolean;
+}) {
   const [i, setI] = useState(0);
   const [anime, setAnime] = useState(false);
 
@@ -34,7 +45,20 @@ export default function LogoAnime({ hauteur = 34 }: { hauteur?: number }) {
   const etat = anime ? ENGAGEMENTS[i] : ENGAGEMENTS[0];
 
   return (
-    <span className={styles.bloc} style={{ color: etat.couleur }}>
+    <span
+      className={styles.bloc}
+      style={
+        {
+          color: etat.couleur,
+          ...(tailleMention ? { "--taille-mention": `${tailleMention}px` } : {}),
+        } as CSSProperties
+      }
+    >
+      {centre && (
+        <span className={styles.zoneMention} aria-hidden="true">
+          <span className={styles.gabarit}>for Humanity</span>
+        </span>
+      )}
       <span
         className={styles.dessin}
         role="img"

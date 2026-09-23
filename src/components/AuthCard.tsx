@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import LogoAnime from "./LogoAnime";
 import LogoComplet from "./LogoComplet";
 import styles from "./AuthCard.module.css";
 
@@ -13,6 +14,8 @@ export default function AuthCard({
   theme = "sombre",
   carteClaire = false,
   sansOnglets = false,
+  compacte = false,
+  logoAnime = false,
   children,
 }: {
   active: "connexion" | "inscription";
@@ -22,12 +25,16 @@ export default function AuthCard({
   carteClaire?: boolean;
   /** true une fois le formulaire envoyé : basculer d'onglet n'a plus de sens. */
   sansOnglets?: boolean;
+  /** true pour une carte à la hauteur de son contenu, sans hauteur fixe. */
+  compacte?: boolean;
+  /** true pour le logo qui passe d'un engagement à l'autre. */
+  logoAnime?: boolean;
   children: ReactNode;
 }) {
   return (
     <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
       <div
-        className={`${styles.card} ${carteClaire ? `clair ${styles.carteClaire}` : ""}`}
+        className={`${styles.card} ${compacte ? styles.compacte : ""} ${carteClaire ? `clair ${styles.carteClaire}` : ""}`}
       >
         {!sansOnglets && (
           <nav className={styles.tabs}>
@@ -49,7 +56,11 @@ export default function AuthCard({
         )}
 
         <Link href="/" className={styles.brand}>
-          <LogoComplet hauteur={48} />
+          {logoAnime ? (
+            <LogoAnime hauteur={56} tailleMention={15} centre />
+          ) : (
+            <LogoComplet hauteur={48} />
+          )}
           <span className={styles.tagline}>
             The best stories wherever they are
           </span>
