@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import AuthCard from "@/components/AuthCard";
 import BoutonFeuArtifice from "@/components/BoutonFeuArtifice";
 import formStyles from "@/components/form.module.css";
+import { cheminSur } from "@/lib/lien-magique";
 import { createClient } from "@/lib/supabase/server";
 import { confirmerLien } from "./actions";
 import styles from "./page.module.css";
@@ -26,7 +27,26 @@ export default async function ConfirmPage({
   const inscription = type === "invite" || type === "signup";
 
   const supabase = await createClient();
-  const { data: prenom } = await supabase.rpc("prenom_du_lien", { p_token_hash: token_hash });
+  const { data: lignes } = await supabase.rpc("lien_de_connexion", { p_token_hash: token_hash });
+  const lien = (lignes as { valable: boolean; prenom: string | null }[] | null)?.[0];
+
+  // Lien déjà servi, ou remplacé par un plus récent : le bouton
+  // échouerait. On le dit tout de suite — sauf si ce navigateur est déjà
+  // connecté (double clic, retour arrière), auquel cas on continue.
+  if (lien && !lien.valable) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) redirect(cheminSur(next ?? "/"));
+    redirect(
+      "/connexion?erreur=" +
+        encodeURIComponent(
+          "Ce lien a déjà servi, ou un lien plus récent l'a remplacé. Utilisez le dernier email reçu, ou demandez-en un nouveau ci-dessous.",
+        ),
+    );
+  }
+
+  const prenom = lien?.prenom;
   const salut = inscription ? "Bienvenue" : "Bonjour";
 
   return (
@@ -51,12 +71,12 @@ export default async function ConfirmPage({
           <p className={styles.consigne}>
             {inscription
               ? "Un dernier clic pour activer votre profil."
-              : "Un clic pour vous connecter."}
+              : "Installez-vous confortablement ! Le pop-corn est prêt."}
           </p>
         </div>
 
         <BoutonFeuArtifice className={`${formStyles.submitWide} ${formStyles.rouge}`}>
-          {inscription ? "Activer mon profil" : "Me connecter"}
+          {inscription ? "Activer mon profil" : "Lancer la séance"}
         </BoutonFeuArtifice>
 
         {/* Le malentendu le plus courant : croire qu'il faudra un lien à
