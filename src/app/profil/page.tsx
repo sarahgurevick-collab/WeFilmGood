@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
-import { quitterLaPlateforme } from "./actions";
 import { BLOCS, calculerCompletion } from "./completion";
 import styles from "./profil.module.css";
 
@@ -107,41 +106,12 @@ export default async function ProfilPage({
         })}
       </div>
 
-      <div className={styles.compte}>
-        <form action="/deconnexion" method="post">
-          <button type="submit" className={formStyles.submit}>
-            Se déconnecter
-          </button>
-        </form>
-
-        <h2 className={styles.section}>Quitter la plateforme</h2>
-        <p className={formStyles.hint}>
-          Ce bouton ne supprime pas votre compte. Il ferme votre accès et retire votre
-          profil de l&apos;annuaire : plus personne ne peut vous contacter. Vos projets
-          restent en ligne et gardent votre nom — c&apos;est ce qui permet à WeFilmGood de
-          vous prévenir si un producteur s&apos;y intéresse. Pour revenir, il suffit de vous
-          reconnecter.
-        </p>
-        <p className={formStyles.hint} style={{ marginTop: 12 }}>
-          Pour un effacement définitif de vos données personnelles,{" "}
-          <Link href="/cguv">écrivez-nous</Link> : nous ne pourrons alors plus vous
-          joindre, même si un producteur cherche à vous parler.
-        </p>
-
-        <form action={quitterLaPlateforme} className={formStyles.form} style={{ marginTop: 20 }}>
-          <label className={formStyles.field}>
-            <span>Pourquoi partez-vous ? (facultatif)</span>
-            <textarea name="reason" rows={3} />
-          </label>
-          <label className={formStyles.checkline}>
-            <input type="checkbox" name="confirmation" value="1" required />
-            <span>Je confirme vouloir fermer mon accès à WeFilmGood.</span>
-          </label>
-          <button type="submit" className={formStyles.submit}>
-            Fermer mon accès
-          </button>
-        </form>
-      </div>
+      {/* Se déconnecter et quitter la plateforme sont rangés à part : on
+          reste connecté avec le lien magique, un gros bouton faisait
+          cliquer par réflexe. */}
+      <p className={styles.reglages}>
+        <Link href="/profil/compte">Réglages du compte</Link>
+      </p>
     </PageShell>
   );
 }

@@ -31,11 +31,10 @@ export default async function MenuPage() {
             {readerRole && <Link href="/lecteur">Espace lecteur</Link>}
             {isAdmin && <Link href="/admin">Administration</Link>}
             <p className={formStyles.hint}>Connecté·e : {user.email}</p>
-            <form action="/deconnexion" method="post">
-              <button type="submit" className={formStyles.submit}>
-                Se déconnecter
-              </button>
-            </form>
+            {/* Discret : avec le lien magique, on reste connecté. */}
+            <Link href="/profil/compte" className={formStyles.hint}>
+              Réglages du compte
+            </Link>
           </>
         ) : (
           <>

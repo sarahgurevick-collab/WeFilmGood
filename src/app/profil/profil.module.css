@@ -224,6 +224,23 @@
   border-top: 1px solid var(--bordure-douce);
 }
 
+/* Le lien vers les réglages du compte : présent, mais sans attirer l'œil. */
+.reglages {
+  margin-top: 72px;
+  text-align: right;
+  font-size: 12px;
+}
+
+.reglages a {
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.reglages a:hover {
+  color: var(--fg);
+  text-decoration: underline;
+}
+
 .section {
   margin: 40px 0 6px;
   font-weight: 600;

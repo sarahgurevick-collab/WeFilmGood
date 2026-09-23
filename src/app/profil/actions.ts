@@ -245,7 +245,7 @@ export async function quitterLaPlateforme(formData: FormData) {
   const { supabase, user } = await requireUser();
 
   if (formData.get("confirmation") !== "1") {
-    redirect("/profil");
+    redirect("/profil/compte");
   }
 
   await supabase.rpc("mark_profile_departed", {
