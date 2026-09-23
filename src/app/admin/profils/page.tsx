@@ -48,7 +48,7 @@ export default async function ProfilsPage() {
     supabase.from("profile_roles").select("profile_id").eq("role_slug", "lecteur"),
   ]);
 
-  // Ne restent que les nouveaux talents : ni les lecteurs, dont le profil
+  // Ne restent que les nouveaux talents à valider : ni les lecteurs, dont le profil
   // n'est vu que d'eux-mêmes, ni les comptes repris de WFG 1 le 19/09
   // (métadonnée imported_from), qui ne sont pas des inscriptions.
   const exclus = new Set((lecteurs ?? []).map((l) => l.profile_id));
@@ -64,7 +64,9 @@ export default async function ProfilsPage() {
 
   const siteDe = new Map((sites ?? []).map((s) => [s.id, s.website]));
   const membres = ((membresBruts ?? []) as Membre[])
-    .filter((m) => !exclus.has(m.profile_id))
+    // Seuls les profils qui demandent une validation (producteurs, talents) :
+    // les auteurs sont actifs dès l'inscription, rien à juger ici.
+    .filter((m) => !exclus.has(m.profile_id) && m.validation_status !== "non_requise")
     .slice()
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
     .slice(0, 60);
