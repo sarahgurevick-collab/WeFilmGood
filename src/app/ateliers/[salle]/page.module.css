@@ -1,0 +1,67 @@
+.date {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.intro {
+  font-size: 14px;
+  color: var(--dim);
+  line-height: 1.6;
+  margin: 0 0 20px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.aide {
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+.grille {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
+  align-items: start;
+}
+
+.seul {
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .grille {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.attente {
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  padding: 32px 20px;
+  text-align: center;
+}
+
+.attente p {
+  margin: 0 0 8px;
+}
+
+.rediffusion {
+  margin-top: 28px;
+}
+
+.sousTitre {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+
+.video {
+  width: 100%;
+  max-height: 72vh;
+  background: #000;
+  border-radius: 8px;
+}

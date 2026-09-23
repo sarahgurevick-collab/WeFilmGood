@@ -14,6 +14,7 @@ const ELEMENTS_MENU = [
   { label: "Nos appels à projets", href: "/appels-a-projets" },
   { label: "Tutoriels", href: "/tutoriels" },
   { label: "Masterclass", href: "/masterclass" },
+  { label: "Ateliers en visio", href: "/ateliers" },
   { label: "Festivals & Résidences", href: "/festivals-residences" },
   { label: "Témoignages", href: "/temoignages" },
   { label: "Adhésion", href: "/adhesion" },

@@ -11,6 +11,7 @@ const PAGES = [
   { href: "/admin/lecteurs", libelle: "Lecteurs" },
   { href: "/admin/fiches", libelle: "Toutes les fiches" },
   { href: "/admin/adhesions", libelle: "Adhésions" },
+  { href: "/admin/ateliers", libelle: "Ateliers" },
 ];
 
 /**

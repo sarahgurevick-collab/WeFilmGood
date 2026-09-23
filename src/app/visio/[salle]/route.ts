@@ -23,6 +23,15 @@ export async function GET(
   } = await supabase.auth.getUser();
   if (!user) redirect(`/connexion?next=/visio/${salle}`);
 
+  // La salle d'un atelier se rejoint par sa page, qui donne à chacun son
+  // rôle (public muet, intervenant, régie).
+  const { data: atelier } = await supabase
+    .from("ateliers")
+    .select("salle")
+    .eq("salle", salle)
+    .maybeSingle();
+  if (atelier) redirect(`/ateliers/${salle}`);
+
   const [{ data: profil }, { data: isAdmin }] = await Promise.all([
     supabase
       .from("profiles")

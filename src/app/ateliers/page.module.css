@@ -1,0 +1,61 @@
+.intro {
+  max-width: none;
+  font-size: 14px;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.sousTitre {
+  font-size: 16px;
+  margin: 28px 0 12px;
+}
+
+.vide {
+  font-size: 14px;
+  color: var(--dim);
+}
+
+.liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.carte {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s var(--ease);
+}
+
+.carte:hover {
+  border-color: var(--rouge-wfg);
+}
+
+.date {
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.description {
+  font-size: 13px;
+  color: var(--dim);
+  line-height: 1.5;
+}
+
+.direct {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rouge-wfg);
+}
