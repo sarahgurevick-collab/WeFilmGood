@@ -39,7 +39,6 @@ const COLONNES: { cle: Colonne; libelle: string }[] = [
   { cle: "scenariste", libelle: "Scénariste" },
   { cle: "titre", libelle: "Titre" },
   { cle: "format", libelle: "Format" },
-  { cle: "statut", libelle: "Statut" },
   { cle: "note", libelle: "Note" },
 ];
 
@@ -62,9 +61,17 @@ function valeur(l: LigneFiche, c: Colonne): string | number {
 
 const sansAccents = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
-export default function TableauFiches({ lignes }: { lignes: LigneFiche[] }) {
+export default function TableauFiches({
+  lignes,
+  uneSeuleAnnee,
+}: {
+  lignes: LigneFiche[];
+  /** Une seule année cochée : inutile de la répéter à chaque ligne. */
+  uneSeuleAnnee: boolean;
+}) {
   const [recherche, setRecherche] = useState("");
-  const [formats, setFormats] = useState<Set<string>>(new Set(TOUS_FORMATS));
+  // Le long métrage est ce que Sarah regarde d'abord ; les autres se cochent.
+  const [formats, setFormats] = useState<Set<string>>(new Set(["LM"]));
   const [tri, setTri] = useState<{ colonne: Colonne; sens: 1 | -1 }>({ colonne: "date", sens: -1 });
   const [ouvertes, setOuvertes] = useState<Set<string>>(new Set());
 
@@ -167,11 +174,21 @@ export default function TableauFiches({ lignes }: { lignes: LigneFiche[] }) {
             {affichees.map((l) => (
               <tr key={l.cle}>
                 <td className={styles.date}>
-                  {l.date ? new Date(l.date).toLocaleDateString("fr-FR") : "—"}
+                  {l.date
+                    ? new Date(l.date).toLocaleDateString("fr-FR", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        ...(uneSeuleAnnee ? {} : { year: "2-digit" }),
+                      })
+                    : "—"}
                 </td>
-                <td>
+                <td className={styles.lecteur}>
                   <strong>{l.lecteur ?? "—"}</strong>
-                  {l.lecteurEmail && <span className={styles.email}>{l.lecteurEmail}</span>}
+                  {l.lecteurEmail && (
+                    <span className={styles.email} title={l.lecteurEmail}>
+                      {l.lecteurEmail}
+                    </span>
+                  )}
                 </td>
                 <td>{l.scenariste ?? "—"}</td>
                 <td>
@@ -184,10 +201,10 @@ export default function TableauFiches({ lignes }: { lignes: LigneFiche[] }) {
                   )}
                 </td>
                 <td>{formatCourt(l) || "—"}</td>
-                <td>
-                  {l.lienFiche ? <a href={l.lienFiche}>{l.statut}</a> : l.statut}
+                <td className={styles.note}>
+                  <Statut ligne={l} />
+                  {l.note != null ? `${l.note} / 200` : "—"}
                 </td>
-                <td className={styles.note}>{l.note != null ? `${l.note} / 200` : "—"}</td>
                 <td className={styles.analyse}>
                   {l.analyse ? (
                     <button
@@ -216,4 +233,23 @@ export default function TableauFiches({ lignes }: { lignes: LigneFiche[] }) {
       )}
     </>
   );
+}
+
+/**
+ * Le statut en une lettre, devant la note : V vert pour une fiche vérifiée
+ * ou publiée, A orange pour une fiche rendue qui attend la relecture —
+ * un clic ouvre alors la page de relecture.
+ */
+function Statut({ ligne }: { ligne: LigneFiche }) {
+  const aValider = ligne.statut === "À valider";
+  const lettre = (
+    <span
+      className={aValider ? styles.statutA : styles.statutV}
+      title={ligne.statut}
+      aria-label={ligne.statut}
+    >
+      {aValider ? "A" : "V"}
+    </span>
+  );
+  return ligne.lienFiche && aValider ? <a href={ligne.lienFiche}>{lettre}</a> : lettre;
 }

@@ -60,16 +60,51 @@
   white-space: nowrap;
 }
 
+.date {
+  font-size: 12.5px;
+}
+
+/* Colonnes serrées : l'analyse prend toute la place qui reste. */
+.lecteur {
+  max-width: 130px;
+  font-size: 12.5px;
+}
+
 .email {
   display: block;
-  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
   font-style: italic;
   color: var(--dim);
 }
 
 .analyse {
-  min-width: 280px;
-  max-width: 420px;
+  width: 100%;
+  min-width: 360px;
+}
+
+.statutV,
+.statutA {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  vertical-align: 1px;
+}
+
+.statutV {
+  background: #2e9d57;
+}
+
+.statutA {
+  background: #e08a1e;
 }
 
 /* L'analyse tient en quatre lignes ; un clic la déplie. */

@@ -243,7 +243,7 @@ export default async function TableauFichesPage({
           Cochez une ou plusieurs années.
         </p>
       ) : (
-        <TableauFiches lignes={lignes} />
+        <TableauFiches lignes={lignes} uneSeuleAnnee={cochees.length === 1} />
       )}
     </PageShell>
   );
