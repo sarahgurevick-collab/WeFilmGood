@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
-import BoutonContact from "@/components/BoutonContact";
+import ContactOuAssistant from "@/components/ContactOuAssistant";
 import EnregistrerServiceWorker from "@/components/EnregistrerServiceWorker";
 import HorsAdmin from "@/components/HorsAdmin";
 import InviterInstallation from "@/components/InviterInstallation";
@@ -35,9 +35,9 @@ export default function RootLayout({
     <html lang="fr" className={sans.variable}>
       <body>
         {children}
-        {/* Contact et traduction servent les membres, pas l'administration. */}
+        {/* Contact (ou assistant) et traduction servent les membres, pas l'administration. */}
         <HorsAdmin>
-          <BoutonContact />
+          <ContactOuAssistant />
           <Traduction />
         </HorsAdmin>
         <EnregistrerServiceWorker />

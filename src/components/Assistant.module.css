@@ -1,0 +1,99 @@
+.panneau {
+  width: min(380px, calc(100vw - 40px));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* La conversation défile ; la saisie reste en bas. */
+.fil {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: min(52vh, 420px);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.assistant,
+.membre {
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.assistant {
+  align-self: flex-start;
+  max-width: 92%;
+  background: var(--surface-actif);
+}
+
+.membre {
+  align-self: flex-end;
+  max-width: 85%;
+  background: var(--rouge-wfg);
+  color: #fff;
+}
+
+.saisie {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.saisie textarea {
+  flex: 1;
+  padding: 9px 11px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 13px;
+  resize: none;
+}
+
+.saisie button {
+  padding: 9px 14px;
+  border-radius: 10px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.saisie button:disabled {
+  opacity: 0.5;
+}
+
+.equipe {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.transmettre {
+  align-self: flex-start;
+  color: var(--dim);
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.transmettre:hover {
+  color: var(--fg);
+}
+
+.transmettre:disabled {
+  opacity: 0.5;
+  text-decoration: none;
+}
