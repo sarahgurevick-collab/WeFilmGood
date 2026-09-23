@@ -98,7 +98,18 @@ export default async function ProjetsEnAttentePage() {
   }
 
   const { data: pendingRows } = await supabase.rpc("admin_pending_projects");
-  const projects = (pendingRows ?? []) as PendingProject[];
+
+  // La reprise du 19/09 a mis tous les projets de WFG 1 au statut « déposé » :
+  // ~3 900 projets déjà lus ou jamais soumis à la lecture. Seuls comptent
+  // ici les projets déposés sur le nouveau site (sans numéro WFG 1). La file
+  // en cours sur l'ancien site arrivera avec la dernière copie, à la bascule.
+  const { data: nouveaux } = await supabase
+    .from("projects")
+    .select("id")
+    .in("status", ["depose", "en_lecture"])
+    .is("legacy_id", null);
+  const idsNouveaux = new Set((nouveaux ?? []).map((n) => n.id));
+  const projects = ((pendingRows ?? []) as PendingProject[]).filter((p) => idsNouveaux.has(p.project_id));
 
   const { data: readers } = await supabase
     .from("profile_roles")
