@@ -230,6 +230,9 @@ export default async function TableauFichesPage({
         Toutes les analyses rendues par les lecteurs et les notes attribuées, de WFG 1 et du
         nouveau site.
       </p>
+      <p className={formStyles.linkRow} style={{ marginTop: 12 }}>
+        <Link href="/admin/projets-en-attente#a-valider">→ Les fiches à valider</Link>
+      </p>
 
       <nav className={adminStyles.annees} aria-label="Années">
         {annees.map((a) => {

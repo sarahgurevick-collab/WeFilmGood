@@ -289,7 +289,7 @@ export default async function ProjetsEnAttentePage() {
         </table>
       )}
 
-      <h2 className={adminStyles.subhead}>Fiches en attente de validation</h2>
+      <h2 id="a-valider" className={adminStyles.subhead}>Fiches en attente de validation</h2>
       <p className={formStyles.linkRow}>
         <Link href="/admin/fiches">Voir toutes les fiches de lecture</Link>
       </p>
