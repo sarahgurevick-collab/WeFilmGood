@@ -4,6 +4,7 @@ import formStyles from "@/components/form.module.css";
 import { PAYS } from "@/lib/pays";
 import { createClient } from "@/lib/supabase/server";
 import BlocProfil from "../BlocProfil";
+import ChampPhoto from "./ChampPhoto";
 import { saveIdentite } from "../actions";
 import styles from "../profil.module.css";
 
@@ -20,9 +21,9 @@ const CATEGORIES = [
 export default async function IdentitePage({
   searchParams,
 }: {
-  searchParams: Promise<{ erreur?: string }>;
+  searchParams: Promise<{ erreur?: string; photo?: string }>;
 }) {
-  const { erreur } = await searchParams;
+  const { erreur, photo } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -31,7 +32,7 @@ export default async function IdentitePage({
   if (!user) redirect("/connexion?next=/profil/identite");
 
   const [{ data: profil }, { data: prive }, { data: langues }, { data: toutesLangues }] = await Promise.all([
-    supabase.from("profiles").select("category, city, country, website, first_name, last_name").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("category, city, country, website, first_name, last_name, full_name, avatar_url").eq("id", user.id).maybeSingle(),
     supabase.from("profile_private_details").select("phone").eq("profile_id", user.id).maybeSingle(),
     supabase.from("profile_languages").select("language_code").eq("profile_id", user.id),
     supabase.from("languages").select("code, label_fr").order("position"),
@@ -40,6 +41,13 @@ export default async function IdentitePage({
 
   return (
     <BlocProfil actif="identite">
+      {/* La photo a son propre envoi, à part du formulaire : elle part dès
+          qu'on la choisit, sans attendre les champs obligatoires. */}
+      {photo && <p className={styles.ok}>Photo enregistrée.</p>}
+      <ChampPhoto
+        photo={profil?.avatar_url ?? null}
+        initiale={(profil?.first_name ?? profil?.full_name ?? "?").trim().charAt(0).toUpperCase()}
+      />
       <form className={`${formStyles.form} ${styles.formulaireIdentite}`} action={saveIdentite} style={{ marginTop: 24 }}>
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 

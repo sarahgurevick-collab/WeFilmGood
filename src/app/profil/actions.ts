@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import sharp from "sharp";
 import { metiersPourCategorie } from "./metiers";
 
 const RESEAUX = ["vimeo", "linkedin", "viadeo", "instagram"];
@@ -255,4 +256,75 @@ export async function quitterLaPlateforme(formData: FormData) {
 
   await supabase.auth.signOut();
   redirect("/");
+}
+
+const PHOTOS = ["image/jpeg", "image/png", "image/webp"];
+const BUCKET_PHOTOS = "avatars";
+
+/** Retire les anciennes photos du dossier du membre, sauf celle qu'on garde. */
+async function nettoyerPhotos(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  garder?: string,
+) {
+  const { data: fichiers } = await supabase.storage.from(BUCKET_PHOTOS).list(userId);
+  const anciens = (fichiers ?? [])
+    .map((f) => `${userId}/${f.name}`)
+    .filter((chemin) => chemin !== garder);
+  if (anciens.length) await supabase.storage.from(BUCKET_PHOTOS).remove(anciens);
+}
+
+/**
+ * La photo du profil : recadrée en carré (sharp repère le visage ou le
+ * sujet), 600 pixels, en JPEG. Une photo de téléphone de plusieurs Mo
+ * finit vers 60 Ko, et s'affiche ronde partout sur le site.
+ */
+export async function savePhoto(formData: FormData) {
+  const { supabase, user } = await requireUser("/profil/identite");
+  const retour = (message: string) =>
+    redirect("/profil/identite?erreur=" + encodeURIComponent(message));
+
+  const fichier = formData.get("photo");
+  if (!(fichier instanceof File) || fichier.size === 0) retour("Choisissez une photo.");
+  const photo = fichier as File;
+  if (photo.type && !PHOTOS.includes(photo.type)) {
+    retour("Cette photo n'est pas dans un format accepté (JPEG, PNG ou WebP).");
+  }
+
+  let donnees: Buffer;
+  try {
+    donnees = await sharp(Buffer.from(await photo.arrayBuffer()), { failOn: "none" })
+      .rotate()
+      .resize(600, 600, { fit: "cover", position: sharp.strategy.attention })
+      .jpeg({ quality: 84, mozjpeg: true })
+      .toBuffer();
+  } catch {
+    return retour("Cette photo n'a pas pu être lue. Essayez avec une autre image.");
+  }
+
+  const chemin = `${user.id}/avatar-${Date.now()}.jpg`;
+  const { error } = await supabase.storage
+    .from(BUCKET_PHOTOS)
+    .upload(chemin, donnees, { contentType: "image/jpeg" });
+  if (error) {
+    console.error("Dépôt de photo refusé :", error.message);
+    retour("La photo n'a pas pu être enregistrée. Réessayez dans un instant.");
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(BUCKET_PHOTOS).getPublicUrl(chemin);
+  await supabase.from("profiles").update({ avatar_url: publicUrl }).eq("id", user.id);
+  await nettoyerPhotos(supabase, user.id, chemin);
+
+  revalidatePath("/profil");
+  redirect("/profil/identite?photo=1");
+}
+
+export async function retirerPhoto() {
+  const { supabase, user } = await requireUser("/profil/identite");
+  await supabase.from("profiles").update({ avatar_url: null }).eq("id", user.id);
+  await nettoyerPhotos(supabase, user.id);
+  revalidatePath("/profil");
+  redirect("/profil/identite");
 }

@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Les photos sortent du téléphone à 3-20 Mo ; au-delà de 1 Mo (la limite
+  // par défaut), l'envoi échouait sans rien dire. Elles sont allégées
+  // ensuite sur le serveur avant d'être stockées.
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "25mb",
+    },
+  },
   // Adresses : la Pitchothèque à /pitchotheque, une fiche projet à
   // /projet/<id>, sa création à /projet. Les anciennes adresses (/projets,
   // /projets/<id>, /deposer) y renvoient : les liens déjà partagés tiennent.
