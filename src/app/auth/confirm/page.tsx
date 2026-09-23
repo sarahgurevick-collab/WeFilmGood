@@ -69,9 +69,15 @@ export default async function ConfirmPage({
             {prenom ? `${salut} ${prenom} !` : `${salut} !`}
           </p>
           <p className={styles.consigne}>
-            {inscription
-              ? "Un dernier clic pour activer votre profil."
-              : "Installez-vous confortablement ! Le pop-corn est prêt."}
+            {inscription ? (
+              "Un dernier clic pour activer votre profil."
+            ) : (
+              <>
+                Installez-vous confortablement !
+                <br />
+                Le pop-corn est prêt
+              </>
+            )}
           </p>
         </div>
 
