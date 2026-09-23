@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../admin.module.css";
 import NavAdmin from "../NavAdmin";
 import { prendreLaPlace } from "../profils/prise-de-place";
+import Factures, { SELECTION_FACTURES, versFactures } from "./Factures";
 
 /**
  * Tous les lecteurs, et l'accès à l'espace de chacun.
@@ -85,6 +86,12 @@ export default async function LecteursPage() {
     ),
   ]);
 
+  const { data: facturesBrutes } = await admin
+    .from("reader_invoices")
+    .select(SELECTION_FACTURES)
+    .order("created_at", { ascending: false });
+  const aPayer = versFactures(facturesBrutes).filter((f) => !f.payee);
+
   const voyantDe = new Map(
     (profilsLecteur ?? []).map((p) => [p.profile_id, p.availability_status]),
   );
@@ -136,7 +143,17 @@ export default async function LecteursPage() {
         votre compte.
       </p>
 
-      <table className={adminStyles.table} style={{ marginTop: 24 }}>
+      <h2 className={adminStyles.subhead}>Factures à payer</h2>
+      {aPayer.length === 0 ? (
+        <p className={formStyles.hint}>
+          Aucune facture en attente de paiement.
+        </p>
+      ) : (
+        <Factures factures={aPayer} retour="/admin/lecteurs" avecLecteur />
+      )}
+
+      <h2 className={adminStyles.subhead}>Tous les lecteurs</h2>
+      <table className={adminStyles.table}>
         <thead>
           <tr>
             <th>Lecteur</th>

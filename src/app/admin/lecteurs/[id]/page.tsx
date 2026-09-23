@@ -7,12 +7,13 @@ import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../../admin.module.css";
 import NavAdmin from "../../NavAdmin";
 import { prendreLaPlace } from "../../profils/prise-de-place";
-import { marquerPayees } from "../actions";
+import Factures, { SELECTION_FACTURES, versFactures } from "../Factures";
 
 /**
  * La fiche d'un lecteur, pour l'administration : toutes ses fiches de
- * lecture — celles du nouveau site, qu'on coche pour les marquer payées,
- * et celles reprises de WFG 1, pour mémoire.
+ * lecture — celles du nouveau site et celles reprises de WFG 1, pour
+ * mémoire — et ses factures. C'est le lecteur qui coche les fiches à se
+ * faire payer et établit sa facture ; ici, on la marque payée.
  */
 
 const VOYANTS: Record<string, string> = {
@@ -67,48 +68,53 @@ export default async function FicheLecteurPage({
   ]);
   if (!profil || !role) notFound();
 
-  const [{ data: nouvelles }, { data: anciennes }] = await Promise.all([
-    admin
-      .from("reading_reports")
-      .select(
-        "id, score, status, payment_status, submitted_at, facture:reader_invoices(numero), project:projects(id, title)",
-      )
-      .eq("reader_id", id)
-      .order("submitted_at", { ascending: false })
-      .returns<
-        {
-          id: string;
-          score: number | null;
-          status: string;
-          payment_status: string;
-          submitted_at: string;
-          facture: { numero: string } | null;
-          project: { id: string; title: string } | null;
-        }[]
-      >(),
-    profil.legacy_user_id != null
-      ? admin
-          .from("legacy_reading_reports")
-          .select(
-            "legacy_review_id, final_mark, read_at, statut, project:projects(id, title)",
-          )
-          .eq("reader_legacy_id", profil.legacy_user_id)
-          .neq("statut", 0)
-          .order("read_at", { ascending: false })
-          .returns<
-            {
-              legacy_review_id: number;
-              final_mark: number | null;
-              read_at: string | null;
-              statut: number;
-              project: { id: string; title: string } | null;
-            }[]
-          >()
-      : Promise.resolve({ data: [] }),
-  ]);
+  const [{ data: nouvelles }, { data: anciennes }, { data: facturesBrutes }] =
+    await Promise.all([
+      admin
+        .from("reading_reports")
+        .select(
+          "id, score, status, payment_status, submitted_at, facture:reader_invoices(numero), project:projects(id, title)",
+        )
+        .eq("reader_id", id)
+        .order("submitted_at", { ascending: false })
+        .returns<
+          {
+            id: string;
+            score: number | null;
+            status: string;
+            payment_status: string;
+            submitted_at: string;
+            facture: { numero: string } | null;
+            project: { id: string; title: string } | null;
+          }[]
+        >(),
+      profil.legacy_user_id != null
+        ? admin
+            .from("legacy_reading_reports")
+            .select(
+              "legacy_review_id, final_mark, read_at, statut, project:projects(id, title)",
+            )
+            .eq("reader_legacy_id", profil.legacy_user_id)
+            .neq("statut", 0)
+            .order("read_at", { ascending: false })
+            .returns<
+              {
+                legacy_review_id: number;
+                final_mark: number | null;
+                read_at: string | null;
+                statut: number;
+                project: { id: string; title: string } | null;
+              }[]
+            >()
+        : Promise.resolve({ data: [] }),
+      admin
+        .from("reader_invoices")
+        .select(SELECTION_FACTURES)
+        .eq("reader_id", id)
+        .order("created_at", { ascending: false }),
+    ]);
 
   const tarif = (lecteur?.tarif_cents ?? 1500) / 100;
-  const dues = (nouvelles ?? []).filter((f) => f.payment_status === "due");
 
   return (
     <PageShell
@@ -137,70 +143,61 @@ export default async function FicheLecteurPage({
           payée.
         </p>
       ) : (
-        <form action={marquerPayees}>
-          <input type="hidden" name="lecteur" value={id} />
-          <table className={adminStyles.table}>
-            <thead>
-              <tr>
-                <th>Payée</th>
-                <th>Projet</th>
-                <th>Rendue le</th>
-                <th>Note</th>
-                <th>Statut</th>
-                <th>Facture</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(nouvelles ?? []).map((f) => (
-                <tr key={f.id}>
-                  <td>
-                    {f.payment_status === "payee" ? (
-                      "✓"
-                    ) : f.payment_status === "due" ? (
-                      <input
-                        type="checkbox"
-                        name="fiche"
-                        value={f.id}
-                        aria-label="Marquer payée"
-                      />
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td>
-                    {f.project ? (
-                      <Link href={`/projet/${f.project.id}`}>
-                        {f.project.title}
-                      </Link>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                  <td>
-                    {new Date(f.submitted_at).toLocaleDateString("fr-FR")}
-                  </td>
-                  <td>{f.score ?? "—"}</td>
-                  <td>
-                    <Link href={`/admin/fiches/${f.id}`}>
-                      {STATUTS[f.status] ?? f.status}
+        <table className={adminStyles.table}>
+          <thead>
+            <tr>
+              <th>Rémunération</th>
+              <th>Projet</th>
+              <th>Rendue le</th>
+              <th>Note</th>
+              <th>Statut</th>
+              <th>Facture</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(nouvelles ?? []).map((f) => (
+              <tr key={f.id}>
+                <td>
+                  {f.payment_status === "payee"
+                    ? "✓ Payée"
+                    : f.payment_status === "due"
+                      ? "Due"
+                      : "—"}
+                </td>
+                <td>
+                  {f.project ? (
+                    <Link href={`/projet/${f.project.id}`}>
+                      {f.project.title}
                     </Link>
-                  </td>
-                  <td>{f.facture?.numero ?? "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {dues.length > 0 && (
-            <button
-              type="submit"
-              className={formStyles.submit}
-              style={{ marginTop: 16 }}
-            >
-              Marquer payées les fiches cochées
-            </button>
-          )}
-        </form>
+                  ) : (
+                    "—"
+                  )}
+                </td>
+                <td>{new Date(f.submitted_at).toLocaleDateString("fr-FR")}</td>
+                <td>{f.score ?? "—"}</td>
+                <td>
+                  <Link href={`/admin/fiches/${f.id}`}>
+                    {STATUTS[f.status] ?? f.status}
+                  </Link>
+                </td>
+                <td>{f.facture?.numero ?? "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
+
+      <h2 className={adminStyles.subhead}>Factures</h2>
+      <p className={formStyles.hint}>
+        Le lecteur coche lui-même, dans son espace, les fiches qu&apos;il veut
+        se faire payer, puis établit sa facture. Elle apparaît ici : ouvrez-la,
+        réglez-la, puis « Marquer payée ».
+      </p>
+      <Factures
+        factures={versFactures(facturesBrutes)}
+        retour={`/admin/lecteurs/${id}`}
+        avecLecteur={false}
+      />
 
       <h2 className={adminStyles.subhead}>Fiches de l&apos;ancien site</h2>
       {(anciennes ?? []).length === 0 ? (
