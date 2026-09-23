@@ -103,6 +103,7 @@ export default async function FicheLecteurPage({
                 final_mark: number | null;
                 read_at: string | null;
                 statut: number;
+                author_rating: number | null;
                 project: { id: string; title: string } | null;
               }[]
             >()
