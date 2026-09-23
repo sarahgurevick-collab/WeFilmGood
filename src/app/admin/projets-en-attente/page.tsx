@@ -206,7 +206,7 @@ export default async function ProjetsEnAttentePage() {
     <PageShell
       avantTitre={<NavAdmin />}
      
-      title="Projets en attente"
+      title="Attribution"
       theme="clair"
     >
       <p className={formStyles.hint}>
