@@ -21,7 +21,6 @@ import TableauFiches, { type LigneFiche } from "./TableauFiches";
  */
 
 const PREMIERE_ANNEE = 2017;
-const EXTRAIT = 600;
 
 type Heritee = {
   legacy_review_id: number;
@@ -57,13 +56,13 @@ const STATUTS: Record<string, string> = {
   rejetee_admin: "Rejetée",
 };
 
-function extrait(texte: string | null, html: boolean): string {
+/** L'analyse entière en texte brut : la recherche porte sur tout le texte. */
+function texteBrut(texte: string | null, html: boolean): string {
   if (!texte) return "";
-  const brut = (html ? texte.replace(/<[^>]+>/g, " ") : texte)
+  return (html ? texte.replace(/<[^>]+>/g, " ") : texte)
     .replace(/&nbsp;/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-  return brut.length > EXTRAIT ? `${brut.slice(0, EXTRAIT)}…` : brut;
 }
 
 /** La base ne renvoie que 1 000 lignes par demande : on lit par tranches. */
@@ -185,7 +184,7 @@ export default async function TableauFichesPage({
         langue: f.project?.language ?? null,
         statut: "Vérifiée",
         note: f.final_mark,
-        analyse: extrait(f.content, false),
+        analyse: texteBrut(f.content, false),
         satisfaction: f.author_rating || null,
         lienFiche: null,
       };
@@ -204,7 +203,7 @@ export default async function TableauFichesPage({
         langue: r.project?.language ?? null,
         statut: STATUTS[r.status] ?? r.status,
         note: r.score,
-        analyse: extrait(r.content, true),
+        analyse: texteBrut(r.content, true),
         satisfaction: null,
         lienFiche: `/admin/fiches/${r.id}`,
       };

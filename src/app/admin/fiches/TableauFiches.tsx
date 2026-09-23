@@ -16,7 +16,7 @@ export type LigneFiche = {
   langue: string | null;
   statut: string;
   note: number | null;
-  /** Début de l'analyse, en texte brut. */
+  /** L'analyse entière, en texte brut. */
   analyse: string;
   /** De 1 à 5, null quand l'auteur n'a pas noté. */
   satisfaction: number | null;
@@ -117,7 +117,7 @@ export default function TableauFiches({ lignes }: { lignes: LigneFiche[] }) {
         <input
           type="search"
           className={styles.recherche}
-          placeholder="Rechercher : lecteur, scénariste, titre, mot de l'analyse…"
+          placeholder="Rechercher : lecteur, scénariste, titre, n'importe quel mot des analyses…"
           value={recherche}
           onChange={(e) => setRecherche(e.target.value)}
         />
