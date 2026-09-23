@@ -205,10 +205,15 @@ export default async function ProjetsEnAttentePage() {
                     </svg>
                   </a>
                   <ScenarioLink projectId={p.project_id} />
-                  <br />
-                  <span className={formStyles.hint}>
-                    {ETATS[p.reading_status] ?? p.reading_status}
-                  </span>
+                  {/* « Sans lecteur » se lit déjà dans la colonne Lecteur. */}
+                  {p.reading_status !== "sans_lecteur" && (
+                    <>
+                      <br />
+                      <span className={formStyles.hint}>
+                        {ETATS[p.reading_status] ?? p.reading_status}
+                      </span>
+                    </>
+                  )}
                 </td>
                 <td>{formatCourt(p.format, p.language)}</td>
                 <td>
