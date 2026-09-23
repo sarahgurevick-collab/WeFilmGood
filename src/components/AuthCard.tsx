@@ -57,7 +57,9 @@ export default function AuthCard({
 
         <Link href="/" className={styles.brand}>
           {logoAnime ? (
-            <LogoAnime hauteur={56} tailleMention={15} centre />
+            // Plus rapide que dans la barre de menu : on clique vite sur
+            // le bouton, les engagements doivent avoir défilé avant.
+            <LogoAnime hauteur={56} tailleMention={15} centre duree={1200} />
           ) : (
             <LogoComplet hauteur={48} />
           )}

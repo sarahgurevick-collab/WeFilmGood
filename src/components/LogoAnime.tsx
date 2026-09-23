@@ -22,6 +22,7 @@ export default function LogoAnime({
   hauteur = 34,
   tailleMention,
   centre = false,
+  duree = DUREE_ENGAGEMENT,
 }: {
   hauteur?: number;
   /** Taille du texte de l'engagement, en pixels (12 par défaut). */
@@ -29,6 +30,8 @@ export default function LogoAnime({
   /** true pour garder le dessin au milieu : la place de la mention est
       aussi réservée à gauche. */
   centre?: boolean;
+  /** Temps passé sur chaque couleur, en millisecondes. */
+  duree?: number;
 }) {
   const [i, setI] = useState(0);
   const [anime, setAnime] = useState(false);
@@ -38,9 +41,9 @@ export default function LogoAnime({
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     setAnime(true);
-    const t = setInterval(() => setI((n) => (n + 1) % ENGAGEMENTS.length), DUREE_ENGAGEMENT);
+    const t = setInterval(() => setI((n) => (n + 1) % ENGAGEMENTS.length), duree);
     return () => clearInterval(t);
-  }, []);
+  }, [duree]);
 
   const etat = anime ? ENGAGEMENTS[i] : ENGAGEMENTS[0];
 
