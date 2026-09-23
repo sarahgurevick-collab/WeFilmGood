@@ -24,19 +24,23 @@ export default async function ConfirmPage({
   const inscription = type === "invite" || type === "signup";
 
   return (
-    <AuthCard active={inscription ? "inscription" : "connexion"} theme="clair">
+    // Rien à choisir ici : pas d'onglets, et le bouton juste sous la phrase
+    // plutôt qu'en bas de la carte, où il passait sous le bord de l'écran.
+    <AuthCard active={inscription ? "inscription" : "connexion"} theme="clair" sansOnglets>
       <form className={formStyles.form} action={confirmerLien}>
         <input type="hidden" name="token_hash" value={token_hash} />
         <input type="hidden" name="type" value={type} />
         <input type="hidden" name="next" value={next ?? "/"} />
 
-        <p className={formStyles.hint}>
-          {inscription
-            ? "Bienvenue ! Un dernier clic pour activer votre profil."
-            : "Bonjour ! Cliquez ci-dessous pour vous connecter."}
-        </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <p className={formStyles.hint}>
+            {inscription
+              ? "Bienvenue ! Un dernier clic pour activer votre profil."
+              : "Bonjour ! Cliquez ci-dessous pour vous connecter."}
+          </p>
 
-        <BoutonConfirmer libelle={inscription ? "Activer mon profil" : "Me connecter"} />
+          <BoutonConfirmer libelle={inscription ? "Activer mon profil" : "Me connecter"} />
+        </div>
       </form>
     </AuthCard>
   );
