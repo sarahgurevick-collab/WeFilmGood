@@ -173,3 +173,34 @@
 .voyantRouge:hover {
   background: #b81b14;
 }
+
+/* Sélecteur d'année (et de format) : des pastilles, l'active en plein. */
+.annees {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 24px;
+}
+
+.annee,
+.anneeActive {
+  padding: 6px 14px;
+  border: 1px solid var(--bordure-forte);
+  border-radius: 999px;
+  background: none;
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.annee:hover {
+  border-color: var(--fg);
+}
+
+.anneeActive {
+  background: var(--fg);
+  border-color: var(--fg);
+  color: var(--bg);
+}

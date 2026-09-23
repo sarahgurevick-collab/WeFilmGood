@@ -30,6 +30,8 @@ export default async function AdminPage() {
       <p className={formStyles.linkRow} style={{ marginBottom: 24 }}>
         <Link href="/admin/projets-en-attente">Projets en attente et fiches à valider</Link>
         {" · "}
+        <Link href="/admin/fiches">Toutes les fiches de lecture</Link>
+        {" · "}
         <Link href="/admin/profils">Profils récents et références professionnelles</Link>
         {" · "}
         <Link href="/admin/adhesions">Adhésions</Link>

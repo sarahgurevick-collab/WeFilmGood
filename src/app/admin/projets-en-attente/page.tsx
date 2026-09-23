@@ -255,6 +255,9 @@ export default async function ProjetsEnAttentePage() {
       )}
 
       <h2 className={adminStyles.subhead}>Fiches en attente de validation</h2>
+      <p className={formStyles.linkRow}>
+        <Link href="/admin/fiches">Voir toutes les fiches de lecture</Link>
+      </p>
 
       {(pendingReports ?? []).length === 0 ? (
         <p className={formStyles.hint}>Aucune fiche à valider.</p>

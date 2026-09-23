@@ -1,0 +1,108 @@
+.outils {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin: 20px 0 8px;
+}
+
+.recherche {
+  flex: 1 1 320px;
+  max-width: 520px;
+  padding: 10px 12px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.recherche:focus {
+  outline: none;
+  border-color: var(--fg);
+}
+
+.formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.compte {
+  margin: 8px 0 16px;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.table td {
+  vertical-align: top;
+}
+
+.tri {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tri span {
+  color: var(--dim);
+  font-weight: 400;
+}
+
+.date,
+.note {
+  white-space: nowrap;
+}
+
+.email {
+  display: block;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--dim);
+}
+
+.analyse {
+  min-width: 280px;
+  max-width: 420px;
+}
+
+/* L'analyse tient en quatre lignes ; un clic la déplie. */
+.analyseFermee,
+.analyseOuverte {
+  display: block;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+}
+
+.analyseFermee {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.etoiles {
+  white-space: nowrap;
+  font-size: 17px;
+  letter-spacing: 1px;
+}
+
+.pleine {
+  color: #f0a53a;
+}
+
+.vide {
+  color: var(--bordure-forte);
+}
