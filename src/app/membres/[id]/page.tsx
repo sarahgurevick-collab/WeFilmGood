@@ -19,8 +19,9 @@ type Membre = {
  * Le profil d'un autre membre.
  *
  * Réservé aux membres connectés, comme l'annuaire : les profils ne sont
- * pas publics. Rien d'ici ne concerne les lecteurs — leur identité reste
- * protégée, un auteur n'en connaît que le prénom.
+ * pas publics. Le profil d'un lecteur n'est vu que de lui-même et de
+ * l'administration : un auteur n'en connaît que le prénom, et ne doit pas
+ * pouvoir le retrouver par ici.
  */
 export default async function ProfilMembrePage({
   params,
@@ -42,6 +43,19 @@ export default async function ProfilMembrePage({
     .maybeSingle<Membre>();
 
   if (!membre) notFound();
+
+  if (membre.id !== user.id) {
+    const [{ data: lecteur }, { data: isAdmin }] = await Promise.all([
+      supabase
+        .from("profile_roles")
+        .select("role_slug")
+        .eq("profile_id", membre.id)
+        .eq("role_slug", "lecteur")
+        .maybeSingle(),
+      supabase.rpc("is_admin"),
+    ]);
+    if (lecteur && !isAdmin) notFound();
+  }
 
   const nom = membre.display_name ?? membre.full_name ?? "Membre";
 
