@@ -30,7 +30,7 @@ const majuscule = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 /**
  * Sommaire de l'étape 2. On y arrive juste après avoir activé son compte,
  * puis chaque fois qu'on ouvre « Mon profil » : quatre blocs à compléter
- * quand on veut, une jauge, et en bas la gestion du compte.
+ * quand on veut, une jauge, et en bas le lien discret vers les réglages du compte.
  */
 export default async function ProfilPage({
   searchParams,
