@@ -142,7 +142,7 @@ export default async function ProjetsEnAttentePage() {
     .returns<PaidReport[]>();
 
   return (
-    <PageShell eyebrow="Administration" title="Projets en attente">
+    <PageShell eyebrow="Administration" title="Projets en attente" theme="clair">
       <p className={formStyles.hint}>
         Tableau de bord des projets reçus : sans lecteur attribué, en cours de
         lecture, ou avec une fiche en attente de validation définitive.
@@ -174,6 +174,30 @@ export default async function ProjetsEnAttentePage() {
                 </td>
                 <td>
                   <Link href={`/projet/${p.project_id}`}>{p.title}</Link>
+                  <a
+                    href={`/projet/${p.project_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={adminStyles.iconePdf}
+                    title="Ouvrir le projet (nouvel onglet)"
+                    aria-label="Ouvrir le projet dans un nouvel onglet"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M15 3h6v6" />
+                      <path d="M10 14 21 3" />
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    </svg>
+                  </a>
                   <ScenarioLink projectId={p.project_id} />
                   <br />
                   <span className={formStyles.hint}>
