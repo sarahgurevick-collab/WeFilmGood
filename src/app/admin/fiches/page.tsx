@@ -239,10 +239,10 @@ export default async function TableauFichesPage({
         note: f.final_mark,
         analyse: texteBrut(f.content, false),
         satisfaction: f.author_rating || null,
-        // Relue sur WFG 1 jusqu'à la bascule : le A mène au projet, où
-        // l'administration lit la fiche.
+        // Relue sur WFG 1 jusqu'à la bascule : le A mène à la fiche, en
+        // lecture seule.
         lienFiche:
-          f.statut === 1 && f.project ? `/projet/${f.project.id}` : null,
+          f.statut === 1 ? `/admin/fiches/ancienne/${f.legacy_review_id}` : null,
       };
     }),
     ...rendues.map((r) => {
