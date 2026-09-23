@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -149,7 +150,9 @@ export default async function LecteursPage() {
           {lecteurs.map((l) => (
             <tr key={l.id}>
               <td>
-                <strong>{l.nom}</strong>
+                <Link href={`/admin/lecteurs/${l.id}`}>
+                  <strong>{l.nom}</strong>
+                </Link>
                 <br />
                 <span className={formStyles.hint}>{l.email}</span>
               </td>
