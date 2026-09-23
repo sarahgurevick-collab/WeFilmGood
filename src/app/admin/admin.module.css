@@ -114,7 +114,6 @@
   color: var(--dim);
 }
 
-/* L'icône d'ouverture du scénario, posée contre le titre du projet. */
 /* Titre de projet coupé après les premiers mots : c'est assez pour le
    reconnaître, et la colonne reste étroite. Le titre entier au survol. */
 .titreCourt {
@@ -126,6 +125,7 @@
   vertical-align: middle;
 }
 
+/* L'icône d'ouverture du scénario, posée contre le titre du projet. */
 .iconePdf {
   display: inline-flex;
   align-items: center;
