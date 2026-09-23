@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
+import NavAdmin from "../NavAdmin";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../admin.module.css";
@@ -52,15 +53,21 @@ export default async function ProfilsPage() {
     .slice(0, 60);
 
   return (
-    <PageShell eyebrow="Administration" title="Profils récents">
+    <PageShell
+      avantTitre={<NavAdmin />}
+      eyebrow="Administration"
+      title="Profils récents"
+      theme="clair"
+    >
       <p className={formStyles.hint}>
-        Les <strong>auteurs</strong> n&apos;ont pas de validation : leur profil est actif
-        dès l&apos;inscription. Pour les <strong>producteurs et autres talents</strong>,
-        le métier suppose au moins une expérience sur un film, prouvée par la
-        référence fournie (page IMDb, Vimeo, site). S&apos;il y a une référence, le profil
-        est validé d&apos;office : vous n&apos;avez rien à faire. Ne cliquez sur
-        «&nbsp;Validé&nbsp;» que si la référence est fausse, pour la refuser — un second
-        clic la rétablit. Sans référence, le profil reste en attente.
+        Les <strong>auteurs</strong> n&apos;ont pas de validation : leur profil
+        est actif dès l&apos;inscription. Pour les{" "}
+        <strong>producteurs et autres talents</strong>, le métier suppose au
+        moins une expérience sur un film, prouvée par la référence fournie (page
+        IMDb, Vimeo, site). S&apos;il y a une référence, le profil est validé
+        d&apos;office : vous n&apos;avez rien à faire. Ne cliquez sur
+        «&nbsp;Validé&nbsp;» que si la référence est fausse, pour la refuser —
+        un second clic la rétablit. Sans référence, le profil reste en attente.
       </p>
 
       <div className={adminStyles.tableWrap}>
@@ -80,7 +87,9 @@ export default async function ProfilsPage() {
               const site = siteDe.get(m.profile_id) ?? null;
               const refusee = m.validation_status === "refusee";
               // Un auteur n'a rien à prouver : pas de validation pour lui.
-              const sansValidation = m.category === "auteur" || m.validation_status === "non_requise";
+              const sansValidation =
+                m.category === "auteur" ||
+                m.validation_status === "non_requise";
 
               return (
                 <tr key={m.profile_id}>
@@ -104,10 +113,16 @@ export default async function ProfilsPage() {
                   <td>{new Date(m.created_at).toLocaleDateString("fr-FR")}</td>
                   <td>
                     {sansValidation ? (
-                      <span className={formStyles.hint}>sans objet (auteur)</span>
+                      <span className={formStyles.hint}>
+                        sans objet (auteur)
+                      </span>
                     ) : site ? (
                       <form action={basculerValidation}>
-                        <input type="hidden" name="profile_id" value={m.profile_id} />
+                        <input
+                          type="hidden"
+                          name="profile_id"
+                          value={m.profile_id}
+                        />
                         <input
                           type="hidden"
                           name="vers"
@@ -115,7 +130,11 @@ export default async function ProfilsPage() {
                         />
                         <button
                           type="submit"
-                          className={refusee ? adminStyles.voyantRouge : adminStyles.voyantVert}
+                          className={
+                            refusee
+                              ? adminStyles.voyantRouge
+                              : adminStyles.voyantVert
+                          }
                           title={
                             refusee
                               ? "Référence écartée — cliquer pour la rétablir"
@@ -126,12 +145,18 @@ export default async function ProfilsPage() {
                         </button>
                       </form>
                     ) : (
-                      <span className={formStyles.hint}>en attente — pas de référence</span>
+                      <span className={formStyles.hint}>
+                        en attente — pas de référence
+                      </span>
                     )}
                   </td>
                   <td>
                     <form action={prendreLaPlace}>
-                      <input type="hidden" name="profile_id" value={m.profile_id} />
+                      <input
+                        type="hidden"
+                        name="profile_id"
+                        value={m.profile_id}
+                      />
                       <button
                         type="submit"
                         className={adminStyles.linkButton}

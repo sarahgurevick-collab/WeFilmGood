@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
+import NavAdmin from "../NavAdmin";
 import formStyles from "@/components/form.module.css";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -50,7 +51,8 @@ type Rendue = {
   project: Heritee["project"];
 };
 
-const PROJET = "project:projects(id, title, format, language, owner:profiles!projects_owner_id_fkey(full_name))";
+const PROJET =
+  "project:projects(id, title, format, language, owner:profiles!projects_owner_id_fkey(full_name))";
 
 const STATUTS: Record<string, string> = {
   soumise: "À valider",
@@ -97,12 +99,18 @@ export default async function TableauFichesPage({
   const cochees = (
     brutes === undefined
       ? [anneeEnCours]
-      : brutes.split(",").map(Number).filter((a) => a >= PREMIERE_ANNEE && a <= anneeEnCours + 1)
+      : brutes
+          .split(",")
+          .map(Number)
+          .filter((a) => a >= PREMIERE_ANNEE && a <= anneeEnCours + 1)
   ).sort((a, b) => b - a);
 
   // La colonne statut arrive avec la migration 0071 : tant qu'elle n'est
   // pas appliquée, toutes les fiches reprises passent pour vérifiées.
-  const { error: sansStatut } = await admin.from("legacy_reading_reports").select("statut").limit(1);
+  const { error: sansStatut } = await admin
+    .from("legacy_reading_reports")
+    .select("statut")
+    .limit(1);
   const colonneStatut = sansStatut ? "" : ", statut";
 
   const parAnnee = await Promise.all(
@@ -113,7 +121,9 @@ export default async function TableauFichesPage({
         toutLire<Heritee>((a, b) =>
           admin
             .from("legacy_reading_reports")
-            .select(`legacy_review_id, read_at, content, final_mark, author_rating, reader_legacy_id${colonneStatut}, ${PROJET}`)
+            .select(
+              `legacy_review_id, read_at, content, final_mark, author_rating, reader_legacy_id${colonneStatut}, ${PROJET}`,
+            )
             .gte("read_at", debut)
             .lt("read_at", fin)
             .order("read_at", { ascending: false })
@@ -123,7 +133,9 @@ export default async function TableauFichesPage({
         toutLire<Rendue>((a, b) =>
           admin
             .from("reading_reports")
-            .select(`id, status, score, content, submitted_at, reader_id, ${PROJET}`)
+            .select(
+              `id, status, score, content, submitted_at, reader_id, ${PROJET}`,
+            )
             .gte("submitted_at", debut)
             .lt("submitted_at", fin)
             .order("submitted_at", { ascending: false })
@@ -140,16 +152,32 @@ export default async function TableauFichesPage({
 
   // Lecteurs de WFG 1 : leur ancien profil (nom, adresse), sinon leur
   // compte WFG 2 quand le profil repris a déjà été rattaché.
-  const idsAnciens = [...new Set(heritees.map((f) => f.reader_legacy_id).filter((id): id is number => id != null))];
+  const idsAnciens = [
+    ...new Set(
+      heritees
+        .map((f) => f.reader_legacy_id)
+        .filter((id): id is number => id != null),
+    ),
+  ];
   const [{ data: anciens }, { data: rattaches }] = idsAnciens.length
     ? await Promise.all([
-        admin.from("legacy_profiles").select("legacy_user_id, full_name, email").in("legacy_user_id", idsAnciens),
-        admin.from("profiles").select("id, full_name, legacy_user_id").in("legacy_user_id", idsAnciens),
+        admin
+          .from("legacy_profiles")
+          .select("legacy_user_id, full_name, email")
+          .in("legacy_user_id", idsAnciens),
+        admin
+          .from("profiles")
+          .select("id, full_name, legacy_user_id")
+          .in("legacy_user_id", idsAnciens),
       ])
     : [{ data: [] }, { data: [] }];
 
-  const lecteurAncien = new Map<number, { nom: string | null; email: string | null }>();
-  for (const l of anciens ?? []) lecteurAncien.set(l.legacy_user_id, { nom: l.full_name, email: l.email });
+  const lecteurAncien = new Map<
+    number,
+    { nom: string | null; email: string | null }
+  >();
+  for (const l of anciens ?? [])
+    lecteurAncien.set(l.legacy_user_id, { nom: l.full_name, email: l.email });
 
   // Adresses des comptes WFG 2 : lecteurs rattachés sans profil repris,
   // et lecteurs des fiches rendues sur le nouveau site.
@@ -157,30 +185,46 @@ export default async function TableauFichesPage({
   for (const p of rattaches ?? []) {
     if (!lecteurAncien.has(p.legacy_user_id)) aChercher.set(p.id, p.full_name);
   }
-  for (const r of rendues) if (!aChercher.has(r.reader_id)) aChercher.set(r.reader_id, null);
+  for (const r of rendues)
+    if (!aChercher.has(r.reader_id)) aChercher.set(r.reader_id, null);
 
   const { data: nomsWfg2 } = aChercher.size
-    ? await admin.from("profiles").select("id, full_name").in("id", [...aChercher.keys()])
+    ? await admin
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", [...aChercher.keys()])
     : { data: [] };
-  const comptes = new Map<string, { nom: string | null; email: string | null }>();
+  const comptes = new Map<
+    string,
+    { nom: string | null; email: string | null }
+  >();
   await Promise.all(
     [...aChercher.keys()].map(async (id) => {
       const { data } = await admin.auth.admin.getUserById(id);
       comptes.set(id, {
-        nom: nomsWfg2?.find((n) => n.id === id)?.full_name ?? aChercher.get(id) ?? null,
+        nom:
+          nomsWfg2?.find((n) => n.id === id)?.full_name ??
+          aChercher.get(id) ??
+          null,
         email: data.user?.email ?? null,
       });
     }),
   );
   for (const p of rattaches ?? []) {
     if (!lecteurAncien.has(p.legacy_user_id)) {
-      lecteurAncien.set(p.legacy_user_id, comptes.get(p.id) ?? { nom: p.full_name, email: null });
+      lecteurAncien.set(
+        p.legacy_user_id,
+        comptes.get(p.id) ?? { nom: p.full_name, email: null },
+      );
     }
   }
 
   const lignes: LigneFiche[] = [
     ...heritees.map((f) => {
-      const lecteur = f.reader_legacy_id != null ? lecteurAncien.get(f.reader_legacy_id) : undefined;
+      const lecteur =
+        f.reader_legacy_id != null
+          ? lecteurAncien.get(f.reader_legacy_id)
+          : undefined;
       return {
         cle: `h${f.legacy_review_id}`,
         date: f.read_at,
@@ -197,7 +241,8 @@ export default async function TableauFichesPage({
         satisfaction: f.author_rating || null,
         // Relue sur WFG 1 jusqu'à la bascule : le A mène au projet, où
         // l'administration lit la fiche.
-        lienFiche: f.statut === 1 && f.project ? `/projet/${f.project.id}` : null,
+        lienFiche:
+          f.statut === 1 && f.project ? `/projet/${f.project.id}` : null,
       };
     }),
     ...rendues.map((r) => {
@@ -222,22 +267,32 @@ export default async function TableauFichesPage({
   ].sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
 
   const annees: number[] = [];
-  for (let a = Math.max(anneeEnCours, 2027); a >= PREMIERE_ANNEE; a--) annees.push(a);
+  for (let a = Math.max(anneeEnCours, 2027); a >= PREMIERE_ANNEE; a--)
+    annees.push(a);
 
   return (
-    <PageShell eyebrow="Administration" title="Fiches de lecture" theme="clair">
+    <PageShell
+      avantTitre={<NavAdmin />}
+      eyebrow="Administration"
+      title="Fiches de lecture"
+      theme="clair"
+    >
       <p className={formStyles.hint}>
-        Toutes les analyses rendues par les lecteurs et les notes attribuées, de WFG 1 et du
-        nouveau site.
+        Toutes les analyses rendues par les lecteurs et les notes attribuées, de
+        WFG 1 et du nouveau site.
       </p>
       <p className={formStyles.linkRow} style={{ marginTop: 12 }}>
-        <Link href="/admin/projets-en-attente#a-valider">→ Les fiches à valider</Link>
+        <Link href="/admin/projets-en-attente#a-valider">
+          → Les fiches à valider
+        </Link>
       </p>
 
       <nav className={adminStyles.annees} aria-label="Années">
         {annees.map((a) => {
           const cochee = cochees.includes(a);
-          const suivantes = cochee ? cochees.filter((c) => c !== a) : [...cochees, a];
+          const suivantes = cochee
+            ? cochees.filter((c) => c !== a)
+            : [...cochees, a];
           return (
             <Link
               key={a}

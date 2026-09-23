@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
+import NavAdmin from "../NavAdmin";
 import formStyles from "@/components/form.module.css";
 import adminStyles from "../admin.module.css";
 import { createClient } from "@/lib/supabase/server";
@@ -27,28 +27,33 @@ export default async function CodesLecteursPage() {
     .from("reader_invite_redemptions")
     .select("code, redeemed_at, profile:profiles(full_name)")
     .order("redeemed_at", { ascending: false })
-    .returns<{ code: string; redeemed_at: string; profile: { full_name: string | null } | null }[]>();
+    .returns<
+      {
+        code: string;
+        redeemed_at: string;
+        profile: { full_name: string | null } | null;
+      }[]
+    >();
 
   return (
-    <PageShell eyebrow="Administration" title="Codes lecteurs">
-      <p className={formStyles.linkRow} style={{ marginBottom: 24 }}>
-        <Link href="/admin/projets-en-attente">← Attribution des projets</Link>
-        {" · "}
-        <Link href="/admin/fiches">Toutes les fiches de lecture</Link>
-        {" · "}
-        <Link href="/admin/profils">Profils récents et références professionnelles</Link>
-        {" · "}
-        <Link href="/admin/adhesions">Adhésions</Link>
-      </p>
-
+    <PageShell
+      avantTitre={<NavAdmin />}
+      eyebrow="Administration"
+      title="Codes lecteurs"
+      theme="clair"
+    >
       <p className={formStyles.hint}>
         Chaque code donne accès au formulaire d&apos;inscription lecteur, à
         l&apos;adresse <code>/lecteur/inscription</code>. Cette page et ce
-        formulaire ne sont liés nulle part ailleurs sur le site — seule
-        cette page en admin les montre.
+        formulaire ne sont liés nulle part ailleurs sur le site — seule cette
+        page en admin les montre.
       </p>
 
-      <form className={formStyles.form} action={createReaderCode} style={{ marginTop: 32 }}>
+      <form
+        className={formStyles.form}
+        action={createReaderCode}
+        style={{ marginTop: 32 }}
+      >
         <label className={formStyles.field}>
           <span>Note (ex. nom du lecteur)</span>
           <input type="text" name="label" placeholder="Philippe Gourgeon" />
@@ -94,7 +99,11 @@ export default async function CodesLecteursPage() {
               <td>
                 <form action={toggleReaderCode}>
                   <input type="hidden" name="code" value={c.code} />
-                  <input type="hidden" name="next_state" value={(!c.is_active).toString()} />
+                  <input
+                    type="hidden"
+                    name="next_state"
+                    value={(!c.is_active).toString()}
+                  />
                   <button type="submit" className={adminStyles.linkButton}>
                     {c.is_active ? "Désactiver" : "Réactiver"}
                   </button>
@@ -107,15 +116,27 @@ export default async function CodesLecteursPage() {
 
       <h2 className={adminStyles.subhead}>Lecteurs inscrits</h2>
       {(redemptions ?? []).length === 0 ? (
-        <p className={formStyles.hint}>Aucun lecteur inscrit pour l&apos;instant.</p>
+        <p className={formStyles.hint}>
+          Aucun lecteur inscrit pour l&apos;instant.
+        </p>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+        <ul
+          style={{
+            listStyle: "none",
+            padding: 0,
+            margin: 0,
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+          }}
+        >
           {(redemptions ?? []).map((r, i) => (
             <li key={i} style={{ fontSize: 13 }}>
               <strong>{r.profile?.full_name ?? "Sans nom"}</strong>
               <span className={formStyles.hint}>
                 {" "}
-                — code {r.code}, {new Date(r.redeemed_at).toLocaleDateString("fr-FR")}
+                — code {r.code},{" "}
+                {new Date(r.redeemed_at).toLocaleDateString("fr-FR")}
               </span>
             </li>
           ))}

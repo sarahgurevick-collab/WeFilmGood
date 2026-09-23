@@ -6,6 +6,7 @@ import EnTeteAnime from "./EnTeteAnime";
 import styles from "./PageShell.module.css";
 
 export default async function PageShell({
+  avantTitre,
   eyebrow,
   title,
   apresTitre,
@@ -15,6 +16,8 @@ export default async function PageShell({
   enTeteAnime = false,
   children,
 }: {
+  /** Posé tout en haut du contenu, avant le titre (ex. la barre d'administration). */
+  avantTitre?: ReactNode;
   eyebrow?: string;
   title?: string;
   /** Posé juste après le titre, dans la même ligne (ex. le label d'un projet). */
@@ -39,6 +42,7 @@ export default async function PageShell({
         <BarreNav actif={nav} connecte={connecte} />
       )}
       <main className={styles.main}>
+        {avantTitre}
         {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
         {title && (
           <h1 className={styles.title}>

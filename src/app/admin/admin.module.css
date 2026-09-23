@@ -205,26 +205,54 @@
   color: var(--bg);
 }
 
-/* Les autres pages d'administration, en haut de la page d'attribution. */
+/* La barre des pages d'administration ; la page en cours est soulignée. */
 .navAdmin {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 20px;
-  margin: -20px 0 24px;
-  font-size: 13px;
+  gap: 8px 22px;
+  margin-bottom: 28px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--bordure-douce);
+  font-size: 14px;
 }
 
-.navAdmin > a:not([class]) {
+.navLien,
+.navActif {
   color: var(--dim);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  padding-bottom: 3px;
+  border-bottom: 2px solid transparent;
 }
 
-.navAdmin > a:not([class]):hover {
+.navLien:hover {
   color: var(--fg);
 }
 
-.navAdmin > a[class] {
-  margin-left: 0;
+.navActif {
+  color: var(--fg);
+  font-weight: 700;
+  border-bottom-color: #e2231a;
+}
+
+.navCle,
+.navCleActive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  border: 1px solid var(--bordure-forte);
+  border-radius: 50%;
+  color: var(--dim);
+}
+
+.navCle:hover {
+  border-color: #e2231a;
+  color: #e2231a;
+}
+
+.navCleActive {
+  border-color: #e2231a;
+  color: #e2231a;
 }

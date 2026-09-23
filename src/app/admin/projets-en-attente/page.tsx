@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
+import NavAdmin from "../NavAdmin";
 import formStyles from "@/components/form.module.css";
 import adminStyles from "../admin.module.css";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -109,7 +110,9 @@ export default async function ProjetsEnAttentePage() {
     .in("status", ["depose", "en_lecture"])
     .is("legacy_id", null);
   const idsNouveaux = new Set((nouveaux ?? []).map((n) => n.id));
-  const projects = ((pendingRows ?? []) as PendingProject[]).filter((p) => idsNouveaux.has(p.project_id));
+  const projects = ((pendingRows ?? []) as PendingProject[]).filter((p) =>
+    idsNouveaux.has(p.project_id),
+  );
 
   const { data: readers } = await supabase
     .from("profile_roles")
@@ -125,11 +128,15 @@ export default async function ProjetsEnAttentePage() {
     .select("profile_id, availability_status")
     .returns<{ profile_id: string; availability_status: string }[]>();
 
-  const voyantDe = new Map((voyants ?? []).map((v) => [v.profile_id, v.availability_status]));
+  const voyantDe = new Map(
+    (voyants ?? []).map((v) => [v.profile_id, v.availability_status]),
+  );
   const parVoyant = (couleur: string) =>
     (readers ?? [])
       .filter((r) => (voyantDe.get(r.profile_id) ?? "vert") === couleur)
-      .sort((a, b) => (a.profile?.full_name ?? "").localeCompare(b.profile?.full_name ?? ""));
+      .sort((a, b) =>
+        (a.profile?.full_name ?? "").localeCompare(b.profile?.full_name ?? ""),
+      );
 
   const GROUPES = [
     { couleur: "vert", libelle: "Disponibles" },
@@ -139,7 +146,9 @@ export default async function ProjetsEnAttentePage() {
 
   const { data: pendingReports } = await supabase
     .from("reading_reports")
-    .select("id, score, labellise, submitted_at, project:projects(title), reader:profiles(full_name)")
+    .select(
+      "id, score, labellise, submitted_at, project:projects(title), reader:profiles(full_name)",
+    )
     .eq("status", "soumise")
     .order("submitted_at", { ascending: true })
     .returns<PendingReport[]>();
@@ -151,7 +160,9 @@ export default async function ProjetsEnAttentePage() {
   const { data: ficheesWfg1 } = admin
     ? await admin
         .from("legacy_reading_reports")
-        .select("legacy_review_id, read_at, final_mark, reader_legacy_id, project:projects(id, title)")
+        .select(
+          "legacy_review_id, read_at, final_mark, reader_legacy_id, project:projects(id, title)",
+        )
         .eq("statut", 1)
         .order("read_at", { ascending: false })
         .returns<
@@ -165,13 +176,22 @@ export default async function ProjetsEnAttentePage() {
         >()
     : { data: null };
   const idsLecteursWfg1 = [
-    ...new Set((ficheesWfg1 ?? []).map((f) => f.reader_legacy_id).filter((id): id is number => id != null)),
+    ...new Set(
+      (ficheesWfg1 ?? [])
+        .map((f) => f.reader_legacy_id)
+        .filter((id): id is number => id != null),
+    ),
   ];
   const { data: lecteursWfg1 } =
     admin && idsLecteursWfg1.length
-      ? await admin.from("legacy_profiles").select("legacy_user_id, full_name").in("legacy_user_id", idsLecteursWfg1)
+      ? await admin
+          .from("legacy_profiles")
+          .select("legacy_user_id, full_name")
+          .in("legacy_user_id", idsLecteursWfg1)
       : { data: null };
-  const nomLecteurWfg1 = new Map((lecteursWfg1 ?? []).map((l) => [l.legacy_user_id, l.full_name]));
+  const nomLecteurWfg1 = new Map(
+    (lecteursWfg1 ?? []).map((l) => [l.legacy_user_id, l.full_name]),
+  );
 
   const { data: paidReports } = await supabase
     .from("reading_reports")
@@ -183,34 +203,12 @@ export default async function ProjetsEnAttentePage() {
     .returns<PaidReport[]>();
 
   return (
-    <PageShell eyebrow="Administration" title="Projets en attente" theme="clair">
-      <nav className={adminStyles.navAdmin}>
-        <Link href="/admin/fiches">Toutes les fiches</Link>
-        <Link href="/admin/profils">Profils</Link>
-        <Link href="/admin/adhesions">Adhésions</Link>
-        <Link
-          href="/admin/codes"
-          className={adminStyles.iconePdf}
-          title="Codes lecteurs"
-          aria-label="Codes lecteurs"
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="7.5" cy="15.5" r="5.5" />
-            <path d="m21 2-9.6 9.6" />
-            <path d="m15.5 7.5 3 3L22 7l-3-3" />
-          </svg>
-        </Link>
-      </nav>
+    <PageShell
+      avantTitre={<NavAdmin />}
+      eyebrow="Administration"
+      title="Projets en attente"
+      theme="clair"
+    >
       <p className={formStyles.hint}>
         Tableau de bord des projets reçus : sans lecteur attribué, en cours de
         lecture, ou avec une fiche en attente de validation définitive.
@@ -289,15 +287,26 @@ export default async function ProjetsEnAttentePage() {
                   <br />
                   <span
                     className={formStyles.hint}
-                    style={joursDepuis(p.submitted_at) >= ALERTE_JOURS ? { color: "#e2231a", fontWeight: 600 } : undefined}
+                    style={
+                      joursDepuis(p.submitted_at) >= ALERTE_JOURS
+                        ? { color: "#e2231a", fontWeight: 600 }
+                        : undefined
+                    }
                   >
                     {delaiEcoule(p.submitted_at)}
                   </span>
                 </td>
                 <td>{p.current_reader_name ?? "—"}</td>
                 <td>
-                  <form action={reassignReader} className={adminStyles.inlineForm}>
-                    <input type="hidden" name="project_id" value={p.project_id} />
+                  <form
+                    action={reassignReader}
+                    className={adminStyles.inlineForm}
+                  >
+                    <input
+                      type="hidden"
+                      name="project_id"
+                      value={p.project_id}
+                    />
                     <select name="reader_id" defaultValue="" required>
                       <option value="" disabled>
                         Choisir…
@@ -309,7 +318,8 @@ export default async function ProjetsEnAttentePage() {
                           <optgroup key={couleur} label={libelle}>
                             {lecteurs.map((r) => (
                               <option key={r.profile_id} value={r.profile_id}>
-                                {r.profile?.full_name ?? r.profile_id.slice(0, 8)}
+                                {r.profile?.full_name ??
+                                  r.profile_id.slice(0, 8)}
                               </option>
                             ))}
                           </optgroup>
@@ -327,12 +337,12 @@ export default async function ProjetsEnAttentePage() {
         </table>
       )}
 
-      <h2 id="a-valider" className={adminStyles.subhead}>Fiches en attente de validation</h2>
-      <p className={formStyles.linkRow}>
-        <Link href="/admin/fiches">Voir toutes les fiches de lecture</Link>
-      </p>
+      <h2 id="a-valider" className={adminStyles.subhead}>
+        Fiches en attente de validation
+      </h2>
 
-      {(pendingReports ?? []).length === 0 && (ficheesWfg1 ?? []).length === 0 ? (
+      {(pendingReports ?? []).length === 0 &&
+      (ficheesWfg1 ?? []).length === 0 ? (
         <p className={formStyles.hint}>Aucune fiche à valider.</p>
       ) : (
         <table className={adminStyles.table}>
@@ -352,11 +362,16 @@ export default async function ProjetsEnAttentePage() {
                 <td>{r.reader?.full_name ?? "—"}</td>
                 <td>
                   {r.score ?? "—"} / 200
-                  {r.labellise && <span className={adminStyles.badge}>Labellise</span>}
+                  {r.labellise && (
+                    <span className={adminStyles.badge}>Labellise</span>
+                  )}
                 </td>
                 <td>{new Date(r.submitted_at).toLocaleDateString("fr-FR")}</td>
                 <td>
-                  <Link href={`/admin/fiches/${r.id}`} className={adminStyles.linkButton}>
+                  <Link
+                    href={`/admin/fiches/${r.id}`}
+                    className={adminStyles.linkButton}
+                  >
                     Ouvrir et publier
                   </Link>
                 </td>
@@ -366,13 +381,22 @@ export default async function ProjetsEnAttentePage() {
               <tr key={`wfg1-${f.legacy_review_id}`}>
                 <td>{f.project?.title ?? "—"}</td>
                 <td>
-                  {(f.reader_legacy_id != null && nomLecteurWfg1.get(f.reader_legacy_id)) || "—"}
+                  {(f.reader_legacy_id != null &&
+                    nomLecteurWfg1.get(f.reader_legacy_id)) ||
+                    "—"}
                 </td>
                 <td>{f.final_mark ?? "—"} / 200</td>
-                <td>{f.read_at ? new Date(f.read_at).toLocaleDateString("fr-FR") : "—"}</td>
+                <td>
+                  {f.read_at
+                    ? new Date(f.read_at).toLocaleDateString("fr-FR")
+                    : "—"}
+                </td>
                 <td>
                   {f.project && (
-                    <Link href={`/projet/${f.project.id}`} className={adminStyles.linkButton}>
+                    <Link
+                      href={`/projet/${f.project.id}`}
+                      className={adminStyles.linkButton}
+                    >
                       À relire sur WFG 1
                     </Link>
                   )}
@@ -386,7 +410,9 @@ export default async function ProjetsEnAttentePage() {
       <h2 className={adminStyles.subhead}>Fiches publiées — rémunération</h2>
 
       {(paidReports ?? []).length === 0 ? (
-        <p className={formStyles.hint}>Aucune fiche publiée pour l&apos;instant.</p>
+        <p className={formStyles.hint}>
+          Aucune fiche publiée pour l&apos;instant.
+        </p>
       ) : (
         <table className={adminStyles.table}>
           <thead>
@@ -420,10 +446,6 @@ export default async function ProjetsEnAttentePage() {
           </tbody>
         </table>
       )}
-
-      <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
-        <Link href="/admin/codes">Codes lecteurs</Link>
-      </p>
     </PageShell>
   );
 }

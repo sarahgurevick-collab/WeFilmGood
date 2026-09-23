@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
+import NavAdmin from "../NavAdmin";
 import formStyles from "@/components/form.module.css";
 import adminStyles from "../admin.module.css";
 import { createClient } from "@/lib/supabase/server";
@@ -44,7 +44,9 @@ export default async function AdminAdhesionsPage({
     .limit(40);
 
   if (recherche) {
-    requete = requete.or(`full_name.ilike.%${recherche}%,display_name.ilike.%${recherche}%`);
+    requete = requete.or(
+      `full_name.ilike.%${recherche}%,display_name.ilike.%${recherche}%`,
+    );
   }
 
   const { data: profils } = await requete.returns<Profil[]>();
@@ -72,18 +74,17 @@ export default async function AdminAdhesionsPage({
     (adhesions ?? []).find((a) => a.profile_id === profileId) ?? null;
 
   return (
-    <PageShell eyebrow="Administration" title="Adhésions">
-      <p className={formStyles.linkRow} style={{ marginBottom: 24 }}>
-        <Link href="/admin/codes">Codes lecteurs</Link>
-        {" · "}
-        <Link href="/admin/projets-en-attente">Projets en attente</Link>
-      </p>
-
+    <PageShell
+      avantTitre={<NavAdmin />}
+      eyebrow="Administration"
+      title="Adhésions"
+      theme="clair"
+    >
       <p className={formStyles.hint}>
         Aucun paiement en ligne n&apos;est branché : c&apos;est ici qu&apos;on
         active ou expire une adhésion à la main après réception d&apos;un
-        paiement. Une adhésion active débloque, pour le membre, la lecture
-        des messages reçus sur ses projets.
+        paiement. Une adhésion active débloque, pour le membre, la lecture des
+        messages reçus sur ses projets.
       </p>
 
       <form method="get" style={{ marginTop: 24, marginBottom: 8 }}>
@@ -119,7 +120,9 @@ export default async function AdminAdhesionsPage({
           {(profils ?? []).length === 0 && (
             <tr>
               <td colSpan={4} style={{ color: "var(--dim)" }}>
-                {recherche ? "Aucun membre trouvé." : "Tapez un nom pour chercher un membre."}
+                {recherche
+                  ? "Aucun membre trouvé."
+                  : "Tapez un nom pour chercher un membre."}
               </td>
             </tr>
           )}
@@ -134,7 +137,9 @@ export default async function AdminAdhesionsPage({
                   {adhesion ? (
                     <>
                       {adhesion.status}
-                      <span className={adminStyles.badge}>{adhesion.plan_slug}</span>
+                      <span className={adminStyles.badge}>
+                        {adhesion.plan_slug}
+                      </span>
                     </>
                   ) : (
                     "Aucune"
@@ -143,13 +148,20 @@ export default async function AdminAdhesionsPage({
                 <td>
                   {active ? (
                     <form action={expirerAdhesion}>
-                      <input type="hidden" name="membership_id" value={adhesion!.id} />
+                      <input
+                        type="hidden"
+                        name="membership_id"
+                        value={adhesion!.id}
+                      />
                       <button type="submit" className={adminStyles.linkButton}>
                         Expirer
                       </button>
                     </form>
                   ) : (
-                    <form action={activerAdhesion} className={adminStyles.inlineForm}>
+                    <form
+                      action={activerAdhesion}
+                      className={adminStyles.inlineForm}
+                    >
                       <input type="hidden" name="profile_id" value={p.id} />
                       <select name="plan_slug" defaultValue="">
                         <option value="">D&apos;après sa catégorie</option>
