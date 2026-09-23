@@ -39,7 +39,7 @@ export async function createReaderCode(formData: FormData) {
     created_by: user?.id ?? null,
   });
 
-  revalidatePath("/admin");
+  revalidatePath("/admin/codes");
 }
 
 export async function toggleReaderCode(formData: FormData) {
@@ -50,5 +50,5 @@ export async function toggleReaderCode(formData: FormData) {
 
   await supabase.from("reader_invite_codes").update({ is_active: nextState }).eq("code", code);
 
-  revalidatePath("/admin");
+  revalidatePath("/admin/codes");
 }

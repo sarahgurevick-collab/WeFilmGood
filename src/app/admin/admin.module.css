@@ -204,3 +204,27 @@
   border-color: var(--fg);
   color: var(--bg);
 }
+
+/* Les autres pages d'administration, en haut de la page d'attribution. */
+.navAdmin {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin: -20px 0 24px;
+  font-size: 13px;
+}
+
+.navAdmin > a:not([class]) {
+  color: var(--dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.navAdmin > a:not([class]):hover {
+  color: var(--fg);
+}
+
+.navAdmin > a[class] {
+  margin-left: 0;
+}

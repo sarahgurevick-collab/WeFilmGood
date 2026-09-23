@@ -74,7 +74,7 @@ export default async function AdminAdhesionsPage({
   return (
     <PageShell eyebrow="Administration" title="Adhésions">
       <p className={formStyles.linkRow} style={{ marginBottom: 24 }}>
-        <Link href="/admin">Codes lecteurs</Link>
+        <Link href="/admin/codes">Codes lecteurs</Link>
         {" · "}
         <Link href="/admin/projets-en-attente">Projets en attente</Link>
       </p>

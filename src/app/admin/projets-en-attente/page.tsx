@@ -184,6 +184,33 @@ export default async function ProjetsEnAttentePage() {
 
   return (
     <PageShell eyebrow="Administration" title="Projets en attente" theme="clair">
+      <nav className={adminStyles.navAdmin}>
+        <Link href="/admin/fiches">Toutes les fiches</Link>
+        <Link href="/admin/profils">Profils</Link>
+        <Link href="/admin/adhesions">Adhésions</Link>
+        <Link
+          href="/admin/codes"
+          className={adminStyles.iconePdf}
+          title="Codes lecteurs"
+          aria-label="Codes lecteurs"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="7.5" cy="15.5" r="5.5" />
+            <path d="m21 2-9.6 9.6" />
+            <path d="m15.5 7.5 3 3L22 7l-3-3" />
+          </svg>
+        </Link>
+      </nav>
       <p className={formStyles.hint}>
         Tableau de bord des projets reçus : sans lecteur attribué, en cours de
         lecture, ou avec une fiche en attente de validation définitive.
@@ -395,7 +422,7 @@ export default async function ProjetsEnAttentePage() {
       )}
 
       <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
-        <Link href="/admin">Retour à l&apos;administration</Link>
+        <Link href="/admin/codes">Codes lecteurs</Link>
       </p>
     </PageShell>
   );
