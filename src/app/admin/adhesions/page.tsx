@@ -76,7 +76,7 @@ export default async function AdminAdhesionsPage({
   return (
     <PageShell
       avantTitre={<NavAdmin />}
-      eyebrow="Administration"
+     
       title="Adhésions"
       theme="clair"
     >

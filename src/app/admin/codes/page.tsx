@@ -38,7 +38,7 @@ export default async function CodesLecteursPage() {
   return (
     <PageShell
       avantTitre={<NavAdmin />}
-      eyebrow="Administration"
+     
       title="Codes lecteurs"
       theme="clair"
     >

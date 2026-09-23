@@ -273,7 +273,7 @@ export default async function TableauFichesPage({
   return (
     <PageShell
       avantTitre={<NavAdmin />}
-      eyebrow="Administration"
+     
       title="Fiches de lecture"
       theme="clair"
     >

@@ -205,7 +205,7 @@ export default async function ProjetsEnAttentePage() {
   return (
     <PageShell
       avantTitre={<NavAdmin />}
-      eyebrow="Administration"
+     
       title="Projets en attente"
       theme="clair"
     >

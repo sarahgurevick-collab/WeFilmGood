@@ -55,7 +55,7 @@ export default async function ProfilsPage() {
   return (
     <PageShell
       avantTitre={<NavAdmin />}
-      eyebrow="Administration"
+     
       title="Profils récents"
       theme="clair"
     >
