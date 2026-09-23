@@ -31,7 +31,15 @@ const FORMATS: Record<string, string> = {
   immersif_360_vr: "VR",
 };
 
-type Colonne = "date" | "lecteur" | "scenariste" | "titre" | "format" | "statut" | "note" | "satisfaction";
+type Colonne =
+  | "date"
+  | "lecteur"
+  | "scenariste"
+  | "titre"
+  | "format"
+  | "statut"
+  | "note"
+  | "satisfaction";
 
 const COLONNES: { cle: Colonne; libelle: string }[] = [
   { cle: "date", libelle: "Date" },
@@ -44,7 +52,8 @@ const COLONNES: { cle: Colonne; libelle: string }[] = [
 
 const TOUS_FORMATS = ["CM", "LM", "TV", "VR"];
 
-const formatCourt = (l: LigneFiche) => (l.format ? (FORMATS[l.format] ?? l.format) : "");
+const formatCourt = (l: LigneFiche) =>
+  l.format ? (FORMATS[l.format] ?? l.format) : "";
 
 function valeur(l: LigneFiche, c: Colonne): string | number {
   switch (c) {
@@ -59,7 +68,11 @@ function valeur(l: LigneFiche, c: Colonne): string | number {
   }
 }
 
-const sansAccents = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const sansAccents = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 
 export default function TableauFiches({
   lignes,
@@ -72,17 +85,28 @@ export default function TableauFiches({
   const [recherche, setRecherche] = useState("");
   // Le long métrage est ce que Sarah regarde d'abord ; les autres se cochent.
   const [formats, setFormats] = useState<Set<string>>(new Set(["LM"]));
-  const [tri, setTri] = useState<{ colonne: Colonne; sens: 1 | -1 }>({ colonne: "date", sens: -1 });
+  const [tri, setTri] = useState<{ colonne: Colonne; sens: 1 | -1 }>({
+    colonne: "date",
+    sens: -1,
+  });
   const [ouvertes, setOuvertes] = useState<Set<string>>(new Set());
 
   const affichees = useMemo(() => {
     const mots = sansAccents(recherche).split(/\s+/).filter(Boolean);
     const filtrees = lignes.filter((l) => {
       // Les quatre cochés : tout passe, y compris les projets sans format.
-      if (formats.size < TOUS_FORMATS.length && !formats.has(formatCourt(l))) return false;
+      if (formats.size < TOUS_FORMATS.length && !formats.has(formatCourt(l)))
+        return false;
       if (mots.length === 0) return true;
       const texte = sansAccents(
-        [l.lecteur, l.lecteurEmail, l.scenariste, l.titre, l.analyse, l.statut].join(" "),
+        [
+          l.lecteur,
+          l.lecteurEmail,
+          l.scenariste,
+          l.titre,
+          l.analyse,
+          l.statut,
+        ].join(" "),
       );
       return mots.every((m) => texte.includes(m));
     });
@@ -98,7 +122,15 @@ export default function TableauFiches({
     setTri((t) =>
       t.colonne === colonne
         ? { colonne, sens: t.sens === 1 ? -1 : 1 }
-        : { colonne, sens: colonne === "date" || colonne === "note" || colonne === "satisfaction" ? -1 : 1 },
+        : {
+            colonne,
+            sens:
+              colonne === "date" ||
+              colonne === "note" ||
+              colonne === "satisfaction"
+                ? -1
+                : 1,
+          },
     );
 
   const basculer = (cle: string) =>
@@ -113,7 +145,9 @@ export default function TableauFiches({
     <th key={c}>
       <button type="button" className={styles.tri} onClick={() => trier(c)}>
         {libelle}
-        <span aria-hidden="true">{tri.colonne === c ? (tri.sens === 1 ? " ▲" : " ▼") : " ↕"}</span>
+        <span aria-hidden="true">
+          {tri.colonne === c ? (tri.sens === 1 ? " ▲" : " ▼") : " ↕"}
+        </span>
       </button>
     </th>
   );
@@ -155,81 +189,105 @@ export default function TableauFiches({
       </div>
 
       <p className={styles.compte}>
-        {affichees.length.toLocaleString("fr-FR")} fiche{affichees.length > 1 ? "s" : ""}
-        {affichees.length !== lignes.length && ` sur ${lignes.length.toLocaleString("fr-FR")}`}
+        {affichees.length.toLocaleString("fr-FR")} fiche
+        {affichees.length > 1 ? "s" : ""}
+        {affichees.length !== lignes.length &&
+          ` sur ${lignes.length.toLocaleString("fr-FR")}`}
       </p>
 
       {affichees.length === 0 ? (
         <p className={styles.compte}>Aucune fiche.</p>
       ) : (
-        <table className={`${adminStyles.table} ${styles.table}`}>
-          <thead>
-            <tr>
-              {COLONNES.map(({ cle, libelle }) => entete(cle, libelle))}
-              <th>Analyse</th>
-              {entete("satisfaction", "Satisfaction de l'auteur")}
-            </tr>
-          </thead>
-          <tbody>
-            {affichees.map((l) => (
-              <tr key={l.cle}>
-                <td className={styles.date}>
-                  {l.date
-                    ? new Date(l.date).toLocaleDateString("fr-FR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        ...(uneSeuleAnnee ? {} : { year: "2-digit" }),
-                      })
-                    : "—"}
-                </td>
-                <td className={styles.lecteur}>
-                  <strong>{l.lecteur ?? "—"}</strong>
-                  {l.lecteurEmail && (
-                    <span className={styles.email} title={l.lecteurEmail}>
-                      {l.lecteurEmail}
-                    </span>
-                  )}
-                </td>
-                <td>{l.scenariste ?? "—"}</td>
-                <td>
-                  {l.projetId ? (
-                    <a href={`/projet/${l.projetId}`} target="_blank" rel="noopener noreferrer">
-                      {l.titre ?? "Sans titre"}
-                    </a>
-                  ) : (
-                    (l.titre ?? "Projet supprimé")
-                  )}
-                </td>
-                <td>{formatCourt(l) || "—"}</td>
-                <td className={styles.note}>
-                  <Statut ligne={l} />
-                  {l.note != null ? `${l.note} / 200` : "—"}
-                </td>
-                <td className={styles.analyse}>
-                  {l.analyse ? (
-                    <button
-                      type="button"
-                      className={ouvertes.has(l.cle) ? styles.analyseOuverte : styles.analyseFermee}
-                      onClick={() => basculer(l.cle)}
-                      title={ouvertes.has(l.cle) ? "Replier" : "Déplier"}
-                    >
-                      {l.analyse}
-                    </button>
-                  ) : (
-                    "—"
-                  )}
-                </td>
-                <td className={styles.etoiles} aria-label={l.satisfaction ? `${l.satisfaction} sur 5` : "Pas de note"}>
-                  {[1, 2, 3, 4, 5].map((n) => (
-                    <span key={n} className={l.satisfaction && n <= l.satisfaction ? styles.pleine : styles.vide}>
-                      ★
-                    </span>
-                  ))}
-                </td>
+        <div className={styles.defilement}>
+          <table className={`${adminStyles.table} ${styles.table}`}>
+            <thead>
+              <tr>
+                {COLONNES.map(({ cle, libelle }) => entete(cle, libelle))}
+                <th>Analyse</th>
+                {entete("satisfaction", "Satisfaction")}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {affichees.map((l) => (
+                <tr key={l.cle}>
+                  <td className={`${styles.serre} ${styles.date}`}>
+                    {l.date
+                      ? new Date(l.date).toLocaleDateString("fr-FR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          ...(uneSeuleAnnee ? {} : { year: "2-digit" }),
+                        })
+                      : "—"}
+                  </td>
+                  <td className={styles.lecteur}>
+                    <strong>{l.lecteur ?? "—"}</strong>
+                    {l.lecteurEmail && (
+                      <span className={styles.email} title={l.lecteurEmail}>
+                        {l.lecteurEmail}
+                      </span>
+                    )}
+                  </td>
+                  <td>{l.scenariste ?? "—"}</td>
+                  <td>
+                    {l.projetId ? (
+                      <a
+                        href={`/projet/${l.projetId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {l.titre ?? "Sans titre"}
+                      </a>
+                    ) : (
+                      (l.titre ?? "Projet supprimé")
+                    )}
+                  </td>
+                  <td className={styles.serre}>{formatCourt(l) || "—"}</td>
+                  <td className={`${styles.serre} ${styles.note}`}>
+                    <Statut ligne={l} />
+                    {l.note ?? "—"}
+                  </td>
+                  <td className={styles.analyse}>
+                    {l.analyse ? (
+                      <button
+                        type="button"
+                        className={
+                          ouvertes.has(l.cle)
+                            ? styles.analyseOuverte
+                            : styles.analyseFermee
+                        }
+                        onClick={() => basculer(l.cle)}
+                        title={ouvertes.has(l.cle) ? "Replier" : "Déplier"}
+                      >
+                        {l.analyse}
+                      </button>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                  <td
+                    className={`${styles.serre} ${styles.etoiles}`}
+                    aria-label={
+                      l.satisfaction ? `${l.satisfaction} sur 5` : "Pas de note"
+                    }
+                  >
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <span
+                        key={n}
+                        className={
+                          l.satisfaction && n <= l.satisfaction
+                            ? styles.pleine
+                            : styles.vide
+                        }
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </>
   );
@@ -251,5 +309,9 @@ function Statut({ ligne }: { ligne: LigneFiche }) {
       {aValider ? "A" : "V"}
     </span>
   );
-  return ligne.lienFiche && aValider ? <a href={ligne.lienFiche}>{lettre}</a> : lettre;
+  return ligne.lienFiche && aValider ? (
+    <a href={ligne.lienFiche}>{lettre}</a>
+  ) : (
+    lettre
+  );
 }

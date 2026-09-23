@@ -64,9 +64,20 @@
   font-size: 12.5px;
 }
 
-/* Colonnes serrées : l'analyse prend toute la place qui reste. */
+/* Le tableau ne déborde jamais de la page ; sur petit écran, il défile. */
+.defilement {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Colonnes serrées au plus juste : l'analyse prend toute la place qui reste. */
+.serre {
+  width: 1%;
+  white-space: nowrap;
+}
+
 .lecteur {
-  max-width: 130px;
+  width: 130px;
   font-size: 12.5px;
 }
 
@@ -75,14 +86,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  max-width: 130px;
   font-size: 11px;
   font-style: italic;
   color: var(--dim);
 }
 
 .analyse {
-  width: 100%;
-  min-width: 360px;
+  min-width: 320px;
 }
 
 .statutV,
