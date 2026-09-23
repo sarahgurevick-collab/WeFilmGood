@@ -42,7 +42,7 @@ export default async function FicheAdminPage({
     .maybeSingle<Report>();
 
   if (!report) {
-    redirect("/admin/projets-en-attente");
+    redirect("/admin/fiches-a-valider");
   }
 
   // Si la fiche a déjà été publiée, c'est cette version qu'on retravaille.
@@ -115,8 +115,8 @@ export default async function FicheAdminPage({
       </form>
 
       <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
-        <Link href="/admin/projets-en-attente">
-          Retour aux projets en attente
+        <Link href="/admin/fiches-a-valider">
+          Retour aux fiches à valider
         </Link>
       </p>
     </PageShell>

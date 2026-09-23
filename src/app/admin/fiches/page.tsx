@@ -282,7 +282,7 @@ export default async function TableauFichesPage({
         WFG 1 et du nouveau site.
       </p>
       <p className={formStyles.linkRow} style={{ marginTop: 12 }}>
-        <Link href="/admin/projets-en-attente#a-valider">
+        <Link href="/admin/fiches-a-valider">
           → Les fiches à valider
         </Link>
       </p>

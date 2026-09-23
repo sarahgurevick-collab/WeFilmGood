@@ -40,6 +40,6 @@ export async function publishReport(formData: FormData) {
     updated_at: new Date().toISOString(),
   });
 
-  revalidatePath("/admin/projets-en-attente");
-  redirect("/admin/projets-en-attente");
+  revalidatePath("/admin/fiches-a-valider");
+  redirect("/admin/fiches-a-valider");
 }

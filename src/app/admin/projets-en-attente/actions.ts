@@ -31,6 +31,7 @@ export async function reassignReader(formData: FormData) {
   });
 
   revalidatePath("/admin/projets-en-attente");
+  revalidatePath("/admin/fiches-a-valider");
 }
 
 /** Grise la ligne correspondante chez le lecteur, une fois sa facture réglée. */
@@ -45,4 +46,5 @@ export async function markReportPaid(formData: FormData) {
     .eq("id", reportId);
 
   revalidatePath("/admin/projets-en-attente");
+  revalidatePath("/admin/fiches-a-valider");
 }

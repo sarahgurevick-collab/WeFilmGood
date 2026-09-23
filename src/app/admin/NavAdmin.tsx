@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 import styles from "./admin.module.css";
 
 const PAGES = [
+  { href: "/admin/fiches-a-valider", libelle: "Fiches à valider" },
+  { href: "/admin/profils", libelle: "Profils à valider" },
   { href: "/admin/projets-en-attente", libelle: "Assignation" },
-  { href: "/admin/profils", libelle: "Profils" },
   { href: "/admin/fiches", libelle: "Toutes les fiches" },
   { href: "/admin/adhesions", libelle: "Adhésions" },
 ];
@@ -18,13 +19,12 @@ const PAGES = [
  */
 export default function NavAdmin() {
   const chemin = usePathname() ?? "";
-  // La relecture d'une fiche (/admin/fiches/…) se fait depuis l’assignation.
+  // La relecture d'une fiche (/admin/fiches/…) se fait depuis « Fiches à valider ».
   const actif = (href: string) =>
     href === "/admin/fiches"
       ? chemin === href
       : chemin.startsWith(href) ||
-        (href === "/admin/projets-en-attente" &&
-          chemin.startsWith("/admin/fiches/"));
+        (href === "/admin/fiches-a-valider" && chemin.startsWith("/admin/fiches/"));
 
   return (
     <nav className={styles.navAdmin} aria-label="Administration">
