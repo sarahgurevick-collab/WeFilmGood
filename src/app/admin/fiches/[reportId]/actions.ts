@@ -43,24 +43,3 @@ export async function publishReport(formData: FormData) {
   revalidatePath("/admin/projets-en-attente");
   redirect("/admin/projets-en-attente");
 }
-
-export async function rejectReport(formData: FormData) {
-  const supabase = await requireAdmin();
-
-  const reportId = formData.get("report_id") as string;
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  await supabase
-    .from("reading_reports")
-    .update({
-      status: "rejetee_admin",
-      admin_validated_by: user?.id ?? null,
-      admin_validated_at: new Date().toISOString(),
-    })
-    .eq("id", reportId);
-
-  revalidatePath("/admin/projets-en-attente");
-  redirect("/admin/projets-en-attente");
-}

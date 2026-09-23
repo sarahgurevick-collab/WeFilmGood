@@ -6,7 +6,7 @@ import adminStyles from "../../admin.module.css";
 import RichTextEditor from "@/components/RichTextEditor";
 import { sanitizeFiche } from "@/lib/sanitize";
 import { createClient } from "@/lib/supabase/server";
-import { publishReport, rejectReport } from "./actions";
+import { publishReport } from "./actions";
 
 type Report = {
   id: string;
@@ -95,15 +95,6 @@ export default async function FicheAdminPage({
           {publication ? "Republier" : "Valider et publier"}
         </button>
       </form>
-
-      {!publication && (
-        <form action={rejectReport} style={{ marginTop: 24 }}>
-          <input type="hidden" name="report_id" value={report.id} />
-          <button type="submit" className={adminStyles.linkButton}>
-            Rejeter cette fiche
-          </button>
-        </form>
-      )}
 
       <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
         <Link href="/admin/projets-en-attente">Retour aux projets en attente</Link>
