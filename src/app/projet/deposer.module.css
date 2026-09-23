@@ -56,7 +56,10 @@
   outline-offset: 3px;
 }
 
-.prix {
+/* Préfixé par .formulaire pour l'emporter sur le display: flex de
+   .field (form.module.css), sans quoi le cadre restait visible même
+   interrupteur fermé, selon l'ordre de chargement des feuilles. */
+.formulaire .prix {
   display: none;
 }
 
