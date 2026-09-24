@@ -14,15 +14,17 @@
   flex-direction: column;
   width: 100%;
 
-  --sq-h: clamp(180px, 32cqi, 340px);
+  /* Des affiches de film, verticales : la rangée est plus haute. */
+  --sq-h: clamp(300px, 42cqi, 520px);
   --sq-gap: 16px;
   --sq-lamelle: 8px;
   --sq-lamelle-gap: 8px;
   --sq-rayon: 6px;
   /* Les flèches suivent la couleur de l'engagement en cours, comme le logo. */
   --sq-accent: var(--engagement);
-  /* Le bloc 16:9 fixe la taille du panneau ouvert et celle de chaque image. */
-  --sq-hero: calc(var(--sq-h) * 16 / 9);
+  /* Le bloc 2:3 (format affiche) fixe la taille du panneau ouvert et
+     celle de chaque image. */
+  --sq-hero: calc(var(--sq-h) * 2 / 3);
   --sq-place: calc(
     100cqi - var(--sq-hero) - var(--sq-nb-lamelles) * var(--sq-lamelle-gap) - 3 * var(--sq-gap) -
       var(--sq-nb-lamelles) * var(--sq-lamelle)
@@ -32,7 +34,7 @@
 /* Sur téléphone, le panneau ouvert laisse de la place aux suivants. */
 @container (max-width: 640px) {
   .carrousel {
-    --sq-h: calc(38cqi);
+    --sq-h: 78cqi;
     --sq-gap: 8px;
     --sq-lamelle: 6px;
     --sq-lamelle-gap: 6px;

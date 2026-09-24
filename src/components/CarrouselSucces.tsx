@@ -43,14 +43,17 @@ export type DiapoSucces = {
 /*
  * La rangée compte quatre colonnes puis une queue de lamelles. Les quatre
  * colonnes se partagent la place restante ; le panneau ouvert part d'un
- * bloc 16:9 et en rend un peu (d'où la part négative). La colonne −1 et
+ * bloc au format affiche (2:3). La colonne −1 et
  * tout ce qui dépasse la colonne 3 sont des lamelles.
  */
-const PARTS = [-0.06, 0.61, 0.3, 0.15];
+// Réglé pour des affiches verticales (2:3) : le panneau ouvert fait
+// exactement la largeur de l'affiche, les suivants sont de plus en plus
+// étroits (aucun ne dépasse l'affiche ouverte).
+const PARTS = [0, 0.45, 0.33, 0.22];
 /** La colonne survolée prend plus de place… */
-const ETIREE = [0, 0.71, 0.4, 0.25];
+const ETIREE = [0, 0.55, 0.43, 0.32];
 /** …et ses voisines en cèdent un peu. */
-const SERREE = [-0.12, 0.59, 0.28, 0.13];
+const SERREE = [-0.05, 0.4, 0.28, 0.17];
 
 const DUREE_MS = 1000;
 /** Délai avant de passer seul au panneau suivant. */
@@ -311,7 +314,7 @@ export default function CarrouselSucces({ diapos }: { diapos: DiapoSucces[] }) {
 }
 
 /*
- * L'image est dessinée à la taille fixe du bloc 16:9 et centrée, jamais
+ * L'image est dessinée à la taille fixe du bloc 2:3 et centrée, jamais
  * à la largeur de sa carte : elle garde une seule échelle, la carte ne
  * fait que changer la part qu'on en voit.
  */
