@@ -26,7 +26,6 @@ export default function RechercheAvancee({
       {/* Fermé : le bouton rouge. Ouvert : le même texte posé sur le bord
           du cadre, avec le rond ⊖ pour refermer — comme sur WFG 1. */}
       <summary className={styles.avanceeBouton}>
-        <span className={`${formStyles.loupe} ${formStyles.loupeBlanche} ${styles.avanceeLoupe}`} aria-hidden="true" />
         Recherche avancée
         {actifs > 0 && <span className={styles.avanceePastille}>{actifs}</span>}
         <span className={styles.avanceeFermer} aria-hidden="true">⊖</span>

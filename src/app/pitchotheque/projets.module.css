@@ -191,38 +191,81 @@
   margin: 0 0 28px;
 }
 
+/* Fermé : même effet que les boutons d'action du site (form.module.css) —
+   contour et point à la couleur de l'engagement, le point remplit le
+   bouton au survol et une flèche apparaît. */
 .avanceeBouton {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 0 24px;
+  padding: 0 30px 0 34px;
   height: 46px;
+  border: 1px solid var(--engagement);
   border-radius: 10px;
-  background: var(--engagement);
-  color: var(--engagement-texte);
+  background: transparent;
+  color: var(--fg);
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   list-style: none;
   user-select: none;
+  transition:
+    color 0.3s ease,
+    padding 0.3s ease;
 }
 
 .avanceeBouton::-webkit-details-marker {
   display: none;
 }
 
-.avanceeBouton:hover {
-  filter: brightness(0.92);
+.avanceeBouton::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 14px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--engagement);
+  transform: translateY(-50%);
+  transition: all 0.3s ease;
 }
 
-.avanceeLoupe {
-  width: 20px;
-  height: 20px;
+.avanceeBouton::after {
+  content: "→";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  opacity: 0;
+  transform: translate(-10px, -50%);
+  transition: all 0.3s ease;
 }
 
-/* Ouvert, le titre est sur fond de page : la loupe redevient grise. */
-.avancee[open] .avanceeLoupe {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8a8a' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cline x1='15.5' y1='15.5' x2='21' y2='21'/%3E%3C/svg%3E");
+.avanceeBouton:hover,
+.avanceeBouton:focus-visible {
+  color: var(--engagement-texte);
+  padding-left: 26px;
+  padding-right: 38px;
+}
+
+.avanceeBouton:hover::before,
+.avanceeBouton:focus-visible::before {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  transform: none;
+}
+
+.avanceeBouton:hover::after,
+.avanceeBouton:focus-visible::after {
+  opacity: 1;
+  transform: translate(0, -50%);
 }
 
 .avanceeFermer {
@@ -253,9 +296,11 @@
 }
 
 .avancee[open] .avanceeBouton {
+  overflow: visible;
   height: auto;
   margin: -14px 0 0 4px;
   padding: 0 10px;
+  border: 0;
   border-radius: 0;
   background: var(--bg);
   color: var(--fg);
@@ -263,8 +308,10 @@
   font-weight: 400;
 }
 
-.avancee[open] .avanceeBouton:hover {
-  filter: none;
+/* Ouvert, c'est un titre : ni point, ni flèche, ni effet au survol. */
+.avancee[open] .avanceeBouton::before,
+.avancee[open] .avanceeBouton::after {
+  display: none;
 }
 
 .avancee[open] .avanceeFermer {
