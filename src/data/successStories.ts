@@ -71,6 +71,19 @@ const VRAIES: { position: number; diapo: DiapoSucces }[] = [
       marque: "Les Bienheureux",
     },
   },
+  {
+    position: 5,
+    diapo: {
+      id: "new-territories",
+      // Texte provisoire, relevé sur l'affiche : à remplacer par celui de Sarah.
+      // Image petite (310 px de large) : une version plus grande sera plus nette.
+      titre: "New Territories, de Fabianny Deschamps.",
+      phrase: "Avec Eve Bitoun et Yilin Yang. Sélection ACID Cannes.",
+      image: "/succes/new-territories.jpg",
+      imageAlt: "Affiche du film New Territories de Fabianny Deschamps",
+      marque: "New Territories",
+    },
+  },
 ];
 
 const EN_ATTENTE: DiapoSucces[] = DEGRADES.map((fond, i) => ({
