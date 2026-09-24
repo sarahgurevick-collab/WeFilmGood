@@ -268,16 +268,25 @@ export default async function ProjetPage({
     >
       {enregistre && <p className={profilStyles.ok}>Modifications enregistrées.</p>}
 
+      {/* Sous le titre, sur une seule ligne : genre, format, langue, budget,
+          audience, puis les mots-clés — écrits comme du texte, pas en
+          boutons : ils ne sont pas cliquables. Un mot-clé qui répète le
+          genre (« drame ») n'est pas écrit deux fois. */}
       <p className={formStyles.hint}>
-        {[
-          project.genre?.label_fr,
-          FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
-          project.language,
-          project.budget_range ? BUDGET_LISIBLE[project.budget_range] : null,
-          project.target_audience ? AUDIENCE_LISIBLE[project.target_audience] : null,
-        ]
-          .filter(Boolean)
-          .join(" · ")}
+        {(() => {
+          const reperes = [
+            project.genre?.label_fr,
+            FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
+            project.language,
+            project.budget_range ? BUDGET_LISIBLE[project.budget_range] : null,
+            project.target_audience ? AUDIENCE_LISIBLE[project.target_audience] : null,
+          ].filter((x): x is string => Boolean(x));
+          const deja = new Set(reperes.map((r) => r.toLowerCase()));
+          const mots = (motsCles ?? [])
+            .map((m) => m.keyword?.label_fr)
+            .filter((label): label is string => Boolean(label) && !deja.has(label!.toLowerCase()));
+          return [...reperes, ...mots].join(" · ");
+        })()}
       </p>
 
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
@@ -415,36 +424,6 @@ export default async function ProjetPage({
         </p>
       )}
 
-      {(motsCles ?? []).length > 0 && (
-        <ul
-          style={{
-            listStyle: "none",
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 8,
-            padding: 0,
-            margin: "20px 0 0",
-          }}
-        >
-          {(motsCles ?? [])
-            .map((m) => m.keyword?.label_fr)
-            .filter((label): label is string => Boolean(label))
-            .map((label) => (
-              <li
-                key={label}
-                style={{
-                  border: "1px solid currentColor",
-                  borderRadius: 999,
-                  padding: "4px 12px",
-                  fontSize: 13,
-                  opacity: 0.75,
-                }}
-              >
-                {label}
-              </li>
-            ))}
-        </ul>
-      )}
 
       {moodboard.length > 0 && (
         <>
