@@ -84,6 +84,19 @@ const VRAIES: { position: number; diapo: DiapoSucces }[] = [
       marque: "New Territories",
     },
   },
+  {
+    position: 6,
+    diapo: {
+      id: "doha-the-rising-sun",
+      // Texte provisoire, relevé sur le visuel : à remplacer par celui de Sarah.
+      // Visuel carré, mis au format affiche en prolongeant son fond rose.
+      titre: "Doha – The Rising Sun, d'Eimi Imanishi.",
+      phrase: "Sélection Final Cut, D'A Film Lab Barcelona 2025.",
+      image: "/succes/doha-the-rising-sun.jpg",
+      imageAlt: "Visuel du film Doha – The Rising Sun d'Eimi Imanishi",
+      marque: "Doha – The Rising Sun",
+    },
+  },
 ];
 
 const EN_ATTENTE: DiapoSucces[] = DEGRADES.map((fond, i) => ({
