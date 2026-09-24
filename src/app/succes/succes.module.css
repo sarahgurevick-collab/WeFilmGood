@@ -1,0 +1,34 @@
+.grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 36px 28px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.film {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.affiche {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+.texte {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.texte span {
+  color: var(--dim);
+}

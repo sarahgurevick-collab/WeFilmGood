@@ -21,7 +21,7 @@ const DEGRADES = [
  * Les vraies success stories, avec leur place dans le carrousel (1 = le
  * panneau ouvert à l'arrivée). Les places libres gardent l'attente.
  */
-const VRAIES: { position: number; diapo: DiapoSucces }[] = [
+export const VRAIES: { position: number; diapo: DiapoSucces }[] = [
   {
     position: 1,
     diapo: {
@@ -128,3 +128,8 @@ export const SUCCESS_STORIES: DiapoSucces[] = Array.from(
   { length: NOMBRE },
   (_, i) => VRAIES.find((v) => v.position === i + 1)?.diapo ?? attente.shift()!,
 );
+
+/** Tous les films réalisés, dans l'ordre du carrousel (page /succes). */
+export const FILMS_REALISES: DiapoSucces[] = [...VRAIES]
+  .sort((a, b) => a.position - b.position)
+  .map((v) => v.diapo);
