@@ -263,27 +263,12 @@
   gap: 14px;
 }
 
-/* Bouton d'action vedette (connexion, « Lancer la séance »…) : déjà
-   rempli au repos ; la flèche apparaît au survol. Au clic il blanchit. */
+/* Bouton d'action vedette (connexion, inscription, « Lancer la séance ») :
+   même effet que les autres boutons d'action — point au repos, qui
+   remplit le bouton au survol (choix de Sarah, 24/09). La classe reste
+   pour les repérer. */
 .rouge {
-  color: var(--engagement-texte);
-}
-
-.rouge::before {
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 0;
-  transform: none;
-}
-
-.rouge:active::before {
-  background: #fff;
-}
-
-.rouge:active {
-  color: var(--engagement);
+  font-weight: 700;
 }
 
 .error {
