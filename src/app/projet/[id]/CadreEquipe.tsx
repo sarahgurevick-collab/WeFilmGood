@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import OngletsCadre from "./OngletsCadre";
+import ComparateurAvantApres from "@/components/ComparateurAvantApres";
+import CoteFiche from "./CoteFiche";
 import styles from "./cadre.module.css";
 
 export type MembreEquipe = {
@@ -10,85 +11,71 @@ export type MembreEquipe = {
   role: string | null;
   /** Invitation pas encore acceptée — visible de l'auteur et de l'admin seulement. */
   enAttente: string | null;
+  photo?: string | null;
 };
 
 /**
- * Le cadre de la fiche projet, repris de WFG 1 : les onglets « Videopitch »
- * et « Mon équipe » posés sur la bordure, les talents en pastilles, et en
- * pied de cadre le nombre de fiches de lecture.
+ * Le cadre de la fiche projet (ESSAI du 24/09/2026, idée de Sarah : « d'un
+ * côté la fiche, de l'autre les talents ») : un comparateur, la fiche à
+ * gauche (image, tagline, videopitch), les talents à droite, la barre au
+ * milieu qu'on tire par sa poignée. Remplace les onglets « Videopitch » /
+ * « L'auteur » (OngletsCadre, gardé pour un retour en arrière).
  *
- * Le nombre de lectures se voit de tous : plusieurs lectures montrent un
- * auteur qui travaille. Le contenu ne s'ouvre qu'à l'auteur et à
- * l'administration, dans un autre onglet — les autres sont invités à le
- * demander à l'auteur.
+ * Le nombre de fiches de lecture n'est plus affiché sous le cadre (retiré
+ * à la demande de Sarah le 24/09).
  */
 export default function CadreEquipe({
-  projectId,
   equipe,
-  nombreFiches,
-  peutLireFiches,
   videopitch,
+  image,
+  tagline,
 }: {
-  projectId: string;
   equipe: MembreEquipe[];
-  nombreFiches: number;
-  peutLireFiches: boolean;
+  /** L'image de présentation (adresse signée), s'il y en a une. */
+  image: string | null;
+  tagline: string | null;
   /** Le lecteur vidéo, s'il y a un videopitch : il devient le premier onglet. */
   videopitch?: ReactNode;
 }) {
-  const equipeListe = (
-    <ul className={styles.equipe}>
-      {equipe.map((m) => (
-        <li key={m.cle} className={`${styles.pastille} ${m.enAttente ? styles.attente : ""}`}>
-          <span className={styles.nom}>{m.nom}</span>
-          {m.role && <strong className={styles.role}>{m.role}</strong>}
-          {m.enAttente ? (
-            <span className={styles.enAttente}>{m.enAttente}</span>
-          ) : (
-            m.profileId && (
-              <Link href={`/membres/${m.profileId}`} className={styles.voir}>
-                Voir le profil
-              </Link>
-            )
-          )}
-        </li>
-      ))}
-    </ul>
+  const portraits = (
+    <div className={styles.coteEquipe}>
+      <ul className={styles.portraits}>
+        {equipe.map((m) => (
+          <li key={m.cle} className={m.enAttente ? styles.attente : undefined}>
+            <span className={styles.portrait} aria-hidden="true">
+              {m.photo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={m.photo} alt="" />
+              ) : (
+                <span>{m.nom.trim().charAt(0).toUpperCase()}</span>
+              )}
+            </span>
+            <span className={styles.nom}>{m.nom}</span>
+            {m.role && <strong className={styles.role}>{m.role}</strong>}
+            {m.enAttente ? (
+              <span className={styles.enAttente}>{m.enAttente}</span>
+            ) : (
+              m.profileId && (
+                <Link href={`/membres/${m.profileId}`} className={styles.voir}>
+                  Voir le profil
+                </Link>
+              )
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 
   return (
-    <section className={styles.cadre}>
-      <OngletsCadre
-        onglets={[
-          ...(videopitch ? [{ cle: "videopitch", titre: "Videopitch", contenu: videopitch }] : []),
-          // Seul sur son projet, l'auteur n'a pas d'« équipe ».
-          { cle: "equipe", titre: equipe.length > 1 ? "Mon équipe" : "L'auteur", contenu: equipeListe },
-        ]}
+    <section className={`${styles.cadre} ${styles.cadreComparateur}`}>
+      <ComparateurAvantApres
+        poigneeSeule
+        format="16 / 10"
+        etiquettes={["La fiche", "Les talents"]}
+        gauche={<CoteFiche image={image} tagline={tagline} videopitch={videopitch} />}
+        droite={portraits}
       />
-
-      {nombreFiches > 0 && (
-        <p className={styles.fiches}>
-          {peutLireFiches ? (
-            <a
-              href={`/projet/${projectId}/fiches`}
-              target="_blank"
-              rel="noopener"
-              title="Ouvrir les fiches de lecture dans un nouvel onglet"
-            >
-              {nombreFiches} fiche{nombreFiches > 1 ? "s" : ""} de lecture{" "}
-              <span aria-hidden="true">↗</span>
-            </a>
-          ) : (
-            <>
-              {nombreFiches} fiche{nombreFiches > 1 ? "s" : ""} de lecture
-              <span className={styles.discret}>
-                {" "}— confidentielle{nombreFiches > 1 ? "s" : ""},{" "}
-                <a href="#contacter">à demander à l&apos;auteur</a>
-              </span>
-            </>
-          )}
-        </p>
-      )}
     </section>
   );
 }

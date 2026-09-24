@@ -17,6 +17,21 @@
   will-change: clip-path;
 }
 
+/* Côtés cliquables (vidéo, liens) : seule la poignée fait glisser. */
+.poigneeSeule {
+  cursor: default;
+  touch-action: auto;
+  user-select: auto;
+}
+
+.poigneeSeule .poignee {
+  touch-action: none;
+}
+
+.tire .cote {
+  pointer-events: none;
+}
+
 /* Les petites étiquettes des coins, qui s'effacent quand leur côté disparaît. */
 .etiquette {
   pointer-events: none;

@@ -12,9 +12,9 @@ import styles from "./ComparateurAvantApres.module.css";
  *
  * `onCote` prévient quand le côté le plus visible change.
  *
- * Gardé en réserve (24/09/2026) : essayé sur la page Appels à projets
- * (Clermont / Cannes), où l'effet ne convenait pas ; Sarah veut le garder
- * pour un autre endroit. Utilisé nulle part pour l'instant.
+ * Essayé sur la page Appels à projets (Clermont / Cannes), où l'effet ne
+ * convenait pas ; à l'essai depuis le 24/09/2026 sur la fiche projet :
+ * le videopitch d'un côté, l'auteur de l'autre (`poigneeSeule`).
  */
 
 const RAIDEUR = 140;
@@ -40,11 +40,18 @@ export default function ComparateurAvantApres({
   droite,
   etiquettes,
   onCote,
+  poigneeSeule = false,
+  format = "16 / 9",
 }: {
   gauche: ReactNode;
   droite: ReactNode;
   etiquettes: [string, string];
   onCote?: (cote: "gauche" | "droite") => void;
+  /** true quand les côtés contiennent de quoi cliquer (une vidéo, des
+      liens) : seule la poignée fait glisser la barre. */
+  poigneeSeule?: boolean;
+  /** Proportions du cadre (CSS aspect-ratio). */
+  format?: string;
 }) {
   const cadre = useRef<HTMLDivElement>(null);
   const dessus = useRef<HTMLDivElement>(null);
@@ -53,6 +60,9 @@ export default function ComparateurAvantApres({
   const etiquettesRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const [position, setPosition] = useState(50);
   const [visible, setVisible] = useState(false);
+  // Pendant qu'on tire, les côtés ne reçoivent plus la souris : sinon une
+  // vidéo (iframe) avalerait le mouvement et la barre resterait coincée.
+  const [tire, setTire] = useState(false);
 
   const sim = useRef({ x: 50, v: 0, cible: 50, glisse: false, doigt: -1, demo: false, demoFaite: false, debut: 0 });
   const dernierCote = useRef<"gauche" | "droite" | null>(null);
@@ -149,17 +159,19 @@ export default function ComparateurAvantApres({
     if (r) fixer(((clientX - r.left) / Math.max(1, r.width)) * 100);
   };
 
-  const appui = (e: PointerEvent<HTMLDivElement>) => {
+  const appui = (e: PointerEvent<HTMLElement>) => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
+    setTire(true);
     sim.current.glisse = true;
     sim.current.doigt = e.pointerId;
     e.currentTarget.setPointerCapture?.(e.pointerId);
     depuisPointeur(e.clientX);
   };
-  const deplacement = (e: PointerEvent<HTMLDivElement>) => {
+  const deplacement = (e: PointerEvent<HTMLElement>) => {
     if (sim.current.glisse && e.pointerId === sim.current.doigt) depuisPointeur(e.clientX);
   };
   const lacher = () => {
+    setTire(false);
     sim.current.glisse = false;
     sim.current.doigt = -1;
   };
@@ -184,12 +196,17 @@ export default function ComparateurAvantApres({
       ref={cadre}
       role="group"
       aria-label={`${etiquettes[0]} ou ${etiquettes[1]}`}
-      className={styles.cadre}
-      onPointerDown={appui}
-      onPointerMove={deplacement}
-      onPointerUp={lacher}
-      onPointerCancel={lacher}
-      onDoubleClick={() => fixer(50)}
+      className={`${styles.cadre} ${poigneeSeule ? styles.poigneeSeule : ""} ${tire ? styles.tire : ""}`}
+      style={{ aspectRatio: format }}
+      {...(poigneeSeule
+        ? {}
+        : {
+            onPointerDown: appui,
+            onPointerMove: deplacement,
+            onPointerUp: lacher,
+            onPointerCancel: lacher,
+            onDoubleClick: () => fixer(50),
+          })}
     >
       <div className={styles.cote}>{droite}</div>
       <div ref={dessus} className={styles.cote} style={{ clipPath: `inset(0 ${100 - affiche}% 0 0)` }}>
@@ -219,6 +236,15 @@ export default function ComparateurAvantApres({
           aria-valuemax={100}
           aria-valuenow={affiche}
           onKeyDown={clavier}
+          {...(poigneeSeule
+            ? {
+                onPointerDown: appui,
+                onPointerMove: deplacement,
+                onPointerUp: lacher,
+                onPointerCancel: lacher,
+                onDoubleClick: () => fixer(50),
+              }
+            : {})}
           className={styles.poignee}
         >
           <svg width="18" height="14" viewBox="0 0 18 14" fill="none" aria-hidden="true">

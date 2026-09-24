@@ -106,24 +106,138 @@
   color: #6b6b6b;
 }
 
-/* En pied de cadre : le nombre de fiches de lecture. */
-.fiches {
-  margin: 24px 0 0;
-  padding-top: 14px;
-  border-top: 1px solid var(--bordure);
+/* ---- ESSAI : le cadre en comparateur, la fiche d'un côté, les talents
+   de l'autre (24/09/2026) ---- */
+
+.cadreComparateur {
+  padding: 10px;
+}
+
+/* Côté « La fiche » : l'image en plein cadre, la tagline par-dessus. */
+.coteFiche {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  background: radial-gradient(120% 120% at 30% 20%, #3a3f44 0%, #1c1f22 60%, #0e1011 100%);
+  container-type: inline-size;
+}
+
+.coteFicheImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coteFicheTexte {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 18% 6% 6%;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.4) 60%, transparent);
+  color: #fff;
+}
+
+.coteFicheTagline {
+  margin: 0;
+  max-width: 70%;
+  font-size: clamp(14px, 3.2cqi, 24px);
+  font-style: italic;
+  line-height: 1.35;
+  text-transform: none;
+}
+
+.coteFicheVideo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--engagement);
+  color: var(--engagement-texte);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.coteVideo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3%;
+  background: #000;
+}
+
+.coteVideo > * {
+  max-width: 100%;
+}
+
+/* Côté « Les talents » : les portraits ronds, sur fond noir. */
+.coteEquipe {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6%;
+  background: #0b0b0b;
+  overflow: auto;
+}
+
+.portraits {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.portraits li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 170px;
+  color: #fff;
   text-align: center;
-  font-weight: 600;
 }
 
-.fiches a {
-  color: inherit;
+.portraits li.attente {
+  background: none;
+  border: 0;
+  opacity: 0.6;
 }
 
-.discret {
-  font-weight: 400;
-  color: var(--dim);
+.portrait {
+  display: grid;
+  place-items: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-size: 44px;
+  font-weight: 800;
 }
 
-.discret a {
-  color: var(--dim);
+.portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.portraits .enAttente {
+  color: #aaa;
 }

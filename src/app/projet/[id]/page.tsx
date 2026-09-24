@@ -193,13 +193,6 @@ export default async function ProjetPage({
       }[]
     >();
 
-  // Le nombre de fiches de lecture, que tout membre peut connaître. Leur
-  // contenu, lui, ne s'ouvre qu'à l'auteur et à l'administration, sur une
-  // page à part.
-  const { data: nombreBrut } = await supabase.rpc("nombre_fiches_lecture", {
-    p_project_id: id,
-  });
-  const nombreFiches = Number(nombreBrut ?? 0);
 
   // L'équipe : l'auteur et les talents qui ont accepté d'être rattachés
   // au projet. Tant que la fonction manque dans la base, l'auteur seul.
@@ -232,6 +225,17 @@ export default async function ProjetPage({
         enAttente: t.profile_id ? "Invitation envoyée" : "Pas encore inscrit",
       });
     }
+  }
+
+  // Les photos de l'équipe, pour le côté « L'auteur » du cadre.
+  const idsEquipe = equipe.map((m) => m.profileId).filter((x): x is string => !!x);
+  if (idsEquipe.length) {
+    const { data: photos } = await supabase
+      .from("profiles")
+      .select("id, avatar_url")
+      .in("id", idsEquipe);
+    const parId = new Map((photos ?? []).map((ph) => [ph.id as string, ph.avatar_url as string | null]));
+    for (const m of equipe) m.photo = m.profileId ? (parId.get(m.profileId) ?? null) : null;
   }
 
   // À part : si les colonnes n'existent pas encore dans la base, la
@@ -274,17 +278,11 @@ export default async function ProjetPage({
           .join(" · ")}
       </p>
 
-      {urlVignette && (
-        <div className={presentation.hero}>
-          <img src={urlVignette} alt="" />
-        </div>
-      )}
-
+      {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
-        projectId={project.id}
         equipe={equipe}
-        nombreFiches={nombreFiches}
-        peutLireFiches={isOwner || !!estAdmin}
+        image={urlVignette ?? null}
+        tagline={project.logline}
         videopitch={
           videopitch?.videopitch_fr || videopitch?.videopitch_en ? (
             <VideopitchLecteur
@@ -390,7 +388,6 @@ export default async function ProjetPage({
         </div>
       )}
 
-      {project.logline && <p style={{ marginTop: 24 }}>{project.logline}</p>}
       {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
 
       {project.has_awards && (
