@@ -171,7 +171,7 @@ export default async function ProfilPage({
           </Link>
         </section>
 
-        {/* Les trois blocs, le prochain mis en avant. */}
+        {/* Les trois blocs ; les incomplets se signalent. */}
         <section className={styles.generique} aria-label="Compléter mon profil">
           <div className={styles.generiqueEntete}>
             <h2 className={styles.generiqueTitre}>Profil complété</h2>
