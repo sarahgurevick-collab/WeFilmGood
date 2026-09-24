@@ -8,8 +8,8 @@ import styles from "./Assistant.module.css";
 
 type Message = { role: "user" | "assistant"; content: string };
 
-const ACCUEIL =
-  "Bonjour ! Je réponds à vos questions sur WeFilmGood : profil, fiche projet, lectures, adhésion, application… Si je ne sais pas, je transmets votre demande à l'équipe.";
+const ACCUEIL_IA =
+  "Je réponds à vos questions sur WeFilmGood : profil, fiche projet, lectures, adhésion, application… Si je ne sais pas, je transmets votre demande à l'équipe.";
 
 const ERREURS: Record<number, string> = {
   429: "Vous avez atteint le nombre de questions du jour. Utilisez « Transmettre à l'équipe » : on vous répondra par email.",
@@ -22,7 +22,18 @@ const ERREURS: Record<number, string> = {
  * et, s'il ne sait pas, transmet la conversation à l'équipe, qui répond
  * par email. Les visiteurs et les lecteurs gardent le formulaire classique.
  */
-export default function Assistant({ nom, email }: { nom: string | null; email: string }) {
+export default function Assistant({
+  nom,
+  prenom,
+  email,
+  ia,
+}: {
+  nom: string | null;
+  prenom: string | null;
+  email: string;
+  /** false tant que la clé de l'IA manque : chaque message part à l'équipe. */
+  ia: boolean;
+}) {
   const [ouvert, setOuvert] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [saisie, setSaisie] = useState("");
@@ -48,6 +59,29 @@ export default function Assistant({ nom, email }: { nom: string | null; email: s
     e.preventDefault();
     const question = saisie.trim();
     if (!question || enCours) return;
+
+    // Sans IA, le tchat sert de messagerie vers l'équipe, qui répond par email.
+    if (!ia) {
+      setMessages((m) => [...m, { role: "user", content: question }]);
+      setSaisie("");
+      setEnCours(true);
+      const donnees = new FormData();
+      donnees.set("nom", nom ?? "");
+      donnees.set("email", email);
+      donnees.set("message", question);
+      const { ok } = await envoyerMessageContact(donnees);
+      setMessages((m) => [
+        ...m,
+        {
+          role: "assistant",
+          content: ok
+            ? "Message envoyé, merci ! On vous répond par email."
+            : "L'envoi a échoué, réessayez dans un instant.",
+        },
+      ]);
+      setEnCours(false);
+      return;
+    }
 
     const suite: Message[] = [...messages, { role: "user", content: question }];
     setMessages([...suite, { role: "assistant", content: "" }]);
@@ -121,10 +155,13 @@ export default function Assistant({ nom, email }: { nom: string | null; email: s
           <button type="button" className={contact.fermer} onClick={() => setOuvert(false)} aria-label="Fermer">
             ⊖
           </button>
-          <h3 className={contact.titre}>Une question ?</h3>
+          <h3 className={contact.titre}>On papote ?</h3>
 
           <div ref={fil} className={styles.fil} aria-live="polite">
-            <p className={styles.assistant}>{ACCUEIL}</p>
+            <p className={styles.assistant}>
+              {prenom ? `Bonjour ${prenom} !` : "Bonjour !"}
+              {ia && ` ${ACCUEIL_IA}`}
+            </p>
             {messages.map((m, i) => (
               <p key={i} className={m.role === "user" ? styles.membre : styles.assistant}>
                 {m.content || (enCours && i === messages.length - 1 ? "…" : "")}
@@ -142,7 +179,7 @@ export default function Assistant({ nom, email }: { nom: string | null; email: s
                   void envoyer(e);
                 }
               }}
-              placeholder="Votre question…"
+              placeholder={ia ? "Votre question…" : "Votre message…"}
               rows={2}
               maxLength={2000}
               autoFocus
@@ -152,23 +189,25 @@ export default function Assistant({ nom, email }: { nom: string | null; email: s
             </button>
           </form>
 
-          <div className={styles.equipe}>
-            {transmission === "fait" ? (
-              <span>Transmis à l&apos;équipe, merci ! On vous répond par email ({email}).</span>
-            ) : (
-              <button
-                type="button"
-                className={styles.transmettre}
-                onClick={transmettre}
-                disabled={transmission === "envoi" || (messages.length === 0 && !saisie.trim())}
-              >
-                {transmission === "envoi" ? "Transmission…" : "Transmettre à l'équipe"}
-              </button>
-            )}
-            {transmission === "erreur" && (
-              <span className={contact.erreur}>L&apos;envoi a échoué, réessayez dans un instant.</span>
-            )}
-          </div>
+          {ia && (
+            <div className={styles.equipe}>
+              {transmission === "fait" ? (
+                <span>Transmis à l&apos;équipe, merci ! On vous répond par email ({email}).</span>
+              ) : (
+                <button
+                  type="button"
+                  className={styles.transmettre}
+                  onClick={transmettre}
+                  disabled={transmission === "envoi" || (messages.length === 0 && !saisie.trim())}
+                >
+                  {transmission === "envoi" ? "Transmission…" : "Transmettre à l'équipe"}
+                </button>
+              )}
+              {transmission === "erreur" && (
+                <span className={contact.erreur}>L&apos;envoi a échoué, réessayez dans un instant.</span>
+              )}
+            </div>
+          )}
         </div>
       )}
     </>

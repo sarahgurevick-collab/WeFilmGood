@@ -20,9 +20,12 @@ const compteurs = new Map<string, { jour: string; n: number }>();
 
 type Message = { role: "user" | "assistant"; content: string };
 
-/** Le membre connecté a-t-il droit à l'assistant ? Sinon, formulaire de contact. */
+/**
+ * Le membre connecté a-t-il droit au tchat ? Sinon, formulaire de contact.
+ * Le tchat s'affiche même sans clé OpenRouter : les messages partent alors
+ * directement à l'équipe (voir `ia` dans GET).
+ */
 async function membreAutorise() {
-  if (!process.env.OPENROUTER_API_KEY) return null;
   const supabase = await createClient();
   const {
     data: { user },
@@ -36,10 +39,12 @@ async function membreAutorise() {
       .eq("role_slug", "lecteur")
       .maybeSingle(),
     supabase.rpc("is_admin"),
-    supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("full_name, first_name").eq("id", user.id).maybeSingle(),
   ]);
   if (lecteur && !isAdmin) return null;
-  return { id: user.id, email: user.email, nom: (profil?.full_name as string | null) ?? null };
+  const nom = (profil?.full_name as string | null) ?? null;
+  const prenom = (profil?.first_name as string | null)?.trim() || nom?.split(" ")[0] || null;
+  return { id: user.id, email: user.email, nom, prenom };
 }
 
 export async function GET() {
@@ -70,7 +75,16 @@ export async function GET() {
     }
   }
   return Response.json(
-    membre ? { actif: true, nom: membre.nom, email: membre.email } : { actif: false, ...visiteur },
+    membre
+      ? {
+          actif: true,
+          nom: membre.nom,
+          prenom: membre.prenom,
+          email: membre.email,
+          // Sans clé, pas de réponse automatique : le tchat transmet à l'équipe.
+          ia: !!process.env.OPENROUTER_API_KEY,
+        }
+      : { actif: false, ...visiteur },
     { headers: { "Cache-Control": "no-store" } },
   );
 }
