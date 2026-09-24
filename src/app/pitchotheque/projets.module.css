@@ -198,8 +198,8 @@
   padding: 0 24px;
   height: 46px;
   border-radius: 10px;
-  background: var(--rouge-wfg);
-  color: #fff;
+  background: var(--engagement);
+  color: var(--engagement-texte);
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;

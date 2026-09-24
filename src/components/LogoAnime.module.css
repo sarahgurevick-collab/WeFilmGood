@@ -1,9 +1,8 @@
-/* La couleur se fond d'un engagement à l'autre plutôt que de sauter. */
+/* Le fondu d'un engagement à l'autre est fait par l'animation commune. */
 .bloc {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  transition: color 900ms ease-in-out;
 }
 
 /* Le logo original sert de pochoir : la couleur du texte (currentColor)

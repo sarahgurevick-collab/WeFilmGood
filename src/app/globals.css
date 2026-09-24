@@ -42,6 +42,54 @@
   --succes-bordure: #bfdcc9;
 }
 
+/*
+ * L'horloge des engagements : une seule couleur pour tout le site.
+ *
+ * Rouge WeFilmGood, puis fondu vers le vert (for Planet), le jaune (for
+ * Humanity), le bleu (for Education), et retour au rouge — 3,6 s par
+ * couleur. Le logo et les boutons d'action lisent tous --engagement :
+ * ils changent ensemble, au même instant. Sur le jaune, trop clair pour
+ * du blanc, le texte des boutons passe au noir (--engagement-texte).
+ *
+ * @property rend la couleur animable (sinon elle sauterait d'un coup).
+ * Qui a demandé moins d'animations garde le rouge, immobile.
+ */
+@property --engagement {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #da2c25;
+}
+
+@property --engagement-texte {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+
+@keyframes engagements {
+  0%, 18.75% { --engagement: #da2c25; --engagement-texte: #ffffff; }
+  25%, 43.75% { --engagement: #35b05e; --engagement-texte: #ffffff; }
+  50%, 68.75% { --engagement: #f2c230; --engagement-texte: #1a1a1a; }
+  75%, 93.75% { --engagement: #3b8ef5; --engagement-texte: #ffffff; }
+  100% { --engagement: #da2c25; --engagement-texte: #ffffff; }
+}
+
+:root {
+  animation: engagements 14.4s linear infinite;
+}
+
+/* Sur la page d'arrivée du lien, on clique vite : le tour est plus court. */
+.engagementsRapides {
+  animation: engagements 4.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root,
+  .engagementsRapides {
+    animation: none;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

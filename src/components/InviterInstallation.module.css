@@ -97,8 +97,8 @@
 
 .principal {
   border: 0;
-  background: var(--rouge-wfg);
-  color: #fff;
+  background: var(--engagement);
+  color: var(--engagement-texte);
 }
 
 .secondaire {

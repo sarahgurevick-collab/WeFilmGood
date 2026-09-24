@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { DUREE_ENGAGEMENT, ENGAGEMENTS, ROUGE_WFG } from "@/lib/engagements";
+import { ENGAGEMENTS, ROUGE_WFG } from "@/lib/engagements";
+import { useEngagement } from "@/lib/useEngagement";
 import styles from "./EnTeteAnime.module.css";
 
 const ETATS = ENGAGEMENTS;
 
-const CYCLE_MS = DUREE_ENGAGEMENT;
 const DELAI_APRES_SCROLL_MS = 500;
 
 const ELEMENTS_MENU = [
@@ -34,7 +34,10 @@ const ELEMENTS_MENU = [
  * des vignettes, et revient dès que ça s'arrête.
  */
 export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
-  const [index, setIndex] = useState(0);
+  // Couleur : l'horloge commune (var(--engagement)), celle des boutons.
+  // La mention (« for Planet »…) est relue sur cette même horloge.
+  const lien = useRef<HTMLAnchorElement>(null);
+  const index = useEngagement(lien);
   const [visible, setVisible] = useState(true);
   const [menuOuvert, setMenuOuvert] = useState(false);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -53,10 +56,6 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
     return () => document.removeEventListener("mousedown", surClicExterieur);
   }, [menuOuvert]);
 
-  useEffect(() => {
-    const id = setInterval(() => setIndex((i) => (i + 1) % ETATS.length), CYCLE_MS);
-    return () => clearInterval(id);
-  }, []);
 
   useEffect(() => {
     const surScroll = () => {
@@ -76,7 +75,7 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
 
   return (
     <div className={`${styles.bande} ${visible ? "" : styles.cachee}`}>
-      <Link href="/" className={styles.lien} style={{ color: etat.couleur }}>
+      <Link href="/" ref={lien} className={styles.lien} style={{ color: "var(--engagement)" }}>
         <span className={styles.logo} aria-label="WeFilmGood" role="img" />
         <span className={styles.etiquetteLogo}>Accueil</span>
 
@@ -115,7 +114,7 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
                     {"special" in el && el.special ? (
                       <>
                         <span style={{ color: ROUGE_WFG }}>Ciné</span>
-                        <span style={{ color: ETATS[index].couleur }}>Fusion</span>
+                        <span style={{ color: "var(--engagement)" }}>Fusion</span>
                       </>
                     ) : (
                       el.label

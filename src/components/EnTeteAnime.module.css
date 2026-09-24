@@ -124,7 +124,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: color 0.6s ease;
+  /* Pas de transition : le fondu vient de l'animation commune. */
 }
 
 /* Le logo sert de retour à l'accueil : il le dit au survol, plutôt que

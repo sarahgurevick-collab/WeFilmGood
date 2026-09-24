@@ -1,7 +1,8 @@
 "use client";
 
-import { type CSSProperties, useEffect, useState } from "react";
-import { DUREE_ENGAGEMENT, ENGAGEMENTS } from "@/lib/engagements";
+import { type CSSProperties, useRef } from "react";
+import { ENGAGEMENTS } from "@/lib/engagements";
+import { useEngagement } from "@/lib/useEngagement";
 import styles from "./LogoAnime.module.css";
 
 /**
@@ -22,7 +23,6 @@ export default function LogoAnime({
   hauteur = 34,
   tailleMention,
   centre = false,
-  duree = DUREE_ENGAGEMENT,
 }: {
   hauteur?: number;
   /** Taille du texte de l'engagement, en pixels (12 par défaut). */
@@ -30,29 +30,20 @@ export default function LogoAnime({
   /** true pour garder le dessin au milieu : la place de la mention est
       aussi réservée à gauche. */
   centre?: boolean;
-  /** Temps passé sur chaque couleur, en millisecondes. */
-  duree?: number;
 }) {
-  const [i, setI] = useState(0);
-  const [anime, setAnime] = useState(false);
-
-  // Rien ne bouge pour qui a demandé à son appareil de limiter les
-  // animations : le logo reste simplement rouge.
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    setAnime(true);
-    const t = setInterval(() => setI((n) => (n + 1) % ENGAGEMENTS.length), duree);
-    return () => clearInterval(t);
-  }, [duree]);
-
-  const etat = anime ? ENGAGEMENTS[i] : ENGAGEMENTS[0];
+  // La couleur vient de l'horloge commune (var(--engagement), globals.css),
+  // la même que celle des boutons : ils changent ensemble. Pour qui a
+  // demandé moins d'animations, rien ne tourne et le logo reste rouge.
+  const bloc = useRef<HTMLSpanElement>(null);
+  const etat = ENGAGEMENTS[useEngagement(bloc)];
 
   return (
     <span
+      ref={bloc}
       className={styles.bloc}
       style={
         {
-          color: etat.couleur,
+          color: "var(--engagement)",
           ...(tailleMention ? { "--taille-mention": `${tailleMention}px` } : {}),
         } as CSSProperties
       }

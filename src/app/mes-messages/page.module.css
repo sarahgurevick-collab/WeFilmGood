@@ -55,8 +55,8 @@
 }
 
 .verrouilleBouton {
-  background: #e2231a;
-  color: #fff;
+  background: var(--engagement);
+  color: var(--engagement-texte);
   border: none;
   border-radius: 8px;
   padding: 10px 18px;

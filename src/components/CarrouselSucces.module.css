@@ -19,7 +19,8 @@
   --sq-lamelle: 8px;
   --sq-lamelle-gap: 8px;
   --sq-rayon: 6px;
-  --sq-accent: var(--rouge-wfg);
+  /* Les flèches suivent la couleur de l'engagement en cours, comme le logo. */
+  --sq-accent: var(--engagement);
   /* Le bloc 16:9 fixe la taille du panneau ouvert et celle de chaque image. */
   --sq-hero: calc(var(--sq-h) * 16 / 9);
   --sq-place: calc(
@@ -54,7 +55,7 @@
   border-radius: 6px;
   cursor: pointer;
   background: var(--sq-accent);
-  color: #fff;
+  color: var(--engagement-texte);
   transition: opacity 0.2s;
 }
 

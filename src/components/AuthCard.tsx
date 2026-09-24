@@ -33,8 +33,11 @@ export default function AuthCard({
 }) {
   return (
     <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
+      {/* Avec le logo animé (page d'arrivée du lien), l'horloge des
+          engagements tourne plus vite sur toute la carte : on clique vite,
+          et le bouton suit le logo. */}
       <div
-        className={`${styles.card} ${compacte ? styles.compacte : ""} ${carteClaire ? `clair ${styles.carteClaire}` : ""}`}
+        className={`${styles.card} ${compacte ? styles.compacte : ""} ${logoAnime ? "engagementsRapides" : ""} ${carteClaire ? `clair ${styles.carteClaire}` : ""}`}
       >
         {!sansOnglets && (
           <nav className={styles.tabs}>
@@ -57,9 +60,7 @@ export default function AuthCard({
 
         <Link href="/" className={styles.brand}>
           {logoAnime ? (
-            // Plus rapide que dans la barre de menu : on clique vite sur
-            // le bouton, les engagements doivent avoir défilé avant.
-            <LogoAnime hauteur={56} tailleMention={15} centre duree={1200} />
+            <LogoAnime hauteur={56} tailleMention={15} centre />
           ) : (
             <LogoComplet hauteur={48} />
           )}

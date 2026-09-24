@@ -5,8 +5,8 @@
   height: 46px;
   border: 0;
   border-radius: 999px;
-  background: var(--rouge-wfg);
-  color: #fff;
+  background: var(--engagement);
+  color: var(--engagement-texte);
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;

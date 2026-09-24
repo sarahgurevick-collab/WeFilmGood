@@ -90,8 +90,8 @@
 
 .voir {
   padding: 6px 14px;
-  background: var(--rouge-wfg);
-  color: #fff;
+  background: var(--engagement);
+  color: var(--engagement-texte);
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;

@@ -61,8 +61,8 @@
 .saisie button {
   padding: 9px 14px;
   border-radius: 10px;
-  background: var(--rouge-wfg);
-  color: #fff;
+  background: var(--engagement);
+  color: var(--engagement-texte);
   font-weight: 700;
   font-size: 13px;
 }

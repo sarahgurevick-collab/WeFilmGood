@@ -160,12 +160,14 @@
  * Un seul langage de boutons dans toute l'application : plein, arrondi,
  * texte inversé. Seule la largeur distingue les deux variantes.
  */
+/* Les boutons d'action prennent la couleur de l'engagement en cours,
+   en même temps que le logo (horloge commune dans globals.css). */
 .submit {
   align-self: flex-start;
-  background: var(--fg);
-  border: 1px solid var(--fg);
+  background: var(--engagement);
+  border: 1px solid var(--engagement);
   border-radius: 10px;
-  color: var(--bg);
+  color: var(--engagement-texte);
   font-family: inherit;
   font-size: 13.5px;
   font-weight: 700;
@@ -182,10 +184,10 @@
 /* Action principale des écrans d'authentification : pleine largeur. */
 .submitWide {
   align-self: stretch;
-  background: var(--fg);
-  border: 1px solid var(--fg);
+  background: var(--engagement);
+  border: 1px solid var(--engagement);
   border-radius: 10px;
-  color: var(--bg);
+  color: var(--engagement-texte);
   font-family: inherit;
   font-size: 13.5px;
   font-weight: 700;
@@ -207,11 +209,11 @@
   gap: 14px;
 }
 
-/* Rouge WFG, comme sur l'ancien site ; au clic il blanchit, le contour reste rouge. */
+/* Bouton d'action vedette : couleur de l'engagement en cours ; au clic il blanchit, le contour garde la couleur. */
 .rouge {
-  background: var(--rouge-wfg);
-  border-color: var(--rouge-wfg);
-  color: #fff;
+  background: var(--engagement);
+  border-color: var(--engagement);
+  color: var(--engagement-texte);
   transition:
     opacity 0.2s ease,
     background 0.12s ease,
@@ -220,7 +222,7 @@
 
 .rouge:active {
   background: #fff;
-  color: var(--rouge-wfg);
+  color: var(--engagement);
   opacity: 1;
 }
 

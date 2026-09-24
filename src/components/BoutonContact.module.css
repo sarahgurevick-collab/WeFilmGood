@@ -9,8 +9,8 @@
   width: 52px;
   height: 52px;
   border-radius: 999px;
-  background: var(--rouge-wfg);
-  color: #fff;
+  background: var(--engagement);
+  color: var(--engagement-texte);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s ease;
 }
@@ -92,8 +92,8 @@
   margin-top: 4px;
   padding: 10px;
   border-radius: 10px;
-  background: var(--rouge-wfg);
-  color: #fff;
+  background: var(--engagement);
+  color: var(--engagement-texte);
   font-size: 13px;
   font-weight: 700;
   text-transform: none;
