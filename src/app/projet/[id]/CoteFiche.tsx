@@ -4,17 +4,16 @@ import { useState, type ReactNode } from "react";
 import styles from "./cadre.module.css";
 
 /**
- * Le côté « La fiche » du comparateur : l'image de présentation, la
- * tagline par-dessus, et le bouton play en transparence (repris de WFG 1) :
+ * Le côté « La fiche » du comparateur : l'image de présentation seule, sans
+ * texte dessus (demande de Sarah, 24/09), et le bouton play en transparence
+ * (repris de WFG 1) :
  * le videopitch prend alors la place de l'image.
  */
 export default function CoteFiche({
   image,
-  tagline,
   videopitch,
 }: {
   image: string | null;
-  tagline: string | null;
   videopitch?: ReactNode;
 }) {
   const [video, setVideo] = useState(false);
@@ -42,11 +41,6 @@ export default function CoteFiche({
             <path d="M40 30 L72 50 L40 70 Z" />
           </svg>
         </button>
-      )}
-      {tagline && (
-        <div className={styles.coteFicheTexte}>
-          <p className={styles.coteFicheTagline}>{tagline}</p>
-        </div>
       )}
     </div>
   );

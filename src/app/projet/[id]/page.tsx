@@ -298,7 +298,6 @@ export default async function ProjetPage({
         }))}
         image={urlVignette ?? null}
         avis={(avisWfg as string | null) ?? null}
-        tagline={project.logline}
         videopitch={
           videopitch?.videopitch_fr || videopitch?.videopitch_en ? (
             <VideopitchLecteur
@@ -406,6 +405,7 @@ export default async function ProjetPage({
         </div>
       )}
 
+      {project.logline && <p style={{ marginTop: 24 }}>{project.logline}</p>}
       {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
 
       {project.has_awards && (

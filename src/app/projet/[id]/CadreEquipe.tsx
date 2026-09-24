@@ -24,7 +24,7 @@ export type MembreEquipe = {
 
 /**
  * Le cadre de la fiche projet (ESSAI du 24/09/2026) : un comparateur, la
- * fiche à gauche (image, tagline, bouton play du videopitch comme sur
+ * fiche à gauche (image, bouton play du videopitch comme sur
  * WFG 1), les personnages à droite — à défaut, les talents —, la barre au
  * milieu qu'on tire par sa poignée. Sous le cadre, l'« Avis WeFilmGood »
  * s'il y en a un (le bandeau de l'équipe a été retiré le 24/09). Remplace les onglets « Videopitch » / « L'auteur »
@@ -38,7 +38,6 @@ export default function CadreEquipe({
   personnages,
   videopitch,
   image,
-  tagline,
   avis,
 }: {
   /** La phrase d'encouragement des lecteurs, pour un projet labellisé. */
@@ -47,7 +46,6 @@ export default function CadreEquipe({
   personnages: PersonnageCadre[];
   /** L'image de présentation (adresse signée), s'il y en a une. */
   image: string | null;
-  tagline: string | null;
   /** Le lecteur vidéo, s'il y a un videopitch : il devient le premier onglet. */
   videopitch?: ReactNode;
 }) {
@@ -113,7 +111,7 @@ export default function CadreEquipe({
         poigneeSeule
         format="16 / 10"
         etiquettes={["La fiche", avecPersonnages ? "Les personnages" : titreEquipe]}
-        gauche={<CoteFiche image={image} tagline={tagline} videopitch={videopitch} />}
+        gauche={<CoteFiche image={image} videopitch={videopitch} />}
         droite={avecPersonnages ? cotePersonnages : portraits}
       />
       {/* Sous le cadre : l'« Avis WeFilmGood » d'un projet labellisé, la
