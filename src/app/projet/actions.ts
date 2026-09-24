@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { echapper, envoyerEmail } from "@/lib/brevo";
 import { AUDIENCES, BUDGETS } from "./ChampsFiche";
+import { IMAGES, deposerImage } from "./[id]/fichiers";
 
 // Un documentaire ou un film d'animation n'est pas un format : selon sa
 // durée, c'est un long ou un court métrage.
@@ -46,6 +47,13 @@ export async function createProject(formData: FormData) {
   if (budgetRange && !VALEURS_BUDGET.includes(budgetRange)) echec("Budget estimé invalide.");
   if (targetAudience && !VALEURS_AUDIENCE.includes(targetAudience)) echec("Audience ciblée invalide.");
 
+  // L'image de présentation peut être choisie dès la création (facultative).
+  const vignette = formData.get("vignette") as File | null;
+  const aVignette = !!vignette && vignette.size > 0;
+  if (aVignette && !IMAGES.includes(vignette.type)) {
+    echec("L'image de présentation doit être un JPG ou un PNG.");
+  }
+
   const { data: project, error } = await supabase
     .from("projects")
     .insert({
@@ -66,6 +74,20 @@ export async function createProject(formData: FormData) {
 
   if (error || !project) {
     echec(error?.message ?? "Une erreur est survenue, réessayez.");
+  }
+
+  if (aVignette) {
+    const chemin = await deposerImage(supabase, user.id, project.id, vignette, "vignette");
+    // La fiche existe déjà : un échec de l'image ne l'annule pas, l'auteur
+    // pourra la redéposer dans le bloc « Documents », où il arrive ensuite.
+    if (chemin) {
+      await supabase.from("project_files").insert({
+        project_id: project.id,
+        storage_path: chemin,
+        kind: "vignette",
+        original_name: vignette.name,
+      });
+    }
   }
 
   if (user.email) {

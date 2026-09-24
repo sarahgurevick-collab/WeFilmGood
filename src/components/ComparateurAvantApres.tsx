@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
-import styles from "./ComparateurFestivals.module.css";
+import styles from "./ComparateurAvantApres.module.css";
 
 /*
  * Comparateur « avant / après » entre deux côtés (d'après Compare Reveal de
@@ -10,8 +10,11 @@ import styles from "./ComparateurFestivals.module.css";
  * aller-retour pour montrer qu'on peut la tirer. Double-clic : retour au
  * milieu. Au clavier : flèches (2 %), Maj + flèches (10 %), Début / Fin.
  *
- * `onCote` prévient quand le côté le plus visible change : la page s'en
- * sert pour afficher le court ou le long métrage en dessous.
+ * `onCote` prévient quand le côté le plus visible change.
+ *
+ * Gardé en réserve (24/09/2026) : essayé sur la page Appels à projets
+ * (Clermont / Cannes), où l'effet ne convenait pas ; Sarah veut le garder
+ * pour un autre endroit. Utilisé nulle part pour l'instant.
  */
 
 const RAIDEUR = 140;
@@ -32,7 +35,7 @@ function balayage(u: number) {
   return entre(4, 50, adoucir((u - 0.78) / 0.22));
 }
 
-export default function ComparateurFestivals({
+export default function ComparateurAvantApres({
   gauche,
   droite,
   etiquettes,

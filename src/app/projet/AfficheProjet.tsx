@@ -51,11 +51,18 @@ export default function AfficheProjet({
   lienFiche: string | null;
 }) {
   const [v, setV] = useState(initial);
+  // L'image choisie dans le formulaire, montrée avant même l'envoi.
+  const [apercu, setApercu] = useState<string | null>(null);
 
   useEffect(() => {
     if (!enDirect) return;
     const suivre = (e: Event) => {
       const champ = e.target as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+      if (champ instanceof HTMLInputElement && champ.type === "file" && champ.name === "vignette") {
+        const fichier = champ.files?.[0];
+        setApercu(fichier ? URL.createObjectURL(fichier) : null);
+        return;
+      }
       const nom = champ.name as keyof ValeursAffiche;
       if (!CHAMPS.has(nom)) return;
       const valeur =
@@ -88,9 +95,9 @@ export default function AfficheProjet({
       <p className={styles.surtitre}>Ce que voit un talent connecté</p>
 
       <div className={styles.image}>
-        {vignette ? (
+        {apercu ?? vignette ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={vignette} alt="" />
+          <img src={(apercu ?? vignette)!} alt="" />
         ) : (
           <span className={styles.imageVide}>Image de présentation</span>
         )}
