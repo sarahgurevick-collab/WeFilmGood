@@ -184,15 +184,15 @@ export default async function ProfilPage({
           {BLOCS.map((b) => {
             const estFait = fait[b.cle];
             const pourcentDuBloc = pourcentBloc[b.cle];
-            // Un bloc pas complet à 100 % se signale : cadre aux couleurs
-            // des engagements et pourcentage en haut à droite. Utile à qui
-            // a été interrompu en plein remplissage et l'a oublié.
+            // Bloc complet : cadre rouge. Bloc pas complet à 100 % : cadre
+            // aux couleurs des engagements et pourcentage en haut à droite —
+            // utile à qui a été interrompu en plein remplissage.
             const incomplet = pourcentDuBloc < 100;
             return (
               <Link
                 key={b.cle}
                 href={`/profil/${b.cle}`}
-                className={incomplet ? styles.etapeIncomplete : styles.etape}
+                className={incomplet ? styles.etapeIncomplete : styles.etapeComplete}
                 title={incomplet ? "Cliquez pour compléter ce bloc" : "Cliquez pour modifier ce bloc"}
               >
                 <span className={estFait ? styles.etapeFaite : styles.etapeNumero}>

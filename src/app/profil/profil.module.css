@@ -617,7 +617,8 @@ a.manque:hover {
 }
 
 .etape,
-.etapeActive {
+.etapeActive,
+.etapeComplete {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -634,7 +635,8 @@ a.manque:hover {
   border-color: var(--bordure-forte);
 }
 
-.etapeActive {
+.etapeActive,
+.etapeComplete {
   border: 2px solid var(--rouge-wfg);
 }
 
