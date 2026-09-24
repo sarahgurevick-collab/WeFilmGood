@@ -46,7 +46,7 @@ export default function BoutonContact() {
         type="button"
         className={styles.bouton}
         onClick={() => setEtat(etat === "ferme" ? "ouvert" : "ferme")}
-        aria-label="Nous écrire"
+        aria-label="Dites-nous tout"
       >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <rect x="2" y="4" width="20" height="16" rx="2" />
@@ -71,9 +71,9 @@ export default function BoutonContact() {
             </p>
           ) : (
             <form onSubmit={envoyer} className={styles.formulaire}>
-              <h3 className={styles.titre}>Nous écrire</h3>
+              <h3 className={styles.titre}>Dites-nous tout</h3>
               <p className={styles.soustitre}>
-                Pas besoin de créer un profil pour nous contacter.
+                Pas besoin de créer un profil pour nous écrire.
               </p>
 
               <input
