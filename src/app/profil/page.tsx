@@ -72,8 +72,6 @@ export default async function ProfilPage({
   const prenom = profil?.first_name ?? profil?.full_name?.split(" ")[0] ?? null;
   const nom = profil?.full_name ?? prenom ?? "Mon profil";
 
-  // Le premier bloc pas encore fait est celui qu'on met en avant.
-  const prochain = BLOCS.find((b) => !fait[b.cle]) ?? null;
 
   type Libelle = { label_fr: string; position: number };
   const libelles = (lignes: unknown, champ: "roles" | "genres") =>
@@ -185,25 +183,26 @@ export default async function ProfilPage({
 
           {BLOCS.map((b) => {
             const estFait = fait[b.cle];
-            const estProchain = prochain?.cle === b.cle;
+            const pourcentDuBloc = pourcentBloc[b.cle];
+            // Un bloc pas complet à 100 % se signale : cadre aux couleurs
+            // des engagements et pourcentage en haut à droite. Utile à qui
+            // a été interrompu en plein remplissage et l'a oublié.
+            const incomplet = pourcentDuBloc < 100;
             return (
               <Link
                 key={b.cle}
                 href={`/profil/${b.cle}`}
-                className={estProchain ? styles.etapeActive : styles.etape}
+                className={incomplet ? styles.etapeIncomplete : styles.etape}
+                title={incomplet ? "Cliquez pour compléter ce bloc" : "Cliquez pour modifier ce bloc"}
               >
                 <span className={estFait ? styles.etapeFaite : styles.etapeNumero}>
                   {estFait ? "✓" : b.numero}
                 </span>
                 <span className={styles.etapeTexte}>
                   <strong>{b.titre}</strong>
-                  <span>
-                    {estFait
-                      ? `Complété à ${pourcentBloc[b.cle]} % · modifier`
-                      : b.duree}
-                  </span>
+                  <span>{incomplet ? b.duree : "Complet · modifier"}</span>
                 </span>
-                {estProchain && <span className={styles.badge}>Commencer ici</span>}
+                {incomplet && <span className={styles.etapePourcent}>{pourcentDuBloc} %</span>}
               </Link>
             );
           })}

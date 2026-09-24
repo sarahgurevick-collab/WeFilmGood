@@ -638,6 +638,30 @@ a.manque:hover {
   border: 2px solid var(--rouge-wfg);
 }
 
+/* Bloc pas complet : cadre aux couleurs des engagements (la même horloge
+   que le logo et les boutons), pourcentage en haut à droite. */
+.etapeIncomplete {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border: 2px solid var(--engagement);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.etapePourcent {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--engagement);
+}
+
 .etapeNumero,
 .etapeFaite {
   flex-shrink: 0;
