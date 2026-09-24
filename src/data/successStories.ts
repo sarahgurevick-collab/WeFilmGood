@@ -25,6 +25,18 @@ const VRAIES: { position: number; diapo: DiapoSucces }[] = [
   {
     position: 1,
     diapo: {
+      id: "you-will-die-at-twenty",
+      // Texte provisoire, relevé sur l'affiche : à remplacer par celui de Sarah.
+      titre: "You Will Die at Twenty, d'Amjad Abu Alala.",
+      phrase: "Lion du futur (meilleur premier film) à la Mostra de Venise 2019.",
+      image: "/succes/you-will-die-at-twenty.jpg",
+      imageAlt: "Affiche du film You Will Die at Twenty d'Amjad Abu Alala",
+      marque: "You Will Die at Twenty",
+    },
+  },
+  {
+    position: 2,
+    diapo: {
       id: "ava",
       // Texte provisoire, relevé sur l'affiche : à remplacer par celui de Sarah.
       titre: "Ava, de Sadaf Foroughi.",
@@ -35,7 +47,7 @@ const VRAIES: { position: number; diapo: DiapoSucces }[] = [
     },
   },
   {
-    position: 2,
+    position: 3,
     diapo: {
       id: "my-little-one",
       // Texte provisoire, relevé sur l'affiche : à remplacer par celui de Sarah.
@@ -47,7 +59,7 @@ const VRAIES: { position: number; diapo: DiapoSucces }[] = [
     },
   },
   {
-    position: 3,
+    position: 4,
     diapo: {
       id: "les-bienheureux",
       // Texte provisoire, relevé sur l'affiche : à remplacer par celui de Sarah.
