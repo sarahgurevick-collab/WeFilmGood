@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import styles from "./SwitchFormat.module.css";
-
-/** Un autre élément de la page (le comparateur des festivals) peut choisir l'onglet. */
-export const EVENEMENT_FORMAT = "wfg:format";
 
 export default function SwitchFormat({
   contenuCourt,
@@ -16,15 +13,6 @@ export default function SwitchFormat({
   defaut?: "court" | "long";
 }) {
   const [format, setFormat] = useState<"court" | "long">(defaut);
-
-  useEffect(() => {
-    const choisir = (e: Event) => {
-      const f = (e as CustomEvent<"court" | "long">).detail;
-      if (f === "court" || f === "long") setFormat(f);
-    };
-    window.addEventListener(EVENEMENT_FORMAT, choisir);
-    return () => window.removeEventListener(EVENEMENT_FORMAT, choisir);
-  }, []);
 
   return (
     <div>

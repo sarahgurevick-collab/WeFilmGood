@@ -2,8 +2,6 @@ import LigneFAQ from "@/components/LigneFAQ";
 import PageShell from "@/components/PageShell";
 import SwitchFormat from "@/components/SwitchFormat";
 import { createClient } from "@/lib/supabase/server";
-import ComparateurAppels from "./ComparateurAppels";
-import comparateur from "./comparateur.module.css";
 import styles from "./page.module.css";
 
 export default async function AppelsAProjetsPage() {
@@ -14,9 +12,6 @@ export default async function AppelsAProjetsPage() {
 
   return (
     <PageShell theme="clair" enTeteAnime connecte={!!user}>
-      <div className={comparateur.essai}>
-        <ComparateurAppels />
-      </div>
       <div className={styles.entete}>
         <h1 className={styles.sousTitre}>Prochain appel à projets</h1>
         <img
