@@ -97,6 +97,18 @@ const VRAIES: { position: number; diapo: DiapoSucces }[] = [
       marque: "Doha – The Rising Sun",
     },
   },
+  {
+    position: 7,
+    diapo: {
+      id: "when-im-done-dying",
+      // Texte provisoire, relevé sur l'affiche : à remplacer par celui de Sarah.
+      titre: "When I'm Done Dying, de Nisan Dag.",
+      phrase: "Sélection officielle en compétition, Tallinn Black Nights Film Festival 2020.",
+      image: "/succes/when-im-done-dying.jpg",
+      imageAlt: "Affiche du film When I'm Done Dying de Nisan Dag",
+      marque: "When I'm Done Dying",
+    },
+  },
 ];
 
 const EN_ATTENTE: DiapoSucces[] = DEGRADES.map((fond, i) => ({
