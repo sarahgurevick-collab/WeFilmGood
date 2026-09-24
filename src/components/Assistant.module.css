@@ -42,8 +42,21 @@
 
 .saisie {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: flex-end;
+}
+
+/* L'email d'un visiteur, sur sa propre ligne au-dessus du message. */
+.email {
+  flex-basis: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 13px;
 }
 
 .saisie textarea {

@@ -5,12 +5,15 @@ import { createClient } from "@/lib/supabase/server";
  * L'assistant des membres : relaie la conversation à MiniMax M3 (par
  * OpenRouter) et renvoie la réponse au fil de l'eau, en texte brut.
  *
- * Réservé aux membres connectés — ni les visiteurs, ni les lecteurs, qui
- * restent à part. Un plafond quotidien par membre protège la facture.
+ * Ouvert aux membres connectés et aux visiteurs de l'accueil — pas aux
+ * lecteurs, qui restent à part. Un plafond quotidien (par membre, ou par
+ * adresse IP pour un visiteur) protège la facture.
  */
 
 const MODELE = "minimax/minimax-m3";
 const PLAFOND_JOUR = 60;
+/** Un visiteur non connecté, compté par adresse IP. */
+const PLAFOND_VISITEUR = 20;
 const HISTORIQUE = 16;
 const LONGUEUR_MAX = 2000;
 
@@ -74,6 +77,22 @@ export async function GET() {
       visiteur = { connecte: true, nom, email: user.email ?? null };
     }
   }
+  // Un visiteur (personne de connecté) a lui aussi le tchat : c'est une
+  // des nouveautés de WFG 2, visible dès l'accueil. On ne connaît pas son
+  // email : le tchat le lui demande.
+  if (!membre && !visiteur.connecte) {
+    return Response.json(
+      {
+        actif: true,
+        visiteur: true,
+        nom: null,
+        prenom: null,
+        email: "",
+        ia: !!process.env.OPENROUTER_API_KEY,
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  }
   return Response.json(
     membre
       ? {
@@ -94,14 +113,29 @@ export async function POST(request: Request) {
   if (!cle) return Response.json({ erreur: "indisponible" }, { status: 503 });
 
   const membre = await membreAutorise();
-  if (!membre) return Response.json({ erreur: "refusé" }, { status: 403 });
-  const user = membre;
+  let compte: string;
+  let plafond: number;
+  if (membre) {
+    compte = membre.id;
+    plafond = PLAFOND_JOUR;
+  } else {
+    // Connecté sans droit au tchat (un lecteur) : refusé. Pas connecté du
+    // tout : un visiteur, compté par adresse IP, avec un plafond plus bas.
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) return Response.json({ erreur: "refusé" }, { status: 403 });
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "inconnue";
+    compte = `ip:${ip}`;
+    plafond = PLAFOND_VISITEUR;
+  }
 
   const jour = new Date().toISOString().slice(0, 10);
-  const c = compteurs.get(user.id);
+  const c = compteurs.get(compte);
   const n = c?.jour === jour ? c.n : 0;
-  if (n >= PLAFOND_JOUR) return Response.json({ erreur: "plafond" }, { status: 429 });
-  compteurs.set(user.id, { jour, n: n + 1 });
+  if (n >= plafond) return Response.json({ erreur: "plafond" }, { status: 429 });
+  compteurs.set(compte, { jour, n: n + 1 });
 
   let messages: Message[];
   try {

@@ -25,15 +25,19 @@ const ERREURS: Record<number, string> = {
 export default function Assistant({
   nom,
   prenom,
-  email,
+  email: emailConnu,
   ia,
+  visiteur = false,
 }: {
   nom: string | null;
   prenom: string | null;
   email: string;
   /** false tant que la clé de l'IA manque : chaque message part à l'équipe. */
   ia: boolean;
+  /** Pas connecté : on lui demande son email pour pouvoir lui répondre. */
+  visiteur?: boolean;
 }) {
+  const [email, setEmail] = useState(emailConnu);
   const [ouvert, setOuvert] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [saisie, setSaisie] = useState("");
@@ -156,6 +160,9 @@ export default function Assistant({
             ⊖
           </button>
           <h3 className={contact.titre}>On papote ?</h3>
+          {visiteur && (
+            <p className={contact.soustitre}>Pas besoin de créer un profil pour nous écrire.</p>
+          )}
 
           <div ref={fil} className={styles.fil} aria-live="polite">
             <p className={styles.assistant}>
@@ -170,6 +177,18 @@ export default function Assistant({
           </div>
 
           <form onSubmit={envoyer} className={styles.saisie}>
+            {/* L'équipe répond par email : un visiteur doit donner le sien
+                (obligatoire dès l'envoi sans IA, pour « Transmettre » sinon). */}
+            {visiteur && (
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Votre email"
+                required={!ia}
+                className={styles.email}
+              />
+            )}
             <textarea
               value={saisie}
               onChange={(e) => setSaisie(e.target.value)}
@@ -182,7 +201,7 @@ export default function Assistant({
               placeholder={ia ? "Votre question…" : "Votre message…"}
               rows={2}
               maxLength={2000}
-              autoFocus
+              autoFocus={!visiteur}
             />
             <button type="submit" disabled={enCours || !saisie.trim()}>
               {enCours ? "…" : "Envoyer"}
@@ -198,7 +217,11 @@ export default function Assistant({
                   type="button"
                   className={styles.transmettre}
                   onClick={transmettre}
-                  disabled={transmission === "envoi" || (messages.length === 0 && !saisie.trim())}
+                  disabled={
+                  transmission === "envoi" ||
+                  (messages.length === 0 && !saisie.trim()) ||
+                  !email.trim()
+                }
                 >
                   {transmission === "envoi" ? "Transmission…" : "Transmettre à l'équipe"}
                 </button>
