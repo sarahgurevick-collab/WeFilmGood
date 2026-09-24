@@ -3,6 +3,7 @@ import Link from "next/link";
 import BarreNav from "@/components/BarreNav";
 import CarrouselSucces from "@/components/CarrouselSucces";
 import Compteur from "@/components/Compteur";
+import DefilementEngagements from "@/components/DefilementEngagements";
 import EnTeteAnime from "@/components/EnTeteAnime";
 import HashSession from "@/components/HashSession";
 import NuageAccueil from "@/components/NuageAccueil";
@@ -106,6 +107,9 @@ export default async function Home() {
           <NuageAccueil total={totalMotsCles} />
         </div>
       </section>
+
+      {/* ESSAI : les quatre engagements en défilement horizontal. */}
+      <DefilementEngagements />
 
       <section className={styles.stories}>
         <h2 className={styles.storiesTitre}>Success stories</h2>

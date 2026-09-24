@@ -1,0 +1,90 @@
+.section {
+  position: relative;
+  z-index: 10;
+}
+
+/* Le panneau reste collé à l'écran pendant que la rangée glisse. */
+.collant {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.rangee {
+  display: flex;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  will-change: transform;
+}
+
+.panneau {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100%;
+  overflow: hidden;
+}
+
+.mot {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-size: 17vw;
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.for {
+  margin: 0 0 0.12em 0.08em;
+  font-size: 0.22em;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.logo {
+  will-change: transform;
+  max-width: 80vw;
+}
+
+/* Sur téléphone, le logo rapetisse. */
+@media (max-width: 720px) {
+  .logo > span {
+    width: 70vw !important;
+    height: calc(70vw * 1113 / 1381) !important;
+  }
+}
+
+/* Moins d'animations demandé : les quatre panneaux, simplement empilés. */
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    height: auto !important;
+  }
+
+  .collant {
+    position: static;
+    height: auto;
+  }
+
+  .rangee {
+    flex-direction: column;
+    width: 100% !important;
+  }
+
+  .panneau {
+    width: 100%;
+    height: 70vh;
+  }
+}
