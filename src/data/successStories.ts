@@ -35,6 +35,18 @@ const VRAIES: { position: number; diapo: DiapoSucces }[] = [
     },
   },
   {
+    position: 2,
+    diapo: {
+      id: "my-little-one",
+      // Texte provisoire, relevé sur l'affiche : à remplacer par celui de Sarah.
+      titre: "My Little One, de Frédéric Choffat et Julie Gilbert.",
+      phrase: "Avec Anna Mouglalis, Mathieu Demy, Vincent Bonillo et Ruby Matenko.",
+      image: "/succes/my-little-one.jpg",
+      imageAlt: "Affiche du film My Little One de Frédéric Choffat et Julie Gilbert",
+      marque: "My Little One",
+    },
+  },
+  {
     position: 3,
     diapo: {
       id: "les-bienheureux",
