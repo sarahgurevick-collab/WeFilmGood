@@ -17,7 +17,20 @@ const DEGRADES = [
   "radial-gradient(120% 120% at 75% 30%, #6d7886 0%, #38404d 55%, #12151c 100%)",
 ];
 
-export const SUCCESS_STORIES: DiapoSucces[] = DEGRADES.map((fond, i) => ({
+/** Les vraies success stories, en tête du carrousel. */
+const VRAIES: DiapoSucces[] = [
+  {
+    id: "ava",
+    // Texte provisoire, relevé sur l'affiche : à remplacer par celui de Sarah.
+    titre: "Ava, de Sadaf Foroughi.",
+    phrase: "Prix FIPRESCI au Festival international du film de Toronto 2017.",
+    image: "/succes/ava.jpg",
+    imageAlt: "Affiche du film Ava de Sadaf Foroughi",
+    marque: "Ava",
+  },
+];
+
+const EN_ATTENTE: DiapoSucces[] = DEGRADES.map((fond, i) => ({
   id: `succes-${i}`,
   titre: "Success story à venir.",
   phrase:
@@ -26,3 +39,9 @@ export const SUCCESS_STORIES: DiapoSucces[] = DEGRADES.map((fond, i) => ({
   marque: `Projet ${i + 1}`,
   href: `/succes/${i}`,
 }));
+
+// Six panneaux en tout : les vraies d'abord, complétées par l'attente.
+export const SUCCESS_STORIES: DiapoSucces[] = [...VRAIES, ...EN_ATTENTE].slice(
+  0,
+  Math.max(6, VRAIES.length),
+);
