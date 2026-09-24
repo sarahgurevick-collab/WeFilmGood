@@ -12,7 +12,6 @@ import LogoComplet from "@/components/LogoComplet";
 import PitchWall, { type Pitch } from "@/components/PitchWall";
 import { SUCCESS_STORIES } from "@/data/successStories";
 import { createClient } from "@/lib/supabase/server";
-import formStyles from "@/components/form.module.css";
 import styles from "./page.module.css";
 
 const DOTS = [0, 45, 90, 135, 180, 225, 270, 315];
@@ -113,11 +112,13 @@ export default async function Home() {
       <DefilementEngagements />
 
       <section className={styles.stories}>
-        <h2 className={styles.storiesTitre}>Success stories</h2>
+        {/* Le titre mène à la liste de tous les films réalisés. */}
+        <h2 className={styles.storiesTitre}>
+          <Link href="/succes" className={styles.storiesLien}>
+            Success stories <span aria-hidden="true">→</span>
+          </Link>
+        </h2>
         <CarrouselSucces diapos={SUCCESS_STORIES} />
-        <Link href="/succes" className={formStyles.submit}>
-          Voir tous les films
-        </Link>
       </section>
     </>
   );
