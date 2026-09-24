@@ -226,6 +226,9 @@ export default async function ProjetPage({
     }
   }
 
+  // La phrase d'encouragement des lecteurs, pour un projet labellisé.
+  const { data: avisWfg } = await supabase.rpc("avis_wfg_projet", { p_project_id: id });
+
   // Les photos de l'équipe, pour le côté « L'auteur » du cadre.
   const idsEquipe = equipe.map((m) => m.profileId).filter((x): x is string => !!x);
   if (idsEquipe.length) {
@@ -294,6 +297,7 @@ export default async function ProjetPage({
           bio: c.biography,
         }))}
         image={urlVignette ?? null}
+        avis={(avisWfg as string | null) ?? null}
         tagline={project.logline}
         videopitch={
           videopitch?.videopitch_fr || videopitch?.videopitch_en ? (

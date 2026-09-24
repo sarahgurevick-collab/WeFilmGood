@@ -26,8 +26,8 @@ export type MembreEquipe = {
  * Le cadre de la fiche projet (ESSAI du 24/09/2026) : un comparateur, la
  * fiche à gauche (image, tagline, bouton play du videopitch comme sur
  * WFG 1), les personnages à droite — à défaut, les talents —, la barre au
- * milieu qu'on tire par sa poignée. L'auteur (ou l'équipe) en petit sous
- * le cadre. Remplace les onglets « Videopitch » / « L'auteur »
+ * milieu qu'on tire par sa poignée. Sous le cadre, l'« Avis WeFilmGood »
+ * s'il y en a un (le bandeau de l'équipe a été retiré le 24/09). Remplace les onglets « Videopitch » / « L'auteur »
  * (OngletsCadre, gardé pour un retour en arrière).
  *
  * Le nombre de fiches de lecture n'est plus affiché sous le cadre (retiré
@@ -39,7 +39,10 @@ export default function CadreEquipe({
   videopitch,
   image,
   tagline,
+  avis,
 }: {
+  /** La phrase d'encouragement des lecteurs, pour un projet labellisé. */
+  avis: string | null;
   equipe: MembreEquipe[];
   personnages: PersonnageCadre[];
   /** L'image de présentation (adresse signée), s'il y en a une. */
@@ -102,40 +105,6 @@ export default function CadreEquipe({
     </div>
   );
 
-  // L'auteur ou l'équipe, en petit sous le cadre.
-  const bandeauEquipe = (
-    <div className={styles.bandeauEquipe}>
-      <span className={styles.bandeauTitre}>{titreEquipe}</span>
-      <ul>
-        {equipe.map((m) => (
-          <li key={m.cle} className={m.enAttente ? styles.attente : undefined}>
-            <span className={styles.miniPortrait} aria-hidden="true">
-              {m.photo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={m.photo} alt="" />
-              ) : (
-                <span>{m.nom.trim().charAt(0).toUpperCase()}</span>
-              )}
-            </span>
-            <span>
-              {m.nom}
-              {m.role && <strong> · {m.role}</strong>}
-            </span>
-            {m.enAttente ? (
-              <span className={styles.enAttente}>{m.enAttente}</span>
-            ) : (
-              m.profileId && (
-                <Link href={`/membres/${m.profileId}`} className={styles.voir}>
-                  Voir le profil
-                </Link>
-              )
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-
   const avecPersonnages = personnages.length > 0;
 
   return (
@@ -147,7 +116,14 @@ export default function CadreEquipe({
         gauche={<CoteFiche image={image} tagline={tagline} videopitch={videopitch} />}
         droite={avecPersonnages ? cotePersonnages : portraits}
       />
-      {avecPersonnages && bandeauEquipe}
+      {/* Sous le cadre : l'« Avis WeFilmGood » d'un projet labellisé, la
+          phrase d'encouragement des lecteurs. Rien s'il n'y en a pas. */}
+      {avis && (
+        <figure className={styles.avis}>
+          <blockquote>{avis}</blockquote>
+          <figcaption>Avis WeFilmGood</figcaption>
+        </figure>
+      )}
     </section>
   );
 }
