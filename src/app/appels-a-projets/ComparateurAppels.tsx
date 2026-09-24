@@ -40,7 +40,6 @@ export default function ComparateurAppels() {
       }
       droite={
         <div className={`${styles.panneau} ${styles.cannes}`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           {/* Blanc sur noir pour Cannes, à gauche du logo. */}
           <div className={styles.texte}>
             <p className={styles.titre}>
@@ -55,6 +54,7 @@ export default function ComparateurAppels() {
             </p>
             <p className={styles.date}>Date limite : 10 mars 2026 à 23h59 (heure française)</p>
           </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/festivals/festival-de-cannes.png" alt="Festival de Cannes" draggable={false} />
         </div>
       }
