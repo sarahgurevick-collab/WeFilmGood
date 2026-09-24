@@ -47,16 +47,30 @@ export async function GET() {
   // Sans assistant, le formulaire de contact a besoin de savoir si la
   // personne est connectée : « pas besoin de créer un profil » ne
   // s'adresse qu'aux visiteurs.
-  let connecte = !!membre;
+  // Un membre connecté y trouve aussi son nom et son email déjà remplis.
+  let visiteur: { connecte: boolean; nom?: string | null; email?: string | null } = {
+    connecte: !!membre,
+  };
   if (!membre) {
     const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    connecte = !!user;
+    if (user) {
+      const { data: profil } = await supabase
+        .from("profiles")
+        .select("full_name, first_name, last_name")
+        .eq("id", user.id)
+        .maybeSingle();
+      const nom =
+        [profil?.first_name, profil?.last_name].filter(Boolean).join(" ").trim() ||
+        profil?.full_name ||
+        null;
+      visiteur = { connecte: true, nom, email: user.email ?? null };
+    }
   }
   return Response.json(
-    membre ? { actif: true, nom: membre.nom, email: membre.email } : { actif: false, connecte },
+    membre ? { actif: true, nom: membre.nom, email: membre.email } : { actif: false, ...visiteur },
     { headers: { "Cache-Control": "no-store" } },
   );
 }

@@ -7,7 +7,16 @@ import styles from "./BoutonContact.module.css";
 
 type Etat = "ferme" | "ouvert" | "envoi" | "envoye" | "erreur";
 
-export default function BoutonContact({ connecte = false }: { connecte?: boolean }) {
+export default function BoutonContact({
+  connecte = false,
+  nom = "",
+  email = "",
+}: {
+  connecte?: boolean;
+  /** Déjà connus pour un membre connecté : remplis d'avance. */
+  nom?: string;
+  email?: string;
+}) {
   const [etat, setEtat] = useState<Etat>("ferme");
   // Un autre bouton du site (« Demander un devis ») peut ouvrir ce
   // panneau avec un message déjà commencé.
@@ -88,8 +97,8 @@ export default function BoutonContact({ connecte = false }: { connecte?: boolean
                 aria-hidden="true"
               />
 
-              <input type="text" name="nom" placeholder="Votre nom (facultatif)" />
-              <input type="email" name="email" placeholder="Votre email" required />
+              <input type="text" name="nom" placeholder="Votre nom (facultatif)" defaultValue={nom} key={`nom-${nom}`} />
+              <input type="email" name="email" placeholder="Votre email" required defaultValue={email} key={`email-${email}`} />
               <textarea
                 key={prerempli}
                 name="message"
