@@ -113,7 +113,7 @@
   padding: 10px;
 }
 
-/* Côté « La fiche » : l'image en plein cadre, la tagline par-dessus. */
+/* Côté « La fiche » : l'image en plein cadre, sans texte dessus. */
 .coteFiche {
   position: absolute;
   inset: 0;
