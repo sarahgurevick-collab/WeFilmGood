@@ -1,0 +1,80 @@
+.cadre {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 18px;
+  background: #000;
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.cote {
+  position: absolute;
+  inset: 0;
+  will-change: clip-path;
+}
+
+/* Les petites étiquettes des coins, qui s'effacent quand leur côté disparaît. */
+.etiquette {
+  pointer-events: none;
+  position: absolute;
+  top: 16px;
+  z-index: 8;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: opacity 0.3s ease;
+}
+
+.etiquetteGauche {
+  left: 16px;
+}
+
+.etiquetteDroite {
+  right: 16px;
+}
+
+/* La barre et sa poignée ronde, à la couleur de l'engagement en cours. */
+.barre {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--engagement);
+  will-change: left;
+}
+
+.poignee {
+  pointer-events: auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 2px solid var(--engagement);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--engagement);
+  transform: translate(-50%, -50%);
+  cursor: ew-resize;
+  box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.25);
+}
+
+.poignee:focus-visible {
+  outline: 2px solid var(--engagement);
+  outline-offset: 3px;
+}

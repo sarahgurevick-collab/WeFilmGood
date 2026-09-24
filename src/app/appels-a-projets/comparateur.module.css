@@ -1,0 +1,33 @@
+/* Chaque festival occupe tout le cadre, son logo centré sur sa moitié :
+   au milieu, on voit les deux ; en tirant la barre, l'un prend la place. */
+.panneau {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+}
+
+.panneau img {
+  width: 32%;
+  height: auto;
+}
+
+.clermont {
+  background: #fff;
+  justify-content: flex-start;
+  padding-left: 9%;
+}
+
+.cannes {
+  background: #000;
+  justify-content: flex-end;
+  padding-right: 7%;
+}
+
+.cannes img {
+  width: 36%;
+}
+
+.essai {
+  margin: 0 0 32px;
+}
