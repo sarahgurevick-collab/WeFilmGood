@@ -7,7 +7,7 @@ import styles from "./BoutonContact.module.css";
 
 type Etat = "ferme" | "ouvert" | "envoi" | "envoye" | "erreur";
 
-export default function BoutonContact() {
+export default function BoutonContact({ connecte = false }: { connecte?: boolean }) {
   const [etat, setEtat] = useState<Etat>("ferme");
   // Un autre bouton du site (« Demander un devis ») peut ouvrir ce
   // panneau avec un message déjà commencé.
@@ -72,9 +72,12 @@ export default function BoutonContact() {
           ) : (
             <form onSubmit={envoyer} className={styles.formulaire}>
               <h3 className={styles.titre}>Dites-nous tout</h3>
-              <p className={styles.soustitre}>
-                Pas besoin de créer un profil pour nous écrire.
-              </p>
+              {/* Seulement pour les visiteurs : un membre a déjà son profil. */}
+              {!connecte && (
+                <p className={styles.soustitre}>
+                  Pas besoin de créer un profil pour nous écrire.
+                </p>
+              )}
 
               <input
                 type="text"

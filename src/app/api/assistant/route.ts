@@ -44,8 +44,19 @@ async function membreAutorise() {
 
 export async function GET() {
   const membre = await membreAutorise();
+  // Sans assistant, le formulaire de contact a besoin de savoir si la
+  // personne est connectée : « pas besoin de créer un profil » ne
+  // s'adresse qu'aux visiteurs.
+  let connecte = !!membre;
+  if (!membre) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    connecte = !!user;
+  }
   return Response.json(
-    membre ? { actif: true, nom: membre.nom, email: membre.email } : { actif: false },
+    membre ? { actif: true, nom: membre.nom, email: membre.email } : { actif: false, connecte },
     { headers: { "Cache-Control": "no-store" } },
   );
 }

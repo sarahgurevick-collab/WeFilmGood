@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Assistant from "./Assistant";
 import BoutonContact from "./BoutonContact";
 
-type Etat = { actif: false } | { actif: true; nom: string | null; email: string };
+type Etat = { actif: false; connecte?: boolean } | { actif: true; nom: string | null; email: string };
 
 /**
  * Le rond rouge en bas à droite : l'assistant pour un membre connecté, le
@@ -21,5 +21,5 @@ export default function ContactOuAssistant() {
       .catch(() => {});
   }, []);
 
-  return etat.actif ? <Assistant nom={etat.nom} email={etat.email} /> : <BoutonContact />;
+  return etat.actif ? <Assistant nom={etat.nom} email={etat.email} /> : <BoutonContact connecte={etat.connecte ?? false} />;
 }
