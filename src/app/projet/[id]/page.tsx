@@ -48,7 +48,6 @@ type Project = {
 const BUDGET_LISIBLE = Object.fromEntries(BUDGETS.map((b) => [b.value, b.label]));
 const AUDIENCE_LISIBLE = Object.fromEntries(AUDIENCES.map((a) => [a.value, a.label]));
 
-const INITIALE = (nom: string) => nom.trim().charAt(0).toUpperCase() || "?";
 
 const PERSONNAGE_LISIBLE: Record<string, string> = {
   principal: "Personnage principal",
@@ -281,6 +280,19 @@ export default async function ProjetPage({
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
         equipe={equipe}
+        personnages={(characters ?? []).map((c) => ({
+          id: c.id,
+          nom: c.name,
+          portrait: c.photo_path ? (urls.get(c.photo_path) ?? null) : null,
+          infos: [
+            PERSONNAGE_LISIBLE[c.character_type ?? ""],
+            PERSONNAGE_LISIBLE[c.gender ?? ""],
+            PERSONNAGE_LISIBLE[c.age_range ?? ""],
+          ]
+            .filter(Boolean)
+            .join(" · "),
+          bio: c.biography,
+        }))}
         image={urlVignette ?? null}
         tagline={project.logline}
         videopitch={
@@ -294,7 +306,9 @@ export default async function ProjetPage({
         }
       />
 
-      {(isOwner || estAdmin) && etatLecture && (
+      {/* Seulement du dépôt à la validation de la fiche de lecture :
+          une fois l'analyse disponible, le suivi n'a plus d'objet. */}
+      {(isOwner || estAdmin) && etatLecture && etatLecture.etat !== "disponible" && (
         <EtatDeLecture etat={etatLecture.etat} deposeLe={etatLecture.depose_le} />
       )}
 
@@ -443,36 +457,7 @@ export default async function ProjetPage({
         </>
       )}
 
-      {(characters ?? []).length > 0 && (
-        <>
-          <h2 className={presentation.section}>Personnages</h2>
-          <ul className={presentation.personnages}>
-            {(characters ?? []).map((c) => {
-              const portrait = c.photo_path ? urls.get(c.photo_path) : null;
-              return (
-                <li key={c.id} className={presentation.personnage}>
-                  <span className={presentation.portrait} aria-hidden="true">
-                    {portrait ? <img src={portrait} alt="" loading="lazy" /> : INITIALE(c.name)}
-                  </span>
-                  <div>
-                    <strong>{c.name}</strong>
-                    <p className={formStyles.hint}>
-                      {[
-                        PERSONNAGE_LISIBLE[c.character_type ?? ""],
-                        PERSONNAGE_LISIBLE[c.gender ?? ""],
-                        PERSONNAGE_LISIBLE[c.age_range ?? ""],
-                      ]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </p>
-                    {c.biography && <p className={formStyles.hint}>{c.biography}</p>}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        </>
-      )}
+      {/* Les personnages sont dans le cadre, côté droit du comparateur. */}
 
       {isOwner && (
         <>

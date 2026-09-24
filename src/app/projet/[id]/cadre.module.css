@@ -152,19 +152,44 @@
   text-transform: none;
 }
 
-.coteFicheVideo {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+/* Le play de WFG 1 : un disque blanc en transparence, triangle rouge. */
+.play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: clamp(72px, 22cqi, 150px);
+  aspect-ratio: 1;
+  padding: 0;
   border: 0;
-  border-radius: 999px;
-  background: var(--engagement);
-  color: var(--engagement-texte);
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
+  background: none;
+  transform: translate(-50%, -50%);
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.play:hover {
+  transform: translate(-50%, -50%) scale(1.06);
+}
+
+.play svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.play circle {
+  fill: rgb(255 255 255 / 0.55);
+}
+
+.play path {
+  fill: var(--rouge-wfg);
+}
+
+.play:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+  border-radius: 50%;
 }
 
 .coteVideo {
@@ -240,4 +265,102 @@
 
 .portraits .enAttente {
   color: #aaa;
+}
+
+/* Côté « Les personnages ». */
+.personnagesCadre {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.personnagesCadre li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 170px;
+  color: #fff;
+  text-align: center;
+}
+
+.infos {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.bio {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #ccc;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* L'auteur ou l'équipe, en petit sous le cadre. */
+.bandeauEquipe {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  padding: 14px 8px 4px;
+}
+
+.bandeauTitre {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.bandeauEquipe ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bandeauEquipe li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.bandeauEquipe li.attente {
+  background: none;
+  border: 0;
+  opacity: 0.6;
+}
+
+.bandeauEquipe .voir {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.miniPortrait {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-weight: 800;
+}
+
+.miniPortrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

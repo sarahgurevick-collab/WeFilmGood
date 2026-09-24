@@ -4,6 +4,14 @@ import ComparateurAvantApres from "@/components/ComparateurAvantApres";
 import CoteFiche from "./CoteFiche";
 import styles from "./cadre.module.css";
 
+export type PersonnageCadre = {
+  id: string;
+  nom: string;
+  portrait: string | null;
+  infos: string;
+  bio: string | null;
+};
+
 export type MembreEquipe = {
   cle: string;
   profileId: string | null;
@@ -15,22 +23,25 @@ export type MembreEquipe = {
 };
 
 /**
- * Le cadre de la fiche projet (ESSAI du 24/09/2026, idée de Sarah : « d'un
- * côté la fiche, de l'autre les talents ») : un comparateur, la fiche à
- * gauche (image, tagline, videopitch), les talents à droite, la barre au
- * milieu qu'on tire par sa poignée. Remplace les onglets « Videopitch » /
- * « L'auteur » (OngletsCadre, gardé pour un retour en arrière).
+ * Le cadre de la fiche projet (ESSAI du 24/09/2026) : un comparateur, la
+ * fiche à gauche (image, tagline, bouton play du videopitch comme sur
+ * WFG 1), les personnages à droite — à défaut, les talents —, la barre au
+ * milieu qu'on tire par sa poignée. L'auteur (ou l'équipe) en petit sous
+ * le cadre. Remplace les onglets « Videopitch » / « L'auteur »
+ * (OngletsCadre, gardé pour un retour en arrière).
  *
  * Le nombre de fiches de lecture n'est plus affiché sous le cadre (retiré
  * à la demande de Sarah le 24/09).
  */
 export default function CadreEquipe({
   equipe,
+  personnages,
   videopitch,
   image,
   tagline,
 }: {
   equipe: MembreEquipe[];
+  personnages: PersonnageCadre[];
   /** L'image de présentation (adresse signée), s'il y en a une. */
   image: string | null;
   tagline: string | null;
@@ -67,15 +78,76 @@ export default function CadreEquipe({
     </div>
   );
 
+  const titreEquipe = equipe.length > 1 ? "Mon équipe" : "L'auteur";
+
+  const cotePersonnages = (
+    <div className={styles.coteEquipe}>
+      <ul className={styles.personnagesCadre}>
+        {personnages.map((c) => (
+          <li key={c.id}>
+            <span className={styles.portrait} aria-hidden="true">
+              {c.portrait ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={c.portrait} alt="" />
+              ) : (
+                <span>{c.nom.trim().charAt(0).toUpperCase()}</span>
+              )}
+            </span>
+            <span className={styles.nom}>{c.nom}</span>
+            {c.infos && <span className={styles.infos}>{c.infos}</span>}
+            {c.bio && <span className={styles.bio}>{c.bio}</span>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
+  // L'auteur ou l'équipe, en petit sous le cadre.
+  const bandeauEquipe = (
+    <div className={styles.bandeauEquipe}>
+      <span className={styles.bandeauTitre}>{titreEquipe}</span>
+      <ul>
+        {equipe.map((m) => (
+          <li key={m.cle} className={m.enAttente ? styles.attente : undefined}>
+            <span className={styles.miniPortrait} aria-hidden="true">
+              {m.photo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={m.photo} alt="" />
+              ) : (
+                <span>{m.nom.trim().charAt(0).toUpperCase()}</span>
+              )}
+            </span>
+            <span>
+              {m.nom}
+              {m.role && <strong> · {m.role}</strong>}
+            </span>
+            {m.enAttente ? (
+              <span className={styles.enAttente}>{m.enAttente}</span>
+            ) : (
+              m.profileId && (
+                <Link href={`/membres/${m.profileId}`} className={styles.voir}>
+                  Voir le profil
+                </Link>
+              )
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
+  const avecPersonnages = personnages.length > 0;
+
   return (
     <section className={`${styles.cadre} ${styles.cadreComparateur}`}>
       <ComparateurAvantApres
         poigneeSeule
         format="16 / 10"
-        etiquettes={["La fiche", "Les talents"]}
+        etiquettes={["La fiche", avecPersonnages ? "Les personnages" : titreEquipe]}
         gauche={<CoteFiche image={image} tagline={tagline} videopitch={videopitch} />}
-        droite={portraits}
+        droite={avecPersonnages ? cotePersonnages : portraits}
       />
+      {avecPersonnages && bandeauEquipe}
     </section>
   );
 }
