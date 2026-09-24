@@ -188,27 +188,11 @@
   text-transform: none;
 }
 
-/* Le titre est un lien vers /succes : la flèche avance au survol. */
-.storiesLien {
-  color: inherit;
-  text-decoration: none;
-}
-
-.storiesLien span {
+/* Le titre est le bouton de la plateforme, en plus grand. */
+.storiesBouton {
   display: inline-block;
-  color: var(--engagement);
-  transition: transform 0.3s ease;
-}
-
-.storiesLien:hover span,
-.storiesLien:focus-visible span {
-  transform: translateX(6px);
-}
-
-.storiesLien:hover {
-  text-decoration: underline;
-  text-decoration-color: var(--engagement);
-  text-underline-offset: 6px;
+  font-size: 22px;
+  text-decoration: none;
 }
 
 .affiches {
