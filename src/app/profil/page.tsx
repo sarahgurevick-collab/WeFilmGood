@@ -122,7 +122,7 @@ export default async function ProfilPage({
         {/* L'affiche : la fiche telle que la voient les producteurs. Ce qui
             manque y apparaît en pointillés, et mène au bloc qui le remplit. */}
         <section className={styles.affiche} aria-label="Votre fiche">
-          <p className={styles.afficheSurtitre}>Ce que voient les producteurs</p>
+          <p className={styles.afficheSurtitre}>Ce que voit un talent connecté</p>
           <div className={styles.affichePhoto} aria-hidden="true">
             {fiche?.avatar_url ? (
               // eslint-disable-next-line @next/next/no-img-element
