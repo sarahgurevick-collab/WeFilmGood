@@ -38,6 +38,9 @@ export default function Assistant({
   visiteur?: boolean;
 }) {
   const [email, setEmail] = useState(emailConnu);
+  // Avec l'IA, l'email d'un visiteur n'est demandé qu'au moment de
+  // transmettre à l'équipe — c'est rare : le tchat répond à presque tout.
+  const [demandeEmail, setDemandeEmail] = useState(false);
   const [ouvert, setOuvert] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [saisie, setSaisie] = useState("");
@@ -126,6 +129,10 @@ export default function Assistant({
   // La conversation part à l'équipe par le même chemin que le formulaire
   // de contact : l'équipe répond par email.
   const transmettre = async () => {
+    if (!email.trim()) {
+      setDemandeEmail(true);
+      return;
+    }
     const echange = [...messages, ...(saisie.trim() ? [{ role: "user" as const, content: saisie.trim() }] : [])];
     if (echange.length === 0) return;
     setTransmission("envoi");
@@ -177,15 +184,16 @@ export default function Assistant({
           </div>
 
           <form onSubmit={envoyer} className={styles.saisie}>
-            {/* L'équipe répond par email : un visiteur doit donner le sien
-                (obligatoire dès l'envoi sans IA, pour « Transmettre » sinon). */}
-            {visiteur && (
+            {/* L'équipe répond par email : un visiteur donne le sien — dès
+                le premier message sans IA, sinon seulement pour « Transmettre ». */}
+            {visiteur && (!ia || demandeEmail) && (
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Votre email"
-                required={!ia}
+                required={!ia || demandeEmail}
+                autoFocus={demandeEmail}
                 className={styles.email}
               />
             )}
@@ -217,11 +225,7 @@ export default function Assistant({
                   type="button"
                   className={styles.transmettre}
                   onClick={transmettre}
-                  disabled={
-                  transmission === "envoi" ||
-                  (messages.length === 0 && !saisie.trim()) ||
-                  !email.trim()
-                }
+                  disabled={transmission === "envoi" || (messages.length === 0 && !saisie.trim())}
                 >
                   {transmission === "envoi" ? "Transmission…" : "Transmettre à l'équipe"}
                 </button>

@@ -115,7 +115,9 @@ export async function POST(request: Request) {
   const membre = await membreAutorise();
   let compte: string;
   let plafond: number;
+  let contexte: string;
   if (membre) {
+    contexte = `Tu parles à un membre connecté${membre.prenom ? `, qui s'appelle ${membre.prenom}` : ""}.`;
     compte = membre.id;
     plafond = PLAFOND_JOUR;
   } else {
@@ -129,6 +131,7 @@ export async function POST(request: Request) {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "inconnue";
     compte = `ip:${ip}`;
     plafond = PLAFOND_VISITEUR;
+    contexte = "Tu parles à un visiteur qui n'a pas encore de compte sur WeFilmGood.";
   }
 
   const jour = new Date().toISOString().slice(0, 10);
@@ -164,7 +167,11 @@ export async function POST(request: Request) {
       stream: true,
       temperature: 0.3,
       max_tokens: 800,
-      messages: [{ role: "system", content: CONSIGNES_ASSISTANT }, ...messages],
+      messages: [
+        { role: "system", content: CONSIGNES_ASSISTANT },
+        { role: "system", content: contexte },
+        ...messages,
+      ],
     }),
   });
 
