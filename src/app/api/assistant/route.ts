@@ -1,4 +1,4 @@
-import { CONSIGNES_ASSISTANT } from "@/lib/assistant/connaissances";
+import { consignesAssistant } from "@/lib/assistant/connaissances";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -154,6 +154,10 @@ export async function POST(request: Request) {
     return Response.json({ erreur: "requête" }, { status: 400 });
   }
 
+  // Les informations sur le site viennent de /admin/tchat, modifiables
+  // par l'administration ; à défaut, la version de départ du code.
+  const { data: informations } = await (await createClient()).rpc("connaissances_tchat");
+
   const reponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -168,7 +172,7 @@ export async function POST(request: Request) {
       temperature: 0.3,
       max_tokens: 800,
       messages: [
-        { role: "system", content: CONSIGNES_ASSISTANT },
+        { role: "system", content: consignesAssistant(informations as string | null) },
         { role: "system", content: contexte },
         ...messages,
       ],
