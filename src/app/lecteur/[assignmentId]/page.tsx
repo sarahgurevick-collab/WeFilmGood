@@ -7,6 +7,7 @@ import EditeurFiche from "./EditeurFiche";
 import { sanitizeFiche } from "@/lib/sanitize";
 import { submitReadingReport } from "./actions";
 import ScoreSlider from "./ScoreSlider";
+import { nomDeLangue } from "@/lib/langues";
 
 type Assignment = {
   id: string;
@@ -81,7 +82,7 @@ export default async function RedactionFichePage({
   return (
     <PageShell eyebrow="Fiche de lecture" title={assignment.project.title} theme="clair">
       <p className={formStyles.hint}>
-        {[assignment.project.format, assignment.project.language].filter(Boolean).join(" · ")}
+        {[assignment.project.format, nomDeLangue(assignment.project.language)].filter(Boolean).join(" · ")}
       </p>
 
       {lireUrl ? (

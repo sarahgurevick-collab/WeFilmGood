@@ -17,6 +17,7 @@ import { BLOCS, etatDesBlocs, hrefBloc } from "../blocs";
 import { AUDIENCES, BUDGETS } from "../ChampsFiche";
 import { signerImages } from "./fichiers";
 import presentation from "./presentation.module.css";
+import { nomDeLangue } from "@/lib/langues";
 
 const FORMATS_LISIBLES: Record<string, string> = {
   long_metrage: "Long métrage",
@@ -277,7 +278,7 @@ export default async function ProjetPage({
           const reperes = [
             project.genre?.label_fr,
             FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
-            project.language,
+            nomDeLangue(project.language),
             project.budget_range ? BUDGET_LISIBLE[project.budget_range] : null,
             project.target_audience ? AUDIENCE_LISIBLE[project.target_audience] : null,
           ].filter((x): x is string => Boolean(x));

@@ -5,6 +5,7 @@ import formStyles from "@/components/form.module.css";
 import styles from "./lecteur.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { respondToAssignment, updateAvailability } from "./actions";
+import { nomDeLangue } from "@/lib/langues";
 
 /**
  * L'orange ne se choisit pas : la plateforme l'allume quand une lecture
@@ -114,7 +115,7 @@ export default async function LecteurPage() {
               <div>
                 <strong>{a.project?.title ?? "Projet supprimé"}</strong>
                 <p className={formStyles.hint}>
-                  {[a.project?.format, a.project?.language].filter(Boolean).join(" · ")}
+                  {[a.project?.format, nomDeLangue(a.project?.language)].filter(Boolean).join(" · ")}
                   {" — attribué le "}
                   {new Date(a.assigned_at).toLocaleDateString("fr-FR")}
                 </p>
