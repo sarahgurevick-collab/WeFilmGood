@@ -88,22 +88,30 @@
 /* Un message qui attend doit se voir : l'onglet pulse doucement tant
    qu'il n'a pas été lu. L'animation s'arrête pour qui a demandé à son
    appareil de limiter les mouvements. */
-.clignote {
+.clignote,
+.clignote:hover {
+  /* L'onglet prend la couleur de l'engagement en cours, la même que le
+     logo, et change avec lui (25/09). Le halo bat doucement dans cette
+     couleur. */
+  background: var(--engagement);
+  color: var(--engagement-texte);
   animation: appelMessage 1.6s ease-in-out infinite;
-  border-radius: 8px;
 }
 
 @keyframes appelMessage {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(226, 35, 26, 0);
+    box-shadow: 0 0 0 0 transparent;
   }
   50% {
-    box-shadow: 0 0 0 3px rgba(226, 35, 26, 0.45);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--engagement) 45%, transparent);
   }
 }
 
+/* La pastille s'inverse : blanche, le nombre à la couleur de l'engagement. */
 .clignote .pastille {
+  background: var(--engagement-texte);
+  color: var(--engagement);
   animation: pastilleMessage 1.6s ease-in-out infinite;
 }
 
@@ -121,9 +129,6 @@
   .clignote,
   .clignote .pastille {
     animation: none;
-  }
-  .clignote {
-    box-shadow: 0 0 0 2px rgba(226, 35, 26, 0.6);
   }
 }
 
