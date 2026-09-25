@@ -29,7 +29,7 @@ export const INFORMATIONS_PAR_DEFAUT = `Connexion et inscription
 
 Profil (menu « Mon profil »)
 - Bloc 1 « Qui êtes-vous ? » (2 minutes) : auteur, producteur ou talent ; référence professionnelle ; langues ; ville et pays. Nécessaire pour déposer un projet. Les coordonnées ne sont jamais montrées aux autres membres.
-- Bloc 2 « Votre parcours » (facultatif) : biofilmographie, compétences, genres de prédilection, agent, réseaux. Visible des membres connectés.
+- Bloc 2 « Votre parcours » (biofilmographie obligatoire, le reste facultatif) : biofilmographie, compétences, genres de prédilection, agent, réseaux. Visible des membres connectés.
 - Bloc 3 « Mieux vous connaître » (facultatif) : le portrait chinois, vingt questions « si j'étais… ».
 - Un profil complet est mieux repéré par les producteurs.
 - Validation : un auteur est actif immédiatement. Un producteur ou un talent (réalisateur, compositeur, comédien…) indique une référence (IMDb, Vimeo, site) montrant au moins une expérience sur un film, un court métrage ou un clip ; avec une référence, le profil est validé d'office, sauf si l'équipe juge la référence fausse. Sans référence, il reste en attente.
