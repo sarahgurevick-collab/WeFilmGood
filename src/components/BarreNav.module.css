@@ -45,20 +45,23 @@
   color: #fff;
 }
 
+/* Le nombre de messages non lus, à côté du mot et non plus caché dans
+   le coin : deux fois plus grand (25/09, remarque de la fille de Sarah :
+   la couleur seule ne dit pas qu'il y a un message). */
 .pastille {
-  position: absolute;
-  top: 2px;
-  right: 4px;
-  min-width: 16px;
-  height: 16px;
+  display: inline-block;
+  vertical-align: middle;
+  min-width: 24px;
+  height: 24px;
+  margin: -4px 0 -4px 8px;
   border-radius: 999px;
   background: #d14b43;
   color: #fff;
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 800;
-  line-height: 16px;
+  line-height: 24px;
   text-align: center;
-  padding: 0 4px;
+  padding: 0 7px;
 }
 
 /* Sur téléphone, la barre descend sous le pouce. */
