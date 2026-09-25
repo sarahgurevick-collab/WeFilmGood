@@ -40,7 +40,6 @@
   font-weight: 800;
   line-height: 0.9;
   letter-spacing: -0.03em;
-  text-transform: uppercase;
   white-space: nowrap;
   will-change: transform;
 }
@@ -48,17 +47,17 @@
 .logo {
   display: flex;
   align-items: flex-end;
-  gap: 0.3em;
+  gap: 2cm;
   will-change: transform;
   max-width: 80vw;
   font-size: clamp(32px, 5vw, 72px);
 }
 
-/* Le « for » après le logo, posé sur la ligne de « GOOD ». */
+/* Le « for » après le logo, posé sur la ligne de « GOOD », en gras
+   droit comme les lettres du logo, à 2 cm de lui. */
 .forLogo {
   line-height: 1;
-  font-style: italic;
-  font-weight: 600;
+  font-weight: 800;
 }
 
 /* Sur téléphone, le logo rapetisse. */
@@ -69,6 +68,7 @@
   }
 
   .logo {
+    gap: 5vw;
     max-width: 90vw;
     font-size: 7vw;
   }
