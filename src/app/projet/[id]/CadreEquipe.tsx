@@ -36,14 +36,10 @@ export type MembreEquipe = {
 export default function CadreEquipe({
   equipe,
   personnages,
-  textes,
   videopitch,
   image,
   avis,
 }: {
-  /** ESSAI (25/09) : la tagline et la logline à droite, à la place des
-      personnages. Si absent, les personnages (puis les talents). */
-  textes?: { tagline: string | null; logline: string | null };
   /** La phrase d'encouragement des lecteurs, pour un projet labellisé. */
   avis: string | null;
   equipe: MembreEquipe[];
@@ -107,32 +103,16 @@ export default function CadreEquipe({
     </div>
   );
 
-  const avecTextes = Boolean(textes && (textes.tagline || textes.logline));
-  const coteTextes = (
-    <div className={`${styles.coteEquipe} ${styles.coteTextes}`}>
-      <div className={styles.textes}>
-        {textes?.tagline && <p className={styles.tagline}>{textes.tagline}</p>}
-        {textes?.logline && <p className={styles.logline}>{textes.logline}</p>}
-      </div>
-    </div>
-  );
-
   const avecPersonnages = personnages.length > 0;
-  const etiquetteDroite = avecTextes
-    ? "Tagline · Logline"
-    : avecPersonnages
-      ? "Les personnages"
-      : titreEquipe;
-  const droite = avecTextes ? coteTextes : avecPersonnages ? cotePersonnages : portraits;
 
   return (
     <section className={`${styles.cadre} ${styles.cadreComparateur}`}>
       <ComparateurAvantApres
         poigneeSeule
         format="16 / 10"
-        etiquettes={["La fiche", etiquetteDroite]}
+        etiquettes={["La fiche", avecPersonnages ? "Les personnages" : titreEquipe]}
         gauche={<CoteFiche image={image} videopitch={videopitch} />}
-        droite={droite}
+        droite={avecPersonnages ? cotePersonnages : portraits}
       />
       {/* Sous le cadre : l'« Avis WeFilmGood » d'un projet labellisé, la
           phrase d'encouragement des lecteurs. Rien s'il n'y en a pas. */}

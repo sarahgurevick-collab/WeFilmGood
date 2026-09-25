@@ -306,7 +306,6 @@ export default async function ProjetPage({
             .join(" · "),
           bio: c.biography,
         }))}
-        textes={{ tagline: project.logline, logline: project.synopsis }}
         image={urlVignette ?? null}
         avis={(avisWfg as string | null) ?? null}
         videopitch={
@@ -416,8 +415,8 @@ export default async function ProjetPage({
         </div>
       )}
 
-      {/* ESSAI (25/09) : la tagline et la logline sont dans le cadre, côté
-          droit du comparateur, et ne sont plus répétées ici. */}
+      {project.logline && <p style={{ marginTop: 24 }}>{project.logline}</p>}
+      {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
 
       {project.has_awards && (
         <p className={presentation.prix}>
