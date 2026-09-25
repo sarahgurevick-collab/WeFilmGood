@@ -2,7 +2,6 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import LabelWFG from "@/components/LabelWFG";
-import VideopitchLecteur from "@/components/VideopitchLecteur";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
@@ -306,16 +305,13 @@ export default async function ProjetPage({
             .join(" · "),
           bio: c.biography,
         }))}
+        moodboard={moodboard.map((m) => urls.get(m.storage_path)).filter((u): u is string => Boolean(u))}
         image={urlVignette ?? null}
         avis={(avisWfg as string | null) ?? null}
         videopitch={
-          videopitch?.videopitch_fr || videopitch?.videopitch_en ? (
-            <VideopitchLecteur
-              fr={videopitch.videopitch_fr}
-              en={videopitch.videopitch_en}
-              titre={project.title}
-            />
-          ) : undefined
+          videopitch?.videopitch_fr || videopitch?.videopitch_en
+            ? { fr: videopitch.videopitch_fr, en: videopitch.videopitch_en, titre: project.title }
+            : undefined
         }
       />
 
@@ -426,22 +422,8 @@ export default async function ProjetPage({
       )}
 
 
-      {moodboard.length > 0 && (
-        <>
-          <h2 className={presentation.section}>Moodboard</h2>
-          <ul className={presentation.moodboard}>
-            {moodboard.map((m) =>
-              urls.get(m.storage_path) ? (
-                <li key={m.id}>
-                  <img src={urls.get(m.storage_path)} alt="" loading="lazy" />
-                </li>
-              ) : null,
-            )}
-          </ul>
-        </>
-      )}
-
-      {/* Les personnages sont dans le cadre, côté droit du comparateur. */}
+      {/* Le moodboard et les personnages sont dans le cadre, côté droit du
+          comparateur (25/09). */}
 
       {isOwner && (
         <>

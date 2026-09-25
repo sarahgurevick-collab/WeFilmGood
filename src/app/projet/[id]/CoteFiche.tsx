@@ -12,9 +12,13 @@ import styles from "./cadre.module.css";
 export default function CoteFiche({
   image,
   videopitch,
+  onVideo,
 }: {
   image: string | null;
   videopitch?: ReactNode;
+  /** Prévient quand on lance la vidéo (le cadre affiche alors le
+      bouton de langue). */
+  onVideo?: () => void;
 }) {
   const [video, setVideo] = useState(false);
 
@@ -33,7 +37,10 @@ export default function CoteFiche({
         <button
           type="button"
           className={styles.play}
-          onClick={() => setVideo(true)}
+          onClick={() => {
+            setVideo(true);
+            onVideo?.();
+          }}
           aria-label="Voir le videopitch"
         >
           <svg viewBox="0 0 100 100" aria-hidden="true">

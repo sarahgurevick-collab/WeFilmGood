@@ -291,6 +291,36 @@
   overflow: hidden;
 }
 
+/* Côté « Moodboard » (25/09) : les photos en mosaïque, sur fond noir. */
+.coteMoodboard {
+  align-items: flex-start;
+  padding: 52px 4% 4%;
+}
+
+.moodboardCadre {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.moodboardCadre li {
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+
+.moodboardCadre img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Sous le cadre : l'« Avis WeFilmGood », en citation. */
 .avis {
   margin: 18px 8px 8px;

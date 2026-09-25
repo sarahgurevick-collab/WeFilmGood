@@ -49,6 +49,35 @@
   transition: opacity 0.3s ease;
 }
 
+/* Une étiquette qui est un bouton : cliquable, à la couleur de
+   l'engagement au survol. */
+.etiquetteBouton {
+  pointer-events: auto;
+  padding: 0;
+}
+
+.etiquetteBouton > button {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.etiquetteBouton > button:hover {
+  background: var(--engagement);
+  color: var(--engagement-texte);
+}
+
+.etiquetteBouton > button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 .etiquetteGauche {
   left: 16px;
 }

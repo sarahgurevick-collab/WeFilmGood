@@ -45,7 +45,8 @@ export default function ComparateurAvantApres({
 }: {
   gauche: ReactNode;
   droite: ReactNode;
-  etiquettes: [string, string];
+  /** Un texte, ou un élément (un bouton) qui reste cliquable. */
+  etiquettes: [ReactNode, ReactNode];
   onCote?: (cote: "gauche" | "droite") => void;
   /** true quand les côtés contiennent de quoi cliquer (une vidéo, des
       liens) : seule la poignée fait glisser la barre. */
@@ -195,7 +196,7 @@ export default function ComparateurAvantApres({
     <div
       ref={cadre}
       role="group"
-      aria-label={`${etiquettes[0]} ou ${etiquettes[1]}`}
+      aria-label="Comparateur"
       className={`${styles.cadre} ${poigneeSeule ? styles.poigneeSeule : ""} ${tire ? styles.tire : ""}`}
       style={{ aspectRatio: format }}
       {...(poigneeSeule
@@ -213,25 +214,28 @@ export default function ComparateurAvantApres({
         {gauche}
       </div>
 
-      {etiquettes.map((texte, i) => (
-        <span
-          key={texte}
-          ref={(el) => {
-            etiquettesRefs.current[i] = el;
-          }}
-          aria-hidden="true"
-          className={`${styles.etiquette} ${i === 0 ? styles.etiquetteGauche : styles.etiquetteDroite}`}
-        >
-          {texte}
-        </span>
-      ))}
+      {etiquettes.map((texte, i) => {
+        const bouton = typeof texte !== "string";
+        return (
+          <span
+            key={i}
+            ref={(el) => {
+              etiquettesRefs.current[i] = el;
+            }}
+            aria-hidden={bouton ? undefined : "true"}
+            className={`${styles.etiquette} ${bouton ? styles.etiquetteBouton : ""} ${i === 0 ? styles.etiquetteGauche : styles.etiquetteDroite}`}
+          >
+            {texte}
+          </span>
+        );
+      })}
 
       <div ref={barre} className={styles.barre} style={{ left: `${affiche}%` }}>
         <button
           ref={poignee}
           type="button"
           role="slider"
-          aria-label={`Glisser entre ${etiquettes[0]} et ${etiquettes[1]}`}
+          aria-label="Glisser entre les deux côtés"
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={affiche}

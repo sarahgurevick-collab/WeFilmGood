@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import ComparateurAvantApres from "@/components/ComparateurAvantApres";
+import VideopitchLecteur from "@/components/VideopitchLecteur";
 import CoteFiche from "./CoteFiche";
 import styles from "./cadre.module.css";
 
@@ -32,23 +35,41 @@ export type MembreEquipe = {
  *
  * Le nombre de fiches de lecture n'est plus affiché sous le cadre (retiré
  * à la demande de Sarah le 24/09).
+ *
+ * Côté droit (25/09) : le moodboard s'il y a des photos, sinon les
+ * personnages, sinon les talents. Quand il y a moodboard ET personnages,
+ * l'étiquette du coin devient un bouton qui nomme l'autre vue. Côté
+ * gauche, une fois la vidéo lancée : si le videopitch existe aussi en
+ * anglais, l'étiquette devient le bouton « Version anglaise » (français
+ * par défaut).
  */
 export default function CadreEquipe({
   equipe,
   personnages,
+  moodboard,
   videopitch,
   image,
   avis,
 }: {
+  /** Les photos du moodboard (adresses signées). */
+  moodboard: string[];
   /** La phrase d'encouragement des lecteurs, pour un projet labellisé. */
   avis: string | null;
   equipe: MembreEquipe[];
   personnages: PersonnageCadre[];
   /** L'image de présentation (adresse signée), s'il y en a une. */
   image: string | null;
-  /** Le lecteur vidéo, s'il y a un videopitch : il devient le premier onglet. */
-  videopitch?: ReactNode;
+  /** Le videopitch (identifiants Vimeo), s'il y en a un. */
+  videopitch?: { fr: string | null; en: string | null; titre: string };
 }) {
+  const avecMoodboard = moodboard.length > 0;
+  const avecPersonnages = personnages.length > 0;
+  const [vue, setVue] = useState<"moodboard" | "personnages">(
+    avecMoodboard ? "moodboard" : "personnages",
+  );
+  const [videoLancee, setVideoLancee] = useState(false);
+  const [langue, setLangue] = useState<"fr" | "en">(videopitch?.fr ? "fr" : "en");
+
   const portraits = (
     <div className={styles.coteEquipe}>
       <ul className={styles.portraits}>
@@ -103,16 +124,73 @@ export default function CadreEquipe({
     </div>
   );
 
-  const avecPersonnages = personnages.length > 0;
+  const coteMoodboard = (
+    <div className={`${styles.coteEquipe} ${styles.coteMoodboard}`}>
+      <ul className={styles.moodboardCadre}>
+        {moodboard.map((src) => (
+          <li key={src}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={src} alt="" loading="lazy" draggable={false} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
+  // Ce que montre le côté droit, et son étiquette (un bouton quand on
+  // peut passer d'une vue à l'autre).
+  let droite = portraits;
+  let etiquetteDroite: ReactNode = titreEquipe;
+  if (avecMoodboard && avecPersonnages) {
+    droite = vue === "moodboard" ? coteMoodboard : cotePersonnages;
+    etiquetteDroite = (
+      <button type="button" onClick={() => setVue(vue === "moodboard" ? "personnages" : "moodboard")}>
+        {vue === "moodboard" ? "Les personnages" : "Moodboard"}
+      </button>
+    );
+  } else if (avecMoodboard) {
+    droite = coteMoodboard;
+    etiquetteDroite = "Moodboard";
+  } else if (avecPersonnages) {
+    droite = cotePersonnages;
+    etiquetteDroite = "Les personnages";
+  }
+
+  // Côté gauche : le bouton de langue, seulement une fois la vidéo lancée
+  // et s'il y a bien une version anglaise en plus de la française.
+  const deuxLangues = Boolean(videopitch?.fr && videopitch?.en);
+  const etiquetteGauche: ReactNode =
+    videoLancee && deuxLangues ? (
+      <button type="button" onClick={() => setLangue(langue === "fr" ? "en" : "fr")}>
+        {langue === "fr" ? "Version anglaise" : "Version française"}
+      </button>
+    ) : (
+      "La fiche"
+    );
 
   return (
     <section className={`${styles.cadre} ${styles.cadreComparateur}`}>
       <ComparateurAvantApres
         poigneeSeule
         format="16 / 10"
-        etiquettes={["La fiche", avecPersonnages ? "Les personnages" : titreEquipe]}
-        gauche={<CoteFiche image={image} videopitch={videopitch} />}
-        droite={avecPersonnages ? cotePersonnages : portraits}
+        etiquettes={[etiquetteGauche, etiquetteDroite]}
+        gauche={
+          <CoteFiche
+            image={image}
+            onVideo={() => setVideoLancee(true)}
+            videopitch={
+              videopitch && (videopitch.fr || videopitch.en) ? (
+                <VideopitchLecteur
+                  fr={videopitch.fr}
+                  en={videopitch.en}
+                  titre={videopitch.titre}
+                  langue={deuxLangues ? langue : undefined}
+                />
+              ) : undefined
+            }
+          />
+        }
+        droite={droite}
       />
       {/* Sous le cadre : l'« Avis WeFilmGood » d'un projet labellisé, la
           phrase d'encouragement des lecteurs. Rien s'il n'y en a pas. */}

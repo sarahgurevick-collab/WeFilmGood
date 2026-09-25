@@ -12,18 +12,23 @@ export default function VideopitchLecteur({
   fr,
   en,
   titre,
+  langue: langueImposee,
 }: {
   fr: string | null;
   en: string | null;
   titre: string;
+  /** Langue choisie ailleurs (le bouton du cadre de la fiche projet) :
+      l'interrupteur n'est alors pas affiché. */
+  langue?: "fr" | "en";
 }) {
-  const [langue, setLangue] = useState<"fr" | "en">(fr ? "fr" : "en");
-  const vimeoId = langue === "fr" ? fr : en;
+  const [langueLocale, setLangue] = useState<"fr" | "en">(fr ? "fr" : "en");
+  const langue = langueImposee ?? langueLocale;
+  const vimeoId = (langue === "fr" ? fr : en) ?? fr ?? en;
   if (!vimeoId) return null;
 
   return (
     <div className={styles.lecteur}>
-      {fr && en && (
+      {fr && en && !langueImposee && (
         // L'interrupteur de WFG 1 : rouge, le texte d'un côté, le rond de
         // l'autre. Il affiche la langue en cours ; un clic passe à l'autre.
         <button
