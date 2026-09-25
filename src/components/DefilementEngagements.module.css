@@ -40,6 +40,7 @@
   font-weight: 700;
   line-height: 0.9;
   letter-spacing: -0.03em;
+  text-transform: none; /* le site met tout en capitales par défaut */
   white-space: nowrap;
   will-change: transform;
 }
@@ -58,6 +59,7 @@
 .forLogo {
   line-height: 1;
   font-weight: 700;
+  text-transform: none;
 }
 
 /* Sur téléphone, le logo rapetisse. */
