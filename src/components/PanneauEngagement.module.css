@@ -5,8 +5,10 @@
   justify-content: center;
   gap: 28px;
   padding: 40px;
-  background: var(--engagement);
-  color: var(--engagement-texte);
+  /* Sur fond noir (25/09, second essai) : c'est le logo et les mots qui
+     prennent la couleur de l'engagement, pas le fond. */
+  background: #000;
+  color: var(--engagement);
   text-transform: none;
   letter-spacing: 0;
   overflow: hidden;

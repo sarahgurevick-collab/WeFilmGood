@@ -9,10 +9,10 @@ import styles from "./PanneauEngagement.module.css";
 
 /*
  * ESSAI (25/09/2026) — le panneau de l'accueil, en version fixe, pour la
- * moitié gauche des pages de connexion et d'inscription : le fond prend
- * la couleur de l'horloge des engagements, le logo en blanc suivi de
- * « for », et le mot de l'engagement en cours (Planet, Humanity,
- * Education) dessous — rien sur le rouge, qui est WeFilmGood tout court.
+ * moitié gauche des pages de connexion et d'inscription : sur fond noir,
+ * le logo suivi de « for » et le mot de l'engagement en cours (Planet,
+ * Humanity, Education) prennent la couleur de l'horloge des engagements
+ * — rien sous le logo sur le rouge, qui est WeFilmGood tout court.
  * Page d'avant : étiquette git « connexion-avant-panneau ».
  */
 const lettrage = Fredoka({ subsets: ["latin"], weight: "700" });
