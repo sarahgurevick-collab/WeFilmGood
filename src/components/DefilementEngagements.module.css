@@ -45,25 +45,32 @@
   will-change: transform;
 }
 
-.for {
-  margin: 0 0 0.12em 0.08em;
-  font-size: 0.22em;
-  font-style: italic;
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
-}
-
 .logo {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.3em;
   will-change: transform;
   max-width: 80vw;
+  font-size: clamp(32px, 5vw, 72px);
+}
+
+/* Le « for » après le logo, posé sur la ligne de « GOOD ». */
+.forLogo {
+  line-height: 1;
+  font-style: italic;
+  font-weight: 600;
 }
 
 /* Sur téléphone, le logo rapetisse. */
 @media (max-width: 720px) {
-  .logo > span {
+  .logo > span:first-child {
     width: 70vw !important;
     height: calc(70vw * 1113 / 1381) !important;
+  }
+
+  .logo {
+    max-width: 90vw;
+    font-size: 7vw;
   }
 }
 

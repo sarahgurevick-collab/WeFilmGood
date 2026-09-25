@@ -12,8 +12,10 @@ import styles from "./DefilementEngagements.module.css";
  * que lui. Page d'accueil d'avant : étiquette git
  * « accueil-avant-scroll-horizontal ».
  *
- * Rouge : le logo seul (le nom fait partie du dessin, on ne le récrit
- * pas). Puis vert, jaune, bleu : for Planet, for Humanity, for Education.
+ * Rouge : le logo suivi de « for » (le nom fait partie du dessin, on ne le
+ * récrit pas). Puis vert, jaune, bleu : Planet, Humanity, Education — la
+ * phrase se lit d'un panneau à l'autre, le « for » n'est dit qu'une fois
+ * (25/09).
  */
 const PANNEAUX = [
   { cle: "wfg", fond: "#DA2C25", texte: "#fff", mot: null },
@@ -79,7 +81,6 @@ export default function DefilementEngagements() {
                   }}
                   className={styles.mot}
                 >
-                  <span className={styles.for}>for</span>
                   {pan.mot}
                 </h2>
               ) : (
@@ -90,6 +91,7 @@ export default function DefilementEngagements() {
                   className={styles.logo}
                 >
                   <LogoComplet hauteur={260} couleur="#fff" />
+                  <span className={styles.forLogo}>for</span>
                 </div>
               )}
             </li>
