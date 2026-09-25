@@ -14,7 +14,7 @@ import styles from "./DefilementEngagements.module.css";
  * « accueil-avant-scroll-horizontal ».
  *
  * Rouge : le logo suivi de « for » (le nom fait partie du dessin, on ne le
- * récrit pas). Puis vert, jaune, bleu : planet, humanity, education — la
+ * récrit pas). Puis vert, jaune, bleu : Planet, Humanity, Education — la
  * phrase se lit d'un panneau à l'autre, le « for » n'est dit qu'une fois
  * (25/09).
  */
@@ -24,9 +24,9 @@ const lettrage = Fredoka({ subsets: ["latin"], weight: "700" });
 
 const PANNEAUX = [
   { cle: "wfg", fond: "#DA2C25", texte: "#fff", mot: null },
-  { cle: "planet", fond: "#35B05E", texte: "#fff", mot: "planet" },
-  { cle: "humanity", fond: "#F2C230", texte: "#1a1a1a", mot: "humanity" },
-  { cle: "education", fond: "#3B8EF5", texte: "#fff", mot: "education" },
+  { cle: "planet", fond: "#35B05E", texte: "#fff", mot: "Planet" },
+  { cle: "humanity", fond: "#F2C230", texte: "#1a1a1a", mot: "Humanity" },
+  { cle: "education", fond: "#3B8EF5", texte: "#fff", mot: "Education" },
 ];
 
 export default function DefilementEngagements() {
