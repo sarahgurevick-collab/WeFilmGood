@@ -291,6 +291,35 @@
   overflow: hidden;
 }
 
+/* Côté « Tagline · Logline » (ESSAI 25/09) : la tagline en grand, la
+   logline dessous, sur fond noir. */
+.coteTextes {
+  padding: 8% 9%;
+  container-type: inline-size;
+}
+
+.textes {
+  margin: auto;
+  max-width: 34em;
+  color: #fff;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.tagline {
+  margin: 0;
+  font-size: clamp(18px, 4.2cqi, 30px);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.logline {
+  margin: 0.9em 0 0;
+  font-size: clamp(13px, 2.6cqi, 17px);
+  line-height: 1.55;
+  color: #d6d6d6;
+}
+
 /* Sous le cadre : l'« Avis WeFilmGood », en citation. */
 .avis {
   margin: 18px 8px 8px;
