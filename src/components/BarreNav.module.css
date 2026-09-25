@@ -39,9 +39,10 @@
 .onglet { color: var(--dim); }
 .onglet:hover { color: var(--fg); }
 
+/* L'onglet de la page où l'on est : rouge WeFilmGood, pas blanc (25/09). */
 .ongletActif {
-  background: var(--fg);
-  color: var(--bg);
+  background: var(--rouge-wfg);
+  color: #fff;
 }
 
 .pastille {
