@@ -127,9 +127,11 @@
   color: var(--fg);
 }
 
+/* L'onglet sélectionné en rouge WeFilmGood, comme dans la barre de
+   navigation (25/09). */
 .tabActive {
-  background: var(--fg);
-  color: var(--bg);
+  background: var(--rouge-wfg);
+  color: #fff;
 }
 
 @media (max-width: 620px) {
