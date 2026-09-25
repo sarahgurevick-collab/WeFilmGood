@@ -1,5 +1,6 @@
 "use client";
 
+import { Fredoka } from "next/font/google";
 import { useEffect, useRef } from "react";
 import LogoComplet from "./LogoComplet";
 import styles from "./DefilementEngagements.module.css";
@@ -13,15 +14,19 @@ import styles from "./DefilementEngagements.module.css";
  * « accueil-avant-scroll-horizontal ».
  *
  * Rouge : le logo suivi de « for » (le nom fait partie du dessin, on ne le
- * récrit pas). Puis vert, jaune, bleu : Planet, Humanity, Education — la
+ * récrit pas). Puis vert, jaune, bleu : planet, humanity, education — la
  * phrase se lit d'un panneau à l'autre, le « for » n'est dit qu'une fois
  * (25/09).
  */
+/* Le lettrage du logo : Fredoka en gras est la police la plus proche
+   (bouts arrondis, « M » pointu). Tout en minuscules (25/09). */
+const lettrage = Fredoka({ subsets: ["latin"], weight: "700" });
+
 const PANNEAUX = [
   { cle: "wfg", fond: "#DA2C25", texte: "#fff", mot: null },
-  { cle: "planet", fond: "#35B05E", texte: "#fff", mot: "Planet" },
-  { cle: "humanity", fond: "#F2C230", texte: "#1a1a1a", mot: "Humanity" },
-  { cle: "education", fond: "#3B8EF5", texte: "#fff", mot: "Education" },
+  { cle: "planet", fond: "#35B05E", texte: "#fff", mot: "planet" },
+  { cle: "humanity", fond: "#F2C230", texte: "#1a1a1a", mot: "humanity" },
+  { cle: "education", fond: "#3B8EF5", texte: "#fff", mot: "education" },
 ];
 
 export default function DefilementEngagements() {
@@ -79,7 +84,7 @@ export default function DefilementEngagements() {
                   ref={(el) => {
                     mots.current[i] = el;
                   }}
-                  className={styles.mot}
+                  className={`${styles.mot} ${lettrage.className}`}
                 >
                   {pan.mot}
                 </h2>
@@ -91,7 +96,7 @@ export default function DefilementEngagements() {
                   className={styles.logo}
                 >
                   <LogoComplet hauteur={260} couleur="#fff" />
-                  <span className={styles.forLogo}>for</span>
+                  <span className={`${styles.forLogo} ${lettrage.className}`}>for</span>
                 </div>
               )}
             </li>
