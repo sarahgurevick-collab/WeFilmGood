@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import LogoAnime from "./LogoAnime";
 import LogoComplet from "./LogoComplet";
+import PanneauEngagement from "./PanneauEngagement";
 import styles from "./AuthCard.module.css";
 
 /**
@@ -33,6 +34,10 @@ export default function AuthCard({
 }) {
   return (
     <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
+      {/* ESSAI (25/09) : la moitié gauche de l'écran est le panneau rouge de
+          l'accueil (logo + « for », couleur de l'horloge). Sur téléphone, il
+          n'y a pas la place : la carte seule. */}
+      <PanneauEngagement />
       {/* Avec le logo animé (page d'arrivée du lien), l'horloge des
           engagements tourne plus vite sur toute la carte : on clique vite,
           et le bouton suit le logo. */}

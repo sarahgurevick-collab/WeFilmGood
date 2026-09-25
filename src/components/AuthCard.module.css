@@ -1,12 +1,29 @@
-/* Cadre calé en haut, pas centré : il ne bouge pas d'une page à l'autre. */
+/* ESSAI (25/09) : l'écran en deux moitiés — le panneau des engagements à
+   gauche, la carte à droite, calée en haut : elle ne bouge pas d'une page
+   à l'autre. Page d'avant : étiquette git « connexion-avant-panneau ». */
 .page {
   min-height: 100vh;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 64px 16px 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   background: var(--bg);
   color: var(--fg);
+}
+
+.page > .card {
+  justify-self: center;
+  align-self: start;
+  margin: 64px 16px 48px;
+}
+
+/* Sur un écran étroit, pas de place pour deux moitiés : la carte seule. */
+@media (max-width: 900px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .page > :first-child:not(.card) {
+    display: none;
+  }
 }
 
 /*
