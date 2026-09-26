@@ -4,6 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 
 export default async function CguvPage() {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const { data: doc } = await supabase
     .from("legal_documents")
     .select("title, content, updated_at")
@@ -15,6 +18,8 @@ export default async function CguvPage() {
       eyebrow="Mentions légales"
       title={doc?.title ?? "Conditions Générales d'Utilisation et de Vente"}
       theme="clair"
+      enTeteAnime
+      connecte={!!user}
     >
       {doc?.content ? (
         <div style={{ whiteSpace: "pre-wrap", fontSize: 14, lineHeight: 1.7 }}>

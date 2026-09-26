@@ -11,7 +11,7 @@ export default async function LecteurInscriptionPage({
 
   if (envoye) {
     return (
-      <PageShell eyebrow="Lecteurs" title="Vérifie ta boîte mail">
+      <PageShell eyebrow="Lecteurs" title="Vérifie ta boîte mail" enTeteAnime>
         <p className={formStyles.hint}>
           Un email vient de t&apos;être envoyé. Clique sur le lien qu&apos;il
           contient : ton compte sera activé et tu seras connecté. Rien reçu ?
@@ -22,7 +22,7 @@ export default async function LecteurInscriptionPage({
   }
 
   return (
-    <PageShell eyebrow="Lecteurs" title="Créer un profil lecteur">
+    <PageShell eyebrow="Lecteurs" title="Créer un profil lecteur" enTeteAnime>
       <form className={formStyles.form} action={signUpReader}>
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
