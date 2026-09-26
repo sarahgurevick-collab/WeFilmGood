@@ -15,6 +15,7 @@ import profilStyles from "@/app/profil/profil.module.css";
 import { BLOCS, etatDesBlocs, hrefBloc } from "../blocs";
 import { AUDIENCES, BUDGETS } from "../ChampsFiche";
 import { signerImages } from "./fichiers";
+import { chargerFiches } from "./fiches-donnees";
 import presentation from "./presentation.module.css";
 import { nomDeLangue } from "@/lib/langues";
 
@@ -167,6 +168,9 @@ export default async function ProjetPage({
   const taux = tauxDeRemplissage(etatFiche);
   const aFaire = prochaineAction(etatFiche);
   const etatBlocs = isOwner || estAdmin ? await etatDesBlocs(supabase, id) : null;
+  // Les fiches de lecture (héritées et publiées) : la base ne les rend
+  // qu'à l'auteur et à l'administration. Un bouton y mène s'il y en a.
+  const fiches = isOwner || estAdmin ? await chargerFiches(supabase, id) : [];
   const prochainBloc = etatBlocs ? (BLOCS.find((b) => !etatBlocs.fait[b.cle]) ?? null) : null;
 
   const { data: auteur } = await supabase
@@ -315,6 +319,16 @@ export default async function ProjetPage({
         }
       />
 
+      {/* Le bouton vers les fiches de lecture, sous le cadre (26/09) :
+          l'auteur et l'administration seulement, et seulement s'il y en a. */}
+      {fiches.length > 0 && (
+        <p style={{ marginTop: 20 }}>
+          <Link href={`/projet/${project.id}/fiches`} className={formStyles.submit} style={{ display: "inline-block" }}>
+            Fiches de lecture ({fiches.length})
+          </Link>
+        </p>
+      )}
+
       {/* Seulement du dépôt à la validation de la fiche de lecture :
           une fois l'analyse disponible, le suivi n'a plus d'objet. */}
       {(isOwner || estAdmin) && etatLecture && etatLecture.etat !== "disponible" && (
@@ -448,11 +462,6 @@ export default async function ProjetPage({
             </button>
           </form>
 
-          <p className={formStyles.linkRow} style={{ marginTop: 40 }}>
-            <Link href={`/projet/${project.id}/fiche-lecture`}>
-              Voir la fiche de lecture de mon projet
-            </Link>
-          </p>
         </>
       )}
 
