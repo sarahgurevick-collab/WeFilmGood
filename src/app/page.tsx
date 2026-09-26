@@ -61,9 +61,13 @@ export default async function Home() {
         </Link>
       </div>
 
-      <div className={styles.barreNavMobileSeule}>
-        <BarreNav connecte={!!auth?.user} />
-      </div>
+      {/* La barre au pouce, sur téléphone : pour les membres seulement. Un
+          visiteur n'a que l'accueil, et le bouton de connexion en haut. */}
+      {auth?.user && (
+        <div className={styles.barreNavMobileSeule}>
+          <BarreNav connecte />
+        </div>
+      )}
 
       <div className={styles.ui}>
         <div className={`${styles.corner} ${styles.topLeft}`}>
