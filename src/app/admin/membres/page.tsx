@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../admin.module.css";
 import { prendreLaPlace } from "../profils/prise-de-place";
 import styles from "./page.module.css";
+import CasesAffichage from "./CasesAffichage";
 
 type Membre = {
   profile_id: string;
@@ -16,6 +17,8 @@ type Membre = {
   role_wfg1: string | null;
   country: string | null;
   city: string | null;
+  postal_code: string | null;
+  avatar_url: string | null;
   website: string | null;
   biofilmo: string | null;
   validation_status: string;
@@ -255,25 +258,18 @@ export default async function MembresPage({
           <option value="nom">Tri : nom</option>
         </select>
 
-        {/* « Affichage » : les colonnes qu'on ajoute ou retire. */}
-        <details className={styles.affichage}>
-          <summary>Affichage</summary>
-          <div className={styles.cases}>
-            {(
-              [
-                ["etendu", "Profil étendu"],
-                ["biofilmo", "Biofilmo"],
-                ["inscription", "Date d'inscription"],
-                ["activite", "Dernière activité"],
-              ] as [string, string][]
-            ).map(([cle, l]) => (
-              <label key={cle}>
-                <input type="checkbox" name="aff" value={cle} defaultChecked={affichage.has(cle)} />
-                {l}
-              </label>
-            ))}
-          </div>
-        </details>
+        {/* « Affichage » : ce qu'on ajoute ou retire, comme sur WFG 1 —
+            le profil étendu (photo, email, pays, code postal) dans la
+            case du membre, les autres en colonnes. */}
+        <CasesAffichage
+          cases={[
+            ["etendu", "Profil étendu"],
+            ["biofilmo", "Biofilmo"],
+            ["inscription", "Date d'inscription"],
+            ["activite", "Dernière activité"],
+          ]}
+          cochees={[...affichage]}
+        />
 
         <button type="submit" className={formStyles.submit}>
           Filtrer
@@ -296,8 +292,6 @@ export default async function MembresPage({
             <tr>
               <th>Membre</th>
               <th>Métier</th>
-              {affichage.has("etendu") && <th>Pays · ville</th>}
-              {affichage.has("etendu") && <th>Référence</th>}
               <th>Projets</th>
               <th>Formats</th>
               <th>Adhésion</th>
@@ -311,31 +305,42 @@ export default async function MembresPage({
             {visibles.map((m) => (
               <tr key={m.profile_id}>
                 <td>
-                  <Link href={`/membres/${m.profile_id}`}>{m.full_name ?? "Sans nom"}</Link>
-                  <br />
-                  <span className={formStyles.hint}>{m.email}</span>
+                  {affichage.has("etendu") ? (
+                    <div className={styles.etendu}>
+                      <span className={styles.photo} aria-hidden="true">
+                        {m.avatar_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={m.avatar_url} alt="" />
+                        ) : (
+                          <span>{(m.full_name ?? "?").trim().charAt(0).toUpperCase()}</span>
+                        )}
+                      </span>
+                      <div>
+                        <Link href={`/membres/${m.profile_id}`}>{m.full_name ?? "Sans nom"}</Link>
+                        <br />
+                        <span className={formStyles.hint}>{m.email}</span>
+                        <br />
+                        <span className={formStyles.hint}>
+                          {[nomDuPays(m.country), m.postal_code, m.city].filter((x) => x && x !== "—").join(" · ") || "—"}
+                        </span>
+                        {m.website && (
+                          <>
+                            <br />
+                            <a href={m.website} target="_blank" rel="noopener noreferrer" className={formStyles.hint}>
+                              {m.website.replace(/^https?:\/\/(www\.)?/, "").slice(0, 40)}
+                            </a>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <Link href={`/membres/${m.profile_id}`}>{m.full_name ?? "Sans nom"}</Link>
+                  )}
                 </td>
                 <td>
                   {metierDe(m)}
                   {m.est_lecteur && <span className={adminStyles.badge}>lecteur</span>}
                 </td>
-                {affichage.has("etendu") && (
-                  <td>
-                    {nomDuPays(m.country)}
-                    {m.city ? ` · ${m.city}` : ""}
-                  </td>
-                )}
-                {affichage.has("etendu") && (
-                  <td>
-                    {m.website ? (
-                      <a href={m.website} target="_blank" rel="noopener noreferrer">
-                        {m.website.replace(/^https?:\/\/(www\.)?/, "").slice(0, 32)}
-                      </a>
-                    ) : (
-                      <span className={formStyles.hint}>—</span>
-                    )}
-                  </td>
-                )}
                 <td>
                   {m.nb_projets}
                   {m.dernier_projet_annee ? (
