@@ -72,7 +72,7 @@ export default async function ProfilsPage() {
     .slice(0, 60);
 
   return (
-    <PageShell
+    <PageShell nav="admin"
       avantTitre={<NavAdmin />}
      
       title="Profils"

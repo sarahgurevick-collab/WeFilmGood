@@ -59,7 +59,7 @@ export default async function FicheAdminPage({
   const score = publication?.score ?? report.score ?? 0;
 
   return (
-    <PageShell
+    <PageShell nav="admin"
       avantTitre={<NavAdmin />}
       eyebrow="Fiche de lecture"
       title={report.project?.title ?? "Projet"}

@@ -17,7 +17,7 @@ export default async function ApercuRelecturePage() {
   if (!isAdmin) redirect("/");
 
   return (
-    <PageShell
+    <PageShell nav="admin"
       avantTitre={<NavAdmin />}
       eyebrow="Fiche de lecture — aperçu"
       title="Titre du projet"

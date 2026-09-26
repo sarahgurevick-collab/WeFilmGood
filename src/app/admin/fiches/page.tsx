@@ -271,7 +271,7 @@ export default async function TableauFichesPage({
     annees.push(a);
 
   return (
-    <PageShell
+    <PageShell nav="admin"
       avantTitre={<NavAdmin />}
      
       title="Fiches de lecture"

@@ -127,7 +127,7 @@ export default async function ProjetsEnAttentePage() {
   ];
 
   return (
-    <PageShell
+    <PageShell nav="admin"
       avantTitre={<NavAdmin />}
 
       title="Assignation"

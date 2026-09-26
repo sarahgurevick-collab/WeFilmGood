@@ -56,7 +56,7 @@ export default async function FicheAnciennePage({
   const aRelire = fiche.statut === 1;
 
   return (
-    <PageShell
+    <PageShell nav="admin"
       avantTitre={<NavAdmin />}
       eyebrow="Fiche de lecture"
       title={fiche.project?.title ?? "Projet supprimé"}

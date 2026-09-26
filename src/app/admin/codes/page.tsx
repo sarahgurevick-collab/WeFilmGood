@@ -36,7 +36,7 @@ export default async function CodesLecteursPage() {
     >();
 
   return (
-    <PageShell
+    <PageShell nav="admin"
       avantTitre={<NavAdmin />}
      
       title="Codes lecteurs"

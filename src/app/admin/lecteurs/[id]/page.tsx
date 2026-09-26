@@ -118,7 +118,7 @@ export default async function FicheLecteurPage({
   const tarif = (lecteur?.tarif_cents ?? 1500) / 100;
 
   return (
-    <PageShell
+    <PageShell nav="admin"
       avantTitre={<NavAdmin />}
       eyebrow="Lecteur"
       title={profil.full_name ?? "Lecteur"}

@@ -74,7 +74,7 @@ export default async function AdminAdhesionsPage({
     (adhesions ?? []).find((a) => a.profile_id === profileId) ?? null;
 
   return (
-    <PageShell
+    <PageShell nav="admin"
       avantTitre={<NavAdmin />}
      
       title="Adhésions"

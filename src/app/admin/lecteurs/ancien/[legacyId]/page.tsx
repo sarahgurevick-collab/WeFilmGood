@@ -69,7 +69,7 @@ export default async function AncienLecteurPage({
   const lieu = [ancien?.city, ancien?.country].filter(Boolean).join(", ");
 
   return (
-    <PageShell
+    <PageShell nav="admin"
       avantTitre={<NavAdmin />}
       eyebrow="Ancien lecteur"
       title={nom}
