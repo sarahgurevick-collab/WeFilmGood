@@ -2,6 +2,12 @@
 // PDF rattaché depuis WFG 1 (project_files.legacy_id « docs/… ») par sa
 // version allégée, au même chemin. Idempotent : un fichier dont la
 // taille en stockage est déjà celle du fichier local n'est pas renvoyé.
+// Les tailles en stockage sont lues d'un export psql (storage.objects
+// n'est pas joignable par l'API) : ~/imports/tailles-stockage.tsv, à
+// régénérer avant chaque lancement :
+//   docker exec supabase-db psql -U postgres -d postgres -Atc "select name || E'\t' || coalesce((metadata->>'size'),'') from storage.objects where bucket_id='scenarios';" > ~/imports/tailles-stockage.tsv
+// Un document annexe (kind « document ») vit sous <compte>/<projet>/docs/,
+// alors que son legacy_id ne garde pas ce sous-dossier.
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
@@ -28,19 +34,25 @@ async function toutLire(construire) {
   }
 }
 
+const tailles = new Map(
+  readFileSync("/home/wfg/imports/tailles-stockage.tsv", "utf8").split("\n").filter(Boolean).map((l) => {
+    const [nom, taille] = l.split("\t");
+    return [nom, Number(taille)];
+  }),
+);
 const lignes = await toutLire(() =>
-  supabase.from("project_files").select("id, storage_path, legacy_id").like("legacy_id", "docs/%").in("kind", ["scenario", "document"]).order("id"),
+  supabase.from("project_files").select("id, storage_path, legacy_id, kind").like("legacy_id", "docs/%").in("kind", ["scenario", "document"]).order("id"),
 );
 let remplaces = 0, dejaBons = 0, nonAlleges = 0, echoues = 0, avant = 0, apres = 0;
 for (const l of lignes) {
-  const local = join(RACINE, l.legacy_id.replace(/^docs\//, ""));
+  const relatif = l.legacy_id.replace(/^docs\//, "");
+  const local = l.kind === "document" ? join(RACINE, relatif.replace(/\/([^/]+)$/, "/docs/$1")) : join(RACINE, relatif);
   if (!existsSync(`${local}.orig.pdf`)) { nonAlleges++; continue; } // jamais allégé (ou gardé tel quel)
   const tailleOrig = statSync(`${local}.orig.pdf`).size;
   const taille = statSync(local).size;
   // La taille en stockage : celle de l'objet ; si elle vaut déjà la
   // taille locale, c'est fait.
-  const { data: objet } = await supabase.schema("storage").from("objects").select("metadata").eq("bucket_id", "scenarios").eq("name", l.storage_path).maybeSingle();
-  if (objet?.metadata?.size === taille) { dejaBons++; continue; }
+  if (tailles.get(l.storage_path) === taille) { dejaBons++; continue; }
   try {
     const { error } = await supabase.storage.from("scenarios").upload(l.storage_path, readFileSync(local), { contentType: "application/pdf", upsert: true });
     if (error) throw error;
