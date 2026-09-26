@@ -3,8 +3,8 @@
     
   </defs>
   <path d="M40 900 A520 520 0 0 1 760 900 Z" fill="#DA2C25"/>
-  <path d="M290 120 Q230 60 165 40 Q185 100 175 190 Q230 130 290 120 Z" fill="#DA2C25"/>
-  <path d="M510 120 Q570 60 635 40 Q615 100 625 190 Q570 130 510 120 Z" fill="#DA2C25"/>
+  <path d="M120 62 L340 100 L200 225 Z" fill="#DA2C25"/>
+  <path d="M680 62 L460 100 L600 225 Z" fill="#DA2C25"/>
   <ellipse cx="400" cy="260" rx="265" ry="175" fill="#F2C230"/>
   <ellipse cx="400" cy="560" rx="235" ry="250" fill="#F2C230"/>
   <g clip-path="url(#corps)">
