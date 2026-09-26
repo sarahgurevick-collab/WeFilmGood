@@ -58,6 +58,26 @@ export default async function FicheAnciennePage({
 
   const aRelire = fiche.statut === 1;
 
+  // Les lecteurs de WFG 2 rattachés à un compte WFG 1 : ce sont eux
+  // qu'on peut mettre sur une fiche héritée (et payer, onglet Lecteurs).
+  const { data: roles } = aRelire
+    ? await admin
+        .from("profile_roles")
+        .select("profile:profiles(full_name, legacy_user_id)")
+        .eq("role_slug", "lecteur")
+        .returns<{ profile: { full_name: string | null; legacy_user_id: number | null } | null }[]>()
+    : { data: null };
+  const lecteurs = (roles ?? [])
+    .map((r) => r.profile)
+    .filter((p): p is { full_name: string | null; legacy_user_id: number } => p?.legacy_user_id != null)
+    .sort((a, b) => (a.full_name ?? "").localeCompare(b.full_name ?? "", "fr"));
+  if (
+    fiche.reader_legacy_id &&
+    !lecteurs.some((l) => l.legacy_user_id === fiche.reader_legacy_id)
+  ) {
+    lecteurs.unshift({ full_name: lecteur?.full_name ?? `Lecteur WFG 1 n° ${fiche.reader_legacy_id}`, legacy_user_id: fiche.reader_legacy_id });
+  }
+
   return (
     <PageShell nav="admin"
       avantTitre={<NavAdmin />}
@@ -92,6 +112,16 @@ export default async function FicheAnciennePage({
 
           <form className={formStyles.form} action={validerFicheAncienne} style={{ marginTop: 32 }}>
             <input type="hidden" name="legacy_review_id" value={fiche.legacy_review_id} />
+            <label className={formStyles.field}>
+              <span>Lecteur (celui qui sera payé pour cette fiche)</span>
+              <select name="reader_legacy_id" defaultValue={fiche.reader_legacy_id ?? ""}>
+                {lecteurs.map((l) => (
+                  <option key={l.legacy_user_id} value={l.legacy_user_id}>
+                    {l.full_name ?? `n° ${l.legacy_user_id}`}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className={formStyles.field}>
               <span>Texte publié à l&apos;auteur</span>
               <textarea name="content" rows={28} required defaultValue={fiche.content ?? ""} />

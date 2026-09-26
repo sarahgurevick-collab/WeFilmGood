@@ -22,6 +22,9 @@ export async function validerFicheAncienne(formData: FormData) {
   const content = ((formData.get("content") as string) ?? "").trim();
   const score = Number(formData.get("score"));
   const motivation = ((formData.get("label_motivation") as string) ?? "").trim();
+  // Le lecteur peut être changé au dernier moment (une fiche refaite par
+  // quelqu'un d'autre) : c'est lui qui sera payé.
+  const lecteur = Number(formData.get("reader_legacy_id"));
 
   if (!Number.isInteger(id) || !content || !Number.isInteger(score) || score < 0 || score > 200) {
     redirect(`/admin/fiches/ancienne/${id}`);
@@ -37,6 +40,7 @@ export async function validerFicheAncienne(formData: FormData) {
       content,
       final_mark: score,
       statut: 2,
+      ...(Number.isInteger(lecteur) && lecteur > 0 ? { reader_legacy_id: lecteur } : {}),
       ...(labellise && motivation ? { wfg_review: motivation } : {}),
     })
     .eq("legacy_review_id", id)
