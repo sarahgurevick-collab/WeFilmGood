@@ -1,0 +1,85 @@
+.filtres {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.recherche,
+.menu {
+  padding: 9px 12px;
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 13px;
+}
+
+.recherche {
+  min-width: 200px;
+}
+
+.affichage {
+  position: relative;
+}
+
+.affichage summary {
+  padding: 9px 14px;
+  border: 1px solid var(--fg);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+}
+
+.affichage summary::-webkit-details-marker {
+  display: none;
+}
+
+.cases {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 6px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+  padding: 12px 14px;
+  border: 1px solid var(--bordure);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.cases label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.effacer {
+  font-size: 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.biofilmo {
+  max-width: 260px;
+  color: var(--dim);
+}
+
+.pages {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 13px;
+}
