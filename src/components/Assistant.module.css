@@ -33,6 +33,26 @@
   background: var(--surface-actif);
 }
 
+/* La chouette qui converse, posée à gauche de chacune de ses réponses. */
+.reponse {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.chouette {
+  flex: 0 0 44px;
+  width: 44px;
+  height: auto;
+}
+
+/* Sa tête, sur le bouton rond du tchat. */
+.tete {
+  width: 34px;
+  height: auto;
+}
+
 .membre {
   align-self: flex-end;
   max-width: 85%;

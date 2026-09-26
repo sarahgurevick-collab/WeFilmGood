@@ -156,9 +156,9 @@ export default function Assistant({
         onClick={() => setOuvert((o) => !o)}
         aria-label="Poser une question"
       >
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z" />
-        </svg>
+        {/* La tête de la chouette, celle qui converse (26/09). */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/chouette-tete.svg" alt="" className={styles.tete} />
       </button>
 
       {ouvert && (
@@ -172,15 +172,30 @@ export default function Assistant({
           )}
 
           <div ref={fil} className={styles.fil} aria-live="polite">
-            <p className={styles.assistant}>
-              {prenom ? `Bonjour ${prenom} !` : "Bonjour !"}
-              {ia && ` ${ACCUEIL_IA}`}
-            </p>
-            {messages.map((m, i) => (
-              <p key={i} className={m.role === "user" ? styles.membre : styles.assistant}>
-                {m.content || (enCours && i === messages.length - 1 ? "…" : "")}
+            {/* C'est la chouette qui répond : elle est là à chacune de ses réponses. */}
+            <div className={styles.reponse}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/chouette.svg" alt="" className={styles.chouette} />
+              <p className={styles.assistant}>
+                {prenom ? `Bonjour ${prenom} !` : "Bonjour !"}
+                {ia && ` ${ACCUEIL_IA}`}
               </p>
-            ))}
+            </div>
+            {messages.map((m, i) =>
+              m.role === "user" ? (
+                <p key={i} className={styles.membre}>
+                  {m.content}
+                </p>
+              ) : (
+                <div key={i} className={styles.reponse}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/chouette.svg" alt="" className={styles.chouette} />
+                  <p className={styles.assistant}>
+                    {m.content || (enCours && i === messages.length - 1 ? "…" : "")}
+                  </p>
+                </div>
+              ),
+            )}
           </div>
 
           <form onSubmit={envoyer} className={styles.saisie}>
