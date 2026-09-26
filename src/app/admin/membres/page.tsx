@@ -125,8 +125,15 @@ export default async function MembresPage({
   const { data: isAdmin } = await supabase.rpc("is_admin");
   if (!isAdmin) redirect("/");
 
-  const { data } = await supabase.rpc("admin_membres");
-  const tous = (data ?? []) as Membre[];
+  // L'API ne rend que 1 000 lignes par lecture : on lit tout, page par page
+  // (le premier passage ne voyait que 1 000 membres sur 3 612).
+  const tous: Membre[] = [];
+  for (let debut = 0; ; debut += 1000) {
+    const { data } = await supabase.rpc("admin_membres").range(debut, debut + 999);
+    const lot = (data ?? []) as Membre[];
+    tous.push(...lot);
+    if (lot.length < 1000) break;
+  }
 
   // Les filtres, lus dans l'adresse : la page se partage et se recharge.
   const q = (sp.q ?? "").trim().toLowerCase();
@@ -142,19 +149,22 @@ export default async function MembresPage({
   // la photo, le pays, le code postal, la ville et la référence.
   const affichage = new Set((sp.aff ?? "").split(",").filter(Boolean));
 
+  // Les métiers sont regroupés par libellé : « producer » (WFG 1) et
+  // « producteur » (WFG 2) sont le même métier.
+  const metierDeCle = (cle: string | null) => (cle ? (METIERS[cle] ?? cle) : null);
   const metiersPresents = new Map<string, number>();
   const paysPresents = new Map<string, number>();
   const anneesPresentes = new Set<number>();
   for (const m of tous) {
-    const cle = m.category ?? m.role_wfg1;
-    if (cle) metiersPresents.set(cle, (metiersPresents.get(cle) ?? 0) + 1);
+    const libelle = metierDeCle(m.category ?? m.role_wfg1);
+    if (libelle) metiersPresents.set(libelle, (metiersPresents.get(libelle) ?? 0) + 1);
     if (m.country) paysPresents.set(m.country, (paysPresents.get(m.country) ?? 0) + 1);
     if (m.dernier_projet_annee) anneesPresentes.add(m.dernier_projet_annee);
   }
 
   const filtres = tous.filter((m) => {
     if (q && !(`${m.full_name ?? ""} ${m.email ?? ""}`.toLowerCase().includes(q))) return false;
-    if (metier && (m.category ?? m.role_wfg1) !== metier) return false;
+    if (metier && metierDeCle(m.category ?? m.role_wfg1) !== metier) return false;
     if (format && !(m.formats ?? []).includes(format)) return false;
     if (annee && String(m.dernier_projet_annee ?? "") !== annee) return false;
     if (pays && m.country !== pays) return false;
@@ -201,9 +211,9 @@ export default async function MembresPage({
           <option value="">Tous les comptes</option>
           {[...metiersPresents.entries()]
             .sort((a, b) => b[1] - a[1])
-            .map(([cle, n]) => (
-              <option key={cle} value={cle}>
-                {METIERS[cle] ?? cle} ({n})
+            .map(([libelle, n]) => (
+              <option key={libelle} value={libelle}>
+                {libelle} ({n})
               </option>
             ))}
         </select>
