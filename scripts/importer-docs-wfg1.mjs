@@ -2,8 +2,13 @@
 // joints à un projet : photos, dessins…), depuis le dossier
 // ~/imports/docs/ rapatrié par FTP le 26/09/2026 :
 //   ~/imports/docs/<compte>/<projet>/docs/<fichier>
-// Les PDF (scénarios `project.pdf`, moodboards) et les audiopitchs (.m4a)
-// du même dossier ne sont PAS traités ici : à décider avec Sarah.
+// Puis (26/09, décision de Sarah) les PDF du même dossier : le
+// `project.pdf` de chaque projet = son scénario (kind « scenario », un
+// seul par fiche, jamais par-dessus un scénario déjà déposé sur WFG 2),
+// et les PDF de `docs/` = documents annexes (kind « document »,
+// migration 0079). Tous dans le bucket privé « scenarios », sous le
+// dossier de l'auteur. Le stockage refuse les fichiers de plus de 50 Mo
+// (FILE_SIZE_LIMIT) : ils sont comptés et listés, pas déposés.
 //
 // Chaque photo va dans le Moodboard de sa fiche WFG 2 (projects.legacy_id
 // = numéro du projet WFG 1), dans la limite du site (MAX_MOODBOARD, 10) :
@@ -127,3 +132,66 @@ console.log(
     `${nAuDela} au-delà de ${MAX_MOODBOARD} par fiche, ${nSansFiche} sans fiche WFG 2, ${nEchouees} échouées`,
 );
 for (const [p, n] of projetsAuDela) console.log(`  projet WFG 1 n° ${p} : ${n} photo(s) laissée(s) de côté`);
+
+// ---------------------------------------------------------------------
+// 2. Scénarios et documents annexes (PDF)
+// ---------------------------------------------------------------------
+const LIMITE_STOCKAGE = 50 * 1024 * 1024;
+const pdfExistants = await toutLire(() =>
+  supabase.from("project_files").select("project_id, kind, legacy_id").in("kind", ["scenario", "document"]).order("id"),
+);
+const pdfDejaPoses = new Set(pdfExistants.map((f) => f.legacy_id).filter(Boolean));
+const aDejaScenario = new Set(pdfExistants.filter((f) => f.kind === "scenario").map((f) => f.project_id));
+
+const bilan = { scenario: { deposes: 0, deja: 0, tropGros: [] , echoues: 0 }, document: { deposes: 0, deja: 0, tropGros: [], echoues: 0 } };
+let nPdfSansFiche = 0;
+
+async function deposerPdf(projet, cheminLocal, fichier, kind, legacyId) {
+  const b = bilan[kind];
+  if (pdfDejaPoses.has(legacyId)) { b.deja++; return; }
+  const taille = statSync(cheminLocal).size;
+  if (taille > LIMITE_STOCKAGE) { b.tropGros.push(`${legacyId} (${Math.round(taille / 1048576)} Mo)`); return; }
+  try {
+    const chemin = `${projet.owner_id}/${projet.id}-${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.pdf`;
+    const { error } = await supabase.storage.from("scenarios").upload(chemin, readFileSync(cheminLocal), { contentType: "application/pdf" });
+    if (error) throw error;
+    const { error: err2 } = await supabase.from("project_files").insert({
+      project_id: projet.id, storage_path: chemin, kind, original_name: fichier, legacy_id: legacyId,
+    });
+    if (err2) throw err2;
+    b.deposes++;
+    pdfDejaPoses.add(legacyId);
+  } catch (e) {
+    b.echoues++;
+    console.error(kind, legacyId, e.message ?? e);
+  }
+}
+
+for (const compte of readdirSync(RACINE)) {
+  const dossierCompte = join(RACINE, compte);
+  if (!/^\d+$/.test(compte) || !statSync(dossierCompte).isDirectory()) continue;
+  for (const projetWfg1 of readdirSync(dossierCompte)) {
+    const dossierProjet = join(dossierCompte, projetWfg1);
+    if (!/^\d+$/.test(projetWfg1) || !statSync(dossierProjet).isDirectory()) continue;
+    const projet = parLegacyId.get(projetWfg1);
+    const scenarioLocal = join(dossierProjet, "project.pdf");
+    const dossierDocs = join(dossierProjet, "docs");
+    const annexes = existsSync(dossierDocs) ? readdirSync(dossierDocs).filter((f) => /\.pdf$/i.test(f)).sort() : [];
+    if (!projet) { nPdfSansFiche += (existsSync(scenarioLocal) ? 1 : 0) + annexes.length; continue; }
+
+    if (existsSync(scenarioLocal) && !aDejaScenario.has(projet.id)) {
+      await deposerPdf(projet, scenarioLocal, "project.pdf", "scenario", `docs/${compte}/${projetWfg1}/project.pdf`);
+      aDejaScenario.add(projet.id);
+    }
+    for (const fichier of annexes) {
+      await deposerPdf(projet, join(dossierDocs, fichier), fichier, "document", `docs/${compte}/${projetWfg1}/${fichier}`);
+    }
+  }
+}
+
+for (const kind of ["scenario", "document"]) {
+  const b = bilan[kind];
+  console.log(`${kind} : ${b.deposes} déposés, ${b.deja} déjà présents, ${b.tropGros.length} trop gros (> 50 Mo), ${b.echoues} échoués`);
+  for (const t of b.tropGros) console.log(`  trop gros : ${t}`);
+}
+console.log(`PDF sans fiche WFG 2 : ${nPdfSansFiche}`);
