@@ -6,12 +6,15 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../../../admin.module.css";
 import NavAdmin from "../../../NavAdmin";
+import ScoreSlider from "@/app/lecteur/[assignmentId]/ScoreSlider";
+import { validerFicheAncienne } from "./actions";
 
 /**
  * Une fiche de lecture reprise de WFG 1, telle que le lecteur l'a rendue.
  *
- * Lecture seule : jusqu'à la bascule, les fiches en attente se relisent et
- * se valident sur l'ancien site, et la dernière copie rapportera leur état.
+ * Vérifiée (statut 2) : lecture seule. Rendue mais jamais relue (statut
+ * 1) : Sarah la relit ici — texte corrigeable, note au curseur, bouton
+ * « Valider » — comme une fiche de WFG 2 (demande du 26/09/2026).
  */
 export default async function FicheAnciennePage({
   params,
@@ -78,20 +81,35 @@ export default async function FicheAnciennePage({
         )}
       </p>
 
-      {aRelire && (
-        <p className={adminStyles.motivation}>
-          <strong>Fiche de l&apos;ancien site, pas encore validée</strong>
-          Elle se relit et se valide sur WFG 1 jusqu&apos;à la bascule.
-          L&apos;auteur ne la voit pas.
-        </p>
-      )}
+      {aRelire ? (
+        <>
+          <p className={adminStyles.motivation}>
+            <strong>Fiche de l&apos;ancien site, pas encore validée</strong>
+            L&apos;auteur ne la voit pas. Relisez, corrigez le texte au besoin,
+            posez la note, puis validez : elle devient visible de l&apos;auteur,
+            et le projet est labellisé si la note dépasse 150.
+          </p>
 
-      <div className={formStyles.field} style={{ marginTop: 32 }}>
-        <span>Texte rendu par le lecteur</span>
-        <div className={adminStyles.ficheTexte}>
-          {fiche.content?.trim() || "Fiche vide."}
+          <form className={formStyles.form} action={validerFicheAncienne} style={{ marginTop: 32 }}>
+            <input type="hidden" name="legacy_review_id" value={fiche.legacy_review_id} />
+            <label className={formStyles.field}>
+              <span>Texte publié à l&apos;auteur</span>
+              <textarea name="content" rows={28} required defaultValue={fiche.content ?? ""} />
+            </label>
+            <ScoreSlider defaultValue={fiche.final_mark ?? 100} />
+            <button type="submit" className={formStyles.submit}>
+              Valider
+            </button>
+          </form>
+        </>
+      ) : (
+        <div className={formStyles.field} style={{ marginTop: 32 }}>
+          <span>Texte rendu par le lecteur</span>
+          <div className={adminStyles.ficheTexte}>
+            {fiche.content?.trim() || "Fiche vide."}
+          </div>
         </div>
-      </div>
+      )}
 
       <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
         <Link href="/admin/fiches-a-valider">Retour aux fiches à valider</Link>
