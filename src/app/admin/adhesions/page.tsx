@@ -81,10 +81,10 @@ export default async function AdminAdhesionsPage({
       theme="clair"
     >
       <p className={formStyles.hint}>
-        Aucun paiement en ligne n&apos;est branché : c&apos;est ici qu&apos;on
-        active ou expire une adhésion à la main après réception d&apos;un
-        paiement. Une adhésion active débloque, pour le membre, la lecture des
-        messages reçus sur ses projets.
+        Les adhésions se paient en ligne (HelloAsso) et s&apos;activent toutes
+        seules. Cette page sert à les suivre, et, par exception, à en offrir
+        une ou à en expirer une avant son terme. Une adhésion active débloque,
+        pour le membre, la lecture des messages reçus sur ses projets.
       </p>
 
       <form method="get" style={{ marginTop: 24, marginBottom: 8 }}>
