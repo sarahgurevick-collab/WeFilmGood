@@ -74,7 +74,7 @@ export default async function AtelierAdminPage({
   const nonInvites = (intervenants ?? []).filter((i) => !i.invite_le).length;
 
   return (
-    <PageShell avantTitre={<NavAdmin />} title={atelier.titre} theme="clair">
+    <PageShell nav="admin" avantTitre={<NavAdmin />} title={atelier.titre} theme="clair">
       <p className={formStyles.hint}>
         <Link href="/admin/ateliers">← Tous les ateliers</Link> · {dateAtelier(atelier.debut)} ·{" "}
         {atelier.duree_minutes} min

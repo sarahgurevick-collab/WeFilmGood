@@ -187,7 +187,7 @@ export default async function LecteursPage() {
     .sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
 
   return (
-    <PageShell avantTitre={<NavAdmin />} title="Lecteurs" theme="clair">
+    <PageShell nav="admin" avantTitre={<NavAdmin />} title="Lecteurs" theme="clair">
       <p className={formStyles.hint}>
         {lecteurs.length} lecteurs. Leur profil n&apos;est visible que
         d&apos;eux-mêmes : « Voir son espace » vous met à la place du lecteur,

@@ -44,7 +44,7 @@ export default async function TchatAdminPage({
     : null;
 
   return (
-    <PageShell avantTitre={<NavAdmin />} title="Ce que sait le tchat" theme="clair">
+    <PageShell nav="admin" avantTitre={<NavAdmin />} title="Ce que sait le tchat" theme="clair">
       <p className={formStyles.hint}>
         Le tchat répond aux questions des visiteurs et des membres à partir de ce texte, et de
         rien d&apos;autre. Écrivez simplement, comme vous l&apos;expliqueriez à quelqu&apos;un :

@@ -78,7 +78,7 @@ export default async function FichesAValiderPage() {
   );
 
   return (
-    <PageShell avantTitre={<NavAdmin />} title="Fiches à valider" theme="clair">
+    <PageShell nav="admin" avantTitre={<NavAdmin />} title="Fiches à valider" theme="clair">
       {(pendingReports ?? []).length === 0 &&
       (ficheesWfg1 ?? []).length === 0 ? (
         <p className={formStyles.hint}>Aucune fiche à valider.</p>

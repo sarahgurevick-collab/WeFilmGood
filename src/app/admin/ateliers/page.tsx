@@ -28,7 +28,7 @@ export default async function AteliersAdminPage({
     .returns<Atelier[]>();
 
   return (
-    <PageShell avantTitre={<NavAdmin />} title="Ateliers en visio" theme="clair">
+    <PageShell nav="admin" avantTitre={<NavAdmin />} title="Ateliers en visio" theme="clair">
       <p className={formStyles.hint}>
         Chaque atelier a sa salle de visio. Les intervenants (5 au plus) reçoivent un lien
         personnel par email ; le public, réservé aux membres connectés, regarde et pose ses
