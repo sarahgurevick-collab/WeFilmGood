@@ -41,10 +41,10 @@ export async function contacterAuteur(formData: FormData) {
   const body = (formData.get("body") as string)?.trim();
 
   if (!user) {
-    redirect(`/connexion?next=/projet/${projectId}`);
+    redirect(`/connexion?next=/mes-messages/nouveau?projet=${projectId}`);
   }
   if (!body) {
-    redirect(`/projet/${projectId}?message=vide`);
+    redirect(`/mes-messages/nouveau?projet=${projectId}&message=vide`);
   }
 
   await supabase.from("project_messages").insert({
@@ -76,6 +76,6 @@ export async function contacterAuteur(formData: FormData) {
   }
 
   revalidatePath(`/projet/${projectId}`);
-  redirect(`/projet/${projectId}?message=envoye`);
+  redirect(`/mes-messages?envoye=1`);
 }
 

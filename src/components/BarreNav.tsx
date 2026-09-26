@@ -27,7 +27,11 @@ export default async function BarreNav({
   }
   const onglets = [
     { cle: "pitchotheque", href: "/pitchotheque", label: "Pitchothèque" },
-    { cle: "deposer", href: "/projet", label: "Fiche projet" },
+    // Connecté : la liste de ses fiches (ou la création s'il n'en a
+    // aucune). Sinon la création, qui demande de se connecter.
+    connecte
+      ? { cle: "deposer", href: "/mes-projets", label: "Mes projets" }
+      : { cle: "deposer", href: "/projet", label: "Fiche projet" },
     ...(connecte ? [{ cle: "messages", href: "/mes-messages", label: "Messages" }] as const : []),
     connecte
       ? { cle: "profil", href: "/profil", label: "Profil" }

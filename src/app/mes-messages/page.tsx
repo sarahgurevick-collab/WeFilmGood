@@ -16,7 +16,12 @@ type MessageRecu = {
   verrouille: boolean;
 };
 
-export default async function MesMessagesPage() {
+export default async function MesMessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ envoye?: string }>;
+}) {
+  const { envoye } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -40,6 +45,11 @@ export default async function MesMessagesPage() {
 
   return (
     <PageShell eyebrow="Mon profil" title="Mes messages" connecte nav="messages">
+      {envoye && (
+        <p className={formStyles.hint} style={{ color: "#2f7d4f" }}>
+          Message envoyé.
+        </p>
+      )}
       {liste.length === 0 ? (
         <p className={formStyles.hint}>Aucun message reçu pour l&apos;instant.</p>
       ) : (

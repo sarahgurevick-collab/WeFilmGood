@@ -5,7 +5,7 @@ import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
-import { contacterAuteur, setShareLink } from "./actions";
+import { setShareLink } from "./actions";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
@@ -70,7 +70,7 @@ export default async function ProjetPage({
   searchParams: Promise<{ message?: string; enregistre?: string }>;
 }) {
   const { id } = await params;
-  const { message, enregistre } = await searchParams;
+  const { enregistre } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -465,43 +465,20 @@ export default async function ProjetPage({
         </>
       )}
 
+      {/* Contacter l'auteur : plus de formulaire sur la fiche (26/09), un
+          bouton qui mène à l'onglet Messages, le projet déjà indiqué. */}
       {!isOwner && (
-        <>
-          <h2 id="contacter" style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
+        <p style={{ marginTop: 40 }}>
+          <Link
+            href={user ? `/mes-messages/nouveau?projet=${project.id}` : `/connexion?next=/projet/${project.id}`}
+            className={formStyles.submit}
+            style={{ display: "inline-block" }}
+          >
             Contacter l&apos;auteur
-          </h2>
-
-          {message === "envoye" && (
-            <p className={formStyles.hint} style={{ color: "#2f7d4f" }}>
-              Message envoyé.
-            </p>
-          )}
-          {message === "vide" && (
-            <p className={formStyles.hint} style={{ color: "#b3261e" }}>
-              Le message ne peut pas être vide.
-            </p>
-          )}
-
-          {user ? (
-            <form action={contacterAuteur} className={formStyles.form} style={{ marginTop: 16 }}>
-              <input type="hidden" name="project_id" value={project.id} />
-              <input type="hidden" name="recipient_id" value={project.owner_id} />
-              <label className={formStyles.field}>
-                <span>Votre message</span>
-                <textarea name="body" rows={4} required />
-              </label>
-              <button type="submit" className={formStyles.submit}>
-                Envoyer
-              </button>
-            </form>
-          ) : (
-            <p className={formStyles.hint}>
-              <Link href={`/connexion?next=/projet/${project.id}`}>Connectez-vous</Link> pour
-              contacter l&apos;auteur de ce projet.
-            </p>
-          )}
-        </>
+          </Link>
+        </p>
       )}
+
     </PageShell>
   );
 }
