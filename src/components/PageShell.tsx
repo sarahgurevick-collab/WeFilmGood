@@ -25,7 +25,7 @@ export default async function PageShell({
   /** "clair" pour les pages qui se lisent longuement ou qui doivent respirer. */
   theme?: "sombre" | "clair";
   /** Onglet à marquer comme actif dans la barre de navigation. */
-  nav?: "pitchotheque" | "deposer" | "messages" | "profil";
+  nav?: "pitchotheque" | "deposer" | "messages" | "profil" | "admin";
   connecte?: boolean;
   /** true pour les pages du menu déroulant : bande blanche animée au lieu de la barre noire. */
   enTeteAnime?: boolean;

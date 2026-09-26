@@ -14,16 +14,21 @@ export default async function BarreNav({
   actif,
   connecte,
 }: {
-  actif?: "pitchotheque" | "deposer" | "messages" | "profil";
+  actif?: "pitchotheque" | "deposer" | "messages" | "profil" | "admin";
   connecte: boolean;
 }) {
   // Le nombre de messages en attente, même pour un membre sans adhésion :
   // il ne peut pas les ouvrir, mais il doit voir qu'ils l'attendent.
   let messagesNonLus = 0;
+  let estAdmin = false;
   if (connecte) {
     const supabase = await createClient();
-    const { data } = await supabase.rpc("compter_messages_non_lus");
+    const [{ data }, { data: admin }] = await Promise.all([
+      supabase.rpc("compter_messages_non_lus"),
+      supabase.rpc("is_admin"),
+    ]);
     messagesNonLus = typeof data === "number" ? data : 0;
+    estAdmin = admin === true;
   }
   const onglets = [
     { cle: "pitchotheque", href: "/pitchotheque", label: "Pitchothèque" },
@@ -34,6 +39,9 @@ export default async function BarreNav({
     connecte
       ? { cle: "profil", href: "/profil", label: "Profil" }
       : { cle: "profil", href: "/connexion", label: "Connexion" },
+    // L'administration, pour qui en a le droit (26/09) : jusqu'ici, seul
+    // le lien de la page Menu y menait.
+    ...(estAdmin ? [{ cle: "admin", href: "/admin", label: "Administration" }] as const : []),
   ] as const;
 
   return (
