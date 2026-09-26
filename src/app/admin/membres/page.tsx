@@ -138,7 +138,9 @@ export default async function MembresPage({
   const projets = sp.projets ?? "";
   const tri = sp.tri ?? "activite";
   const page = Math.max(1, Number(sp.page ?? "1") || 1);
-  const affichage = new Set((sp.aff ?? "etendu").split(",").filter(Boolean));
+  // Par défaut, rien de coché : le nom et l'email. Le profil étendu ajoute
+  // la photo, le pays, le code postal, la ville et la référence.
+  const affichage = new Set((sp.aff ?? "").split(",").filter(Boolean));
 
   const metiersPresents = new Map<string, number>();
   const paysPresents = new Map<string, number>();
@@ -334,7 +336,11 @@ export default async function MembresPage({
                       </div>
                     </div>
                   ) : (
-                    <Link href={`/membres/${m.profile_id}`}>{m.full_name ?? "Sans nom"}</Link>
+                    <>
+                      <Link href={`/membres/${m.profile_id}`}>{m.full_name ?? "Sans nom"}</Link>
+                      <br />
+                      <span className={formStyles.hint}>{m.email}</span>
+                    </>
                   )}
                 </td>
                 <td>
