@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { incarnationEnCours } from "@/app/admin/profils/prise-de-place";
+import { createClient } from "@/lib/supabase/server";
 import BandeauIncarnation from "./BandeauIncarnation";
 import BarreNav from "./BarreNav";
 import EnTeteAnime from "./EnTeteAnime";
@@ -12,7 +13,7 @@ export default async function PageShell({
   apresTitre,
   theme = "sombre",
   nav,
-  connecte = false,
+  connecte,
   enTeteAnime = false,
   children,
 }: {
@@ -32,14 +33,25 @@ export default async function PageShell({
   children: ReactNode;
 }) {
   const incarne = await incarnationEnCours();
+  // Si la page ne le dit pas, on regarde nous-mêmes : une trentaine de
+  // pages oubliaient de le passer, et la barre montrait « Connexion » à
+  // une membre connectée (26/09).
+  let estConnecte = connecte;
+  if (estConnecte === undefined) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    estConnecte = Boolean(user);
+  }
 
   return (
     <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
       {incarne && <BandeauIncarnation />}
       {enTeteAnime ? (
-        <EnTeteAnime connecte={connecte} />
+        <EnTeteAnime connecte={estConnecte} />
       ) : (
-        <BarreNav actif={nav} connecte={connecte} />
+        <BarreNav actif={nav} connecte={estConnecte} />
       )}
       <main className={styles.main}>
         {avantTitre}
