@@ -8,7 +8,10 @@
 // et les PDF de `docs/` = documents annexes (kind « document »,
 // migration 0079). Tous dans le bucket privé « scenarios », sous le
 // dossier de l'auteur. Le stockage refuse les fichiers de plus de 50 Mo
-// (FILE_SIZE_LIMIT) : ils sont comptés et listés, pas déposés.
+// (FILE_SIZE_LIMIT) : ils sont comptés et listés, pas déposés. Les
+// originaux gardés par l'allègement (`.orig.pdf`) sont ignorés — une
+// passe du 26/09 les avait pris pour des documents, 1 309 doublons
+// retirés (scripts/retirer-doublons-orig-wfg1.mjs).
 //
 // Chaque photo va dans le Moodboard de sa fiche WFG 2 (projects.legacy_id
 // = numéro du projet WFG 1), dans la limite du site (MAX_MOODBOARD, 10) :
@@ -176,7 +179,7 @@ for (const compte of readdirSync(RACINE)) {
     const projet = parLegacyId.get(projetWfg1);
     const scenarioLocal = join(dossierProjet, "project.pdf");
     const dossierDocs = join(dossierProjet, "docs");
-    const annexes = existsSync(dossierDocs) ? readdirSync(dossierDocs).filter((f) => /\.pdf$/i.test(f)).sort() : [];
+    const annexes = existsSync(dossierDocs) ? readdirSync(dossierDocs).filter((f) => /\.pdf$/i.test(f) && !/\.(orig|leger)\.pdf$/i.test(f)).sort() : [];
     if (!projet) { nPdfSansFiche += (existsSync(scenarioLocal) ? 1 : 0) + annexes.length; continue; }
 
     if (existsSync(scenarioLocal) && !aDejaScenario.has(projet.id)) {
