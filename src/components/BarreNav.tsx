@@ -27,11 +27,9 @@ export default async function BarreNav({
   }
   const onglets = [
     { cle: "pitchotheque", href: "/pitchotheque", label: "Pitchothèque" },
-    // Connecté : la liste de ses fiches (ou la création s'il n'en a
-    // aucune). Sinon la création, qui demande de se connecter.
-    connecte
-      ? { cle: "deposer", href: "/mes-projets", label: "Mes projets" }
-      : { cle: "deposer", href: "/projet", label: "Fiche projet" },
+    // La liste de ses fiches (ou la création s'il n'en a aucune). Un
+    // visiteur non connecté n'a rien à y faire : pas d'onglet (26/09).
+    ...(connecte ? [{ cle: "deposer", href: "/mes-projets", label: "Mes projets" }] as const : []),
     ...(connecte ? [{ cle: "messages", href: "/mes-messages", label: "Messages" }] as const : []),
     connecte
       ? { cle: "profil", href: "/profil", label: "Profil" }
