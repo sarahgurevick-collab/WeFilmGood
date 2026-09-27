@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import ComparateurAvantApres from "@/components/ComparateurAvantApres";
 import VideopitchLecteur from "@/components/VideopitchLecteur";
 import CoteFiche from "./CoteFiche";
 import styles from "./cadre.module.css";
@@ -159,43 +158,45 @@ export default function CadreEquipe({
     etiquetteDroite = "Les personnages";
   }
 
-  // Côté gauche : le bouton de langue, seulement une fois la vidéo lancée
-  // et s'il y a bien une version anglaise en plus de la française.
   const deuxLangues = Boolean(videopitch?.fr && videopitch?.en);
-  const etiquetteGauche: ReactNode =
-    videoLancee && deuxLangues ? (
-      <button type="button" onClick={() => setLangue(langue === "fr" ? "en" : "fr")}>
-        {langue === "fr" ? "Version anglaise" : "Version française"}
-      </button>
-    ) : (
-      "La fiche"
-    );
 
   return (
     <section className={`${styles.cadre} ${styles.cadreComparateur}`}>
-      <ComparateurAvantApres
-        poigneeSeule
-        format="16 / 10"
-        etiquettes={[etiquetteGauche, etiquetteDroite]}
-        gauche={
-          <CoteFiche
-            image={image}
-            bandeau={bandeau ?? null}
-            onVideo={() => setVideoLancee(true)}
-            videopitch={
-              videopitch && (videopitch.fr || videopitch.en) ? (
-                <VideopitchLecteur
-                  fr={videopitch.fr}
-                  en={videopitch.en}
-                  titre={videopitch.titre}
-                  langue={deuxLangues ? langue : undefined}
-                />
-              ) : undefined
-            }
-          />
-        }
-        droite={droite}
-      />
+      {/* Plus de comparateur (27/09, Sarah : l'effet n'apportait rien) :
+          la fiche seule dans le cadre, le reste en dessous. Page d'avant :
+          étiquette git « fiche-projet-avant-retrait-comparateur ». */}
+      <div className={styles.ecranFiche}>
+        <CoteFiche
+          image={image}
+          bandeau={bandeau ?? null}
+          onVideo={() => setVideoLancee(true)}
+          videopitch={
+            videopitch && (videopitch.fr || videopitch.en) ? (
+              <VideopitchLecteur
+                fr={videopitch.fr}
+                en={videopitch.en}
+                titre={videopitch.titre}
+                langue={deuxLangues ? langue : undefined}
+              />
+            ) : undefined
+          }
+        />
+        {videoLancee && deuxLangues && (
+          <button
+            type="button"
+            className={styles.pastilleLangue}
+            onClick={() => setLangue(langue === "fr" ? "en" : "fr")}
+          >
+            {langue === "fr" ? "Version anglaise" : "Version française"}
+          </button>
+        )}
+      </div>
+
+      <div className={styles.dessous}>
+        <p className={styles.dessousTitre}>{etiquetteDroite}</p>
+        {droite}
+      </div>
+
       {/* Sous le cadre : l'« Avis WeFilmGood » d'un projet labellisé, la
           phrase d'encouragement des lecteurs. Rien s'il n'y en a pas. */}
       {avis && (

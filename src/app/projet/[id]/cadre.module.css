@@ -351,3 +351,74 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
+
+/* Sans comparateur (27/09) : la fiche seule dans le cadre rouge, puis
+   dessous le moodboard, les personnages ou l'équipe. */
+.ecranFiche {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #000;
+}
+
+.pastilleLangue {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 8;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.pastilleLangue:hover {
+  background: var(--engagement);
+  color: var(--engagement-texte);
+}
+
+.dessous {
+  margin-top: 18px;
+}
+
+.dessousTitre {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dessousTitre button {
+  padding: 6px 12px;
+  border: 1px solid var(--engagement);
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.dessousTitre button:hover {
+  background: var(--engagement);
+  color: var(--engagement-texte);
+}
+
+/* Dessous, le côté équipe / personnages / moodboard n'est plus posé sur
+   l'image : il prend sa hauteur naturelle. */
+.dessous .coteEquipe {
+  position: static;
+  padding: 8px 0;
+  background: none;
+  overflow: visible;
+}
