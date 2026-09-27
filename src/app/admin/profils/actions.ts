@@ -23,7 +23,7 @@ export async function basculerValidation(formData: FormData) {
   const profileId = formData.get("profile_id") as string;
   const vers = formData.get("vers") as string;
   if (!profileId || !["validee", "refusee"].includes(vers)) {
-    redirect("/admin/profils");
+    redirect("/admin/membres?metier=avalider");
   }
 
   await supabase.rpc("admin_set_profile_validation", {
@@ -32,4 +32,5 @@ export async function basculerValidation(formData: FormData) {
   });
 
   revalidatePath("/admin/profils");
+  revalidatePath("/admin/membres");
 }

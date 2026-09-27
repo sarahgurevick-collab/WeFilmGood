@@ -6,6 +6,7 @@ import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../admin.module.css";
 import { prendreLaPlace } from "../profils/prise-de-place";
+import { basculerValidation } from "../profils/actions";
 import styles from "./page.module.css";
 import CasesAffichage from "./CasesAffichage";
 import FormatsLecteur from "./FormatsLecteur";
@@ -176,6 +177,11 @@ export default async function MembresPage({
   // Un lecteur compte comme « Lecteur » même si son métier est autre
   // (ou inconnu) : c'est la marque « lecteur » de WFG 2 qui fait foi.
   const estLecteur = (m: Membre) => m.est_lecteur || m.role_wfg1 === "reader";
+  // Les profils à valider (27/09, l'ancienne page « Profils à valider »
+  // rejoint celle-ci) : producteurs et talents inscrits sur WFG 2, hors
+  // lecteurs. Les comptes repris de WFG 1 ne sont pas des inscriptions.
+  const aValider = (m: Membre) =>
+    m.validation_status !== "non_requise" && !m.est_lecteur && m.role_wfg1 === null;
   for (const m of tous) {
     const libelle = metierDeCle(m.category ?? m.role_wfg1);
     if (libelle && libelle !== "Lecteur") metiersPresents.set(libelle, (metiersPresents.get(libelle) ?? 0) + 1);
@@ -186,7 +192,9 @@ export default async function MembresPage({
 
   const filtres = tous.filter((m) => {
     if (q && !(`${m.full_name ?? ""} ${m.email ?? ""}`.toLowerCase().includes(q))) return false;
-    if (metier === "recents") {
+    if (metier === "avalider") {
+      if (!aValider(m)) return false;
+    } else if (metier === "recents") {
       if (new Date(m.inscrit_le).getTime() < ilYaUneSemaine) return false;
     } else if (metier === "Lecteur" ? !estLecteur(m) : metier && metierDeCle(m.category ?? m.role_wfg1) !== metier) return false;
     if (format && !(m.formats ?? []).includes(format)) return false;
@@ -233,6 +241,7 @@ export default async function MembresPage({
 
         <select name="metier" defaultValue={metier} className={styles.menu}>
           <option value="">Tous les comptes</option>
+          <option value="avalider">À valider ({tous.filter(aValider).length})</option>
           <option value="recents">
             Profils récents (&lt; 1 sem) ({tous.filter((m) => new Date(m.inscrit_le).getTime() >= ilYaUneSemaine).length})
           </option>
@@ -334,6 +343,7 @@ export default async function MembresPage({
               <th>Projets</th>
               <th>Formats</th>
               <th>Adhésion</th>
+              {metier === "avalider" && <th>Validation</th>}
               {affichage.has("biofilmo") && <th>Biofilmo</th>}
               {affichage.has("inscription") && <th>Inscrit</th>}
               {affichage.has("activite") && <th>Dernière activité</th>}
@@ -395,6 +405,29 @@ export default async function MembresPage({
                 </td>
                 <td>{(m.formats ?? []).map((f) => FORMATS[f] ?? f).join(", ") || "—"}</td>
                 <td>{m.adhesion ? m.adhesion.replace("palier_", "") + " €" : "—"}</td>
+                {metier === "avalider" && (
+                  <td>
+                    {m.website ? (
+                      <form action={basculerValidation}>
+                        <input type="hidden" name="profile_id" value={m.profile_id} />
+                        <input type="hidden" name="vers" value={m.validation_status === "refusee" ? "validee" : "refusee"} />
+                        <button
+                          type="submit"
+                          className={m.validation_status === "refusee" ? adminStyles.voyantRouge : adminStyles.voyantVert}
+                          title={
+                            m.validation_status === "refusee"
+                              ? "Référence écartée — cliquer pour la rétablir"
+                              : "Référence acceptée — cliquer pour l'écarter"
+                          }
+                        >
+                          {m.validation_status === "refusee" ? "Non valide" : "Validé"}
+                        </button>
+                      </form>
+                    ) : (
+                      <span className={formStyles.hint}>en attente — pas de référence</span>
+                    )}
+                  </td>
+                )}
                 {affichage.has("biofilmo") && (
                   <td className={styles.biofilmo}>{m.biofilmo?.slice(0, 160) || "—"}</td>
                 )}
