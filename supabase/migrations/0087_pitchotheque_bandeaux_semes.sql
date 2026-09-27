@@ -1,7 +1,8 @@
 -- Pitchothèque (27/09/2026) : les projets signés, tournés ou primés ne
 -- forment plus une famille à part en tête (ils remplissaient toute la
 -- première page) ; chaque nuit, vingt d'entre eux sont semés dans les dix
--- premières pages, deux par page, et les autres suivent les labellisés.
+-- premières pages, deux par page, et les autres sont mêlés aux labellisés
+-- des pages suivantes.
 -- Au fil des jours, chacun passe à son tour dans les premières pages.
 CREATE OR REPLACE FUNCTION public.pitchotheque(p_limite integer DEFAULT 60, p_decalage integer DEFAULT 0, p_format text DEFAULT NULL::text, p_genre text DEFAULT NULL::text, p_audience text DEFAULT NULL::text, p_budget text DEFAULT NULL::text, p_bandeau text DEFAULT NULL::text)
  RETURNS TABLE(id uuid, total bigint)
@@ -70,8 +71,8 @@ AS $function$
     from notes n
   ),
   -- Chaque nuit, vingt projets à bandeau tirés au sort sont semés dans
-  -- les dix premières pages, deux par page ; les autres suivent les
-  -- labellisés (27/09/2026).
+  -- les dix premières pages, deux par page ; les autres sont mêlés aux
+  -- labellisés des pages suivantes (27/09/2026). Tous ont été labellisés.
   bandeaux as (
     select c.id, row_number() over (order by c.tirage) - 1 as r
     from classes c
@@ -86,7 +87,11 @@ AS $function$
       row_number() over (
         partition by c.famille, c.tranche, c.a_bandeau, coalesce(b.r < 20, false)
         order by c.tirage
-      ) as rang
+      ) as rang,
+      count(*) over (
+        partition by c.famille, c.tranche, c.a_bandeau, coalesce(b.r < 20, false)
+      ) as effectif,
+      count(*) filter (where not c.a_bandeau) over (partition by c.famille, c.tranche) as labellises
     from classes c
     left join bandeaux b on b.id = c.id
   )
@@ -97,9 +102,11 @@ AS $function$
   order by p.famille, p.tranche,
     -- les projets à bandeau non tirés ce jour-là passent après les
     -- labellisés : les dix premières pages en gardent deux, pas plus.
+    -- les projets à bandeau non tirés ce jour-là sont mêlés aux autres
+    -- labellisés, mais au-delà de la dixième page, qui garde ses deux.
     case
       when p.place_semee is not null then p.place_semee
-      when p.a_bandeau then 1000000 + p.rang
+      when p.a_bandeau then 480 + (p.rang::numeric / (p.effectif + 1)) * greatest(p.labellises - 480, 1)
       else p.rang
     end,
     p.tirage
