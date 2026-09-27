@@ -89,15 +89,15 @@ export default function RechercheAvancee({
             ))}
           </select>
         </label>
-        {/* Recherche de coproduction (27/09) : les projets qui ont déjà un
-            producteur ou un réalisateur dans leur équipe. */}
+        {/* Équipe déjà en place (27/09, libellés validés par Sarah) : un
+            producteur intéresse les coproducteurs, un réalisateur les
+            comédiens. */}
         <label className={formStyles.field}>
-          <span>Recherche de coproduction</span>
+          <span>Équipe déjà en place</span>
           <select name="equipe" defaultValue={filtres.equipe ?? ""}>
             <option value="">Tous les projets</option>
-            <option value="producteur">Avec un producteur</option>
-            <option value="realisateur">Avec un réalisateur</option>
-            <option value="tous">Avec un producteur ou un réalisateur</option>
+            <option value="producteur">Avec un producteur (coproduction)</option>
+            <option value="realisateur">Avec un réalisateur (casting)</option>
           </select>
         </label>
 
