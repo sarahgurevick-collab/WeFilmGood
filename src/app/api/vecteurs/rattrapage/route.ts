@@ -25,5 +25,20 @@ export async function POST(req: Request) {
     }
     faits += mots.length;
   }
-  return Response.json({ ok: true, vectorises: faits });
+  // Les fiches projet aussi (0097) : nouvelles, ou dont le texte a changé.
+  let fiches = 0;
+  for (let tour = 0; tour < 20; tour++) {
+    const { data: lot } = await admin.rpc("projets_sans_vecteur", { p_limite: 50 });
+    const projets = (lot ?? []) as { id: string; texte: string; empreinte: string }[];
+    if (projets.length === 0) break;
+    const vs = await vecteurs(projets.map((p) => p.texte));
+    for (let i = 0; i < projets.length; i++) {
+      await admin
+        .from("projects")
+        .update({ vecteur: enTexte(vs[i]), vecteur_empreinte: projets[i].empreinte })
+        .eq("id", projets[i].id);
+    }
+    fiches += projets.length;
+  }
+  return Response.json({ ok: true, vectorises: faits, fiches });
 }

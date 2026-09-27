@@ -25,6 +25,10 @@ export type ResultatRecherche = {
 const PEU_DE_RESULTATS = 8;
 // Un mot-clé compte comme voisin de sens à partir de cette proximité (0 à 1).
 const PROXIMITE_MINIMALE = 0.45;
+// Une fiche (titre, tagline, logline) compte comme proche par le sens à
+// partir de cette proximité — réglée sur des essais : « boulangerie »
+// trouve « Pain Perdu » (0,41), « banane » ne trouve rien (0,39 au mieux).
+const PROXIMITE_FICHE = 0.4;
 
 /**
  * Les projets des mots-clés voisins par le sens (27/09). Le vecteur de la
@@ -64,6 +68,24 @@ async function projetsParLeSens(
       ajoutes++;
     }
     if (ajoutes > 0) mots.push(m.label_fr);
+  }
+
+  // Puis le texte même des fiches (0097) : un projet qui parle de
+  // poissons ou de pêcheurs remonte pour « sardine », même sans le mot.
+  if (ids.length < limite) {
+    const { data: fiches } = await supabase.rpc("projets_par_sens", {
+      p_vecteur: enTexte(v),
+      p_limite: limite,
+      ...parametresRpc(filtres),
+    });
+    let ajoutes = 0;
+    for (const f of (fiches ?? []) as { id: string; proximite: number }[]) {
+      if (f.proximite < PROXIMITE_FICHE || dejaTrouves.has(f.id) || ids.length >= limite) continue;
+      dejaTrouves.add(f.id);
+      ids.push(f.id);
+      ajoutes++;
+    }
+    if (ajoutes > 0) mots.push("le texte des fiches");
   }
   return { ids, mots };
 }
