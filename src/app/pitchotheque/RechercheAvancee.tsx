@@ -43,23 +43,23 @@ export default function RechercheAvancee({
           </select>
         </label>
         <label className={formStyles.field}>
-          <span>Genre principal</span>
-          <select name="genre" defaultValue={filtres.genre ?? ""}>
-            <option value="">Tous les genres</option>
-            {genres.map((g) => (
-              <option key={g.slug} value={g.slug}>
-                {g.label_fr}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={formStyles.field}>
           <span>Audience ciblée</span>
           <select name="audience" defaultValue={filtres.audience ?? ""}>
             <option value="">Toutes les audiences</option>
             {AUDIENCES.map((a) => (
               <option key={a.value} value={a.value}>
                 {a.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className={formStyles.field}>
+          <span>Genre principal</span>
+          <select name="genre" defaultValue={filtres.genre ?? ""}>
+            <option value="">Tous les genres</option>
+            {genres.map((g) => (
+              <option key={g.slug} value={g.slug}>
+                {g.label_fr}
               </option>
             ))}
           </select>
