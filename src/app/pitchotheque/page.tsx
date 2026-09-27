@@ -63,10 +63,7 @@ export default async function ProjetsPage({
 
   const adherent = await peutVoirLeNuage();
 
-  const [{ data: genres }, { data: langues }] = await Promise.all([
-    supabase.from("genres").select("slug, label_fr").order("position"),
-    supabase.from("languages").select("code, label_fr").order("position"),
-  ]);
+  const { data: genres } = await supabase.from("genres").select("slug, label_fr").order("position");
 
   // L'ordre vient de la base (fonction « pitchotheque ») : labellisés
   // d'abord, puis par tranche de remplissage, tirés au sort chaque nuit.
@@ -122,14 +119,14 @@ export default async function ProjetsPage({
   return (
     <PageShell title="Pitchothèque" nav="pitchotheque" connecte={!!user}>
       <Finder adherent={adherent} filtres={filtres} />
-      <RechercheAvancee filtres={filtres} genres={genres ?? []} langues={langues ?? []} />
+      <RechercheAvancee filtres={filtres} genres={genres ?? []} />
 
       {!projects || projects.length === 0 ? (
         <p className={formStyles.hint}>
           {nbFiltres > 0 ? (
             <>
               Aucun projet ne correspond à ces filtres.{" "}
-              <Link href={adresse({ format: null, genre: null, audience: null, budget: null, langue: null })}>
+              <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null })}>
                 Tout effacer
               </Link>
               .

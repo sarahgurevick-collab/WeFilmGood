@@ -94,7 +94,7 @@ export default function Finder({
       if (minuteur.current) clearTimeout(minuteur.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- les filtres sont comparés par valeur
-  }, [requete, filtres.format, filtres.genre, filtres.audience, filtres.budget, filtres.langue]);
+  }, [requete, filtres.format, filtres.genre, filtres.audience, filtres.budget, filtres.bandeau]);
 
   // Le nuage suit ce qui est tapé, tant qu'il est ouvert : il ne reste
   // jamais figé sur une liste générique une fois qu'on cherche quelque

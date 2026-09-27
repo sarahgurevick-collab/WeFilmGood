@@ -2,7 +2,6 @@ import styles from "./Bandeau.module.css";
 
 /** Les bandeaux posés par l'administration sur un projet signé, tourné ou primé. */
 export const BANDEAUX: Record<string, string> = {
-  optionne: "Optionné",
   signe: "Signé",
   tourne: "Tourné",
   script_prime: "Script primé",

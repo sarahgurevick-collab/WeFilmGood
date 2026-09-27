@@ -8,12 +8,12 @@ export type Filtres = {
   genre: string | null;
   audience: string | null;
   budget: string | null;
-  langue: string | null;
+  bandeau: string | null;
 };
 
-export const CLES: (keyof Filtres)[] = ["format", "genre", "audience", "budget", "langue"];
+export const CLES: (keyof Filtres)[] = ["format", "genre", "audience", "budget", "bandeau"];
 
-export const AUCUN: Filtres = { format: null, genre: null, audience: null, budget: null, langue: null };
+export const AUCUN: Filtres = { format: null, genre: null, audience: null, budget: null, bandeau: null };
 
 export function lireFiltres(params: Record<string, string | string[] | undefined>): Filtres {
   const lire = (cle: keyof Filtres) => {
@@ -21,7 +21,7 @@ export function lireFiltres(params: Record<string, string | string[] | undefined
     const s = Array.isArray(v) ? v[0] : v;
     return s && s.trim() ? s.trim() : null;
   };
-  return { format: lire("format"), genre: lire("genre"), audience: lire("audience"), budget: lire("budget"), langue: lire("langue") };
+  return { format: lire("format"), genre: lire("genre"), audience: lire("audience"), budget: lire("budget"), bandeau: lire("bandeau") };
 }
 
 export function nombreDeFiltres(f: Filtres) {
@@ -44,6 +44,6 @@ export function parametresRpc(f: Filtres) {
     p_genre: f.genre,
     p_audience: f.audience,
     p_budget: f.budget,
-    p_langue: f.langue,
+    p_bandeau: f.bandeau,
   };
 }

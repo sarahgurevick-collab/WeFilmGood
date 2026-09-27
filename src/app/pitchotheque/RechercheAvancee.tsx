@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BANDEAUX } from "@/components/Bandeau";
 import formStyles from "@/components/form.module.css";
 import { AUDIENCES, BUDGETS, FORMATS } from "@/app/projet/ChampsFiche";
 import { adresse, nombreDeFiltres, type Filtres } from "./filtres";
@@ -13,11 +14,9 @@ import styles from "./projets.module.css";
 export default function RechercheAvancee({
   filtres,
   genres,
-  langues,
 }: {
   filtres: Filtres;
   genres: { slug: string; label_fr: string }[];
-  langues: { code: string; label_fr: string }[];
 }) {
   const actifs = nombreDeFiltres(filtres);
 
@@ -76,13 +75,16 @@ export default function RechercheAvancee({
             ))}
           </select>
         </label>
+        {/* À la place de la langue (27/09) : les projets signés, tournés
+            ou primés, ceux qui portent un bandeau. */}
         <label className={formStyles.field}>
-          <span>Langue du projet</span>
-          <select name="langue" defaultValue={filtres.langue ?? ""}>
-            <option value="">Toutes les langues</option>
-            {langues.map((l) => (
-              <option key={l.code} value={l.code}>
-                {l.label_fr}
+          <span>Signé, tourné ou primé</span>
+          <select name="bandeau" defaultValue={filtres.bandeau ?? ""}>
+            <option value="">Tous les projets</option>
+            <option value="tous">Signés, tournés ou primés</option>
+            {Object.entries(BANDEAUX).map(([cle, libelle]) => (
+              <option key={cle} value={cle}>
+                {libelle}
               </option>
             ))}
           </select>
@@ -90,7 +92,7 @@ export default function RechercheAvancee({
 
         <div className={styles.avanceeActions}>
           {actifs > 0 && (
-            <Link href={adresse({ format: null, genre: null, audience: null, budget: null, langue: null })}>
+            <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null })}>
               Tout effacer
             </Link>
           )}
