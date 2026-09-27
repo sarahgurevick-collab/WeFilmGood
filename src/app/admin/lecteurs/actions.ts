@@ -25,7 +25,10 @@ export async function payerFacture(formData: FormData) {
     .eq("payment_status", "due");
 
   revalidatePath("/admin/lecteurs", "layout");
-  redirect(retour.startsWith("/admin/lecteurs") ? retour : "/admin/lecteurs");
+  revalidatePath("/admin/fiches-a-valider");
+  redirect(
+    retour.startsWith("/admin/lecteurs") || retour === "/admin/fiches-a-valider" ? retour : "/admin/lecteurs",
+  );
 }
 
 /**
@@ -109,5 +112,6 @@ export async function reactiverLecteur(formData: FormData) {
     .is("claimed_by", null);
 
   revalidatePath("/admin/lecteurs", "layout");
+  revalidatePath("/admin/fiches-a-valider");
   redirect(`/admin/lecteurs/${uid}`);
 }

@@ -146,11 +146,43 @@ export default async function MembresPage({
   // Les formats que chaque lecteur peut lire (27/09).
   const service = createAdminClient();
   const { data: profilsLecteur } = service
-    ? await service.from("reader_profiles").select("profile_id, formats")
+    ? await service.from("reader_profiles").select("profile_id, formats, availability_status")
     : { data: null };
-  const formatsDe = new Map(
-    ((profilsLecteur ?? []) as { profile_id: string; formats: string[] | null }[]).map((r) => [r.profile_id, r.formats]),
-  );
+  const lignesLecteur = (profilsLecteur ?? []) as {
+    profile_id: string;
+    formats: string[] | null;
+    availability_status: string | null;
+  }[];
+  const formatsDe = new Map(lignesLecteur.map((r) => [r.profile_id, r.formats]));
+  const dispoDe = new Map(lignesLecteur.map((r) => [r.profile_id, r.availability_status]));
+
+  // Pour les lecteurs (27/09, l'ancienne page Lecteurs rejoint celle-ci) :
+  // le nombre de fiches et la date de la dernière, WFG 1 et WFG 2 réunis.
+  const fichesDe = new Map<string, { n: number; derniere: string | null }>();
+  if (service && sp.metier === "Lecteur") {
+    const ids = lignesLecteur.map((r) => r.profile_id);
+    const [{ data: nouvelles }, { data: anciensIds }] = await Promise.all([
+      service.from("reading_reports").select("reader_id, submitted_at").in("reader_id", ids),
+      service.from("profiles").select("id, legacy_user_id").in("id", ids).not("legacy_user_id", "is", null),
+    ]);
+    const ajoute = (id: string, date: string | null) => {
+      const e = fichesDe.get(id) ?? { n: 0, derniere: null };
+      e.n += 1;
+      if (date && (!e.derniere || date > e.derniere)) e.derniere = date;
+      fichesDe.set(id, e);
+    };
+    for (const f of nouvelles ?? []) ajoute(f.reader_id, f.submitted_at);
+    const parAncien = new Map((anciensIds ?? []).map((p) => [p.legacy_user_id as number, p.id as string]));
+    if (parAncien.size) {
+      const { data: anciennes } = await service
+        .from("legacy_reading_reports")
+        .select("reader_legacy_id, read_at")
+        .in("reader_legacy_id", [...parAncien.keys()])
+        .neq("statut", 0);
+      for (const f of anciennes ?? []) ajoute(parAncien.get(f.reader_legacy_id)!, f.read_at);
+    }
+  }
+  const DISPO: Record<string, string> = { vert: "Disponible", orange: "Peu disponible", rouge: "Indisponible" };
 
   // Les filtres, lus dans l'adresse : la page se partage et se recharge.
   const q = (sp.q ?? "").trim().toLowerCase();
@@ -327,6 +359,12 @@ export default async function MembresPage({
         </Link>
       </form>
 
+      {metier === "Lecteur" && (
+        <p className={formStyles.hint} style={{ marginTop: 16 }}>
+          Le nombre de fiches mène à la page du lecteur (détail, factures).{" "}
+          <Link href="/admin/lecteurs">Anciens lecteurs de WFG 1</Link>
+        </p>
+      )}
       <p className={formStyles.hint} style={{ marginTop: 16 }}>
         {filtres.length === tous.length
           ? `${tous.length} membres.`
@@ -343,6 +381,9 @@ export default async function MembresPage({
               <th>Projets</th>
               <th>Formats</th>
               <th>Adhésion</th>
+              {metier === "Lecteur" && <th>Disponibilité</th>}
+              {metier === "Lecteur" && <th>Fiches</th>}
+              {metier === "Lecteur" && <th>Dernière fiche</th>}
               {metier === "avalider" && <th>Validation</th>}
               {affichage.has("biofilmo") && <th>Biofilmo</th>}
               {affichage.has("inscription") && <th>Inscrit</th>}
@@ -405,6 +446,13 @@ export default async function MembresPage({
                 </td>
                 <td>{(m.formats ?? []).map((f) => FORMATS[f] ?? f).join(", ") || "—"}</td>
                 <td>{m.adhesion ? m.adhesion.replace("palier_", "") + " €" : "—"}</td>
+                {metier === "Lecteur" && <td>{DISPO[dispoDe.get(m.profile_id) ?? "vert"]}</td>}
+                {metier === "Lecteur" && (
+                  <td>
+                    <Link href={`/admin/lecteurs/${m.profile_id}`}>{fichesDe.get(m.profile_id)?.n ?? 0}</Link>
+                  </td>
+                )}
+                {metier === "Lecteur" && <td>{dateCourte(fichesDe.get(m.profile_id)?.derniere ?? null)}</td>}
                 {metier === "avalider" && (
                   <td>
                     {m.website ? (

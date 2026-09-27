@@ -7,7 +7,6 @@ import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../admin.module.css";
 import NavAdmin from "../NavAdmin";
 import { prendreLaPlace } from "../profils/prise-de-place";
-import Factures, { SELECTION_FACTURES, versFactures } from "./Factures";
 
 /**
  * Tous les lecteurs, et l'accès à l'espace de chacun.
@@ -86,11 +85,6 @@ export default async function LecteursPage() {
     ),
   ]);
 
-  const { data: facturesBrutes } = await admin
-    .from("reader_invoices")
-    .select(SELECTION_FACTURES)
-    .order("created_at", { ascending: false });
-  const aPayer = versFactures(facturesBrutes).filter((f) => !f.payee);
 
   // Les anciens lecteurs de WFG 1 sans compte sur le nouveau site : ceux
   // qui ont rendu des fiches, et ceux inscrits comme lecteurs sans en avoir
@@ -194,15 +188,6 @@ export default async function LecteursPage() {
         tel qu&apos;il se voit. Un bandeau en haut de page permet de revenir à
         votre compte.
       </p>
-
-      <h2 className={adminStyles.subhead}>Factures à payer</h2>
-      {aPayer.length === 0 ? (
-        <p className={formStyles.hint}>
-          Aucune facture en attente de paiement.
-        </p>
-      ) : (
-        <Factures factures={aPayer} retour="/admin/lecteurs" avecLecteur />
-      )}
 
       <h2 className={adminStyles.subhead}>Lecteurs actifs</h2>
       <table className={adminStyles.table}>

@@ -6,6 +6,7 @@ import formStyles from "@/components/form.module.css";
 import adminStyles from "../admin.module.css";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import Factures, { SELECTION_FACTURES, versFactures } from "../lecteurs/Factures";
 
 /**
  * Les fiches rendues par les lecteurs, à relire avant publication — l'une
@@ -77,8 +78,23 @@ export default async function FichesAValiderPage() {
     (lecteursWfg1 ?? []).map((l) => [l.legacy_user_id, l.full_name]),
   );
 
+  // Les factures des lecteurs à payer (27/09) : déplacées ici depuis
+  // l'ancienne page Lecteurs — on valide une fiche, puis on paie.
+  const { data: facturesBrutes } = admin
+    ? await admin.from("reader_invoices").select(SELECTION_FACTURES).order("created_at", { ascending: false })
+    : { data: null };
+  const aPayer = versFactures(facturesBrutes).filter((f) => !f.payee);
+
   return (
     <PageShell nav="admin" avantTitre={<NavAdmin />} title="Fiches à valider" theme="clair">
+      <h2 className={adminStyles.subhead}>Factures à payer</h2>
+      {aPayer.length === 0 ? (
+        <p className={formStyles.hint}>Aucune facture en attente de paiement.</p>
+      ) : (
+        <Factures factures={aPayer} retour="/admin/fiches-a-valider" avecLecteur />
+      )}
+
+      <h2 className={adminStyles.subhead}>Fiches à valider</h2>
       {(pendingReports ?? []).length === 0 &&
       (ficheesWfg1 ?? []).length === 0 ? (
         <p className={formStyles.hint}>Aucune fiche à valider.</p>
