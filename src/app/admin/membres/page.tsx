@@ -90,6 +90,11 @@ const PROJETS_CHOIX: [string, string][] = [
 
 const PAR_PAGE = 50;
 
+/** Il y a sept jours, en millisecondes (page rendue côté serveur). */
+function debutDeLaSemaine() {
+  return new Date().getTime() - 7 * 24 * 3600 * 1000;
+}
+
 const nomsDePays = new Intl.DisplayNames(["fr"], { type: "region" });
 function nomDuPays(code: string | null) {
   if (!code) return "—";
@@ -148,13 +153,15 @@ export default async function MembresPage({
 
   // Les filtres, lus dans l'adresse : la page se partage et se recharge.
   const q = (sp.q ?? "").trim().toLowerCase();
-  const metier = sp.metier ?? "";
+  // Par défaut (aucun choix dans l'adresse), les profils de la semaine.
+  const metier = sp.metier === undefined ? "recents" : sp.metier;
+  const ilYaUneSemaine = debutDeLaSemaine();
   const format = sp.format ?? "";
   const annee = sp.annee ?? "";
   const pays = sp.pays ?? "";
   const adhesion = sp.adhesion ?? "";
   const projets = sp.projets ?? "";
-  const tri = sp.tri ?? "activite";
+  const tri = sp.tri ?? "inscription";
   const page = Math.max(1, Number(sp.page ?? "1") || 1);
   // Par défaut, rien de coché : le nom et l'email. Le profil étendu ajoute
   // la photo, le pays, le code postal, la ville et la référence.
@@ -179,7 +186,9 @@ export default async function MembresPage({
 
   const filtres = tous.filter((m) => {
     if (q && !(`${m.full_name ?? ""} ${m.email ?? ""}`.toLowerCase().includes(q))) return false;
-    if (metier === "Lecteur" ? !estLecteur(m) : metier && metierDeCle(m.category ?? m.role_wfg1) !== metier) return false;
+    if (metier === "recents") {
+      if (new Date(m.inscrit_le).getTime() < ilYaUneSemaine) return false;
+    } else if (metier === "Lecteur" ? !estLecteur(m) : metier && metierDeCle(m.category ?? m.role_wfg1) !== metier) return false;
     if (format && !(m.formats ?? []).includes(format)) return false;
     if (annee && String(m.dernier_projet_annee ?? "") !== annee) return false;
     if (pays && m.country !== pays) return false;
@@ -224,6 +233,9 @@ export default async function MembresPage({
 
         <select name="metier" defaultValue={metier} className={styles.menu}>
           <option value="">Tous les comptes</option>
+          <option value="recents">
+            Profils récents (&lt; 1 sem) ({tous.filter((m) => new Date(m.inscrit_le).getTime() >= ilYaUneSemaine).length})
+          </option>
           {[...metiersPresents.entries()]
             .sort((a, b) => b[1] - a[1])
             .map(([libelle, n]) => (
@@ -279,8 +291,8 @@ export default async function MembresPage({
         </select>
 
         <select name="tri" defaultValue={tri} className={styles.menu}>
+          <option value="inscription">Tri : les plus récents</option>
           <option value="activite">Tri : dernière activité</option>
-          <option value="inscription">Tri : date d&apos;inscription</option>
           <option value="projets">Tri : nombre de projets</option>
           <option value="nom">Tri : nom</option>
         </select>
@@ -317,7 +329,7 @@ export default async function MembresPage({
         <table className={adminStyles.table}>
           <thead>
             <tr>
-              <th>Membre</th>
+              <th className={styles.colMembre}>Membre</th>
               <th>Métier</th>
               <th>Projets</th>
               <th>Formats</th>
@@ -331,7 +343,7 @@ export default async function MembresPage({
           <tbody>
             {visibles.map((m) => (
               <tr key={m.profile_id}>
-                <td>
+                <td className={styles.colMembre}>
                   {affichage.has("etendu") ? (
                     <div className={styles.etendu}>
                       <span className={styles.photo} aria-hidden="true">
