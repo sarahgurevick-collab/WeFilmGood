@@ -22,11 +22,13 @@ export const BUDGETS = [
 
 // « Public » veut dire deux choses sur le site : ici, c'est celui à qui
 // le film s'adresse, jamais la visibilité de la fiche.
-// Trois audiences (27/09/2026, libellés de Sarah).
+// Les audiences (27/09/2026, libellés de Sarah), plus « Tous publics »
+// repris de WFG 1.
 export const AUDIENCES = [
   { value: "jeune_public", label: "Jeune public (3 à 12 ans)" },
   { value: "jeunes_adultes", label: "Jeunes adultes (15 à 25 ans)" },
   { value: "adultes", label: "Adultes et seniors" },
+  { value: "tous_publics", label: "Tous publics" },
 ];
 
 export type ValeursFiche = {
