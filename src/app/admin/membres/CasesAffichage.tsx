@@ -4,7 +4,7 @@ import styles from "./page.module.css";
 
 /**
  * Les cases du bouton « Affichage » : cocher une case ajoute aussitôt sa
- * colonne (le formulaire est renvoyé), sans passer par « Filtrer ».
+ * colonne (le formulaire des filtres se renvoie tout seul, FiltresAuto).
  */
 export default function CasesAffichage({
   cases,
@@ -24,7 +24,6 @@ export default function CasesAffichage({
               name="aff"
               value={cle}
               defaultChecked={cochees.includes(cle)}
-              onChange={(e) => e.currentTarget.form?.requestSubmit()}
             />
             {l}
           </label>

@@ -9,6 +9,7 @@ import { prendreLaPlace } from "../profils/prise-de-place";
 import { basculerValidation } from "../profils/actions";
 import styles from "./page.module.css";
 import CasesAffichage from "./CasesAffichage";
+import FiltresAuto from "./FiltresAuto";
 import FormatsLecteur from "./FormatsLecteur";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -268,7 +269,7 @@ export default async function MembresPage({
 
   return (
     <PageShell nav="admin" avantTitre={<NavAdmin />} title="Membres" theme="clair">
-      <form method="get" className={styles.filtres}>
+      <FiltresAuto className={styles.filtres}>
         <input
           type="search"
           name="q"
@@ -357,13 +358,10 @@ export default async function MembresPage({
           cochees={[...affichage]}
         />
 
-        <button type="submit" className={formStyles.submit}>
-          Filtrer
-        </button>
         <Link href="/admin/membres" className={styles.effacer}>
           Tout effacer
         </Link>
-      </form>
+      </FiltresAuto>
 
       {metier === "Lecteur" && (
         <p className={formStyles.hint} style={{ marginTop: 16 }}>
