@@ -79,3 +79,18 @@ export async function contacterAuteur(formData: FormData) {
   redirect(`/mes-messages?envoye=1`);
 }
 
+
+/** Le bandeau d'un projet (Optionné, Signé, Tourné…) : l'administration seule. */
+export async function choisirBandeau(formData: FormData) {
+  const supabase = await createClient();
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  const projectId = formData.get("project_id") as string;
+  if (!isAdmin) redirect(`/projet/${projectId}`);
+  const valeur = (formData.get("bandeau") as string) || null;
+  const permis = ["optionne", "signe", "tourne", "script_prime", "film_prime"];
+  if (valeur && !permis.includes(valeur)) redirect(`/projet/${projectId}`);
+  await supabase.from("projects").update({ bandeau: valeur }).eq("id", projectId);
+  revalidatePath(`/projet/${projectId}`);
+  revalidatePath("/pitchotheque");
+  redirect(`/projet/${projectId}`);
+}

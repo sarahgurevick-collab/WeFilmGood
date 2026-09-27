@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Bandeau from "@/components/Bandeau";
 import { redirect } from "next/navigation";
 import Finder from "@/components/Finder";
 import VignetteEau from "@/components/VignetteEau";
@@ -23,6 +24,7 @@ type Projet = {
   title: string;
   logline: string | null;
   status: string;
+  bandeau: string | null;
   genre: { label_fr: string } | null;
   files: { storage_path: string; kind: string }[];
 };
@@ -33,7 +35,7 @@ export const metadata: Metadata = { title: "Pitchothèque — WeFilmGood" };
 const PAR_PAGE = 50;
 
 const SELECTION =
-  "id, title, logline, status, genre:genres(label_fr), files:project_files(storage_path, kind)";
+  "id, title, logline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)";
 
 export default async function ProjetsPage({
   searchParams,
@@ -157,6 +159,7 @@ export default async function ProjetsPage({
                     className={`${styles.carte} ${EFFET_VIGNETTE === "eau" ? styles.eau : ""}`}
                   >
                     <div className={styles.vignette}>
+                      <Bandeau valeur={p.bandeau} />
                       {vignette && EFFET_VIGNETTE === "eau" ? (
                         <VignetteEau src={vignette} />
                       ) : vignette ? (

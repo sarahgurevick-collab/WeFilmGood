@@ -5,7 +5,8 @@ import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
-import { setShareLink } from "./actions";
+import { choisirBandeau, setShareLink } from "./actions";
+import { BANDEAUX } from "@/components/Bandeau";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
@@ -35,6 +36,7 @@ type Project = {
   language: string | null;
   country: string | null;
   status: string;
+  bandeau: string | null;
   owner_id: string;
   legacy_id: string | null;
   genre_slug: string | null;
@@ -89,7 +91,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
+      "id, title, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -311,6 +313,7 @@ export default async function ProjetPage({
         }))}
         moodboard={moodboard.map((m) => urls.get(m.storage_path)).filter((u): u is string => Boolean(u))}
         image={urlVignette ?? null}
+        bandeau={project.bandeau ?? null}
         avis={(avisWfg as string | null) ?? null}
         videopitch={
           videopitch?.videopitch_fr || videopitch?.videopitch_en
@@ -333,6 +336,27 @@ export default async function ProjetPage({
           une fois l'analyse disponible, le suivi n'a plus d'objet. */}
       {(isOwner || estAdmin) && etatLecture && etatLecture.etat !== "disponible" && (
         <EtatDeLecture etat={etatLecture.etat} deposeLe={etatLecture.depose_le} />
+      )}
+
+      {/* Le bandeau posé sur la vignette : l'administration seule le choisit. */}
+      {estAdmin && (
+        <form action={choisirBandeau} className={formStyles.form} style={{ marginTop: 24, maxWidth: 360 }}>
+          <input type="hidden" name="project_id" value={project.id} />
+          <label className={formStyles.field}>
+            <span>Choix du bandeau (visible en admin uniquement)</span>
+            <select name="bandeau" defaultValue={project.bandeau ?? ""}>
+              <option value="">— Aucun bandeau —</option>
+              {Object.entries(BANDEAUX).map(([cle, libelle]) => (
+                <option key={cle} value={cle}>
+                  {libelle}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button type="submit" className={formStyles.submit}>
+            Enregistrer le bandeau
+          </button>
+        </form>
       )}
 
       {(isOwner || estAdmin) && (

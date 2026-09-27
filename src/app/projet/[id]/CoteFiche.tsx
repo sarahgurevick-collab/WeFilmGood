@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import styles from "./cadre.module.css";
+import Bandeau from "@/components/Bandeau";
 
 /**
  * Le côté « La fiche » du comparateur : l'image de présentation seule, sans
@@ -11,10 +12,12 @@ import styles from "./cadre.module.css";
  */
 export default function CoteFiche({
   image,
+  bandeau,
   videopitch,
   onVideo,
 }: {
   image: string | null;
+  bandeau?: string | null;
   videopitch?: ReactNode;
   /** Prévient quand on lance la vidéo (le cadre affiche alors le
       bouton de langue). */
@@ -28,6 +31,7 @@ export default function CoteFiche({
 
   return (
     <div className={styles.coteFiche}>
+      <Bandeau valeur={bandeau ?? null} grand />
       {image && (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={image} alt="" className={styles.coteFicheImage} draggable={false} />

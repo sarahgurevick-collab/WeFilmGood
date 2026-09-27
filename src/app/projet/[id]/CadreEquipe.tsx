@@ -49,6 +49,7 @@ export default function CadreEquipe({
   moodboard,
   videopitch,
   image,
+  bandeau,
   avis,
 }: {
   /** Les photos du moodboard (adresses signées). */
@@ -59,6 +60,8 @@ export default function CadreEquipe({
   personnages: PersonnageCadre[];
   /** L'image de présentation (adresse signée), s'il y en a une. */
   image: string | null;
+  /** Le bandeau posé par l'administration (Signé, Tourné…), s'il y en a un. */
+  bandeau?: string | null;
   /** Le videopitch (identifiants Vimeo), s'il y en a un. */
   videopitch?: { fr: string | null; en: string | null; titre: string };
 }) {
@@ -177,6 +180,7 @@ export default function CadreEquipe({
         gauche={
           <CoteFiche
             image={image}
+            bandeau={bandeau ?? null}
             onVideo={() => setVideoLancee(true)}
             videopitch={
               videopitch && (videopitch.fr || videopitch.en) ? (
