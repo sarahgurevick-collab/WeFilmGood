@@ -11,6 +11,7 @@ import { publishReport } from "./actions";
 
 type Report = {
   id: string;
+  reader_id: string;
   content: string | null;
   score: number | null;
   label_motivation: string | null;
@@ -36,7 +37,7 @@ export default async function FicheAdminPage({
   const { data: report } = await supabase
     .from("reading_reports")
     .select(
-      "id, content, score, label_motivation, status, submitted_at, project:projects(id, title), reader:profiles(full_name)",
+      "id, reader_id, content, score, label_motivation, status, submitted_at, project:projects(id, title), reader:profiles(full_name)",
     )
     .eq("id", reportId)
     .maybeSingle<Report>();
@@ -56,6 +57,17 @@ export default async function FicheAdminPage({
   // l'ancienne mise en forme est traduite, sans quoi l'éditeur la
   // supprimerait en silence.
   const content = sanitizeFiche(publication?.content ?? report.content ?? "");
+
+  // Le lecteur peut être changé au moment de la validation (27/09) : fiche
+  // refaite par un autre, lecteur malade… C'est lui qui sera payé.
+  const { data: roles } = await supabase
+    .from("profile_roles")
+    .select("profile_id, profile:profiles(full_name)")
+    .eq("role_slug", "lecteur")
+    .returns<{ profile_id: string; profile: { full_name: string | null } | null }[]>();
+  const lecteurs = (roles ?? [])
+    .map((r) => ({ id: r.profile_id, nom: r.profile?.full_name ?? r.profile_id.slice(0, 8) }))
+    .sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
   const score = publication?.score ?? report.score ?? 0;
 
   return (
@@ -91,6 +103,17 @@ export default async function FicheAdminPage({
         style={{ marginTop: 32 }}
       >
         <input type="hidden" name="report_id" value={report.id} />
+
+        <label className={formStyles.field}>
+          <span>Lecteur (celui qui sera payé pour cette fiche)</span>
+          <select name="reader_id" defaultValue={report.reader_id}>
+            {lecteurs.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.nom}
+              </option>
+            ))}
+          </select>
+        </label>
 
         <div className={formStyles.field}>
           <span>Texte publié à l&apos;auteur</span>
