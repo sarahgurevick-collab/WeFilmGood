@@ -237,7 +237,7 @@ export default async function TableauFichesPage({
         langue: f.project?.language ?? null,
         statut: f.statut === 1 ? "À valider" : "Vérifiée",
         note: f.final_mark,
-        analyse: texteBrut(f.content, false),
+        analyse: texteBrut(f.content, true),
         satisfaction: f.author_rating || null,
         // Relue sur WFG 1 jusqu'à la bascule : le A mène à la fiche, en
         // lecture seule.

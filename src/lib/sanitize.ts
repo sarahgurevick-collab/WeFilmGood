@@ -53,6 +53,17 @@ export function sanitizeFiche(html: string): string {
   });
 }
 
+/**
+ * Une fiche reprise de WFG 1 : du texte à retours à la ligne, semé de
+ * balises (<u>, <b>, <font color>…) que l'ancien site interprétait. On
+ * les interprète aussi — le soulignement et le gras réapparaissent, les
+ * signes disparaissent — au lieu de les afficher tels quels (27/09).
+ */
+export function ficheHeriteeEnHtml(texte: string | null): string {
+  if (!texte) return "";
+  return sanitizeFiche(texte.replace(/\r\n?/g, "\n").replace(/\n/g, "<br>"));
+}
+
 /** Vrai si la fiche ne contient que des balises vides ou des espaces. */
 export function ficheEstVide(html: string): boolean {
   return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().length === 0;

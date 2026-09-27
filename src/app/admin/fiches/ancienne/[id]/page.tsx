@@ -1,4 +1,6 @@
 import Link from "next/link";
+import FicheContent from "@/components/FicheContent";
+import { ficheHeriteeEnHtml } from "@/lib/sanitize";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -136,7 +138,7 @@ export default async function FicheAnciennePage({
         <div className={formStyles.field} style={{ marginTop: 32 }}>
           <span>Texte rendu par le lecteur</span>
           <div className={adminStyles.ficheTexte}>
-            {fiche.content?.trim() || "Fiche vide."}
+            {fiche.content?.trim() ? <FicheContent html={ficheHeriteeEnHtml(fiche.content)} /> : "Fiche vide."}
           </div>
         </div>
       )}

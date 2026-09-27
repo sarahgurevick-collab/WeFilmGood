@@ -1,3 +1,4 @@
+import { ficheHeriteeEnHtml } from "@/lib/sanitize";
 import type { createClient } from "@/lib/supabase/server";
 
 export type FicheAffichee = {
@@ -36,8 +37,8 @@ export async function chargerFiches(
       cle: `h${f.legacy_review_id}`,
       date: f.read_at,
       note: f.final_mark,
-      contenu: f.content,
-      html: false,
+      contenu: ficheHeriteeEnHtml(f.content),
+      html: true,
       avis: f.wfg_review,
     })),
     ...((publiees ?? []) as {
