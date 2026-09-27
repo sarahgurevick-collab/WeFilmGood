@@ -174,12 +174,18 @@ export default async function MembresPage({
     for (const f of nouvelles ?? []) ajoute(f.reader_id, f.submitted_at);
     const parAncien = new Map((anciensIds ?? []).map((p) => [p.legacy_user_id as number, p.id as string]));
     if (parAncien.size) {
-      const { data: anciennes } = await service
-        .from("legacy_reading_reports")
-        .select("reader_legacy_id, read_at")
-        .in("reader_legacy_id", [...parAncien.keys()])
-        .neq("statut", 0);
-      for (const f of anciennes ?? []) ajoute(parAncien.get(f.reader_legacy_id)!, f.read_at);
+      // Plus de 1 000 fiches : l'API n'en rend que 1 000 par lecture.
+      for (let debut = 0; ; debut += 1000) {
+        const { data: anciennes } = await service
+          .from("legacy_reading_reports")
+          .select("reader_legacy_id, read_at")
+          .in("reader_legacy_id", [...parAncien.keys()])
+          .neq("statut", 0)
+          .order("legacy_review_id")
+          .range(debut, debut + 999);
+        for (const f of anciennes ?? []) ajoute(parAncien.get(f.reader_legacy_id)!, f.read_at);
+        if (!anciennes || anciennes.length < 1000) break;
+      }
     }
   }
   const DISPO: Record<string, string> = { vert: "Disponible", orange: "Peu disponible", rouge: "Indisponible" };
