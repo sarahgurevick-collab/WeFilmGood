@@ -204,13 +204,7 @@ export default async function ProjetsEnAttentePage() {
                   <td>
                     <ScenarioLink projectId={p.project_id} />
                   </td>
-                  <td>
-                    {formatCourt(p.format, p.language)}
-                    <br />
-                    <Link href={`/projet/${p.project_id}`} className={adminStyles.boutonPlus}>
-                      + Plus
-                    </Link>
-                  </td>
+                  <td>{formatCourt(p.format, p.language)}</td>
                   <td
                     style={
                       joursDepuis(p.submitted_at) >= ALERTE_JOURS
