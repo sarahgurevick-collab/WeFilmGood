@@ -31,7 +31,6 @@ export default function RechercheAvancee({
       </summary>
 
       <form method="get" action="/pitchotheque" className={styles.avanceePanneau}>
-        {filtres.coprod && <input type="hidden" name="coprod" value="1" />}
         <label className={formStyles.field}>
           <span>Format du projet</span>
           <select name="format" defaultValue={filtres.format ?? ""}>
@@ -90,10 +89,21 @@ export default function RechercheAvancee({
             ))}
           </select>
         </label>
+        {/* Recherche de coproduction (27/09) : les projets qui ont déjà un
+            producteur ou un réalisateur dans leur équipe. */}
+        <label className={formStyles.field}>
+          <span>Recherche de coproduction</span>
+          <select name="equipe" defaultValue={filtres.equipe ?? ""}>
+            <option value="">Tous les projets</option>
+            <option value="producteur">Avec un producteur</option>
+            <option value="realisateur">Avec un réalisateur</option>
+            <option value="tous">Avec un producteur ou un réalisateur</option>
+          </select>
+        </label>
 
         <div className={styles.avanceeActions}>
           {actifs > 0 && (
-            <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null, coprod: null })}>
+            <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null, equipe: null })}>
               Tout effacer
             </Link>
           )}

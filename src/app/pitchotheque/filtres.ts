@@ -9,13 +9,13 @@ export type Filtres = {
   audience: string | null;
   budget: string | null;
   bandeau: string | null;
-  /** « 1 » : seulement les projets qui ont déjà un producteur. */
-  coprod: string | null;
+  /** Équipe déjà en place : « producteur », « realisateur » ou « tous » (l'un ou l'autre). */
+  equipe: string | null;
 };
 
-export const CLES: (keyof Filtres)[] = ["format", "genre", "audience", "budget", "bandeau", "coprod"];
+export const CLES: (keyof Filtres)[] = ["format", "genre", "audience", "budget", "bandeau", "equipe"];
 
-export const AUCUN: Filtres = { format: null, genre: null, audience: null, budget: null, bandeau: null, coprod: null };
+export const AUCUN: Filtres = { format: null, genre: null, audience: null, budget: null, bandeau: null, equipe: null };
 
 export function lireFiltres(params: Record<string, string | string[] | undefined>): Filtres {
   const lire = (cle: keyof Filtres) => {
@@ -23,13 +23,11 @@ export function lireFiltres(params: Record<string, string | string[] | undefined
     const s = Array.isArray(v) ? v[0] : v;
     return s && s.trim() ? s.trim() : null;
   };
-  return { format: lire("format"), genre: lire("genre"), audience: lire("audience"), budget: lire("budget"), bandeau: lire("bandeau"), coprod: lire("coprod") === "1" ? "1" : null };
+  return { format: lire("format"), genre: lire("genre"), audience: lire("audience"), budget: lire("budget"), bandeau: lire("bandeau"), equipe: lire("equipe") };
 }
 
-/** Les filtres du panneau « Recherche avancée » (la coproduction a son
-    propre bouton, à côté). */
 export function nombreDeFiltres(f: Filtres) {
-  return CLES.filter((c) => c !== "coprod" && f[c]).length;
+  return CLES.filter((c) => f[c]).length;
 }
 
 /** La chaîne « ?format=…&page=2 » d'un lien de la pitchothèque. */
@@ -49,6 +47,6 @@ export function parametresRpc(f: Filtres) {
     p_audience: f.audience,
     p_budget: f.budget,
     p_bandeau: f.bandeau,
-    p_coprod: f.coprod === "1",
+    p_equipe: f.equipe,
   };
 }

@@ -119,18 +119,6 @@ export default async function ProjetsPage({
   return (
     <PageShell title="Pitchothèque" nav="pitchotheque" connecte={!!user}>
       <Finder adherent={adherent} filtres={filtres} />
-      {/* « Recherche de coproduction » (27/09) : bien visible, à part de la
-          recherche avancée. Actif, il se remplit de la couleur du moment. */}
-      <Link
-        href={adresse({ ...filtres, coprod: filtres.coprod ? null : "1" })}
-        className={`${styles.coprod} ${filtres.coprod ? styles.coprodActif : ""}`}
-        aria-pressed={Boolean(filtres.coprod)}
-      >
-        <span className={styles.coprodCase} aria-hidden="true">
-          {filtres.coprod ? "✓" : ""}
-        </span>
-        Recherche de coproduction
-      </Link>
       <RechercheAvancee filtres={filtres} genres={genres ?? []} />
 
       {!projects || projects.length === 0 ? (
@@ -138,7 +126,7 @@ export default async function ProjetsPage({
           {nbFiltres > 0 ? (
             <>
               Aucun projet ne correspond à ces filtres.{" "}
-              <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null, coprod: null })}>
+              <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null, equipe: null })}>
                 Tout effacer
               </Link>
               .
