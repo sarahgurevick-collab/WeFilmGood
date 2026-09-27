@@ -5,7 +5,7 @@ import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
-import { choisirBandeau, setShareLink } from "./actions";
+import { choisirBandeau, choisirVisibilite, setShareLink } from "./actions";
 import { BANDEAUX } from "@/components/Bandeau";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
@@ -37,6 +37,7 @@ type Project = {
   country: string | null;
   status: string;
   bandeau: string | null;
+  visible_pour: string[] | null;
   owner_id: string;
   legacy_id: string | null;
   genre_slug: string | null;
@@ -91,7 +92,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
+      "id, title, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, visible_pour, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -101,6 +102,27 @@ export default async function ProjetPage({
   }
 
   const isOwner = user?.id === project.owner_id;
+
+  // Visibilité par métier (27/09) : un porteur adhérent peut réserver son
+  // projet à certains métiers. Les autres membres ne voient pas la fiche.
+  if (project.visible_pour) {
+    const { data: visible } = await supabase.rpc("projet_visible_pour_moi", {
+      p_owner: project.owner_id,
+      p_visible: project.visible_pour,
+    });
+    if (visible === false) notFound();
+  }
+  const { data: porteurAdherent } = isOwner
+    ? await supabase.rpc("a_une_adhesion_active", { p_profile_id: project.owner_id })
+    : { data: false };
+  const { data: metiers } = isOwner
+    ? await supabase
+        .from("roles")
+        .select("slug, label_fr")
+        // Les métiers du site (lecteur, agent, diffuseur… sont au-delà de 90).
+        .lt("position", 90)
+        .order("position")
+    : { data: null };
 
   // Limites introduites par WeFilmGood 2 : les fiches héritées de
   // l'ancienne plateforme gardent leurs textes, mais leur auteur est
@@ -465,6 +487,47 @@ export default async function ProjetPage({
 
       {isOwner && (
         <>
+          {/* Qui voit ce projet (27/09) : tout le monde par défaut ; un
+              adhérent peut décocher des métiers. */}
+          <h2 style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
+            Qui peut voir ce projet
+          </h2>
+          <p className={formStyles.hint}>
+            Par défaut, votre projet est visible de tous les membres. Vous pouvez le réserver à
+            certains métiers en décochant les autres.
+            {!porteurAdherent && " Cette possibilité est réservée aux adhérents."}
+          </p>
+          <form action={choisirVisibilite} style={{ marginTop: 12 }}>
+            <input type="hidden" name="project_id" value={project.id} />
+            <fieldset
+              disabled={!porteurAdherent}
+              style={{ border: 0, padding: 0, margin: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "6px 16px" }}
+            >
+              {(metiers ?? []).map((m) => (
+                <label key={m.slug} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                  <input
+                    type="checkbox"
+                    name="metier"
+                    value={m.slug}
+                    defaultChecked={!project.visible_pour || project.visible_pour.includes(m.slug)}
+                  />
+                  {m.label_fr}
+                </label>
+              ))}
+            </fieldset>
+            {porteurAdherent ? (
+              <button type="submit" className={formStyles.submit} style={{ marginTop: 14 }}>
+                Enregistrer
+              </button>
+            ) : (
+              <p style={{ marginTop: 14 }}>
+                <Link href="/adhesion" className={formStyles.submit} style={{ display: "inline-block" }}>
+                  Adhérer
+                </Link>
+              </p>
+            )}
+          </form>
+
           <h2 style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
             Partager ce projet
           </h2>

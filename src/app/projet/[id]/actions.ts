@@ -94,3 +94,39 @@ export async function choisirBandeau(formData: FormData) {
   revalidatePath("/pitchotheque");
   redirect(`/projet/${projectId}`);
 }
+
+/**
+ * Qui peut voir ce projet (27/09) : le porteur, s'il est adhérent, coche
+ * les métiers qui y ont accès. Tout coché = visible de tous (NULL).
+ */
+export async function choisirVisibilite(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const projectId = formData.get("project_id") as string;
+  if (!user) redirect(`/connexion?next=/projet/${projectId}`);
+
+  const { data: projet } = await supabase
+    .from("projects")
+    .select("owner_id")
+    .eq("id", projectId)
+    .maybeSingle<{ owner_id: string }>();
+  if (!projet || projet.owner_id !== user.id) redirect(`/projet/${projectId}`);
+
+  const { data: adherent } = await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id });
+  if (!adherent) redirect(`/projet/${projectId}`);
+
+  const { data: metiers } = await supabase
+    .from("roles")
+    .select("slug")
+    .lt("position", 90);
+  const tous = (metiers ?? []).map((m) => m.slug as string);
+  const coches = formData.getAll("metier").map(String).filter((m) => tous.includes(m));
+  const visible = coches.length === tous.length ? null : coches;
+
+  await supabase.from("projects").update({ visible_pour: visible }).eq("id", projectId);
+  revalidatePath(`/projet/${projectId}`);
+  revalidatePath("/pitchotheque");
+  redirect(`/projet/${projectId}?enregistre=1`);
+}
