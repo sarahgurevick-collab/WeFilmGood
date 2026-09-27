@@ -12,12 +12,12 @@ export const FORMATS = [
   { value: "immersif_360_vr", label: "Format immersif (360/VR)" },
 ];
 
+// Trois tranches seulement (27/09/2026, libellés de Sarah) : les cinq
+// tranches de WFG 1 étaient trop fines pour chercher un projet.
 export const BUDGETS = [
-  { value: "moins_1m", label: "< 1 million €" },
-  { value: "1_3m", label: "1 à 3 millions €" },
-  { value: "3_5m", label: "3 à 5 millions €" },
-  { value: "5_10m", label: "5 à 10 millions €" },
-  { value: "plus_10m", label: "> 10 millions €" },
+  { value: "petit", label: "Petits budgets (< 1 M€)" },
+  { value: "milieu", label: "Films du milieu" },
+  { value: "gros", label: "Gros budgets (> 7 M€)" },
 ];
 
 // « Public » veut dire deux choses sur le site : ici, c'est celui à qui
