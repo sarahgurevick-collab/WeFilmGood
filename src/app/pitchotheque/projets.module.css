@@ -351,3 +351,45 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* « Recherche de coproduction » : un bouton à bascule bien visible, à la
+   couleur de l'engagement ; actif, il se remplit (27/09). */
+.coprod {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  padding: 10px 18px 10px 12px;
+  border: 2px solid var(--engagement);
+  border-radius: 999px;
+  color: var(--fg);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.coprod:hover {
+  transform: translateY(-1px);
+}
+
+.coprodCase {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--engagement);
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.coprodActif,
+.coprodActif:hover {
+  background: var(--engagement);
+  color: var(--engagement-texte);
+}
+
+.coprodActif .coprodCase {
+  border-color: var(--engagement-texte);
+}

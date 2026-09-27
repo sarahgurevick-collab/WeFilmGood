@@ -31,6 +31,7 @@ export default function RechercheAvancee({
       </summary>
 
       <form method="get" action="/pitchotheque" className={styles.avanceePanneau}>
+        {filtres.coprod && <input type="hidden" name="coprod" value="1" />}
         <label className={formStyles.field}>
           <span>Format du projet</span>
           <select name="format" defaultValue={filtres.format ?? ""}>
@@ -92,7 +93,7 @@ export default function RechercheAvancee({
 
         <div className={styles.avanceeActions}>
           {actifs > 0 && (
-            <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null })}>
+            <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null, coprod: null })}>
               Tout effacer
             </Link>
           )}
