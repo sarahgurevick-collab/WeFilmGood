@@ -22,13 +22,11 @@ export const BUDGETS = [
 
 // « Public » veut dire deux choses sur le site : ici, c'est celui à qui
 // le film s'adresse, jamais la visibilité de la fiche.
+// Trois audiences (27/09/2026, libellés de Sarah).
 export const AUDIENCES = [
-  { value: "tous_publics", label: "Tous publics" },
-  { value: "jeune_public", label: "Jeune public" },
-  { value: "adultes", label: "Adultes" },
-  { value: "interdit_12", label: "Interdit aux moins de 12 ans" },
-  { value: "interdit_16", label: "Interdit aux moins de 16 ans" },
-  { value: "interdit_18", label: "Interdit aux moins de 18 ans" },
+  { value: "jeune_public", label: "Jeune public (3 à 12 ans)" },
+  { value: "jeunes_adultes", label: "Jeunes adultes (15 à 25 ans)" },
+  { value: "adultes", label: "Adultes et seniors" },
 ];
 
 export type ValeursFiche = {
