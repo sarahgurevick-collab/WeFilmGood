@@ -151,7 +151,17 @@ export default function Finder({
             {nuage && nuage.length >= G_MINIMUM ? (
               <NuageDisque mots={nuage.slice(0, ICONE_MOTS)} icone />
             ) : (
-              <span className={styles.iconeGLettre}>G</span>
+              // Trop peu de mots pour dessiner le nuage : le disque du logo,
+              // en rouge (27/09 ; c'était un « G », qui évoquait Google).
+              <svg viewBox="77 28 1066 1064" className={styles.iconeDisque} aria-hidden="true">
+                <mask id="disque-logo">
+                  <circle cx="609.5" cy="560" r="532" fill="#fff" />
+                  <rect x="831" y="359" width="400" height="800" fill="#000" />
+                  <rect x="644" y="590" width="400" height="800" fill="#000" />
+                  <rect x="445" y="823" width="400" height="800" fill="#000" />
+                </mask>
+                <rect x="0" y="0" width="1300" height="1200" fill="var(--rouge-wfg)" mask="url(#disque-logo)" />
+              </svg>
             )}
           </button>
         )}
