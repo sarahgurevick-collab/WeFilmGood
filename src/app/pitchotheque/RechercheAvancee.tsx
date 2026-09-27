@@ -81,7 +81,7 @@ export default function RechercheAvancee({
           <span>Signé, tourné ou primé</span>
           <select name="bandeau" defaultValue={filtres.bandeau ?? ""}>
             <option value="">Tous les projets</option>
-            <option value="tous">Signés, tournés ou primés</option>
+            <option value="tous">Signés, tournés et primés</option>
             {Object.entries(BANDEAUX).map(([cle, libelle]) => (
               <option key={cle} value={cle}>
                 {libelle}
