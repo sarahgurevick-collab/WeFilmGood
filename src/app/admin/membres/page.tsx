@@ -11,6 +11,7 @@ import styles from "./page.module.css";
 import CasesAffichage from "./CasesAffichage";
 import FiltresAuto from "./FiltresAuto";
 import FormatsLecteur from "./FormatsLecteur";
+import AdhesionMembre from "./AdhesionMembre";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 type Membre = {
@@ -250,6 +251,21 @@ export default async function MembresPage({
   const pageCourante = Math.min(page, nbPages);
   const visibles = filtres.slice((pageCourante - 1) * PAR_PAGE, pageCourante * PAR_PAGE);
 
+  // Les projets des membres affichés, pour y aller d'un clic (27/09,
+  // comme le bouton « Fichier » de WFG 1).
+  const idsVisibles = visibles.filter((m) => m.nb_projets > 0).map((m) => m.profile_id);
+  const { data: projetsVisibles } = idsVisibles.length
+    ? await supabase
+        .from("projects")
+        .select("id, title, owner_id")
+        .in("owner_id", idsVisibles)
+        .order("created_at", { ascending: false })
+    : { data: [] };
+  const projetsDe = new Map<string, { id: string; title: string }[]>();
+  for (const pr of (projetsVisibles ?? []) as { id: string; title: string; owner_id: string }[]) {
+    projetsDe.set(pr.owner_id, [...(projetsDe.get(pr.owner_id) ?? []), pr]);
+  }
+
   // L'adresse d'une autre page, les mêmes filtres.
   const lienPage = (n: number) => {
     const params = new URLSearchParams();
@@ -431,13 +447,32 @@ export default async function MembresPage({
                   )}
                 </td>
                 <td>
-                  {m.nb_projets}
+                  {m.nb_projets === 0 ? (
+                    "0"
+                  ) : m.nb_projets === 1 && projetsDe.get(m.profile_id)?.[0] ? (
+                    <Link href={`/projet/${projetsDe.get(m.profile_id)![0].id}`} className={styles.projetLien}>
+                      {projetsDe.get(m.profile_id)![0].title}
+                    </Link>
+                  ) : (
+                    <details className={styles.projets}>
+                      <summary>{m.nb_projets} projets</summary>
+                      <ul>
+                        {(projetsDe.get(m.profile_id) ?? []).map((pr) => (
+                          <li key={pr.id}>
+                            <Link href={`/projet/${pr.id}`}>{pr.title}</Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
                   {m.dernier_projet_annee ? (
                     <span className={formStyles.hint}> · {m.dernier_projet_annee}</span>
                   ) : null}
                 </td>
                 <td>{(m.formats ?? []).map((f) => FORMATS[f] ?? f).join(", ") || "—"}</td>
-                <td>{m.adhesion ? m.adhesion.replace("palier_", "") + " €" : "—"}</td>
+                <td>
+                  <AdhesionMembre profileId={m.profile_id} plan={m.adhesion} />
+                </td>
                 {metier === "Lecteur" && <td>{DISPO[dispoDe.get(m.profile_id) ?? "vert"]}</td>}
                 {metier === "Lecteur" && (
                   <td>

@@ -133,3 +133,24 @@
   max-width: 230px;
   overflow-wrap: anywhere;
 }
+
+/* Les projets d'un membre, pour y aller d'un clic. */
+.projetLien {
+  display: inline-block;
+  max-width: 180px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
+.projets summary {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.projets ul {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  max-width: 220px;
+}
