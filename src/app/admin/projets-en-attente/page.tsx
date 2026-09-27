@@ -5,6 +5,7 @@ import NavAdmin from "../NavAdmin";
 import formStyles from "@/components/form.module.css";
 import adminStyles from "../admin.module.css";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { reassignReader } from "./actions";
 import ScenarioLink from "./ScenarioLink";
 
@@ -63,14 +64,18 @@ function joursDepuis(date: string): number {
   return Math.floor((Date.now() - new Date(date).getTime()) / 86400000);
 }
 
-function delaiEcoule(date: string): string {
-  const jours = joursDepuis(date);
-  if (jours <= 0) return "aujourd'hui";
-  if (jours === 1) return "il y a 1 jour";
-  if (jours < 31) return `il y a ${jours} jours`;
-  const mois = Math.floor(jours / 30);
-  return mois === 1 ? "il y a 1 mois" : `il y a ${mois} mois`;
+function depuisJoursHeures(date: string): string {
+  const heures = Math.floor((Date.now() - new Date(date).getTime()) / 3600000);
+  return `${Math.floor(heures / 24)} jour(s), ${heures % 24} heure(s)`;
 }
+
+/** « 2026/09/25 à 19h », comme sur WFG 1. */
+function dateWfg1(date: string): string {
+  const d = new Date(new Date(date).toLocaleString("en-US", { timeZone: "Europe/Paris" }));
+  const z = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}/${z(d.getMonth() + 1)}/${z(d.getDate())} à ${d.getHours()}h`;
+}
+
 
 export default async function ProjetsEnAttentePage() {
   const supabase = await createClient();
@@ -119,6 +124,31 @@ export default async function ProjetsEnAttentePage() {
     return !formats || (format ? formats.includes(format) : formats.length > 0);
   };
 
+  // Pour la colonne « Lecteurs assignés » : l'état de la mission et le jour
+  // où le lecteur l'a reçue ; pour le menu : l'email de chaque lecteur.
+  const { data: missions } = projects.length
+    ? await supabase
+        .from("reading_assignments")
+        .select("project_id, reader_id, status, assigned_at, responded_at, created_at")
+        .in("project_id", projects.map((p) => p.project_id))
+        .order("created_at", { ascending: false })
+    : { data: [] };
+  const missionDe = new Map<string, { status: string; recu: string | null }>();
+  for (const m of missions ?? []) {
+    if (!missionDe.has(m.project_id))
+      missionDe.set(m.project_id, { status: m.status, recu: m.responded_at ?? m.assigned_at ?? m.created_at });
+  }
+  const service = createAdminClient();
+  const emailDe = new Map<string, string>();
+  if (service) {
+    await Promise.all(
+      (readers ?? []).map(async (r) => {
+        const { data } = await service.auth.admin.getUserById(r.profile_id);
+        if (data.user?.email) emailDe.set(r.profile_id, data.user.email);
+      }),
+    );
+  }
+
   const voyantDe = new Map(
     (voyants ?? []).map((v) => [v.profile_id, v.availability_status]),
   );
@@ -139,13 +169,8 @@ export default async function ProjetsEnAttentePage() {
     <PageShell nav="admin"
       avantTitre={<NavAdmin />}
 
-      title="Projets en attente"
-      theme="clair"
+      title="Projets en attente (pas de lecteur ou lecteur inactif)"
     >
-      <p className={formStyles.hint}>
-        Les projets déposés qui attendent un lecteur, ou dont la lecture est en
-        cours.
-      </p>
 
       {(projects ?? []).length === 0 ? (
         <p className={formStyles.hint} style={{ marginTop: 24 }}>
@@ -155,117 +180,89 @@ export default async function ProjetsEnAttentePage() {
         <table className={adminStyles.table} style={{ marginTop: 24 }}>
           <thead>
             <tr>
-              <th>Auteur</th>
-              <th>Projet</th>
+              <th>Scénariste</th>
+              <th>Titre</th>
+              <th></th>
               <th>Format</th>
-              <th>Déposé le</th>
-              <th>Lecteur</th>
-              <th>Attribuer</th>
+              <th>Payé il y a</th>
+              <th>Lecteurs assignés</th>
+              <th>Nombre de refus</th>
+              <th>Attribuer lecteur</th>
             </tr>
           </thead>
           <tbody>
-            {(projects ?? []).map((p) => (
-              <tr key={p.project_id}>
-                <td>
-                  {p.author_name ?? "Sans nom"}
-                  <br />
-                  <span className={formStyles.hint}>{p.author_email}</span>
-                </td>
-                <td>
-                  <Link
-                    href={`/projet/${p.project_id}`}
-                    className={adminStyles.titreCourt}
-                    title={p.title}
-                  >
-                    {p.title}
-                  </Link>
-                  <a
-                    href={`/projet/${p.project_id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={adminStyles.iconePdf}
-                    title="Ouvrir le projet (nouvel onglet)"
-                    aria-label="Ouvrir le projet dans un nouvel onglet"
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d="M15 3h6v6" />
-                      <path d="M10 14 21 3" />
-                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                    </svg>
-                  </a>
-                  <ScenarioLink projectId={p.project_id} />
-                  {/* « Sans lecteur » se lit déjà dans la colonne Lecteur. */}
-                  {p.reading_status !== "sans_lecteur" && (
-                    <>
-                      <br />
-                      <span className={formStyles.hint}>
-                        {ETATS[p.reading_status] ?? p.reading_status}
-                      </span>
-                    </>
-                  )}
-                </td>
-                <td>{formatCourt(p.format, p.language)}</td>
-                <td>
-                  {new Date(p.submitted_at).toLocaleDateString("fr-FR")}
-                  <br />
-                  <span
-                    className={formStyles.hint}
+            {(projects ?? []).map((p) => {
+              const mission = missionDe.get(p.project_id);
+              return (
+                <tr key={p.project_id}>
+                  <td>
+                    <strong>{p.author_name ?? "Sans nom"}</strong>
+                    <br />
+                    <em className={formStyles.hint}>{p.author_email}</em>
+                  </td>
+                  <td>{p.title}</td>
+                  <td>
+                    <ScenarioLink projectId={p.project_id} />
+                  </td>
+                  <td>
+                    {formatCourt(p.format, p.language)}
+                    <br />
+                    <Link href={`/projet/${p.project_id}`} className={adminStyles.boutonPlus}>
+                      + Plus
+                    </Link>
+                  </td>
+                  <td
                     style={
                       joursDepuis(p.submitted_at) >= ALERTE_JOURS
                         ? { color: "#e2231a", fontWeight: 600 }
                         : undefined
                     }
                   >
-                    {delaiEcoule(p.submitted_at)}
-                  </span>
-                </td>
-                <td>{p.current_reader_name ?? "—"}</td>
-                <td>
-                  <form
-                    action={reassignReader}
-                    className={adminStyles.inlineForm}
-                  >
-                    <input
-                      type="hidden"
-                      name="project_id"
-                      value={p.project_id}
-                    />
-                    <select name="reader_id" defaultValue="" required>
-                      <option value="" disabled>
-                        Choisir…
-                      </option>
-                      {GROUPES.map(({ couleur, libelle }) => {
-                        const lecteurs = parVoyant(couleur).filter((r) => peutLire(r.profile_id, p.format));
-                        if (lecteurs.length === 0) return null;
-                        return (
-                          <optgroup key={couleur} label={libelle}>
-                            {lecteurs.map((r) => (
-                              <option key={r.profile_id} value={r.profile_id}>
-                                {r.profile?.full_name ??
-                                  r.profile_id.slice(0, 8)}
-                              </option>
-                            ))}
-                          </optgroup>
-                        );
-                      })}
-                    </select>
-                    <button type="submit" className={adminStyles.linkButton}>
-                      Attribuer
-                    </button>
-                  </form>
-                </td>
-              </tr>
-            ))}
+                    {depuisJoursHeures(p.submitted_at)}
+                  </td>
+                  <td>
+                    {p.current_reader_name ?? "—"}
+                    {mission && p.current_reader_name && (
+                      <>
+                        <br />
+                        <span className={adminStyles.etatMission}>
+                          {mission.status === "en_cours" ? "Analyse en cours" : (ETATS[mission.status] ?? mission.status)}
+                          {mission.recu && ` (reçu le ${dateWfg1(mission.recu)})`}
+                        </span>
+                      </>
+                    )}
+                  </td>
+                  <td>{p.reader_refusal_count ?? 0}</td>
+                  <td>
+                    <form action={reassignReader} className={adminStyles.attribuer}>
+                      <input type="hidden" name="project_id" value={p.project_id} />
+                      <select name="reader_id" defaultValue="" required>
+                        <option value="" disabled>
+                          Email du lecteur
+                        </option>
+                        {GROUPES.map(({ couleur, libelle }) => {
+                          const lecteurs = parVoyant(couleur).filter((r) => peutLire(r.profile_id, p.format));
+                          if (lecteurs.length === 0) return null;
+                          return (
+                            <optgroup key={couleur} label={libelle}>
+                              {lecteurs.map((r) => (
+                                <option key={r.profile_id} value={r.profile_id}>
+                                  {r.profile?.full_name ?? r.profile_id.slice(0, 8)}
+                                  {emailDe.get(r.profile_id) ? ` - ${emailDe.get(r.profile_id)}` : ""}
+                                </option>
+                              ))}
+                            </optgroup>
+                          );
+                        })}
+                      </select>
+                      <button type="submit" className={adminStyles.boutonAssigner}>
+                        Assigner
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}

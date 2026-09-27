@@ -32,13 +32,13 @@ export default async function ScenarioLink({ projectId }: { projectId: string })
       href={signed.signedUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className={adminStyles.iconePdf}
-      title="Ouvrir le scénario (nouvel onglet)"
-      aria-label="Ouvrir le scénario dans un nouvel onglet"
+      className={adminStyles.boutonScenario}
+      title="Télécharger le scénario (nouvel onglet)"
+      aria-label="Télécharger le scénario"
     >
       <svg
-        width="16"
-        height="16"
+        width="22"
+        height="22"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
