@@ -103,14 +103,15 @@ export default async function ProjetPage({
 
   const isOwner = user?.id === project.owner_id;
 
-  // Visibilité par métier (27/09) : un porteur adhérent peut réserver son
-  // projet à certains métiers. Les autres membres ne voient pas la fiche.
+  // Le videopitch réservé à certains métiers (27/09) : un porteur adhérent
+  // peut le cacher aux autres. La fiche, elle, reste visible de tous.
+  let videopitchVisible = true;
   if (project.visible_pour) {
     const { data: visible } = await supabase.rpc("projet_visible_pour_moi", {
       p_owner: project.owner_id,
       p_visible: project.visible_pour,
     });
-    if (visible === false) notFound();
+    videopitchVisible = visible !== false;
   }
   const { data: porteurAdherent } = isOwner
     ? await supabase.rpc("a_une_adhesion_active", { p_profile_id: project.owner_id })
@@ -338,7 +339,7 @@ export default async function ProjetPage({
         bandeau={project.bandeau ?? null}
         avis={(avisWfg as string | null) ?? null}
         videopitch={
-          videopitch?.videopitch_fr || videopitch?.videopitch_en
+          videopitchVisible && (videopitch?.videopitch_fr || videopitch?.videopitch_en)
             ? { fr: videopitch.videopitch_fr, en: videopitch.videopitch_en, titre: project.title }
             : undefined
         }
@@ -487,46 +488,41 @@ export default async function ProjetPage({
 
       {isOwner && (
         <>
-          {/* Qui voit ce projet (27/09) : tout le monde par défaut ; un
-              adhérent peut décocher des métiers. */}
-          <h2 style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
-            Qui peut voir ce projet
-          </h2>
-          <p className={formStyles.hint}>
-            Par défaut, votre projet est visible de tous les membres. Vous pouvez le réserver à
-            certains métiers en décochant les autres.
-            {!porteurAdherent && " Cette possibilité est réservée aux adhérents."}
-          </p>
-          <form action={choisirVisibilite} style={{ marginTop: 12 }}>
-            <input type="hidden" name="project_id" value={project.id} />
-            <fieldset
-              disabled={!porteurAdherent}
-              style={{ border: 0, padding: 0, margin: 0, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "6px 16px" }}
-            >
-              {(metiers ?? []).map((m) => (
-                <label key={m.slug} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
-                  <input
-                    type="checkbox"
-                    name="metier"
-                    value={m.slug}
-                    defaultChecked={!project.visible_pour || project.visible_pour.includes(m.slug)}
-                  />
-                  {m.label_fr}
-                </label>
-              ))}
-            </fieldset>
-            {porteurAdherent ? (
-              <button type="submit" className={formStyles.submit} style={{ marginTop: 14 }}>
-                Enregistrer
-              </button>
-            ) : (
-              <p style={{ marginTop: 14 }}>
-                <Link href="/adhesion" className={formStyles.submit} style={{ display: "inline-block" }}>
-                  Adhérer
-                </Link>
+          {/* Qui voit le videopitch (27/09) : réservé aux porteurs adhérents ;
+              pour les autres, le bloc n'apparaît pas du tout. */}
+          {porteurAdherent && (
+            <>
+              <h2 style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
+                Qui peut voir votre videopitch
+              </h2>
+              <p className={formStyles.hint}>
+                Par défaut, votre videopitch est visible de tous les membres. Vous pouvez le
+                réserver à certains métiers en décochant les autres. La fiche de votre projet
+                reste visible de tous.
               </p>
-            )}
-          </form>
+              <form action={choisirVisibilite} style={{ marginTop: 12 }}>
+                <input type="hidden" name="project_id" value={project.id} />
+                <div
+                  style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "6px 16px" }}
+                >
+                  {(metiers ?? []).map((m) => (
+                    <label key={m.slug} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                      <input
+                        type="checkbox"
+                        name="metier"
+                        value={m.slug}
+                        defaultChecked={!project.visible_pour || project.visible_pour.includes(m.slug)}
+                      />
+                      {m.label_fr}
+                    </label>
+                  ))}
+                </div>
+                <button type="submit" className={formStyles.submit} style={{ marginTop: 14 }}>
+                  Enregistrer
+                </button>
+              </form>
+            </>
+          )}
 
           <h2 style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
             Partager ce projet
