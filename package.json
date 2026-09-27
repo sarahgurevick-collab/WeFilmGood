@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@huggingface/transformers": "^4.3.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.116.0",
     "@tiptap/extension-color": "^3.31.3",

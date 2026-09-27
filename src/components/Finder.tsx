@@ -33,6 +33,8 @@ export default function Finder({
 }) {
   const [requete, setRequete] = useState("");
   const [resultats, setResultats] = useState<ProjetTrouve[] | null>(null);
+  // Les mots-clés voisins par le sens qui ont complété la recherche.
+  const [parLeSens, setParLeSens] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
   const [enCours, setEnCours] = useState(false);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -84,9 +86,10 @@ export default function Finder({
 
     setEnCours(true);
     minuteur.current = setTimeout(async () => {
-      const { projets, total } = await rechercherProjets(q, filtres);
+      const { projets, total, parLeSens: sens } = await rechercherProjets(q, filtres);
       setResultats(projets);
       setTotal(total);
+      setParLeSens(sens ?? []);
       setEnCours(false);
     }, 300);
 
@@ -252,6 +255,12 @@ export default function Finder({
                 {total} résultat{total > 1 ? "s" : ""} pour «&nbsp;{requete}&nbsp;»
                 {total > resultats.length &&
                   ` — les ${resultats.length} plus récents affichés`}
+                {parLeSens.length > 0 && (
+                  <>
+                    {" "}
+                    · dont des projets proches par le sens&nbsp;: {parLeSens.join(", ")}
+                  </>
+                )}
               </p>
               <ul className={projetsStyles.grille}>
                 {resultats.map((p) => (

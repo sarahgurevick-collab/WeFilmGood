@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Le modèle des vecteurs de sens (src/lib/vecteurs.ts) tourne dans Node,
+  // pas dans le paquet du site : Next ne doit pas essayer de l'empaqueter.
+  serverExternalPackages: ["@huggingface/transformers", "onnxruntime-node", "sharp"],
   // Les photos sortent du téléphone à 3-20 Mo ; au-delà de 1 Mo (la limite
   // par défaut), l'envoi échouait sans rien dire. Elles sont allégées
   // ensuite sur le serveur avant d'être stockées.

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { AUCUN, parametresRpc, type Filtres } from "./filtres";
+import { enTexte, vecteur } from "@/lib/vecteurs";
 
 export type ProjetTrouve = {
   id: string;
@@ -15,7 +16,57 @@ export type ProjetTrouve = {
 export type ResultatRecherche = {
   projets: ProjetTrouve[];
   total: number;
+  /** Les mots-clés voisins par le sens qui ont fourni des projets
+      (« sardine » → poisson, pêche…), quand les lettres n'ont pas suffi. */
+  parLeSens?: string[];
 };
+
+// En dessous, la recherche par les lettres est complétée par le sens.
+const PEU_DE_RESULTATS = 8;
+// Un mot-clé compte comme voisin de sens à partir de cette proximité (0 à 1).
+const PROXIMITE_MINIMALE = 0.45;
+
+/**
+ * Les projets des mots-clés voisins par le sens (27/09). Le vecteur de la
+ * recherche est calculé sur le serveur ; les mots-clés les plus proches,
+ * s'ils sont assez proches, donnent leurs projets. Rien si le modèle ne
+ * répond pas : la recherche par les lettres reste seule, comme avant.
+ */
+async function projetsParLeSens(
+  q: string,
+  filtres: Filtres,
+  dejaTrouves: Set<string>,
+  limite: number,
+): Promise<{ ids: string[]; mots: string[] }> {
+  const v = await vecteur(q);
+  if (!v) return { ids: [], mots: [] };
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("mots_cles_par_sens", { p_vecteur: enTexte(v), p_limite: 12 });
+  const proches = ((data ?? []) as { keyword_id: number; label_fr: string; effectif: number; proximite: number }[])
+    .filter((m) => m.proximite >= PROXIMITE_MINIMALE && m.effectif > 0 && m.label_fr.toLowerCase() !== q.toLowerCase());
+  if (proches.length === 0) return { ids: [], mots: [] };
+
+  const ids: string[] = [];
+  const mots: string[] = [];
+  for (const m of proches) {
+    if (ids.length >= limite) break;
+    // Les mêmes filtres que la recherche par les lettres.
+    const { data: trouves } = await supabase.rpc("rechercher_projets", {
+      q: m.label_fr,
+      p_limite: limite,
+      ...parametresRpc(filtres),
+    });
+    let ajoutes = 0;
+    for (const t of (trouves ?? []) as { id: string }[]) {
+      if (dejaTrouves.has(t.id) || ids.length >= limite) continue;
+      dejaTrouves.add(t.id);
+      ids.push(t.id);
+      ajoutes++;
+    }
+    if (ajoutes > 0) mots.push(m.label_fr);
+  }
+  return { ids, mots };
+}
 
 const LIMITE = 60;
 
@@ -37,7 +88,18 @@ export async function rechercherProjets(
 
   const lignes = (trouves ?? []) as { id: string; score: number; total: number }[];
   const ids: string[] = lignes.map((t) => t.id);
-  const total = lignes[0]?.total ?? 0;
+  let total = lignes[0]?.total ?? 0;
+
+  // Peu de résultats par les lettres : on complète par le sens.
+  let parLeSens: string[] | undefined;
+  if (ids.length < PEU_DE_RESULTATS) {
+    const sens = await projetsParLeSens(q, filtres, new Set(ids), LIMITE - ids.length);
+    if (sens.ids.length) {
+      ids.push(...sens.ids);
+      total += sens.ids.length;
+      parLeSens = sens.mots;
+    }
+  }
   if (ids.length === 0) return { projets: [], total: 0 };
 
   const { data: projects } = await supabase
@@ -82,7 +144,7 @@ export async function rechercherProjets(
     })
     .sort((a, b) => (ordreDe.get(a.id) ?? 0) - (ordreDe.get(b.id) ?? 0));
 
-  return { projets, total };
+  return { projets, total, parLeSens };
 }
 
 export type MotCle = { label: string; effectif: number };
@@ -103,7 +165,24 @@ export async function motsClesProches(requete: string, limite = 80): Promise<Mot
   const supabase = await createClient();
   const { data } = await supabase.rpc("mots_cles_proches", { q, p_limite: limite });
   const lignes = (data ?? []) as { label_fr: string; effectif: number; score: number }[];
-  return lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif }));
+  const mots = lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif }));
+
+  // Le nuage se complète par le sens (27/09) : autour de « sardine »,
+  // poisson, pêche, mer… même sans lettre commune.
+  if (mots.length < limite) {
+    const v = await vecteur(q);
+    if (v) {
+      const { data: sens } = await supabase.rpc("mots_cles_par_sens", { p_vecteur: enTexte(v), p_limite: limite });
+      const deja = new Set(mots.map((m) => m.label));
+      for (const m of (sens ?? []) as { label_fr: string; effectif: number; proximite: number }[]) {
+        if (mots.length >= limite) break;
+        if (m.proximite < PROXIMITE_MINIMALE || m.effectif === 0 || deja.has(m.label_fr)) continue;
+        deja.add(m.label_fr);
+        mots.push({ label: m.label_fr, effectif: m.effectif });
+      }
+    }
+  }
+  return mots;
 }
 
 export type DecompteRecherche = {
