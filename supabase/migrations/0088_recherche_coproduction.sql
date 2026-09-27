@@ -1,8 +1,8 @@
 -- « Recherche de coproduction » (27/09/2026, demande de Sarah) : un
 -- coproducteur ne s'intéresse qu'aux projets qui ont déjà au moins un
--- producteur — un producteur dans l'équipe du projet, ou un bandeau Signé,
--- Tourné ou Film primé. Nouveau paramètre p_coprod des deux fonctions de
--- la pitchothèque.
+-- producteur dans son équipe. Les films tournés ou primés n'en cherchent
+-- plus : ils sont écartés (précision de Sarah, même jour). Nouveau
+-- paramètre p_coprod des deux fonctions de la pitchothèque.
 drop function if exists public.pitchotheque(integer, integer, text, text, text, text, text);
 drop function if exists public.rechercher_projets(text, integer, text, text, text, text, text);
 
@@ -52,9 +52,9 @@ AS $function$
       and (p_audience is null or p.target_audience = p_audience)
       and (p_budget is null or p.budget_range = p_budget)
       and (p_bandeau is null or (p_bandeau = 'tous' and p.bandeau is not null) or p.bandeau = p_bandeau)
-      and (not p_coprod or p.bandeau in ('signe', 'tourne', 'film_prime')
-           or exists (select 1 from public.project_co_authors ca
-                      where ca.project_id = p.id and ca.role_slug = 'producteur' and ca.status = 'accepte'))
+      and (not p_coprod or (coalesce(p.bandeau, '') not in ('tourne', 'film_prime')
+           and exists (select 1 from public.project_co_authors ca
+                      where ca.project_id = p.id and ca.role_slug = 'producteur' and ca.status = 'accepte')))
   )
   ,
   classes as (
@@ -182,9 +182,9 @@ AS $function$
     and (p_audience is null or p.target_audience = p_audience)
     and (p_budget is null or p.budget_range = p_budget)
     and (p_bandeau is null or (p_bandeau = 'tous' and p.bandeau is not null) or p.bandeau = p_bandeau)
-      and (not p_coprod or p.bandeau in ('signe', 'tourne', 'film_prime')
-           or exists (select 1 from public.project_co_authors ca
-                      where ca.project_id = p.id and ca.role_slug = 'producteur' and ca.status = 'accepte'))
+      and (not p_coprod or (coalesce(p.bandeau, '') not in ('tourne', 'film_prime')
+           and exists (select 1 from public.project_co_authors ca
+                      where ca.project_id = p.id and ca.role_slug = 'producteur' and ca.status = 'accepte')))
   order by t.score desc, p.created_at desc
   limit p_limite;
 $function$;
