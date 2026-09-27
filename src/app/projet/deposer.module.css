@@ -86,3 +86,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Budget et audience n'ont pas de sens pour un court métrage (27/09) :
+   ils disparaissent dès que ce format est choisi. */
+.groupe:has(select[name="format"] option[value="court_metrage"]:checked) .horsCourt {
+  display: none;
+}

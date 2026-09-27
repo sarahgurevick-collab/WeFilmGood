@@ -63,8 +63,9 @@ export async function createProject(formData: FormData) {
       synopsis: synopsis || null,
       format: format || null,
       genre_slug: genreSlug || null,
-      budget_range: budgetRange || null,
-      target_audience: targetAudience || null,
+      // Pas de budget ni d'audience pour un court métrage (27/09).
+      budget_range: format === "court_metrage" ? null : budgetRange || null,
+      target_audience: format === "court_metrage" ? null : targetAudience || null,
       has_awards: hasAwards,
       awards_detail: awardsDetail,
       status: "depose",

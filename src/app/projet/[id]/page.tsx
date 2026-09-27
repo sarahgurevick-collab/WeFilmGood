@@ -307,8 +307,9 @@ export default async function ProjetPage({
             project.genre?.label_fr,
             FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
             nomDeLangue(project.language),
-            project.budget_range ? BUDGET_LISIBLE[project.budget_range] : null,
-            project.target_audience ? AUDIENCE_LISIBLE[project.target_audience] : null,
+            // Pas de budget ni d'audience pour un court métrage (27/09).
+            project.format !== "court_metrage" && project.budget_range ? BUDGET_LISIBLE[project.budget_range] : null,
+            project.format !== "court_metrage" && project.target_audience ? AUDIENCE_LISIBLE[project.target_audience] : null,
           ].filter((x): x is string => Boolean(x));
           const deja = new Set(reperes.map((r) => r.toLowerCase()));
           const mots = (motsCles ?? [])

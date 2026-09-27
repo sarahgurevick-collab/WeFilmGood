@@ -79,13 +79,15 @@ export async function etatDesBlocs(
   const aMoodboard = genresFichiers.includes("moodboard");
   const nombrePersonnages = personnages ?? 0;
 
+  // Pas de budget ni d'audience pour un court métrage (27/09) : ils ne
+  // comptent pas dans son remplissage.
+  const court = projet?.format === "court_metrage";
   const criteresFiche = [
     !!projet?.logline?.trim(),
     !!projet?.synopsis?.trim(),
     !!projet?.format,
     !!projet?.genre_slug,
-    !!projet?.budget_range,
-    !!projet?.target_audience,
+    ...(court ? [] : [!!projet?.budget_range, !!projet?.target_audience]),
   ];
 
   return {

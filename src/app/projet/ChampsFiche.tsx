@@ -72,7 +72,9 @@ export default function ChampsFiche({
           groupée juste sous le titre plutôt que quatre champs isolés plus
           bas dans le formulaire. Pas de « lieu de l'histoire » : sur WFG 2,
           ce sont les mots-clés générés qui s'en chargent, bien mieux que la
-          liste manuelle de WFG 1 (décision de Sarah, 22/09/2026). */}
+          liste manuelle de WFG 1 (décision de Sarah, 22/09/2026).
+          Budget et audience disparaissent pour un court métrage (27/09) :
+          il est fait pour les festivals, sans modèle économique. */}
       <div className={styles.groupe}>
         <label className={formStyles.field}>
           <span>Format *</span>
@@ -100,7 +102,7 @@ export default function ChampsFiche({
             ))}
           </select>
         </label>
-        <label className={formStyles.field}>
+        <label className={`${formStyles.field} ${styles.horsCourt}`}>
           <span>Budget estimé</span>
           <select name="budget_range" defaultValue={valeurs?.budget_range ?? ""}>
             <option value="">Non précisé</option>
@@ -111,7 +113,7 @@ export default function ChampsFiche({
             ))}
           </select>
         </label>
-        <label className={formStyles.field}>
+        <label className={`${formStyles.field} ${styles.horsCourt}`}>
           <span>Audience ciblée</span>
           <select name="target_audience" defaultValue={valeurs?.target_audience ?? ""}>
             <option value="">Non précisé</option>
