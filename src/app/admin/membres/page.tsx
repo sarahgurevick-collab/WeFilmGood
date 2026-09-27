@@ -155,16 +155,20 @@ export default async function MembresPage({
   const metiersPresents = new Map<string, number>();
   const paysPresents = new Map<string, number>();
   const anneesPresentes = new Set<number>();
+  // Un lecteur compte comme « Lecteur » même si son métier est autre
+  // (ou inconnu) : c'est la marque « lecteur » de WFG 2 qui fait foi.
+  const estLecteur = (m: Membre) => m.est_lecteur || m.role_wfg1 === "reader";
   for (const m of tous) {
     const libelle = metierDeCle(m.category ?? m.role_wfg1);
-    if (libelle) metiersPresents.set(libelle, (metiersPresents.get(libelle) ?? 0) + 1);
+    if (libelle && libelle !== "Lecteur") metiersPresents.set(libelle, (metiersPresents.get(libelle) ?? 0) + 1);
+    if (estLecteur(m)) metiersPresents.set("Lecteur", (metiersPresents.get("Lecteur") ?? 0) + 1);
     if (m.country) paysPresents.set(m.country, (paysPresents.get(m.country) ?? 0) + 1);
     if (m.dernier_projet_annee) anneesPresentes.add(m.dernier_projet_annee);
   }
 
   const filtres = tous.filter((m) => {
     if (q && !(`${m.full_name ?? ""} ${m.email ?? ""}`.toLowerCase().includes(q))) return false;
-    if (metier && metierDeCle(m.category ?? m.role_wfg1) !== metier) return false;
+    if (metier === "Lecteur" ? !estLecteur(m) : metier && metierDeCle(m.category ?? m.role_wfg1) !== metier) return false;
     if (format && !(m.formats ?? []).includes(format)) return false;
     if (annee && String(m.dernier_projet_annee ?? "") !== annee) return false;
     if (pays && m.country !== pays) return false;
