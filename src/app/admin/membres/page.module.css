@@ -110,3 +110,18 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* Les formats qu'un lecteur peut lire : quatre petites cases. */
+.formatsLecteur {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 11px;
+}
+
+.formatsLecteur label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+}

@@ -107,8 +107,17 @@ export default async function ProjetsEnAttentePage() {
   // plutôt que de les faire retenir.
   const { data: voyants } = await supabase
     .from("reader_profiles")
-    .select("profile_id, availability_status")
-    .returns<{ profile_id: string; availability_status: string }[]>();
+    .select("profile_id, availability_status, formats")
+    .returns<{ profile_id: string; availability_status: string; formats: string[] | null }[]>();
+
+  // Les formats que chaque lecteur peut lire (27/09) : un lecteur n'est
+  // proposé que pour les projets de ses formats ; sans aucun format, il
+  // n'est plus proposé du tout.
+  const formatsDe = new Map((voyants ?? []).map((v) => [v.profile_id, v.formats]));
+  const peutLire = (lecteur: string, format: string | null) => {
+    const formats = formatsDe.get(lecteur);
+    return !formats || (format ? formats.includes(format) : formats.length > 0);
+  };
 
   const voyantDe = new Map(
     (voyants ?? []).map((v) => [v.profile_id, v.availability_status]),
@@ -236,7 +245,7 @@ export default async function ProjetsEnAttentePage() {
                         Choisir…
                       </option>
                       {GROUPES.map(({ couleur, libelle }) => {
-                        const lecteurs = parVoyant(couleur);
+                        const lecteurs = parVoyant(couleur).filter((r) => peutLire(r.profile_id, p.format));
                         if (lecteurs.length === 0) return null;
                         return (
                           <optgroup key={couleur} label={libelle}>

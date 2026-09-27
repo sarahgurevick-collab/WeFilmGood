@@ -8,6 +8,8 @@ import adminStyles from "../admin.module.css";
 import { prendreLaPlace } from "../profils/prise-de-place";
 import styles from "./page.module.css";
 import CasesAffichage from "./CasesAffichage";
+import FormatsLecteur from "./FormatsLecteur";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type Membre = {
   profile_id: string;
@@ -134,6 +136,15 @@ export default async function MembresPage({
     tous.push(...lot);
     if (lot.length < 1000) break;
   }
+
+  // Les formats que chaque lecteur peut lire (27/09).
+  const service = createAdminClient();
+  const { data: profilsLecteur } = service
+    ? await service.from("reader_profiles").select("profile_id, formats")
+    : { data: null };
+  const formatsDe = new Map(
+    ((profilsLecteur ?? []) as { profile_id: string; formats: string[] | null }[]).map((r) => [r.profile_id, r.formats]),
+  );
 
   // Les filtres, lus dans l'adresse : la page se partage et se recharge.
   const q = (sp.q ?? "").trim().toLowerCase();
@@ -360,6 +371,9 @@ export default async function MembresPage({
                 <td>
                   {metierDe(m)}
                   {m.est_lecteur && <span className={adminStyles.badge}>lecteur</span>}
+                  {m.est_lecteur && (
+                    <FormatsLecteur profileId={m.profile_id} formats={formatsDe.get(m.profile_id) ?? null} />
+                  )}
                 </td>
                 <td>
                   {m.nb_projets}
