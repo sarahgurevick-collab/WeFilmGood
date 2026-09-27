@@ -92,11 +92,6 @@ const PROJETS_CHOIX: [string, string][] = [
 
 const PAR_PAGE = 50;
 
-/** Il y a sept jours, en millisecondes (page rendue côté serveur). */
-function debutDeLaSemaine() {
-  return new Date().getTime() - 7 * 24 * 3600 * 1000;
-}
-
 const nomsDePays = new Intl.DisplayNames(["fr"], { type: "region" });
 function nomDuPays(code: string | null) {
   if (!code) return "—";
@@ -193,9 +188,7 @@ export default async function MembresPage({
 
   // Les filtres, lus dans l'adresse : la page se partage et se recharge.
   const q = (sp.q ?? "").trim().toLowerCase();
-  // Par défaut (aucun choix dans l'adresse), les profils de la semaine.
-  const metier = sp.metier === undefined ? "recents" : sp.metier;
-  const ilYaUneSemaine = debutDeLaSemaine();
+  const metier = sp.metier ?? "";
   const format = sp.format ?? "";
   const annee = sp.annee ?? "";
   const pays = sp.pays ?? "";
@@ -233,8 +226,6 @@ export default async function MembresPage({
     if (q && !(`${m.full_name ?? ""} ${m.email ?? ""}`.toLowerCase().includes(q))) return false;
     if (metier === "avalider") {
       if (!aValider(m)) return false;
-    } else if (metier === "recents") {
-      if (new Date(m.inscrit_le).getTime() < ilYaUneSemaine) return false;
     } else if (metier === "Lecteur" ? !estLecteur(m) : metier && metierDeCle(m.category ?? m.role_wfg1) !== metier) return false;
     if (format && !(m.formats ?? []).includes(format)) return false;
     if (annee && String(m.dernier_projet_annee ?? "") !== annee) return false;
@@ -281,9 +272,6 @@ export default async function MembresPage({
         <select name="metier" defaultValue={metier} className={styles.menu}>
           <option value="">Tous les comptes</option>
           <option value="avalider">À valider ({tous.filter(aValider).length})</option>
-          <option value="recents">
-            Profils récents (&lt; 1 sem) ({tous.filter((m) => new Date(m.inscrit_le).getTime() >= ilYaUneSemaine).length})
-          </option>
           {[...metiersPresents.entries()]
             .sort((a, b) => b[1] - a[1])
             .map(([libelle, n]) => (
