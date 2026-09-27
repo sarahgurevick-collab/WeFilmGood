@@ -42,15 +42,18 @@
 }
 
 .chouette {
-  flex: 0 0 44px;
-  width: 44px;
+  flex: 0 0 48px;
+  width: 48px;
   height: auto;
 }
 
-/* Sa tête, sur le bouton rond du tchat. */
+/* La chouette, sur le bouton rond du tchat : elle déborde un peu du
+   rond, comme posée dessus. */
 .tete {
-  width: 34px;
+  width: 46px;
   height: auto;
+  margin-top: -8px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
 }
 
 .membre {

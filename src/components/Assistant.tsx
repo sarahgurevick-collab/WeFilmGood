@@ -158,7 +158,7 @@ export default function Assistant({
       >
         {/* La tête de la chouette, celle qui converse (26/09). */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/chouette-tete.svg" alt="" className={styles.tete} />
+        <img src="/chouette-fille.webp" alt="" className={styles.tete} />
       </button>
 
       {ouvert && (
@@ -175,7 +175,7 @@ export default function Assistant({
             {/* C'est la chouette qui répond : elle est là à chacune de ses réponses. */}
             <div className={styles.reponse}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/chouette.svg" alt="" className={styles.chouette} />
+              <img src="/chouette-fille.webp" alt="" className={styles.chouette} />
               <p className={styles.assistant}>
                 {prenom ? `Bonjour ${prenom} !` : "Bonjour !"}
                 {ia && ` ${ACCUEIL_IA}`}
@@ -189,7 +189,7 @@ export default function Assistant({
               ) : (
                 <div key={i} className={styles.reponse}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/chouette.svg" alt="" className={styles.chouette} />
+                  <img src="/chouette-fille.webp" alt="" className={styles.chouette} />
                   <p className={styles.assistant}>
                     {m.content || (enCours && i === messages.length - 1 ? "…" : "")}
                   </p>
