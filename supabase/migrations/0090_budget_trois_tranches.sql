@@ -15,3 +15,12 @@ update public.projects p
  where p.legacy_id = w.project_id::text
    and w.budget in (0, 1, 2, 4)
    and p.budget_range is null;
+
+-- Décision de Sarah (27/09/2026) : la tranche 5 à 10 M€ va dans « Films du
+-- milieu ».
+update public.projects p
+   set budget_range = 'milieu'
+  from wfg1.projects w
+ where p.legacy_id = w.project_id::text
+   and w.budget = 3
+   and p.budget_range is null;
