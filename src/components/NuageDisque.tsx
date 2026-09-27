@@ -4,72 +4,46 @@ import { useEffect, useMemo, useState } from "react";
 import { Pacifico } from "next/font/google";
 import { ENGAGEMENTS } from "@/lib/engagements";
 import type { MotCle } from "@/app/pitchotheque/actions";
-import styles from "./NuageG.module.css";
+import styles from "./NuageDisque.module.css";
 
 /**
- * Le nuage de mots-clés dessiné en forme de « G » — le G de WeFilmGood —
- * dans les quatre couleurs de la marque, à la main levée.
+ * Le nuage de mots-clés dessiné dans le disque du logo WeFilmGood — le
+ * grand rond et son découpage en escalier —, dans les quatre couleurs de
+ * la marque, à la main levée. Il remplace le « G » (27/09/2026) : un G
+ * coloré sur une page de recherche faisait penser à Google.
  *
- * Le G est découpé en lignes horizontales ; chaque ligne reçoit les mots
- * qui tiennent dans la lettre, sans jamais être déformés. La taille de
- * l'ensemble s'ajuste pour que tous les mots trouvent leur place.
+ * Le disque est découpé en lignes horizontales ; chaque ligne reçoit les
+ * mots qui y tiennent, sans jamais être déformés. La taille de l'ensemble
+ * s'ajuste pour que tous les mots trouvent leur place.
  */
 
 const manuscrite = Pacifico({ subsets: ["latin"], weight: "400", display: "swap" });
 
-const TAILLE = 1000;
-const CX = 500;
-const CY = 500;
-const R = 490; // rayon extérieur
-const r = 270; // rayon intérieur
-// La barre du G : part du centre et rejoint l'anneau sur la droite.
-const BARRE_HAUT = CY - 20;
-const BARRE_BAS = CY + 110;
-const BARRE_GAUCHE = CX + 20;
+// Le disque, mesuré sur le fichier du logo (public/label-wfg.png, 1381 × 1113).
+const CX = 609.5;
+const CY = 560;
+const R = 532;
+// Les trois marches de l'escalier, en bas à droite : à partir de chaque
+// hauteur, le disque s'arrête à cette abscisse.
+const MARCHES: [number, number][] = [
+  [359, 831],
+  [590, 644],
+  [823, 445],
+];
+const VUE = `${CX - R} ${CY - R} ${2 * R} ${2 * R}`;
 
 const COULEURS = ENGAGEMENTS.map((e) => e.couleur);
 
 type Intervalle = [number, number];
 
-/** Les parties d'une ligne horizontale qui tombent dans le G. */
+/** La partie d'une ligne horizontale qui tombe dans le disque. */
 function intervallesA(y: number): Intervalle[] {
   const dy = y - CY;
-  const parts: Intervalle[] = [];
-  if (Math.abs(dy) < R) {
-    const W = Math.sqrt(R * R - dy * dy);
-    if (Math.abs(dy) < r) {
-      const w = Math.sqrt(r * r - dy * dy);
-      parts.push([CX - W, CX - w], [CX + w, CX + W]);
-    } else {
-      parts.push([CX - W, CX + W]);
-    }
-  }
-  // L'ouverture du G, en haut à droite, coupée à 45°.
-  const coupees: Intervalle[] = [];
-  for (const [a, b] of parts) {
-    if (dy < 0) {
-      const limite = CX + Math.abs(dy) * 0.9;
-      if (a < limite) coupees.push([a, Math.min(b, limite)]);
-    } else {
-      coupees.push([a, b]);
-    }
-  }
-  // La barre horizontale.
-  if (y >= BARRE_HAUT && y <= BARRE_BAS && Math.abs(dy) < R) {
-    coupees.push([BARRE_GAUCHE, CX + Math.sqrt(R * R - dy * dy)]);
-  }
-  return fusionner(coupees);
-}
-
-function fusionner(parts: Intervalle[]): Intervalle[] {
-  const tries = parts.filter(([a, b]) => b > a).sort((p, q) => p[0] - q[0]);
-  const res: Intervalle[] = [];
-  for (const p of tries) {
-    const der = res[res.length - 1];
-    if (der && p[0] <= der[1]) der[1] = Math.max(der[1], p[1]);
-    else res.push([...p]);
-  }
-  return res;
+  if (Math.abs(dy) >= R) return [];
+  const W = Math.sqrt(R * R - dy * dy);
+  let droite = CX + W;
+  for (const [hauteur, limite] of MARCHES) if (y >= hauteur) droite = Math.min(droite, limite);
+  return droite > CX - W ? [[CX - W, droite]] : [];
 }
 
 function intersecter(a: Intervalle[], b: Intervalle[]): Intervalle[] {
@@ -83,14 +57,14 @@ function intersecter(a: Intervalle[], b: Intervalle[]): Intervalle[] {
   return res;
 }
 
-/** Ce qui, dans une bande, reste dans le G sur toute sa hauteur. */
+/** Ce qui, dans une bande, reste dans le disque sur toute sa hauteur. */
 function segmentsBande(y0: number, y1: number): Intervalle[] {
   let seg = intervallesA(y0);
   for (let k = 1; k <= 4; k++) seg = intersecter(seg, intervallesA(y0 + ((y1 - y0) * k) / 4));
   return seg;
 }
 
-/** Petit générateur pseudo-aléatoire : le même G à chaque visite. */
+/** Petit générateur pseudo-aléatoire : le même nuage à chaque visite. */
 function hasard(graine: number) {
   let s = graine;
   return () => {
@@ -109,7 +83,7 @@ type Place = {
 
 type Mesure = (texte: string, taille: number) => number;
 
-/** « comédie dramatique » s'écrit « Comédie dramatique » dans le G. */
+/** « comédie dramatique » s'écrit « Comédie dramatique » dans le nuage. */
 const affiche = (label: string) => label.charAt(0).toLocaleUpperCase("fr-FR") + label.slice(1);
 
 // Trois tailles d'écriture, selon le rang du mot : les plus utilisés
@@ -121,10 +95,10 @@ const PALIERS = [
 ];
 
 /**
- * Remplit le G ligne après ligne. Chaque ligne a la hauteur d'un palier :
+ * Remplit le disque ligne après ligne. Chaque ligne a la hauteur d'un palier :
  * les mots les plus utilisés ont leurs propres lignes, plus hautes, et
  * ressortent nettement. Les lignes des trois paliers sont mêlées pour que
- * les gros mots se répartissent sur toute la lettre. Chaque mot garde sa
+ * les gros mots se répartissent sur tout le disque. Chaque mot garde sa
  * forme naturelle : on joue seulement sur les espaces.
  */
 function disposer(mots: MotCle[], unite: number, mesure: Mesure) {
@@ -192,18 +166,18 @@ function disposer(mots: MotCle[], unite: number, mesure: Mesure) {
   return { places, tousPlaces: files.every((f) => !f.length) };
 }
 
-export default function NuageG({
+export default function NuageDisque({
   mots,
   onChoisir,
   icone = false,
 }: {
   mots: MotCle[];
   onChoisir?: (label: string) => void;
-  /** Le petit G de la barre de recherche : un simple dessin, rien de cliquable. */
+  /** Le petit disque de la barre de recherche : un simple dessin, rien de cliquable. */
   icone?: boolean;
 }) {
   // La police manuscrite doit être chargée avant de mesurer les mots :
-  // on recalcule le G une fois qu'elle est là.
+  // on recalcule le nuage une fois qu'elle est là.
   const [policePrete, setPolicePrete] = useState(0);
   useEffect(() => {
     let actif = true;
@@ -237,7 +211,7 @@ export default function NuageG({
     // ressemblance : la taille, elle, suit la fréquence.
     const tries = [...mots].sort((x, y) => y.effectif - x.effectif);
 
-    // La plus grande écriture qui fait tenir tous les mots dans le G.
+    // La plus grande écriture qui fait tenir tous les mots dans le disque.
     let bas = 10;
     let haut = 140;
     for (let k = 0; k < 16; k++) {
@@ -252,7 +226,7 @@ export default function NuageG({
   if (icone) {
     return (
       <svg
-        viewBox={`0 0 ${TAILLE} ${TAILLE}`}
+        viewBox={VUE}
         className={`${styles.icone} ${manuscrite.className}`}
         aria-hidden="true"
       >
@@ -267,10 +241,10 @@ export default function NuageG({
 
   return (
     <svg
-      viewBox={`0 0 ${TAILLE} ${TAILLE}`}
+      viewBox={VUE}
       className={`${styles.g} ${manuscrite.className}`}
       role="group"
-      aria-label="Mots-clés en forme de G"
+      aria-label="Mots-clés dans le disque du logo"
     >
       {places.map((p) => (
         <text

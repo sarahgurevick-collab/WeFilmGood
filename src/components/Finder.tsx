@@ -10,7 +10,7 @@ import {
 } from "@/app/pitchotheque/actions";
 import { AUCUN, type Filtres } from "@/app/pitchotheque/filtres";
 import formStyles from "./form.module.css";
-import NuageG from "./NuageG";
+import NuageDisque from "./NuageDisque";
 import styles from "./Finder.module.css";
 import projetsStyles from "@/app/pitchotheque/projets.module.css";
 
@@ -18,9 +18,9 @@ const PAS = 20;
 const MIN = 20;
 const MAX = 200;
 const DEFAUT = 80;
-// En dessous, trop peu de mots pour dessiner le G : on les liste.
+// En dessous, trop peu de mots pour dessiner le disque : on les liste.
 const G_MINIMUM = 20;
-// Le petit G de la barre : peu de mots, pour que la lettre se lise.
+// Le petit disque de la barre : peu de mots, pour que la forme se lise.
 const ICONE_MOTS = 30;
 
 export default function Finder({
@@ -37,7 +37,7 @@ export default function Finder({
   const [enCours, setEnCours] = useState(false);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Le nuage est fermé en arrivant : un petit G à droite de la
+  // Le nuage est fermé en arrivant : un petit disque à droite de la
   // recherche l'ouvre en grand en dessous, et le referme.
   const [nuageDemande, setNuageDemande] = useState(false);
   // Combien de mots le nuage affiche : l'adhérent l'ajuste au + et au -,
@@ -100,7 +100,7 @@ export default function Finder({
   // jamais figé sur une liste générique une fois qu'on cherche quelque
   // chose de précis.
   useEffect(() => {
-    // Chargé même fermé : le petit G de la barre est dessiné avec.
+    // Chargé même fermé : le petit disque de la barre est dessiné avec.
     if (!adherent) return;
     if (minuteurNuage.current) clearTimeout(minuteurNuage.current);
 
@@ -149,7 +149,7 @@ export default function Finder({
             title={nuageAffiche ? "Fermer les mots-clés" : "Explorer les mots-clés"}
           >
             {nuage && nuage.length >= G_MINIMUM ? (
-              <NuageG mots={nuage.slice(0, ICONE_MOTS)} icone />
+              <NuageDisque mots={nuage.slice(0, ICONE_MOTS)} icone />
             ) : (
               <span className={styles.iconeGLettre}>G</span>
             )}
@@ -203,7 +203,7 @@ export default function Finder({
           ) : !nuage || nuage.length === 0 ? (
             <p className={styles.indice}>Aucun mot-clé pour l&apos;instant.</p>
           ) : nuage.length >= G_MINIMUM ? (
-            <NuageG
+            <NuageDisque
               mots={nuage}
               onChoisir={(label) => {
                 setRequete(label);
