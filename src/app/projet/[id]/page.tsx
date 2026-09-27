@@ -497,8 +497,8 @@ export default async function ProjetPage({
               </h2>
               <p className={formStyles.hint}>
                 Par défaut, votre videopitch est visible de tous les membres. Vous pouvez le
-                réserver à certains métiers en décochant les autres. La fiche de votre projet
-                reste visible de tous.
+                réserver à certains talents en décochant les autres. Votre fiche projet reste
+                visible de tous car elle contient très peu d&apos;informations.
               </p>
               <form action={choisirVisibilite} style={{ marginTop: 12 }}>
                 <input type="hidden" name="project_id" value={project.id} />
