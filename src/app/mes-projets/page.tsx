@@ -1,9 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
+import Bandeau from "@/components/Bandeau";
 import formStyles from "@/components/form.module.css";
+import profilStyles from "@/app/profil/profil.module.css";
 import { createClient } from "@/lib/supabase/server";
+import { tauxDeRemplissage } from "@/lib/remplissage";
 import { signerImages } from "@/app/projet/[id]/fichiers";
+import { BLOCS, etatDesBlocs, hrefBloc } from "@/app/projet/blocs";
 import styles from "./page.module.css";
 
 const STATUT_LISIBLE: Record<string, string> = {
@@ -11,23 +15,36 @@ const STATUT_LISIBLE: Record<string, string> = {
   depose: "Déposé",
   en_lecture: "En lecture",
   labellise: "Labellisé",
+  lecture_terminee_non_labellise: "Lu",
+};
+
+const FORMATS: Record<string, string> = {
+  long_metrage: "Long métrage",
+  court_metrage: "Court métrage",
+  serie: "Série",
+  immersif_360_vr: "360/VR",
 };
 
 type Projet = {
   id: string;
   title: string;
+  logline: string | null;
+  synopsis: string | null;
+  format: string | null;
+  genre_slug: string | null;
   status: string;
+  bandeau: string | null;
   created_at: string;
-  vignette: { storage_path: string }[];
+  genre: { label_fr: string } | null;
+  files: { kind: string; storage_path: string }[];
 };
 
 /**
- * Les fiches projet du membre connecté, pour y revenir depuis le menu
- * (l'onglet « Mes projets », 26/09/2026). Deux gestes bien séparés, à la
- * demande de Sarah : déposer une nouvelle version du scénario d'un projet
- * existant — depuis sa fiche, sans en créer une seconde —, et créer une
- * fiche pour un nouveau projet. Sans aucune fiche, on arrive directement
- * sur la création.
+ * Mes projets, présentés comme Mon profil (28/09/2026, demande de Sarah) :
+ * pour chaque fiche, à gauche ce que voit un talent connecté (l'affiche),
+ * à droite « Fiche complétée » avec sa jauge et les trois blocs à remplir.
+ * Une nouvelle version du scénario se dépose depuis le bloc Documents ;
+ * un autre projet se crée en bas.
  */
 export default async function MesProjetsPage() {
   const supabase = await createClient();
@@ -38,9 +55,10 @@ export default async function MesProjetsPage() {
 
   const { data } = await supabase
     .from("projects")
-    .select("id, title, status, created_at, vignette:project_files(storage_path)")
+    .select(
+      "id, title, logline, synopsis, format, genre_slug, status, bandeau, created_at, genre:genres(label_fr), files:project_files(kind, storage_path)",
+    )
     .eq("owner_id", user.id)
-    .eq("project_files.kind", "vignette")
     .order("created_at", { ascending: false })
     .returns<Projet[]>();
   const projets = data ?? [];
@@ -48,45 +66,117 @@ export default async function MesProjetsPage() {
 
   const urls = await signerImages(
     supabase,
-    projets.map((p) => p.vignette[0]?.storage_path),
+    projets.map((p) => p.files.find((f) => f.kind === "vignette")?.storage_path),
+  );
+
+  // L'état de chaque fiche : ses trois blocs, et le remplissage global.
+  const etats = await Promise.all(
+    projets.map(async (p) => {
+      const [blocs, { count: personnages }] = await Promise.all([
+        etatDesBlocs(supabase, p.id),
+        supabase.from("characters").select("id", { count: "exact", head: true }).eq("project_id", p.id),
+      ]);
+      const taux = tauxDeRemplissage({
+        titre: p.title,
+        tagline: p.logline,
+        logline: p.synopsis,
+        genre: p.genre_slug,
+        format: p.format,
+        aUneVignette: p.files.some((f) => f.kind === "vignette"),
+        aUnScenario: p.files.some((f) => f.kind === "scenario"),
+        nombrePersonnages: personnages ?? 0,
+      });
+      return { blocs, taux };
+    }),
   );
 
   return (
-    <PageShell eyebrow="Mon profil" title="Mes projets" connecte nav="deposer">
-      <p className={formStyles.hint}>
-        Une nouvelle version de votre scénario se dépose depuis la fiche du projet, dans son bloc
-        « Documents » : inutile de créer une seconde fiche pour le même projet.
+    <PageShell nav="deposer" connecte>
+      <h1 className={profilStyles.titre}>Mes projets</h1>
+      <p className={profilStyles.chapeau}>
+        {projets.length === 1 ? "Votre fiche projet" : `Vos ${projets.length} fiches projet`}, telles que
+        les voient les talents. Une nouvelle version de votre scénario se dépose depuis le bloc
+        « Documents » de la fiche : inutile de créer une seconde fiche pour le même projet.
       </p>
 
-      <ul className={styles.liste}>
-        {projets.map((p) => {
-          const image = p.vignette[0] ? urls.get(p.vignette[0].storage_path) : undefined;
-          return (
-            <li key={p.id} className={styles.carte}>
-              <Link href={`/projet/${p.id}`} className={styles.vignette} aria-hidden="true">
+      {projets.map((p, i) => {
+        const image = urls.get(p.files.find((f) => f.kind === "vignette")?.storage_path ?? "");
+        const { blocs, taux } = etats[i];
+        return (
+          <div key={p.id} className={`${profilStyles.scene} ${styles.projet}`}>
+            {/* L'affiche : la fiche telle que la voient les talents. */}
+            <section className={profilStyles.affiche} aria-label={`Fiche de ${p.title}`}>
+              <p className={profilStyles.afficheSurtitre}>Ce que voit un talent connecté</p>
+              <div className={styles.vignette} aria-hidden="true">
+                <Bandeau valeur={p.bandeau} />
                 {image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={image} alt="" />
                 ) : (
-                  <span className={styles.sansImage} />
+                  <Link href={hrefBloc(p.id, "documents")} className={profilStyles.manque}>
+                    + votre image de présentation
+                  </Link>
                 )}
-              </Link>
-              <div className={styles.texte}>
-                <Link href={`/projet/${p.id}`} className={styles.titre}>
-                  {p.title}
-                </Link>
-                <span className={styles.statut}>{STATUT_LISIBLE[p.status] ?? p.status}</span>
-                <span className={styles.liens}>
-                  <Link href={`/projet/${p.id}`}>Voir la fiche</Link>
-                  <Link href={`/projet/${p.id}/documents`}>Déposer une nouvelle version</Link>
-                </span>
               </div>
-            </li>
-          );
-        })}
-      </ul>
+              <p className={profilStyles.afficheNom}>{p.title}</p>
+              <p className={profilStyles.afficheLigne}>
+                {[p.genre?.label_fr, p.format ? FORMATS[p.format] : null].filter(Boolean).join(" · ") || (
+                  <Link href={hrefBloc(p.id, "fiche")} className={profilStyles.manque}>
+                    + genre et format
+                  </Link>
+                )}
+                {" · "}
+                {STATUT_LISIBLE[p.status] ?? p.status}
+              </p>
+              {p.logline ? (
+                <p className={styles.tagline}>{p.logline}</p>
+              ) : (
+                <Link href={hrefBloc(p.id, "fiche")} className={`${styles.tagline} ${profilStyles.manque}`}>
+                  + votre tagline
+                </Link>
+              )}
+              <Link href={`/projet/${p.id}`} className={profilStyles.afficheLien}>
+                Voir ma fiche
+              </Link>
+            </section>
 
-      <p style={{ marginTop: 32 }}>
+            {/* Les trois blocs, comme ceux du profil. */}
+            <section className={profilStyles.generique} aria-label={`Compléter ${p.title}`}>
+              <div className={profilStyles.generiqueEntete}>
+                <h2 className={profilStyles.generiqueTitre}>Fiche complétée</h2>
+                <strong className={profilStyles.generiqueCompte}>{taux} %</strong>
+              </div>
+              <div className={profilStyles.jauge} aria-hidden="true">
+                <span style={{ width: `${taux}%` }} />
+              </div>
+              {BLOCS.map((b) => {
+                const estFait = blocs.fait[b.cle];
+                const pourcentDuBloc = blocs.pourcent[b.cle];
+                const incomplet = pourcentDuBloc < 100;
+                return (
+                  <Link
+                    key={b.cle}
+                    href={hrefBloc(p.id, b.cle)}
+                    className={incomplet ? profilStyles.etapeIncomplete : profilStyles.etapeComplete}
+                    title={incomplet ? "Cliquez pour compléter ce bloc" : "Cliquez pour modifier ce bloc"}
+                  >
+                    <span className={estFait ? profilStyles.etapeFaite : profilStyles.etapeNumero}>
+                      {estFait ? "✓" : b.numero}
+                    </span>
+                    <span className={profilStyles.etapeTexte}>
+                      <strong>{b.titre}</strong>
+                      <span>{incomplet ? b.duree : "Complet · modifier"}</span>
+                    </span>
+                    {incomplet && <span className={profilStyles.etapePourcent}>{pourcentDuBloc} %</span>}
+                  </Link>
+                );
+              })}
+            </section>
+          </div>
+        );
+      })}
+
+      <p style={{ marginTop: 36 }}>
         <Link href="/projet" className={formStyles.submit} style={{ display: "inline-block" }}>
           Nouvelle fiche projet
         </Link>
