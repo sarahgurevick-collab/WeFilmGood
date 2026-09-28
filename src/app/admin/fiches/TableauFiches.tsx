@@ -385,19 +385,23 @@ export default function TableauFiches({
 }
 
 /**
- * Le statut en une lettre, devant la note : V vert pour une fiche vérifiée
- * ou publiée, A orange pour une fiche rendue qui attend la relecture —
- * un clic ouvre alors la page de relecture.
+ * Le statut devant la note, seulement quand il demande quelque chose :
+ * A orange pour une fiche rendue qui attend la relecture (un clic ouvre
+ * la page de relecture), R rouge pour une fiche rejetée. Une fiche
+ * vérifiée ou publiée n'a pas de pastille (28/09 : le V vert sur toutes
+ * les fiches depuis 2017 n'apportait rien).
  */
 function Statut({ ligne }: { ligne: LigneFiche }) {
   const aValider = ligne.statut === "À valider";
+  const rejetee = ligne.statut === "Rejetée";
+  if (!aValider && !rejetee) return null;
   const lettre = (
     <span
-      className={aValider ? styles.statutA : styles.statutV}
+      className={aValider ? styles.statutA : styles.statutR}
       title={ligne.statut}
       aria-label={ligne.statut}
     >
-      {aValider ? "A" : "V"}
+      {aValider ? "A" : "R"}
     </span>
   );
   return ligne.lienFiche && aValider ? (

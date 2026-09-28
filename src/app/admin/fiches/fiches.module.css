@@ -96,8 +96,8 @@
   min-width: 320px;
 }
 
-.statutV,
-.statutA {
+.statutA,
+.statutR {
   display: inline-grid;
   place-items: center;
   width: 20px;
@@ -110,9 +110,10 @@
   vertical-align: 1px;
 }
 
-.statutV {
-  background: #2e9d57;
-}
+.statutR {
+  background: #c62828;
+  color: #fff;
+
 
 .statutA {
   background: #e08a1e;
