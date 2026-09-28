@@ -110,7 +110,7 @@ export default async function ParcoursPage({
 
         <label className={formStyles.field}>
           <span>Nom de votre agent, si vous en avez un</span>
-          <input type="text" name="agent_name" defaultValue={profil?.agent_name ?? ""} />
+          <input placeholder=" " type="text" name="agent_name" defaultValue={profil?.agent_name ?? ""} />
         </label>
 
         <ReseauxSociaux reseaux={RESEAUX} valeurs={valeursReseaux} />

@@ -317,6 +317,19 @@
   max-width: 720px;
 }
 
+/*
+ * Un champ bien rempli prend un cadre vert (28/09) : un membre ne savait
+ * pas si ce qu'il avait saisi était accepté. Vide, ou mal rempli (une
+ * adresse de site incomplète…), il garde son cadre gris. Le
+ * placeholder=" " des champs sans exemple sert à reconnaître un champ vide.
+ */
+.colonne input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="file"]):not(:placeholder-shown):valid,
+.colonne textarea:not(:placeholder-shown):valid,
+.colonne select:has(option:checked:not([value=""])),
+.colonne label:has(> input[type="radio"]:checked) {
+  border-color: var(--succes);
+}
+
 .row {
   display: flex;
   gap: 16px;

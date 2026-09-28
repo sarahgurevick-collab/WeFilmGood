@@ -10,7 +10,7 @@ import styles from "../profil.module.css";
 
 const CATEGORIES = [
   { value: "auteur", label: "Auteur", hint: "J'écris. Profil actif immédiatement." },
-  { value: "producteur", label: "Producteur", hint: "Validation par un administrateur." },
+  { value: "producteur", label: "Producteur", hint: "Validation par l'équipe de la Maison des Scénaristes/WeFilmGood." },
   {
     value: "talent",
     label: "Autre talent",
@@ -58,6 +58,7 @@ export default async function IdentitePage({
           <label className={formStyles.field}>
             <span>Prénom</span>
             <input
+              placeholder=" "
               type="text"
               name="first_name"
               required
@@ -68,6 +69,7 @@ export default async function IdentitePage({
           <label className={formStyles.field}>
             <span>Nom</span>
             <input
+              placeholder=" "
               type="text"
               name="last_name"
               required
@@ -157,7 +159,7 @@ export default async function IdentitePage({
           <div className={styles.row}>
           <label className={formStyles.field}>
             <span>Ville</span>
-            <input type="text" name="city" required defaultValue={profil?.city ?? ""} autoComplete="off" />
+            <input placeholder=" " type="text" name="city" required defaultValue={profil?.city ?? ""} autoComplete="off" />
           </label>
           <label className={formStyles.field}>
             <span>Pays</span>
