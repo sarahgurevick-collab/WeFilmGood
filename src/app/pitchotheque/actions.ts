@@ -9,6 +9,7 @@ export type ProjetTrouve = {
   title: string;
   logline: string | null;
   status: string;
+  bandeau: string | null;
   genre: { label_fr: string } | null;
   vignette: string | null;
 };
@@ -127,7 +128,7 @@ export async function rechercherProjets(
   const { data: projects } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, status, genre:genres(label_fr), files:project_files(storage_path, kind)",
+      "id, title, logline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)",
     )
     .in("id", ids)
     .returns<
@@ -136,6 +137,7 @@ export async function rechercherProjets(
         title: string;
         logline: string | null;
         status: string;
+        bandeau: string | null;
         genre: { label_fr: string } | null;
         files: { storage_path: string; kind: string }[];
       }[]
@@ -160,6 +162,7 @@ export async function rechercherProjets(
         title: p.title,
         logline: p.logline,
         status: p.status,
+        bandeau: p.bandeau,
         genre: p.genre,
         vignette: chemin ? (urlDe.get(chemin) ?? null) : null,
       };

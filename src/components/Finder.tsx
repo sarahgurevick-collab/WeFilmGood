@@ -9,6 +9,7 @@ import {
   type ProjetTrouve,
 } from "@/app/pitchotheque/actions";
 import { AUCUN, type Filtres } from "@/app/pitchotheque/filtres";
+import Bandeau from "./Bandeau";
 import formStyles from "./form.module.css";
 import NuageDisque from "./NuageDisque";
 import styles from "./Finder.module.css";
@@ -267,6 +268,7 @@ export default function Finder({
                   <li key={p.id}>
                     <Link href={`/projet/${p.id}`} className={projetsStyles.carte}>
                       <div className={projetsStyles.vignette}>
+                        <Bandeau valeur={p.bandeau} />
                         {p.vignette ? (
                           <>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
