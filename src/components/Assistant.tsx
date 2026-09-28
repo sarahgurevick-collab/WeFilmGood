@@ -9,11 +9,11 @@ import styles from "./Assistant.module.css";
 type Message = { role: "user" | "assistant"; content: string };
 
 const ACCUEIL_IA =
-  "Je réponds à vos questions sur WeFilmGood : profil, fiche projet, lectures, adhésion, application… Si je ne sais pas, je transmets votre demande à l'équipe.";
+  "Je suis Mira. Je réponds à vos questions sur WeFilmGood : profil, fiche projet, lectures, adhésion, application… Si je ne sais pas, je transmets votre demande à l'équipe.";
 
 const ERREURS: Record<number, string> = {
   429: "Vous avez atteint le nombre de questions du jour. Utilisez « Transmettre à l'équipe » : on vous répondra par email.",
-  503: "L'assistant n'est pas disponible pour le moment. Utilisez « Transmettre à l'équipe ».",
+  503: "Mira n'est pas disponible pour le moment. Utilisez « Transmettre à l'équipe ».",
 };
 
 /**
@@ -141,8 +141,8 @@ export default function Assistant({
     donnees.set("email", email);
     donnees.set(
       "message",
-      "Conversation avec l'assistant du site :\n\n" +
-        echange.map((m) => `${m.role === "user" ? "Membre" : "Assistant"} : ${m.content}`).join("\n\n"),
+      "Conversation avec Mira, l'assistante du site :\n\n" +
+        echange.map((m) => `${m.role === "user" ? "Membre" : "Mira"} : ${m.content}`).join("\n\n"),
     );
     const { ok } = await envoyerMessageContact(donnees);
     setTransmission(ok ? "fait" : "erreur");
