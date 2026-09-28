@@ -36,7 +36,9 @@
   flex-direction: column;
   width: 100%;
   max-width: 420px;
-  height: 720px;
+  /* Minimum plutôt que fixe : avec le bouton Google, l'inscription peut
+     dépasser un peu, et la carte grandit au lieu de déborder. */
+  min-height: 720px;
   border: 1px solid var(--bordure-douce);
   border-radius: 20px;
   padding: 36px 32px 32px;
@@ -52,7 +54,7 @@
 
 /* Pour un écran court (arrivée du lien) : pas de grand vide sous le bouton. */
 .card.compacte {
-  height: auto;
+  min-height: 0;
 }
 
 .contenu {
@@ -136,7 +138,7 @@
 
 @media (max-width: 620px) {
   .card {
-    height: auto;
+    min-height: 0;
     padding: 28px 22px 26px;
   }
 }

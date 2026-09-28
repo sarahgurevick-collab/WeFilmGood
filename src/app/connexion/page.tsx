@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AuthCard from "@/components/AuthCard";
 import BoutonFeuArtifice from "@/components/BoutonFeuArtifice";
+import BoutonGoogle from "@/components/BoutonGoogle";
 import formStyles from "@/components/form.module.css";
 import { signIn } from "./actions";
 
@@ -31,18 +32,23 @@ export default async function ConnexionPage({
 
   return (
     <AuthCard active="connexion" carteClaire>
+      {erreur && <p className={formStyles.error}>{erreur}</p>}
+
+      {/* Même écart qu'avant sous l'accroche, quand elle était dans le formulaire. */}
+      <div style={{ marginBottom: 10 }}>
+        <p className={formStyles.accroche}>WeFilmGood a 10 ans&nbsp;!</p>
+        <p className={formStyles.hint}>
+          Merci de votre confiance
+          <br />
+          Cliquer pour souffler les bougies&nbsp;!
+        </p>
+      </div>
+
+      {/* Un formulaire à part : on ne peut pas en mettre un dans l'autre. */}
+      <BoutonGoogle next={nextPath} depuis="connexion" />
+
       <form className={formStyles.form} action={signIn}>
         <input type="hidden" name="next" value={nextPath} />
-        {erreur && <p className={formStyles.error}>{erreur}</p>}
-
-        <div>
-          <p className={formStyles.accroche}>WeFilmGood a 10 ans&nbsp;!</p>
-          <p className={formStyles.hint}>
-            Merci de votre confiance
-            <br />
-            Cliquer pour souffler les bougies&nbsp;!
-          </p>
-        </div>
 
         <label className={formStyles.field}>
           <span>Email</span>
@@ -54,6 +60,12 @@ export default async function ConnexionPage({
             placeholder="vous@exemple.com"
           />
         </label>
+
+        <p className={formStyles.mentionCgu}>
+          En vous connectant à WeFilmGood, vous acceptez nos{" "}
+          <Link href="/cguv">conditions d&apos;utilisation</Link> et reconnaissez avoir pris
+          connaissance de notre politique de confidentialité.
+        </p>
 
         <div className={formStyles.pied}>
           <p className={formStyles.hint} style={{ textAlign: "center" }}>
