@@ -75,7 +75,7 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
 
   return (
     <div className={`${styles.bande} ${visible ? "" : styles.cachee}`}>
-      <Link href="/" ref={lien} className={styles.lien} style={{ color: "var(--engagement)" }}>
+      <Link href="/" ref={lien} className={styles.lien} style={{ color: "var(--engagement, #da2c25)" }}>
         <span className={styles.logo} aria-label="WeFilmGood" role="img" />
         <span className={styles.etiquetteLogo}>Accueil</span>
 
@@ -114,7 +114,7 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
                     {"special" in el && el.special ? (
                       <>
                         <span style={{ color: ROUGE_WFG }}>Ciné</span>
-                        <span style={{ color: "var(--engagement)" }}>Fusion</span>
+                        <span style={{ color: "var(--engagement, #da2c25)" }}>Fusion</span>
                       </>
                     ) : (
                       el.label

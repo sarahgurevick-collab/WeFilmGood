@@ -203,8 +203,8 @@
   height: 50px;
   line-height: 50px;
   border-radius: 12px;
-  background: var(--engagement);
-  color: var(--engagement-texte);
+  background: var(--engagement, #da2c25);
+  color: var(--engagement-texte, #ffffff);
   font-size: 16px;
   font-weight: 700;
 }
@@ -648,7 +648,7 @@ a.manque:hover {
   align-items: center;
   gap: 14px;
   padding: 16px 18px;
-  border: 2px solid var(--engagement);
+  border: 2px solid var(--engagement, #da2c25);
   border-radius: 14px;
   background: var(--surface);
   color: var(--fg);
@@ -661,7 +661,7 @@ a.manque:hover {
   right: 12px;
   font-size: 12px;
   font-weight: 800;
-  color: var(--engagement);
+  color: var(--engagement, #da2c25);
 }
 
 .etapeNumero,
@@ -705,8 +705,8 @@ a.manque:hover {
   flex-shrink: 0;
   padding: 8px 14px;
   border-radius: 8px;
-  background: var(--engagement);
-  color: var(--engagement-texte);
+  background: var(--engagement, #da2c25);
+  color: var(--engagement-texte, #ffffff);
   font-size: 13px;
   font-weight: 700;
   text-transform: none;
@@ -742,8 +742,8 @@ a.manque:hover {
   display: inline-block;
   padding: 10px 18px;
   border-radius: 10px;
-  background: var(--engagement);
-  color: var(--engagement-texte);
+  background: var(--engagement, #da2c25);
+  color: var(--engagement-texte, #ffffff);
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;

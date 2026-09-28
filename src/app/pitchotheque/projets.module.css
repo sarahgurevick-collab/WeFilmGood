@@ -203,7 +203,7 @@
   gap: 10px;
   padding: 0 30px 0 34px;
   height: 46px;
-  border: 1px solid var(--engagement);
+  border: 1px solid var(--engagement, #da2c25);
   border-radius: 10px;
   background: transparent;
   color: var(--fg);
@@ -230,7 +230,7 @@
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: var(--engagement);
+  background: var(--engagement, #da2c25);
   transform: translateY(-50%);
   transition: all 0.3s ease;
 }
@@ -247,7 +247,7 @@
 
 .avanceeBouton:hover,
 .avanceeBouton:focus-visible {
-  color: var(--engagement-texte);
+  color: var(--engagement-texte, #ffffff);
   padding-left: 26px;
   padding-right: 38px;
 }

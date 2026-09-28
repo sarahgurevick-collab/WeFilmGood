@@ -90,8 +90,8 @@
 
 .voir {
   padding: 6px 14px;
-  background: var(--engagement);
-  color: var(--engagement-texte);
+  background: var(--engagement, #da2c25);
+  color: var(--engagement-texte, #ffffff);
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
@@ -381,8 +381,8 @@
 }
 
 .pastilleLangue:hover {
-  background: var(--engagement);
-  color: var(--engagement-texte);
+  background: var(--engagement, #da2c25);
+  color: var(--engagement-texte, #ffffff);
 }
 
 .dessous {
@@ -399,7 +399,7 @@
 
 .dessousTitre button {
   padding: 6px 12px;
-  border: 1px solid var(--engagement);
+  border: 1px solid var(--engagement, #da2c25);
   border-radius: 999px;
   background: none;
   color: inherit;
@@ -410,8 +410,8 @@
 }
 
 .dessousTitre button:hover {
-  background: var(--engagement);
-  color: var(--engagement-texte);
+  background: var(--engagement, #da2c25);
+  color: var(--engagement-texte, #ffffff);
 }
 
 /* Dessous, le côté équipe / personnages / moodboard n'est plus posé sur

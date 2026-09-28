@@ -69,8 +69,8 @@
 }
 
 .etiquetteBouton > button:hover {
-  background: var(--engagement);
-  color: var(--engagement-texte);
+  background: var(--engagement, #da2c25);
+  color: var(--engagement-texte, #ffffff);
 }
 
 .etiquetteBouton > button:focus-visible {
@@ -95,7 +95,7 @@
   z-index: 10;
   width: 2px;
   margin-left: -1px;
-  background: var(--engagement);
+  background: var(--engagement, #da2c25);
   will-change: left;
 }
 
@@ -109,16 +109,16 @@
   width: 46px;
   height: 46px;
   padding: 0;
-  border: 2px solid var(--engagement);
+  border: 2px solid var(--engagement, #da2c25);
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.7);
-  color: var(--engagement);
+  color: var(--engagement, #da2c25);
   transform: translate(-50%, -50%);
   cursor: ew-resize;
   box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.25);
 }
 
 .poignee:focus-visible {
-  outline: 2px solid var(--engagement);
+  outline: 2px solid var(--engagement, #da2c25);
   outline-offset: 3px;
 }

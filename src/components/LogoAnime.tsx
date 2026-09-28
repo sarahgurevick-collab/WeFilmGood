@@ -43,7 +43,7 @@ export default function LogoAnime({
       className={styles.bloc}
       style={
         {
-          color: "var(--engagement)",
+          color: "var(--engagement, #da2c25)",
           ...(tailleMention ? { "--taille-mention": `${tailleMention}px` } : {}),
         } as CSSProperties
       }

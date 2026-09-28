@@ -77,6 +77,11 @@ export default async function ProjetsPage({
     p_decalage: (page - 1) * PAR_PAGE,
     ...parametresRpc(filtres),
   });
+  if (sansOrdre) {
+    // Le repli qui suit rend la page silencieusement : ce message est le
+    // seul endroit où l'échec de la fonction « pitchotheque » se voit.
+    console.error("Pitchothèque : fonction pitchotheque en échec, repli sur les plus récents", sansOrdre);
+  }
   const lignes = (ordre ?? []) as { id: string; total: number }[];
 
   let projects: Projet[] | null;

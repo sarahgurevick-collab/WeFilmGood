@@ -196,7 +196,7 @@
 
 .chercheurBouton {
   padding: 0 16px;
-  border: 1px solid var(--engagement);
+  border: 1px solid var(--engagement, #da2c25);
   border-radius: 10px;
   background: none;
   color: var(--fg);
@@ -207,8 +207,8 @@
 }
 
 .chercheurBouton:hover {
-  background: var(--engagement);
-  color: var(--engagement-texte);
+  background: var(--engagement, #da2c25);
+  color: var(--engagement-texte, #ffffff);
 }
 
 .chercheurResultats {
@@ -233,7 +233,7 @@
 }
 
 .chercheurResultats button:hover {
-  border-color: var(--engagement);
+  border-color: var(--engagement, #da2c25);
 }
 
 .chercheurResultats img {

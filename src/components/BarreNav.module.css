@@ -97,8 +97,8 @@
   /* L'onglet prend la couleur de l'engagement en cours, la même que le
      logo, et change avec lui (25/09). Le halo bat doucement dans cette
      couleur. */
-  background: var(--engagement);
-  color: var(--engagement-texte);
+  background: var(--engagement, #da2c25);
+  color: var(--engagement-texte, #ffffff);
   animation: appelMessage 1.6s ease-in-out infinite;
 }
 
@@ -108,14 +108,14 @@
     box-shadow: 0 0 0 0 transparent;
   }
   50% {
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--engagement) 45%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--engagement, #da2c25) 45%, transparent);
   }
 }
 
 /* La pastille s'inverse : blanche, le nombre à la couleur de l'engagement. */
 .clignote .pastille {
-  background: var(--engagement-texte);
-  color: var(--engagement);
+  background: var(--engagement-texte, #ffffff);
+  color: var(--engagement, #da2c25);
   animation: pastilleMessage 1.6s ease-in-out infinite;
 }
 

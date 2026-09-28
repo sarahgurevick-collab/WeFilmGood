@@ -184,7 +184,7 @@
   isolation: isolate;
   overflow: hidden;
   background: transparent;
-  border: 1px solid var(--engagement);
+  border: 1px solid var(--engagement, #da2c25);
   border-radius: 10px;
   color: var(--fg);
   font-family: inherit;
@@ -218,7 +218,7 @@
   width: 8px;
   height: 8px;
   border-radius: 999px;
-  background: var(--engagement);
+  background: var(--engagement, #da2c25);
   transform: translateY(-50%);
   transition: all 0.3s ease;
 }
@@ -239,7 +239,7 @@
 .submitWide:hover,
 .submit:focus-visible,
 .submitWide:focus-visible {
-  color: var(--engagement-texte);
+  color: var(--engagement-texte, #ffffff);
   padding-left: 26px;
   padding-right: 38px;
 }
