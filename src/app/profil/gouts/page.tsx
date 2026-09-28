@@ -80,7 +80,7 @@ export default async function GoutsPage() {
         </div>
 
         <div className={styles.pied}>
-          <button type="submit" className={styles.bouton}>
+          <button type="submit" className={formStyles.submit}>
             Enregistrer et terminer →
           </button>
         </div>

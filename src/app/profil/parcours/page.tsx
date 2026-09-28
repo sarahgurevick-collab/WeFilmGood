@@ -119,7 +119,7 @@ export default async function ParcoursPage({
           <Link href="/profil" className={styles.lienDiscret}>
             Passer ce bloc
           </Link>
-          <button type="submit" className={styles.bouton}>
+          <button type="submit" className={formStyles.submit}>
             Enregistrer et continuer →
           </button>
         </div>
