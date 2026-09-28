@@ -172,14 +172,6 @@ export default async function ProjetsPage({
                         <>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={vignette} alt="" loading="lazy" />
-                          <span className={styles.live} aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                              <circle cx="12" cy="12" r="3" fill="currentColor" stroke="none" />
-                              <circle cx="12" cy="12" r="6.5" />
-                              <circle cx="12" cy="12" r="10" strokeDasharray="1.6 2.2" />
-                            </svg>
-                            LIVE
-                          </span>
                         </>
                       ) : (
                         <span className={styles.sansImage}>Sans vignette</span>
