@@ -318,21 +318,23 @@
 }
 
 /*
- * Un champ bien rempli prend un cadre vert (28/09) : un membre ne savait
- * pas si ce qu'il avait saisi était accepté. Vide, ou mal rempli (une
- * adresse de site incomplète…), il garde son cadre gris. Le
+ * Un champ bien rempli prend un cadre rouge sur fond rose pâle (28/09),
+ * comme les pastilles cochées et le bloc actif du menu : un membre ne
+ * savait pas si ce qu'il avait saisi était accepté. Vide, ou mal rempli
+ * (une adresse de site incomplète…), il garde son cadre gris. Le
  * placeholder=" " des champs sans exemple sert à reconnaître un champ vide.
  */
 .colonne input:not([type="checkbox"], [type="radio"], [type="hidden"], [type="file"]):not(:placeholder-shown):valid,
 .colonne textarea:not(:placeholder-shown):valid,
 .colonne select:has(option:checked:not([value=""])),
 .colonne label:has(> input[type="radio"]:checked) {
-  border-color: var(--succes);
+  border-color: var(--rouge-wfg);
+  background: rgba(218, 44, 37, 0.08);
 }
 
 /* Les pastilles cochées (langues, métiers, genres) : contour rouge,
-   fond rose pâle, comme le bloc actif du menu. Le rouge dit « choisi »,
-   le vert « accepté » (28/09). */
+   fond rose pâle, comme le bloc actif du menu et les champs remplis
+   (28/09). */
 .colonne label:has(> input[type="checkbox"]:checked) {
   border-color: var(--rouge-wfg);
   background: rgba(218, 44, 37, 0.08);
