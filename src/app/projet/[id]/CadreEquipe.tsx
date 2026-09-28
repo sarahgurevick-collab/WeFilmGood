@@ -197,6 +197,15 @@ export default function CadreEquipe({
         {droite}
       </div>
 
+      {/* « Mon équipe » reste toujours visible (remis le 28/09) : avant, il
+          disparaissait dès qu'il y avait un moodboard ou des personnages. */}
+      {droite !== portraits && equipe.length > 0 && (
+        <div className={styles.dessous}>
+          <p className={styles.dessousTitre}>{titreEquipe}</p>
+          {portraits}
+        </div>
+      )}
+
       {/* Sous le cadre : l'« Avis WeFilmGood » d'un projet labellisé, la
           phrase d'encouragement des lecteurs. Rien s'il n'y en a pas. */}
       {avis && (
