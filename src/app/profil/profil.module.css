@@ -759,15 +759,10 @@ a.manque:hover {
   gap: 8px;
 }
 
+/* Même bouton que les autres (le point qui grossit au survol :
+   formStyles.submit) ; ici posé sur l'étiquette du champ fichier. */
 .boutonPhoto {
   display: inline-block;
-  padding: 10px 18px;
-  border-radius: 10px;
-  background: var(--engagement, #da2c25);
-  color: var(--engagement-texte, #ffffff);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
   text-transform: none;
 }
 

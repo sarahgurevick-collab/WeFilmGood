@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
+import formStyles from "@/components/form.module.css";
 import { retirerPhoto, savePhoto } from "../actions";
 import styles from "../profil.module.css";
 
@@ -28,7 +29,7 @@ export default function ChampPhoto({ photo, initiale }: { photo: string | null; 
 
       <div className={styles.champPhotoActions}>
         <form ref={formulaire} action={savePhoto}>
-          <label className={styles.boutonPhoto}>
+          <label className={`${formStyles.submit} ${styles.boutonPhoto}`}>
             <input
               type="file"
               name="photo"
