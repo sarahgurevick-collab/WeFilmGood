@@ -31,3 +31,27 @@
   text-transform: none;
   letter-spacing: normal;
 }
+
+/* Le sélecteur de projet, au-dessus de la scène. */
+.selecteur {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.selecteur select {
+  flex: 1;
+  max-width: 420px;
+  padding: 10px 12px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 15px;
+  text-transform: none;
+  letter-spacing: normal;
+}

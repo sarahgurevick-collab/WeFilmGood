@@ -9,6 +9,7 @@ import { tauxDeRemplissage } from "@/lib/remplissage";
 import { signerImages } from "@/app/projet/[id]/fichiers";
 import { BLOCS, etatDesBlocs, hrefBloc } from "@/app/projet/blocs";
 import styles from "./page.module.css";
+import SelecteurProjet from "./SelecteurProjet";
 
 const STATUT_LISIBLE: Record<string, string> = {
   brouillon: "Brouillon",
@@ -46,7 +47,12 @@ type Projet = {
  * Une nouvelle version du scénario se dépose depuis le bloc Documents ;
  * un autre projet se crée en bas.
  */
-export default async function MesProjetsPage() {
+export default async function MesProjetsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ projet?: string }>;
+}) {
+  const { projet: projetChoisi } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -61,8 +67,12 @@ export default async function MesProjetsPage() {
     .eq("owner_id", user.id)
     .order("created_at", { ascending: false })
     .returns<Projet[]>();
-  const projets = data ?? [];
-  if (projets.length === 0) redirect("/projet");
+  const tous = data ?? [];
+  if (tous.length === 0) redirect("/projet");
+  // Plusieurs projets : un sélecteur, et un seul projet affiché à la fois
+  // (le plus récent par défaut).
+  const courant = tous.find((p) => p.id === projetChoisi) ?? tous[0];
+  const projets = [courant];
 
   const urls = await signerImages(
     supabase,
@@ -94,10 +104,12 @@ export default async function MesProjetsPage() {
     <PageShell nav="deposer" connecte>
       <h1 className={profilStyles.titre}>Mes projets</h1>
       <p className={profilStyles.chapeau}>
-        {projets.length === 1 ? "Votre fiche projet" : `Vos ${projets.length} fiches projet`}, telles que
+        {tous.length === 1 ? "Votre fiche projet" : `Vos ${tous.length} fiches projet`}, telles que
         les voient les talents. Une nouvelle version de votre scénario se dépose depuis le bloc
         « Documents » de la fiche : inutile de créer une seconde fiche pour le même projet.
       </p>
+
+      {tous.length > 1 && <SelecteurProjet projets={tous.map((p) => ({ id: p.id, titre: p.title }))} courant={courant.id} />}
 
       {projets.map((p, i) => {
         const image = urls.get(p.files.find((f) => f.kind === "vignette")?.storage_path ?? "");
