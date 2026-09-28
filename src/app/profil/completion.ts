@@ -70,7 +70,7 @@ export async function calculerCompletion(
     supabase
       .from("profiles")
       .select(
-        "full_name, first_name, category, validation_status, city, country, biofilmo, website, agent_name, agent_reponse, reseaux_reponse, autre_metier_actif, autre_genre_actif, personality_answers",
+        "full_name, first_name, category, validation_status, city, country, biofilmo, website, agent_name, agent_reponse, reseaux_reponse, site_reponse, autre_metier_actif, autre_genre_actif, personality_answers",
       )
       .eq("id", userId)
       .maybeSingle(),
@@ -104,12 +104,17 @@ export async function calculerCompletion(
   const agentRenseigne = profil?.agent_reponse === false || !!profil?.agent_name;
   const reseauxRenseignes = profil?.reseaux_reponse === false || (reseaux ?? 0) > 0;
 
+  // Un auteur n'a pas de référence à fournir : son site est une question
+  // oui/non comme l'agent.
+  const siteRenseigne =
+    profil?.category === "auteur" ? profil?.site_reponse === false || !!profil?.website : !!profil?.website;
+
   const reperes = [
     !!profil?.category,
     !!profil?.city,
     !!profil?.country,
     !!profil?.biofilmo,
-    !!profil?.website,
+    siteRenseigne,
     metierRenseigne,
     (langues ?? 0) > 0,
     genreRenseigne,
@@ -131,6 +136,7 @@ export async function calculerCompletion(
 
   const criteresParcours = [
     !!profil?.biofilmo,
+    ...(profil?.category === "auteur" ? [siteRenseigne] : []),
     metierRenseigne,
     genreRenseigne,
     agentRenseigne,

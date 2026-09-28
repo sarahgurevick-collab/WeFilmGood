@@ -152,6 +152,14 @@ export async function saveParcours(formData: FormData) {
       agent_name: formData.get("agent_reponse") === "oui" ? texte(formData, "agent_name") : null,
       agent_reponse: reponseOuiNon(formData, "agent_reponse"),
       reseaux_reponse: reponseOuiNon(formData, "reseaux_reponse"),
+      // Le site d'un auteur se saisit ici ; celui d'un producteur ou d'un
+      // autre talent est sa référence, saisie en bloc 1.
+      ...(profil?.category === "auteur"
+        ? {
+            site_reponse: reponseOuiNon(formData, "site_reponse"),
+            website: formData.get("site_reponse") === "oui" ? texte(formData, "website") : null,
+          }
+        : {}),
       autre_metier_actif: formData.get("autre_metier_actif") === "1",
       autre_metier: formData.get("autre_metier_actif") === "1" ? texte(formData, "autre_metier") : null,
       autre_genre_actif: formData.get("autre_genre_actif") === "1",

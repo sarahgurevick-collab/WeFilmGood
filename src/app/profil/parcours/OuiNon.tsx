@@ -2,13 +2,13 @@
 
 import { useState, type ReactNode } from "react";
 import formStyles from "@/components/form.module.css";
-import styles from "./OuiNon.module.css";
+import styles from "@/app/projet/deposer.module.css";
 
 /**
- * Deux boutons Oui / Non. « Oui » (rouge) déplie ce qu'il y a à remplir ;
- * « Non » (gris) le replie. Tant qu'aucun n'est choisi, la question reste
- * sans réponse. La réponse part avec le formulaire dans `nom` (« oui » /
- * « non », rien si pas de réponse).
+ * Une question oui/non avec l'interrupteur gris/rouge déjà utilisé pour
+ * les prix d'un projet, posé à côté de la question. Sur « oui », ce qu'il
+ * y a à remplir s'ouvre. La réponse part toujours avec le formulaire
+ * (`nom` = « oui » ou « non ») : ne pas toucher l'interrupteur, c'est non.
  */
 export default function OuiNon({
   question,
@@ -18,33 +18,21 @@ export default function OuiNon({
 }: {
   question: string;
   nom: string;
-  initial: boolean | null;
+  initial: boolean;
   children: ReactNode;
 }) {
-  const [reponse, setReponse] = useState<boolean | null>(initial);
+  const [oui, setOui] = useState(initial);
   return (
     <div className={formStyles.field}>
-      <span>{question}</span>
-      <div className={styles.boutons}>
-        <button
-          type="button"
-          aria-pressed={reponse === true}
-          className={`${styles.bouton} ${reponse === true ? styles.oui : ""}`}
-          onClick={() => setReponse(true)}
-        >
-          Oui
-        </button>
-        <button
-          type="button"
-          aria-pressed={reponse === false}
-          className={`${styles.bouton} ${reponse === false ? styles.non : ""}`}
-          onClick={() => setReponse(false)}
-        >
-          Non
-        </button>
-      </div>
-      {reponse !== null && <input type="hidden" name={nom} value={reponse ? "oui" : "non"} />}
-      {reponse === true && children}
+      <label className={styles.question}>
+        <span>{question}</span>
+        <span className={styles.interrupteur}>
+          <input type="checkbox" checked={oui} onChange={(e) => setOui(e.target.checked)} />
+          <span className={styles.rond} aria-hidden="true" />
+        </span>
+      </label>
+      <input type="hidden" name={nom} value={oui ? "oui" : "non"} />
+      {oui && children}
     </div>
   );
 }

@@ -35,7 +35,7 @@ export default async function ParcoursPage({
       supabase
         .from("profiles")
         .select(
-          "category, biofilmo, agent_name, agent_reponse, reseaux_reponse, autre_metier_actif, autre_metier, autre_genre_actif, autre_genre",
+          "category, biofilmo, agent_name, agent_reponse, reseaux_reponse, site_reponse, website, autre_metier_actif, autre_metier, autre_genre_actif, autre_genre",
         )
         .eq("id", user.id)
         .maybeSingle(),
@@ -130,10 +130,20 @@ export default async function ParcoursPage({
           </div>
         </div>
 
+        {profil?.category === "auteur" && (
+          <OuiNon
+            question="Avez-vous un site internet ?"
+            nom="site_reponse"
+            initial={profil?.site_reponse ?? !!profil?.website}
+          >
+            <input type="url" name="website" placeholder="https://" defaultValue={profil?.website ?? ""} />
+          </OuiNon>
+        )}
+
         <OuiNon
           question="Avez-vous un agent ?"
           nom="agent_reponse"
-          initial={profil?.agent_reponse ?? null}
+          initial={profil?.agent_reponse === true}
         >
           <input
             placeholder="Nom de votre agent"
@@ -146,7 +156,7 @@ export default async function ParcoursPage({
         <OuiNon
           question="Avez-vous des réseaux ou des sites professionnels ?"
           nom="reseaux_reponse"
-          initial={profil?.reseaux_reponse ?? (Object.keys(valeursReseaux).length ? true : null)}
+          initial={profil?.reseaux_reponse ?? Object.keys(valeursReseaux).length > 0}
         >
           <ReseauxSociaux reseaux={RESEAUX} valeurs={valeursReseaux} />
         </OuiNon>
