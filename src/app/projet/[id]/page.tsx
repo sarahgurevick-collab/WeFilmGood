@@ -153,6 +153,12 @@ export default async function ProjetPage({
     >();
 
   const { data: estAdmin } = await supabase.rpc("is_admin");
+  // Les sélections de la Maison des Scénaristes (Cannes 2019, PCDV 2022…),
+  // reprises de WFG 1 : pour l'administration seule (28/09).
+  const { data: selections } = estAdmin
+    ? await supabase.from("project_selections").select("libelle").eq("project_id", id).order("libelle")
+    : { data: null };
+
 
   // « Où en est mon projet ? » — la réponse que l'auteur allait chercher
   // par e-mail auprès de l'administration.
@@ -363,6 +369,13 @@ export default async function ProjetPage({
       )}
 
       {/* Le bandeau posé sur la vignette : l'administration seule le choisit. */}
+      {estAdmin && (selections ?? []).length > 0 && (
+        <p className={formStyles.hint} style={{ marginTop: 24 }}>
+          Sélections de la Maison des Scénaristes (visible en admin uniquement) :{" "}
+          {(selections ?? []).map((s) => s.libelle).join(" · ")}
+        </p>
+      )}
+
       {estAdmin && (
         <form action={choisirBandeau} className={formStyles.form} style={{ marginTop: 24, maxWidth: 360 }}>
           <input type="hidden" name="project_id" value={project.id} />
