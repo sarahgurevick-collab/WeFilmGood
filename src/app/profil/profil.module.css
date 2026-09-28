@@ -330,6 +330,15 @@
   border-color: var(--succes);
 }
 
+/* Les pastilles cochées (langues, métiers, genres) en rouge, comme
+   l'onglet actif de la barre : le rouge dit « choisi », le vert
+   « accepté » (28/09). */
+.colonne label:has(> input[type="checkbox"]:checked) {
+  border-color: var(--rouge-wfg);
+  background: var(--rouge-wfg);
+  color: #ffffff;
+}
+
 .row {
   display: flex;
   gap: 16px;
