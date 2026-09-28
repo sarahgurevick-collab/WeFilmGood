@@ -37,6 +37,16 @@ export async function enregistrerPersonnage(formData: FormData) {
   if (photo && photo.size > 0) {
     photoPath = await deposerImage(supabase, projet.owner_id, id, photo, "personnage");
     if (!photoPath) echec("Le portrait n'a pas pu être enregistré. Réessayez, ou écrivez-nous.");
+  } else {
+    // Un portrait choisi sur internet (28/09) : copié sur le site, allégé,
+    // comme un portrait déposé — un lien extérieur pourrait mourir.
+    const photoUrl = ((formData.get("photo_url") as string) ?? "").trim();
+    if (/^https:\/\//.test(photoUrl)) {
+      const fichier = await telechargerImage(photoUrl);
+      if (!fichier) echec("Le portrait choisi n'a pas pu être récupéré. Essayez-en un autre.");
+      photoPath = await deposerImage(supabase, projet.owner_id, id, fichier, "personnage");
+      if (!photoPath) echec("Le portrait n'a pas pu être enregistré. Réessayez, ou écrivez-nous.");
+    }
   }
 
   if (characterId) {
@@ -105,4 +115,21 @@ export async function retirerPersonnage(formData: FormData) {
 
   revalidatePath(`/projet/${id}`);
   redirect(`/projet/${id}/personnages`);
+}
+
+/** Récupère une image sur internet (portrait choisi), 15 Mo au plus. */
+async function telechargerImage(url: string): Promise<File | null> {
+  try {
+    const r = await fetch(url, {
+      headers: { "User-Agent": "WeFilmGood/1.0 (https://app.wefilmgood.com)" },
+      signal: AbortSignal.timeout(15000),
+    });
+    const type = r.headers.get("content-type")?.split(";")[0] ?? "";
+    if (!r.ok || !IMAGES.includes(type)) return null;
+    const donnees = await r.arrayBuffer();
+    if (donnees.byteLength > 15 * 1024 * 1024) return null;
+    return new File([donnees], "portrait", { type });
+  } catch {
+    return null;
+  }
 }

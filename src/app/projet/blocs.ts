@@ -24,14 +24,14 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     titre: "Documents",
     resume:
       "L'image de présentation, celle qui représente votre projet dans la pitchothèque · le Moodboard, visible sur la fiche seulement · le scénario en PDF.",
-    duree: "3 minutes · facultatif",
+    duree: "3 minutes",
   },
   {
     cle: "personnages",
     numero: 3,
     titre: "Les personnages",
     resume: "Vos personnages, principaux et secondaires : un nom, un portrait, quelques lignes.",
-    duree: "5 minutes · facultatif",
+    duree: "5 minutes",
   },
 ];
 

@@ -3,6 +3,7 @@ import profilStyles from "@/app/profil/profil.module.css";
 import BlocProjet from "../../BlocProjet";
 import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
+import ChercheurPortrait from "./ChercheurPortrait";
 import { signerImages } from "../fichiers";
 import { enregistrerPersonnage, retirerPersonnage } from "./actions";
 import { AGES, GENRES_PERSONNAGE, TYPES } from "./options";
@@ -154,7 +155,7 @@ function FormulairePersonnage({
           <textarea
             name="biography"
             rows={4}
-            placeholder="Qui est-il ? Que veut-il ? Qu'est-ce qui l'en empêche ?"
+            placeholder="Qui est-il ? Que veut-il ? Qu'est-ce qui l'en empêche ? Si vous pensez à un·e comédien·ne pour ce rôle, nommez-le·la ici (« dans l'esprit de Juliette Binoche ») : les producteurs et directeurs de casting le retrouveront dans la pitchothèque."
             defaultValue={personnage?.biography ?? ""}
           />
         </label>
@@ -163,6 +164,7 @@ function FormulairePersonnage({
           <span>{photo ? "Remplacer le portrait" : "Portrait (JPG ou PNG)"}</span>
           <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" />
         </label>
+        <ChercheurPortrait />
 
         <div className={styles.piedPersonnage}>
           {personnage ? (

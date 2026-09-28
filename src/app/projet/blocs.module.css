@@ -177,3 +177,92 @@
     flex-direction: column;
   }
 }
+
+/* Chercher un portrait sur internet (28/09). */
+.chercheur {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chercheurLigne {
+  display: flex;
+  gap: 8px;
+}
+
+.chercheurLigne input {
+  flex: 1;
+}
+
+.chercheurBouton {
+  padding: 0 16px;
+  border: 1px solid var(--engagement);
+  border-radius: 10px;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chercheurBouton:hover {
+  background: var(--engagement);
+  color: var(--engagement-texte);
+}
+
+.chercheurResultats {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chercheurResultats button {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.chercheurResultats button:hover {
+  border-color: var(--engagement);
+}
+
+.chercheurResultats img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chercheurChoix {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.chercheurChoix img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.chercheurChoix button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+}
