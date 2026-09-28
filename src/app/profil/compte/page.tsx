@@ -23,10 +23,6 @@ export default async function ComptePage() {
 
   return (
     <PageShell nav="profil" connecte>
-      <p className={formStyles.linkRow}>
-        <Link href="/profil">← Retour à mon profil</Link>
-      </p>
-
       <h1 className={styles.titre}>Réglages du compte</h1>
 
       <h2 className={styles.section}>Se déconnecter</h2>
