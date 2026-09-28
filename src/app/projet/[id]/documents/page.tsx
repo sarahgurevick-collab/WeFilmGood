@@ -52,7 +52,7 @@ export default async function DocumentsPage({
       {enregistre && <p className={profilStyles.ok}>Documents enregistrés.</p>}
       {pourAutrui && (
         <p className={formStyles.avertissement}>
-          Vous modifiez la fiche d&apos;un autre membre, en tant qu&apos;administratrice.
+          Vous modifiez la fiche d&apos;un autre membre.
         </p>
       )}
 
@@ -137,7 +137,7 @@ export default async function DocumentsPage({
               </>
             )}
             Confidentiel : seuls vous, les lecteurs qui en seront chargés et
-            l&apos;administration y auront accès.
+            l&apos;équipe de la Maison des Scénaristes/WeFilmGood y auront accès.
           </span>
         </label>
 

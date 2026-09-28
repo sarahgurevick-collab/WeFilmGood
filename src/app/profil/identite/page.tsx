@@ -132,7 +132,6 @@ export default async function IdentitePage({
         </div>
 
         <fieldset className={styles.cadreAdmin}>
-          <legend className={styles.cadreAdminTitre}>Réservé à l&apos;administration</legend>
           <p className={formStyles.hint}>
             Ces informations ne sont jamais montrées aux autres membres. Elles servent à
             l&apos;administration de WeFilmGood pour vous joindre.

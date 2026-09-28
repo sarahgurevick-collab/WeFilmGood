@@ -25,7 +25,7 @@ export default async function ModifierProjetPage({
     <BlocProjet actif="fiche" projet={projet}>
       {pourAutrui && (
         <p className={formStyles.avertissement}>
-          Vous modifiez la fiche d&apos;un autre membre, en tant qu&apos;administratrice.
+          Vous modifiez la fiche d&apos;un autre membre.
         </p>
       )}
 

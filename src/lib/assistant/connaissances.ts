@@ -40,7 +40,7 @@ Fiche projet (menu « Créer une fiche projet »)
 - Obligatoires : titre, tagline, format, genre principal. Tagline : 300 caractères maximum (une phrase d'accroche). Logline : 600 caractères maximum (un petit résumé).
 - Image de présentation : format paysage 16/9, JPG ou PNG, sans son nom ni le titre dessus.
 - Moodboard : 10 photos maximum.
-- Le scénario PDF est confidentiel : seuls l'auteur, les lecteurs qui en sont chargés et l'administration y ont accès.
+- Le scénario PDF est confidentiel : seuls l'auteur, les lecteurs qui en sont chargés et l'équipe de la Maison des Scénaristes/WeFilmGood y ont accès.
 - Une jauge indique le remplissage : les fiches complètes apparaissent plus haut dans la pitchothèque (visibilité, pas promesse de résultat).
 - Sur la fiche : onglets « Videopitch » et « Mon équipe » (inviter les talents du projet).
 - Lien de partage : l'auteur peut créer un lien à envoyer à un producteur, qui ouvre une page de présentation visible sans compte. Le scénario reste inaccessible. Le lien peut être désactivé à tout moment, définitivement.

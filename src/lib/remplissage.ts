@@ -58,7 +58,7 @@ export function criteres(f: EtatFiche): Critere[] {
       cle: "scenario",
       poids: 20,
       rempli: f.aUnScenario,
-      manque: "Votre scénario en PDF. Il reste confidentiel : seuls vous, le lecteur chargé de votre projet et l'administration y ont accès.",
+      manque: "Votre scénario en PDF. Il reste confidentiel : seuls vous, le lecteur chargé de votre projet et l'équipe de la Maison des Scénaristes/WeFilmGood y ont accès.",
     },
     {
       cle: "genre",

@@ -52,7 +52,7 @@ export default async function PersonnagesPage({
       {erreur && <p className={formStyles.error}>{erreur}</p>}
       {pourAutrui && (
         <p className={formStyles.avertissement}>
-          Vous modifiez la fiche d&apos;un autre membre, en tant qu&apos;administratrice.
+          Vous modifiez la fiche d&apos;un autre membre.
         </p>
       )}
 
