@@ -269,8 +269,7 @@ export default function TableauFiches({
                   </td>
                   <td className={styles.serre}>{formatCourt(l) || "—"}</td>
                   <td className={`${styles.serre} ${styles.note}`}>
-                    <Statut ligne={l} />
-                    {l.note ?? "—"}
+                    <Note ligne={l} />
                   </td>
                   <td className={styles.analyse}>
                     {l.analyse ? (
@@ -385,15 +384,22 @@ export default function TableauFiches({
 }
 
 /**
- * Le statut devant la note : A orange pour une fiche rendue qui attend la
- * relecture — un clic ouvre la page de relecture. Rien sinon : une fiche
- * vérifiée n'a pas de pastille (28/09), et une fiche ne se rejette jamais
- * (décision du 23/09 : Sarah réécrit les fiches ratées, puis les publie).
+ * La note. En orange quand la fiche attend la relecture de Sarah (28/09) :
+ * c'est la note du lecteur, à confirmer — un clic ouvre la page de
+ * relecture. Rien de particulier sinon : une fiche vérifiée s'affiche
+ * telle quelle, et une fiche ne se rejette jamais (décision du 23/09).
  */
-function Statut({ ligne }: { ligne: LigneFiche }) {
-  if (ligne.statut !== "À valider") return null;
-  const lettre = (
-    <span className={styles.statutA} title={ligne.statut} aria-label={ligne.statut} />
+function Note({ ligne }: { ligne: LigneFiche }) {
+  const texte = ligne.note ?? "—";
+  if (ligne.statut !== "À valider") return <>{texte}</>;
+  const titre = "Fiche à relire — note du lecteur, à confirmer";
+  return ligne.lienFiche ? (
+    <a href={ligne.lienFiche} className={styles.noteAValider} title={titre}>
+      {texte}
+    </a>
+  ) : (
+    <span className={styles.noteAValider} title={titre}>
+      {texte}
+    </span>
   );
-  return ligne.lienFiche ? <a href={ligne.lienFiche}>{lettre}</a> : lettre;
 }

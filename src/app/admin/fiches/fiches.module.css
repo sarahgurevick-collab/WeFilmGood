@@ -96,14 +96,15 @@
   min-width: 320px;
 }
 
-/* La pastille orange, sans lettre (28/09) : une fiche à relire. */
-.statutA {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-right: 8px;
-  border-radius: 50%;
-  vertical-align: 1px;
+/* La note en orange (28/09) : fiche à relire, note du lecteur à confirmer. */
+.noteAValider {
+  color: #e08a00;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.noteAValider:hover {
+  text-decoration: underline;
 }
 
 
