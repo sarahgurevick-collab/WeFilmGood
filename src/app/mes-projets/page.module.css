@@ -33,11 +33,20 @@
 }
 
 /* Le sélecteur de projet, au-dessus de la scène. */
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 20px;
+}
+
 .selecteur {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-top: 20px;
   font-size: 13px;
   font-weight: 700;
 }

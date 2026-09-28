@@ -109,7 +109,14 @@ export default async function MesProjetsPage({
         « Documents » de la fiche : inutile de créer une seconde fiche pour le même projet.
       </p>
 
-      {tous.length > 1 && <SelecteurProjet projets={tous.map((p) => ({ id: p.id, titre: p.title }))} courant={courant.id} />}
+      {/* Le bouton de création en haut, bien visible (28/09), à côté du
+          sélecteur quand il y a plusieurs projets. */}
+      <div className={styles.entete}>
+        {tous.length > 1 && <SelecteurProjet projets={tous.map((p) => ({ id: p.id, titre: p.title }))} courant={courant.id} />}
+        <Link href="/projet" className={formStyles.submit} style={{ display: "inline-block" }}>
+          Nouvelle fiche projet
+        </Link>
+      </div>
 
       {projets.map((p, i) => {
         const image = urls.get(p.files.find((f) => f.kind === "vignette")?.storage_path ?? "");
@@ -188,11 +195,6 @@ export default async function MesProjetsPage({
         );
       })}
 
-      <p style={{ marginTop: 36 }}>
-        <Link href="/projet" className={formStyles.submit} style={{ display: "inline-block" }}>
-          Nouvelle fiche projet
-        </Link>
-      </p>
     </PageShell>
   );
 }
