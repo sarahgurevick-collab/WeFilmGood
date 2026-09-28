@@ -286,7 +286,7 @@ export default async function TableauFichesPage({
     <PageShell nav="admin"
       avantTitre={<NavAdmin />}
      
-      title="Fiches de lecture"
+      title="Projets"
       theme="clair"
     >
       <p className={formStyles.hint}>
