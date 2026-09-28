@@ -37,6 +37,7 @@ type Heritee = {
     title: string;
     format: string | null;
     language: string | null;
+    bandeau: string | null;
     owner: { full_name: string | null } | null;
   } | null;
 };
@@ -52,7 +53,7 @@ type Rendue = {
 };
 
 const PROJET =
-  "project:projects(id, title, format, language, owner:profiles!projects_owner_id_fkey(full_name))";
+  "project:projects(id, title, format, language, bandeau, owner:profiles!projects_owner_id_fkey(full_name))";
 
 const STATUTS: Record<string, string> = {
   soumise: "À valider",
@@ -233,6 +234,7 @@ export default async function TableauFichesPage({
         scenariste: f.project?.owner?.full_name ?? null,
         titre: f.project?.title ?? null,
         projetId: f.project?.id ?? null,
+        bandeau: f.project?.bandeau ?? null,
         format: f.project?.format ?? null,
         langue: f.project?.language ?? null,
         statut: f.statut === 1 ? "À valider" : "Vérifiée",
@@ -255,6 +257,7 @@ export default async function TableauFichesPage({
         scenariste: r.project?.owner?.full_name ?? null,
         titre: r.project?.title ?? null,
         projetId: r.project?.id ?? null,
+        bandeau: r.project?.bandeau ?? null,
         format: r.project?.format ?? null,
         langue: r.project?.language ?? null,
         statut: STATUTS[r.status] ?? r.status,

@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import adminStyles from "../admin.module.css";
 import styles from "./fiches.module.css";
-import { modifierSelection } from "@/app/projet/[id]/actions";
+import { choisirBandeau, modifierSelection } from "@/app/projet/[id]/actions";
+import { BANDEAUX } from "@/components/Bandeau";
 
 export type LigneFiche = {
   cle: string;
@@ -13,6 +14,8 @@ export type LigneFiche = {
   scenariste: string | null;
   titre: string | null;
   projetId: string | null;
+  /** Le bandeau du projet (signé, tourné, primé), s'il en porte un. */
+  bandeau: string | null;
   format: string | null;
   langue: string | null;
   statut: string;
@@ -100,6 +103,9 @@ export default function TableauFiches({
     sens: -1,
   });
   const [ouvertes, setOuvertes] = useState<Set<string>>(new Set());
+  // La colonne en plus (28/09) : les sélections de la Maison des
+  // Scénaristes, ou le bandeau — rarement les deux, la page reste courte.
+  const [colonne, setColonne] = useState<"aucune" | "selection" | "bandeau">("aucune");
 
   const affichees = useMemo(() => {
     const mots = sansAccents(recherche).split(/\s+/).filter(Boolean);
@@ -172,6 +178,14 @@ export default function TableauFiches({
           value={recherche}
           onChange={(e) => setRecherche(e.target.value)}
         />
+        <label className={styles.colonneEnPlus}>
+          <span>Colonne en plus</span>
+          <select value={colonne} onChange={(e) => setColonne(e.target.value as typeof colonne)}>
+            <option value="aucune">Aucune</option>
+            <option value="selection">Sélection MdS</option>
+            <option value="bandeau">Bandeau</option>
+          </select>
+        </label>
         <div className={styles.formats}>
           {TOUS_FORMATS.map((f) => {
             const coche = formats.has(f);
@@ -215,7 +229,8 @@ export default function TableauFiches({
                 {COLONNES.map(({ cle, libelle }) => entete(cle, libelle))}
                 <th>Analyse</th>
                 {entete("satisfaction", "Satisfaction")}
-                <th>Sélection MdS</th>
+                {colonne === "selection" && <th>Sélection MdS</th>}
+                {colonne === "bandeau" && <th>Bandeau</th>}
               </tr>
             </thead>
             <tbody>
@@ -294,6 +309,32 @@ export default function TableauFiches({
                       </span>
                     ))}
                   </td>
+                  {colonne === "bandeau" && (
+                    <td className={styles.selection}>
+                      {l.projetId ? (
+                        <form action={choisirBandeau} className={styles.selectionLigne}>
+                          <input type="hidden" name="project_id" value={l.projetId} />
+                          <input type="hidden" name="retour" value={retour} />
+                          <select
+                            name="bandeau"
+                            defaultValue={l.bandeau ?? ""}
+                            onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                            className={styles.selectionSaisie}
+                          >
+                            <option value="">— Aucun —</option>
+                            {Object.entries(BANDEAUX).map(([cle, libelle]) => (
+                              <option key={cle} value={cle}>
+                                {libelle}
+                              </option>
+                            ))}
+                          </select>
+                        </form>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                  )}
+                  {colonne === "selection" && (
                   <td className={styles.selection}>
                     {l.projetId ? (
                       <>
@@ -327,6 +368,7 @@ export default function TableauFiches({
                       "—"
                     )}
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

@@ -5,8 +5,7 @@ import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
-import { choisirBandeau, choisirVisibilite, modifierSelection, setShareLink } from "./actions";
-import { BANDEAUX } from "@/components/Bandeau";
+import { choisirVisibilite, setShareLink } from "./actions";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
@@ -385,53 +384,6 @@ export default async function ProjetPage({
             Fiches de lecture ({fiches.length})
           </Link>
         </p>
-      )}
-
-      {/* Les outils d'administration, repliés (28/09) : le bandeau, et le
-          retrait d'une sélection. L'ajout d'une sélection se fait dans
-          Administration → Toutes les fiches. */}
-      {estAdmin && (
-        <details style={{ marginTop: 20 }}>
-          <summary className={formStyles.submit} style={{ display: "inline-block", cursor: "pointer", listStyle: "none" }}>
-            Administration (bandeau, sélections)
-          </summary>
-          <form action={choisirBandeau} className={formStyles.form} style={{ marginTop: 12, maxWidth: 360 }}>
-            <input type="hidden" name="project_id" value={project.id} />
-            <label className={formStyles.field}>
-              <span>Bandeau</span>
-              <select name="bandeau" defaultValue={project.bandeau ?? ""}>
-                <option value="">— Aucun bandeau —</option>
-                {Object.entries(BANDEAUX).map(([cle, libelle]) => (
-                  <option key={cle} value={cle}>
-                    {libelle}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button type="submit" className={formStyles.submit}>
-              Enregistrer le bandeau
-            </button>
-          </form>
-          {(selections ?? []).length > 0 && (
-            <p className={formStyles.hint} style={{ marginTop: 12 }}>
-              Sélections :{" "}
-              {(selections ?? []).map((x, i) => (
-                <span key={x.libelle}>
-                  {i > 0 && " · "}
-                  {x.libelle}
-                  <form action={modifierSelection} style={{ display: "inline" }}>
-                    <input type="hidden" name="project_id" value={project.id} />
-                    <input type="hidden" name="libelle" value={x.libelle} />
-                    <input type="hidden" name="geste" value="retirer" />
-                    <button type="submit" title="Retirer cette sélection" aria-label={`Retirer ${x.libelle}`} style={{ marginLeft: 4, background: "none", border: 0, color: "inherit", cursor: "pointer", font: "inherit" }}>
-                      Retirer
-                    </button>
-                  </form>
-                </span>
-              ))}
-            </p>
-          )}
-        </details>
       )}
 
       {/* Seulement du dépôt à la validation de la fiche de lecture :

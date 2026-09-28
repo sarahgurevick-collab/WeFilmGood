@@ -92,7 +92,9 @@ export async function choisirBandeau(formData: FormData) {
   await supabase.from("projects").update({ bandeau: valeur }).eq("id", projectId);
   revalidatePath(`/projet/${projectId}`);
   revalidatePath("/pitchotheque");
-  redirect(`/projet/${projectId}`);
+  revalidatePath("/admin/fiches");
+  const retour = (formData.get("retour") as string) || "";
+  redirect(retour.startsWith("/admin/fiches") ? retour : `/projet/${projectId}`);
 }
 
 /**
