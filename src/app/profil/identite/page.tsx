@@ -133,8 +133,9 @@ export default async function IdentitePage({
 
         <fieldset className={styles.cadreAdmin}>
           <p className={formStyles.hint}>
-            Ces informations ne sont jamais montrées aux autres membres. Elles servent à
-            l&apos;administration de WeFilmGood pour vous joindre.
+            Les informations ci-dessous sont réservées uniquement à l&apos;équipe de la Maison des
+            Scénaristes/WeFilmGood afin de vous joindre. Aucun talent connecté à la plateforme ne
+            peut les voir.
           </p>
 
           <div className={styles.row}>
