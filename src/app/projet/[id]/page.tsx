@@ -5,7 +5,7 @@ import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
-import { choisirBandeau, choisirVisibilite, setShareLink } from "./actions";
+import { choisirBandeau, choisirVisibilite, modifierSelection, setShareLink } from "./actions";
 import { BANDEAUX } from "@/components/Bandeau";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
@@ -156,9 +156,11 @@ export default async function ProjetPage({
   // Les sélections de la Maison des Scénaristes (Cannes 2019, PCDV 2022…)
   // et les comédiens envisagés par l'auteur, repris de WFG 1 (28/09) :
   // visibles des membres, et filtres de la recherche avancée.
-  const [{ data: selections }, { data: comediens }] = await Promise.all([
+  const [{ data: selections }, { data: comediens }, { data: toutesSelections }] = await Promise.all([
     supabase.from("project_selections").select("libelle").eq("project_id", id).order("libelle"),
     supabase.from("project_actors").select("libelle").eq("project_id", id).order("libelle"),
+    // Pour l'administration : les sélections déjà connues, proposées à la saisie.
+    estAdmin ? supabase.rpc("selections_disponibles") : Promise.resolve({ data: null }),
   ]);
 
 
@@ -373,8 +375,43 @@ export default async function ProjetPage({
       {/* Le bandeau posé sur la vignette : l'administration seule le choisit. */}
       {(selections ?? []).length > 0 && (
         <p className={formStyles.hint} style={{ marginTop: 24 }}>
-          Sélection de la Maison des Scénaristes : {(selections ?? []).map((s) => s.libelle).join(" · ")}
+          Sélection de la Maison des Scénaristes :{" "}
+          {(selections ?? []).map((s, i) => (
+            <span key={s.libelle}>
+              {i > 0 && " · "}
+              {s.libelle}
+              {estAdmin && (
+                <form action={modifierSelection} style={{ display: "inline" }}>
+                  <input type="hidden" name="project_id" value={project.id} />
+                  <input type="hidden" name="libelle" value={s.libelle} />
+                  <input type="hidden" name="geste" value="retirer" />
+                  <button type="submit" title="Retirer cette sélection" aria-label={`Retirer ${s.libelle}`} style={{ marginLeft: 4, background: "none", border: 0, color: "inherit", cursor: "pointer", font: "inherit" }}>
+                    ⊖
+                  </button>
+                </form>
+              )}
+            </span>
+          ))}
         </p>
+      )}
+      {/* L'administration ajoute une sélection (28/09) : un libellé libre,
+          les sélections déjà connues proposées en cours de frappe. */}
+      {estAdmin && (
+        <form action={modifierSelection} className={formStyles.form} style={{ marginTop: 12, maxWidth: 420 }}>
+          <input type="hidden" name="project_id" value={project.id} />
+          <label className={formStyles.field}>
+            <span>Ajouter une sélection de la Maison des Scénaristes (visible en admin uniquement)</span>
+            <input type="text" name="libelle" list="selections-connues" placeholder="Cannes 2026" required maxLength={80} />
+            <datalist id="selections-connues">
+              {((toutesSelections ?? []) as { libelle: string }[]).map((s) => (
+                <option key={s.libelle} value={s.libelle} />
+              ))}
+            </datalist>
+          </label>
+          <button type="submit" className={formStyles.submit}>
+            Ajouter
+          </button>
+        </form>
       )}
       {(comediens ?? []).length > 0 && (
         <p className={formStyles.hint} style={{ marginTop: 8 }}>

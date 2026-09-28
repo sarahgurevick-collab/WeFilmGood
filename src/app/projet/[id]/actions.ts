@@ -130,3 +130,23 @@ export async function choisirVisibilite(formData: FormData) {
   revalidatePath("/pitchotheque");
   redirect(`/projet/${projectId}?enregistre=1`);
 }
+
+/** Une sélection de la Maison des Scénaristes (« Cannes 2019 ») ajoutée ou retirée : l'administration seule. */
+export async function modifierSelection(formData: FormData) {
+  const supabase = await createClient();
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  const projectId = formData.get("project_id") as string;
+  if (!isAdmin) redirect(`/projet/${projectId}`);
+  const libelle = ((formData.get("libelle") as string) ?? "").trim().slice(0, 80);
+  const geste = formData.get("geste") as string;
+  if (libelle) {
+    if (geste === "retirer") {
+      await supabase.from("project_selections").delete().eq("project_id", projectId).eq("libelle", libelle);
+    } else {
+      await supabase.from("project_selections").upsert({ project_id: projectId, libelle });
+    }
+  }
+  revalidatePath(`/projet/${projectId}`);
+  revalidatePath("/pitchotheque");
+  redirect(`/projet/${projectId}`);
+}
