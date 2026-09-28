@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import adminStyles from "../admin.module.css";
 import styles from "./fiches.module.css";
+import { modifierSelection } from "@/app/projet/[id]/actions";
 
 export type LigneFiche = {
   cle: string;
@@ -77,10 +78,19 @@ const sansAccents = (s: string) =>
 export default function TableauFiches({
   lignes,
   uneSeuleAnnee,
+  selectionsDe,
+  selectionsConnues,
+  retour,
 }: {
   lignes: LigneFiche[];
   /** Une seule année cochée : inutile de la répéter à chaque ligne. */
   uneSeuleAnnee: boolean;
+  /** Les sélections de la Maison des Scénaristes, par projet (28/09). */
+  selectionsDe: Record<string, string[]>;
+  /** Toutes les sélections connues, proposées en cours de frappe. */
+  selectionsConnues: string[];
+  /** L'adresse de cette page, pour y revenir après un ajout. */
+  retour: string;
 }) {
   const [recherche, setRecherche] = useState("");
   // Le long métrage est ce que Sarah regarde d'abord ; les autres se cochent.
@@ -205,6 +215,7 @@ export default function TableauFiches({
                 {COLONNES.map(({ cle, libelle }) => entete(cle, libelle))}
                 <th>Analyse</th>
                 {entete("satisfaction", "Satisfaction")}
+                <th>Sélection MdS</th>
               </tr>
             </thead>
             <tbody>
@@ -283,10 +294,48 @@ export default function TableauFiches({
                       </span>
                     ))}
                   </td>
+                  <td className={styles.selection}>
+                    {l.projetId ? (
+                      <>
+                        {(selectionsDe[l.projetId] ?? []).map((sel) => (
+                          <form key={sel} action={modifierSelection} className={styles.selectionLigne}>
+                            <input type="hidden" name="project_id" value={l.projetId} />
+                            <input type="hidden" name="libelle" value={sel} />
+                            <input type="hidden" name="geste" value="retirer" />
+                            <input type="hidden" name="retour" value={retour} />
+                            <span>{sel}</span>
+                            <button type="submit" title="Retirer" aria-label={`Retirer ${sel}`}>
+                              ⊖
+                            </button>
+                          </form>
+                        ))}
+                        <form action={modifierSelection} className={styles.selectionLigne}>
+                          <input type="hidden" name="project_id" value={l.projetId} />
+                          <input type="hidden" name="retour" value={retour} />
+                          <input
+                            type="text"
+                            name="libelle"
+                            list="selections-connues"
+                            placeholder="+ Cannes 2026"
+                            maxLength={80}
+                            className={styles.selectionSaisie}
+                            title="Ajouter une sélection : tapez, puis Entrée"
+                          />
+                        </form>
+                      </>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <datalist id="selections-connues">
+            {selectionsConnues.map((x) => (
+              <option key={x} value={x} />
+            ))}
+          </datalist>
         </div>
       )}
     </>

@@ -152,3 +152,37 @@
 .vide {
   color: var(--bordure-forte);
 }
+
+/* La colonne « Sélection MdS » (28/09) : les sélections du projet, et une
+   case pour en ajouter une (Entrée). */
+.selection {
+  min-width: 150px;
+}
+
+.selectionLigne {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.selectionLigne button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.selectionSaisie {
+  width: 120px;
+  padding: 2px 6px;
+  border: 1px solid var(--bordure);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 11px;
+}

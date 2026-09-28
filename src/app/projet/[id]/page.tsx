@@ -156,11 +156,9 @@ export default async function ProjetPage({
   // Les sélections de la Maison des Scénaristes (Cannes 2019, PCDV 2022…)
   // et les comédiens envisagés par l'auteur, repris de WFG 1 (28/09) :
   // visibles des membres, et filtres de la recherche avancée.
-  const [{ data: selections }, { data: comediens }, { data: toutesSelections }] = await Promise.all([
+  const [{ data: selections }, { data: comediens }] = await Promise.all([
     supabase.from("project_selections").select("libelle").eq("project_id", id).order("libelle"),
     supabase.from("project_actors").select("libelle").eq("project_id", id).order("libelle"),
-    // Pour l'administration : les sélections déjà connues, proposées à la saisie.
-    estAdmin ? supabase.rpc("selections_disponibles") : Promise.resolve({ data: null }),
   ]);
 
 
@@ -356,6 +354,29 @@ export default async function ProjetPage({
         }
       />
 
+      {/* Sous le cadre, d'abord ce qui compte pour tous : la tagline, la
+          logline, les prix — puis les sélections et comédiens repris de
+          WFG 1, en petit (28/09 : page allégée à la demande de Sarah). */}
+      {project.logline && <p style={{ marginTop: 24 }}>{project.logline}</p>}
+      {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
+      {project.has_awards && (
+        <p className={presentation.prix}>
+          <strong>Projet primé</strong>
+          {project.awards_detail}
+        </p>
+      )}
+      {((selections ?? []).length > 0 || (comediens ?? []).length > 0) && (
+        <p className={formStyles.hint} style={{ marginTop: 12 }}>
+          {(selections ?? []).length > 0 && (
+            <>Sélection de la Maison des Scénaristes : {(selections ?? []).map((x) => x.libelle).join(" · ")}</>
+          )}
+          {(selections ?? []).length > 0 && (comediens ?? []).length > 0 && <br />}
+          {(comediens ?? []).length > 0 && (
+            <>Comédien·ne·s envisagé·e·s : {(comediens ?? []).map((c) => c.libelle).join(" · ")}</>
+          )}
+        </p>
+      )}
+
       {/* Le bouton vers les fiches de lecture, sous le cadre (26/09) :
           l'auteur et l'administration seulement, et seulement s'il y en a. */}
       {fiches.length > 0 && (
@@ -370,73 +391,6 @@ export default async function ProjetPage({
           une fois l'analyse disponible, le suivi n'a plus d'objet. */}
       {(isOwner || estAdmin) && etatLecture && etatLecture.etat !== "disponible" && (
         <EtatDeLecture etat={etatLecture.etat} deposeLe={etatLecture.depose_le} />
-      )}
-
-      {/* Le bandeau posé sur la vignette : l'administration seule le choisit. */}
-      {(selections ?? []).length > 0 && (
-        <p className={formStyles.hint} style={{ marginTop: 24 }}>
-          Sélection de la Maison des Scénaristes :{" "}
-          {(selections ?? []).map((s, i) => (
-            <span key={s.libelle}>
-              {i > 0 && " · "}
-              {s.libelle}
-              {estAdmin && (
-                <form action={modifierSelection} style={{ display: "inline" }}>
-                  <input type="hidden" name="project_id" value={project.id} />
-                  <input type="hidden" name="libelle" value={s.libelle} />
-                  <input type="hidden" name="geste" value="retirer" />
-                  <button type="submit" title="Retirer cette sélection" aria-label={`Retirer ${s.libelle}`} style={{ marginLeft: 4, background: "none", border: 0, color: "inherit", cursor: "pointer", font: "inherit" }}>
-                    ⊖
-                  </button>
-                </form>
-              )}
-            </span>
-          ))}
-        </p>
-      )}
-      {/* L'administration ajoute une sélection (28/09) : un libellé libre,
-          les sélections déjà connues proposées en cours de frappe. */}
-      {estAdmin && (
-        <form action={modifierSelection} className={formStyles.form} style={{ marginTop: 12, maxWidth: 420 }}>
-          <input type="hidden" name="project_id" value={project.id} />
-          <label className={formStyles.field}>
-            <span>Ajouter une sélection de la Maison des Scénaristes (visible en admin uniquement)</span>
-            <input type="text" name="libelle" list="selections-connues" placeholder="Cannes 2026" required maxLength={80} />
-            <datalist id="selections-connues">
-              {((toutesSelections ?? []) as { libelle: string }[]).map((s) => (
-                <option key={s.libelle} value={s.libelle} />
-              ))}
-            </datalist>
-          </label>
-          <button type="submit" className={formStyles.submit}>
-            Ajouter
-          </button>
-        </form>
-      )}
-      {(comediens ?? []).length > 0 && (
-        <p className={formStyles.hint} style={{ marginTop: 8 }}>
-          Comédien·ne·s envisagé·e·s : {(comediens ?? []).map((c) => c.libelle).join(" · ")}
-        </p>
-      )}
-
-      {estAdmin && (
-        <form action={choisirBandeau} className={formStyles.form} style={{ marginTop: 24, maxWidth: 360 }}>
-          <input type="hidden" name="project_id" value={project.id} />
-          <label className={formStyles.field}>
-            <span>Choix du bandeau (visible en admin uniquement)</span>
-            <select name="bandeau" defaultValue={project.bandeau ?? ""}>
-              <option value="">— Aucun bandeau —</option>
-              {Object.entries(BANDEAUX).map(([cle, libelle]) => (
-                <option key={cle} value={cle}>
-                  {libelle}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button type="submit" className={formStyles.submit}>
-            Enregistrer le bandeau
-          </button>
-        </form>
       )}
 
       {(isOwner || estAdmin) && (
@@ -529,19 +483,6 @@ export default async function ProjetPage({
         </div>
       )}
 
-      {project.logline && <p style={{ marginTop: 24 }}>{project.logline}</p>}
-      {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
-
-      {project.has_awards && (
-        <p className={presentation.prix}>
-          <strong>Projet primé</strong>
-          {project.awards_detail}
-        </p>
-      )}
-
-
-      {/* Le moodboard et les personnages sont dans le cadre, côté droit du
-          comparateur (25/09). */}
 
       {isOwner && (
         <>
@@ -549,7 +490,7 @@ export default async function ProjetPage({
               pour les autres, le bloc n'apparaît pas du tout. */}
           {porteurAdherent && (
             <>
-              <h2 style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
+              <h2 style={{ marginTop: 40, fontWeight: 600, fontSize: 15 }}>
                 Qui peut voir votre videopitch
               </h2>
               <p className={formStyles.hint}>
@@ -581,7 +522,7 @@ export default async function ProjetPage({
             </>
           )}
 
-          <h2 style={{ marginTop: 56, fontWeight: 600, fontSize: 17 }}>
+          <h2 style={{ marginTop: 40, fontWeight: 600, fontSize: 15 }}>
             Partager ce projet
           </h2>
           <p className={formStyles.hint}>
@@ -607,6 +548,53 @@ export default async function ProjetPage({
 
       {/* Contacter l'auteur : plus de formulaire sur la fiche (26/09), un
           bouton qui mène à l'onglet Messages, le projet déjà indiqué. */}
+      {/* Les outils d'administration, repliés (28/09) : le bandeau, et le
+          retrait d'une sélection. L'ajout d'une sélection se fait dans
+          Administration → Toutes les fiches. */}
+      {estAdmin && (
+        <details style={{ marginTop: 40 }}>
+          <summary className={formStyles.hint} style={{ cursor: "pointer" }}>
+            Administration : bandeau, sélections
+          </summary>
+          <form action={choisirBandeau} className={formStyles.form} style={{ marginTop: 12, maxWidth: 360 }}>
+            <input type="hidden" name="project_id" value={project.id} />
+            <label className={formStyles.field}>
+              <span>Bandeau</span>
+              <select name="bandeau" defaultValue={project.bandeau ?? ""}>
+                <option value="">— Aucun bandeau —</option>
+                {Object.entries(BANDEAUX).map(([cle, libelle]) => (
+                  <option key={cle} value={cle}>
+                    {libelle}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button type="submit" className={formStyles.submit}>
+              Enregistrer le bandeau
+            </button>
+          </form>
+          {(selections ?? []).length > 0 && (
+            <p className={formStyles.hint} style={{ marginTop: 12 }}>
+              Sélections :{" "}
+              {(selections ?? []).map((x, i) => (
+                <span key={x.libelle}>
+                  {i > 0 && " · "}
+                  {x.libelle}
+                  <form action={modifierSelection} style={{ display: "inline" }}>
+                    <input type="hidden" name="project_id" value={project.id} />
+                    <input type="hidden" name="libelle" value={x.libelle} />
+                    <input type="hidden" name="geste" value="retirer" />
+                    <button type="submit" title="Retirer cette sélection" aria-label={`Retirer ${x.libelle}`} style={{ marginLeft: 4, background: "none", border: 0, color: "inherit", cursor: "pointer", font: "inherit" }}>
+                      ⊖
+                    </button>
+                  </form>
+                </span>
+              ))}
+            </p>
+          )}
+        </details>
+      )}
+
       {!isOwner && (
         <p style={{ marginTop: 40 }}>
           <Link

@@ -266,6 +266,18 @@ export default async function TableauFichesPage({
     }),
   ].sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
 
+  // Les sélections de la Maison des Scénaristes (28/09) : par projet, et
+  // la liste complète pour la saisie.
+  const [{ data: selectionsLignes }, { data: selectionsConnues }] = await Promise.all([
+    supabase.from("project_selections").select("project_id, libelle").order("libelle"),
+    supabase.rpc("selections_disponibles"),
+  ]);
+  const selectionsDe: Record<string, string[]> = {};
+  for (const l of (selectionsLignes ?? []) as { project_id: string; libelle: string }[]) {
+    (selectionsDe[l.project_id] ??= []).push(l.libelle);
+  }
+  const connues = ((selectionsConnues ?? []) as { libelle: string }[]).map((x) => x.libelle);
+
   const annees: number[] = [];
   for (let a = Math.max(anneeEnCours, 2027); a >= PREMIERE_ANNEE; a--)
     annees.push(a);
@@ -307,7 +319,13 @@ export default async function TableauFichesPage({
           Cochez une ou plusieurs années.
         </p>
       ) : (
-        <TableauFiches lignes={lignes} uneSeuleAnnee={cochees.length === 1} />
+        <TableauFiches
+          lignes={lignes}
+          uneSeuleAnnee={cochees.length === 1}
+          selectionsDe={selectionsDe}
+          selectionsConnues={connues}
+          retour={`/admin/fiches?annees=${cochees.join(",")}`}
+        />
       )}
     </PageShell>
   );

@@ -148,5 +148,7 @@ export async function modifierSelection(formData: FormData) {
   }
   revalidatePath(`/projet/${projectId}`);
   revalidatePath("/pitchotheque");
-  redirect(`/projet/${projectId}`);
+  revalidatePath("/admin/fiches");
+  const retour = (formData.get("retour") as string) || "";
+  redirect(retour.startsWith("/admin/fiches") ? retour : `/projet/${projectId}`);
 }
