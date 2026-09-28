@@ -459,9 +459,17 @@
 
 .scene {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: 24px;
   margin-top: 32px;
+}
+
+/* Les blocs à remplir à gauche, l'affiche à droite (28/09). Sur
+   téléphone, une seule colonne : l'affiche reste en premier. */
+@media (min-width: 761px) {
+  .scene > .generique {
+    order: -1;
+  }
 }
 
 .affiche {
