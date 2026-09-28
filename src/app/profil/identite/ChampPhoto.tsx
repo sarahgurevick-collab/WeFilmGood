@@ -11,10 +11,16 @@ import styles from "../profil.module.css";
  * aussitôt : pas de second bouton « Enregistrer » à trouver. L'aperçu
  * s'affiche pendant l'envoi.
  */
-export default function ChampPhoto({ photo, initiale }: { photo: string | null; initiale: string }) {
+export default function ChampPhoto({
+  photo,
+  initiale,
+}: {
+  photo: string | null;
+  initiale: string;
+}) {
   const [apercu, setApercu] = useState<string | null>(null);
   const formulaire = useRef<HTMLFormElement>(null);
-  const image = apercu ?? photo;
+  const image = photo ?? apercu;
 
   return (
     <div className={styles.champPhoto}>
@@ -28,27 +34,29 @@ export default function ChampPhoto({ photo, initiale }: { photo: string | null; 
       </div>
 
       <div className={styles.champPhotoActions}>
-        <form ref={formulaire} action={savePhoto}>
-          <label className={`${formStyles.submit} ${styles.boutonPhoto}`}>
-            <input
-              type="file"
-              name="photo"
-              // Sans HEIC dans la liste, l'iPhone convertit la photo en JPEG avant
-              // l'envoi : le serveur ne sait pas lire le HEIC.
-              accept="image/jpeg,image/png,image/webp"
-              className={styles.fichierCache}
-              onChange={(e) => {
-                const fichier = e.currentTarget.files?.[0];
-                if (!fichier) return;
-                setApercu(URL.createObjectURL(fichier));
-                formulaire.current?.requestSubmit();
-              }}
-            />
-            <Libelle aPhoto={!!photo} />
-          </label>
-        </form>
-        {photo && !apercu && (
-          <form action={retirerPhoto}>
+        {!photo && (
+          <form ref={formulaire} action={savePhoto}>
+            <label className={`${formStyles.submit} ${styles.boutonPhoto}`}>
+              <input
+                type="file"
+                name="photo"
+                // Sans HEIC dans la liste, l'iPhone convertit la photo en JPEG avant
+                // l'envoi : le serveur ne sait pas lire le HEIC.
+                accept="image/jpeg,image/png,image/webp"
+                className={styles.fichierCache}
+                onChange={(e) => {
+                  const fichier = e.currentTarget.files?.[0];
+                  if (!fichier) return;
+                  setApercu(URL.createObjectURL(fichier));
+                  formulaire.current?.requestSubmit();
+                }}
+              />
+              <Libelle />
+            </label>
+          </form>
+        )}
+        {photo && (
+          <form action={retirerPhoto} onSubmit={() => setApercu(null)}>
             <button type="submit" className={styles.lienPhoto}>
               Retirer la photo
             </button>
@@ -62,8 +70,8 @@ export default function ChampPhoto({ photo, initiale }: { photo: string | null; 
   );
 }
 
-function Libelle({ aPhoto }: { aPhoto: boolean }) {
+function Libelle() {
   const { pending } = useFormStatus();
   if (pending) return <span>Envoi de la photo…</span>;
-  return <span>{aPhoto ? "Changer la photo" : "Ajouter une photo"}</span>;
+  return <span>Ajouter une photo</span>;
 }
