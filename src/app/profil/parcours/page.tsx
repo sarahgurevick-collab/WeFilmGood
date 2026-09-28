@@ -75,7 +75,7 @@ export default async function ParcoursPage({
             placeholder={
               profil?.category === "auteur"
                 ? "Pas d'expérience dans le cinéma ?\nC'est votre imagination qui prime.\nCe qui a de la valeur, c'est votre expérience de la vie."
-                : "Pas d'expérience dans le cinéma ? Aucune importance. Ce qui a de la valeur, c'est votre expérience de la vie. Joyeuse, parfois douloureuse, toujours précieuse. Racontez la vôtre ici."
+                : " "
             }
           />
         </label>
