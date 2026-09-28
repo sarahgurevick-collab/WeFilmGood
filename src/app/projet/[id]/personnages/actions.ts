@@ -27,6 +27,7 @@ export async function enregistrerPersonnage(formData: FormData) {
   const gender = parmi(GENRES_PERSONNAGE, formData.get("gender"));
   const ageRange = parmi(AGES, formData.get("age_range"));
   const biography = (formData.get("biography") as string)?.trim() || null;
+  const actorName = (formData.get("actor_name") as string)?.trim() || null;
   const photo = formData.get("photo") as File | null;
 
   if (photo && photo.size > 0 && !IMAGES.includes(photo.type)) {
@@ -65,6 +66,7 @@ export async function enregistrerPersonnage(formData: FormData) {
         gender,
         age_range: ageRange,
         biography,
+        actor_name: actorName,
         ...(photoPath ? { photo_path: photoPath } : {}),
       })
       .eq("id", characterId)
@@ -85,6 +87,7 @@ export async function enregistrerPersonnage(formData: FormData) {
       gender,
       age_range: ageRange,
       biography,
+      actor_name: actorName,
       photo_path: photoPath,
       position: count ?? 0,
     });

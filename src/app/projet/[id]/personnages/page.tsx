@@ -11,6 +11,7 @@ import { AGES, GENRES_PERSONNAGE, TYPES } from "./options";
 type Personnage = {
   id: string;
   name: string;
+  actor_name: string | null;
   photo_path: string | null;
   character_type: string | null;
   gender: string | null;
@@ -35,7 +36,7 @@ export default async function PersonnagesPage({
 
   const { data: personnages } = await supabase
     .from("characters")
-    .select("id, name, photo_path, character_type, gender, age_range, biography")
+    .select("id, name, actor_name, photo_path, character_type, gender, age_range, biography")
     .eq("project_id", id)
     .order("position", { ascending: true })
     .order("created_at", { ascending: true })
@@ -164,7 +165,7 @@ function FormulairePersonnage({
           <span>{photo ? "Remplacer le portrait" : "Portrait (JPG ou PNG)"}</span>
           <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" />
         </label>
-        <ChercheurPortrait />
+        <ChercheurPortrait nomInitial={personnage?.actor_name ?? ""} />
 
         <div className={styles.piedPersonnage}>
           {personnage ? (

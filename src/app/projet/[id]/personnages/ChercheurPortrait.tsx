@@ -11,8 +11,8 @@ type Portrait = { apercu: string; url: string; titre: string; source: string };
  * trouvées s'affichent, un clic en choisit une — son adresse part avec le
  * formulaire (photo_url), et le site la copie comme un portrait déposé.
  */
-export default function ChercheurPortrait() {
-  const [q, setQ] = useState("");
+export default function ChercheurPortrait({ nomInitial }: { nomInitial: string }) {
+  const [q, setQ] = useState(nomInitial);
   const [portraits, setPortraits] = useState<Portrait[] | null>(null);
   const [enCours, setEnCours] = useState(false);
   const [choisi, setChoisi] = useState<Portrait | null>(null);
@@ -35,10 +35,11 @@ export default function ChercheurPortrait() {
     <div className={styles.chercheur}>
       <input type="hidden" name="photo_url" value={choisi?.url ?? ""} />
       <label className={formStyles.field}>
-        <span>Ou chercher un portrait sur internet</span>
+        <span>Comédien ou comédienne imaginé(e)</span>
         <span className={styles.chercheurLigne}>
           <input
             type="text"
+            name="actor_name"
             value={q}
             onChange={(e) => setQ(e.target.value)}
             onKeyDown={(e) => {
@@ -50,7 +51,7 @@ export default function ChercheurPortrait() {
             placeholder="Juliette Binoche"
           />
           <button type="button" onClick={chercher} disabled={enCours} className={styles.chercheurBouton}>
-            {enCours ? "Recherche…" : "Chercher"}
+            {enCours ? "Recherche…" : "Chercher son portrait"}
           </button>
         </span>
       </label>
