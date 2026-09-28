@@ -464,12 +464,10 @@
   margin-top: 32px;
 }
 
-/* Les blocs à remplir à gauche, l'affiche à droite (28/09). Sur
-   téléphone, une seule colonne : l'affiche reste en premier. */
-@media (min-width: 761px) {
-  .scene > .generique {
-    order: -1;
-  }
+/* Les blocs à remplir d'abord : à gauche sur écran large, au-dessus
+   sur téléphone. L'affiche d'un profil encore vide ne dit rien (28/09). */
+.scene > .generique {
+  order: -1;
 }
 
 .affiche {
