@@ -27,11 +27,11 @@ export default function RechercheAvancee({
   return (
     <details className={styles.avancee} open={actifs > 0}>
       {/* Fermé : le bouton rouge. Ouvert : le même texte posé sur le bord
-          du cadre, avec le rond ⊖ pour refermer — comme sur WFG 1. */}
+          du cadre, avec la croix × pour refermer (28/09 : le rond ⊖ se lisait comme un « moins »). */}
       <summary className={styles.avanceeBouton}>
         Recherche avancée
         {actifs > 0 && <span className={styles.avanceePastille}>{actifs}</span>}
-        <span className={styles.avanceeFermer} aria-hidden="true">⊖</span>
+        <span className={styles.avanceeFermer} aria-hidden="true">×</span>
       </summary>
 
       <form method="get" action="/pitchotheque" className={styles.avanceePanneau}>

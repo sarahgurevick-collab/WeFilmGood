@@ -305,7 +305,7 @@ export default function TableauFiches({
                             <input type="hidden" name="retour" value={retour} />
                             <span>{sel}</span>
                             <button type="submit" title="Retirer" aria-label={`Retirer ${sel}`}>
-                              ⊖
+                              Retirer
                             </button>
                           </form>
                         ))}

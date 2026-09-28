@@ -34,9 +34,9 @@
   border-radius: 12px;
 }
 
-/* Le rond ⊖ pour refermer — jamais une croix : le logo est rond, et
-   c'est le même signe partout sur le site (nuage, contact, réseaux,
-   recherche avancée). Seul moyen de refermer le nuage, le bouton
+/* La croix × pour refermer (28/09 ; le rond ⊖ se lisait comme un « moins »
+   près des + et −), le même signe partout sur le site (nuage, contact,
+   réseaux, recherche avancée). Seul moyen de refermer le nuage, le bouton
    permanent de la barre de recherche ayant été retiré. */
 .fermerNuage {
   position: absolute;

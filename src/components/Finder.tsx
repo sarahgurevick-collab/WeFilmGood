@@ -181,7 +181,7 @@ export default function Finder({
             aria-label="Fermer les mots-clés"
             title="Fermer les mots-clés"
           >
-            ⊖
+            ×
           </button>
           <div className={styles.nuageEntete}>
             <p className={styles.nuageTitre}>

@@ -16,7 +16,7 @@
   min-width: 0;
 }
 
-/* Le rond ⊖ pour retirer une ligne, comme partout sur le site — jamais une croix. */
+/* « Retirer », en toutes lettres, pour retirer une ligne (28/09). */
 .retirer {
   flex-shrink: 0;
   font-size: 22px;

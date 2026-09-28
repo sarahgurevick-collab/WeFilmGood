@@ -164,7 +164,7 @@ export default function Assistant({
       {ouvert && (
         <div className={`${contact.panneau} ${styles.panneau}`}>
           <button type="button" className={contact.fermer} onClick={() => setOuvert(false)} aria-label="Fermer">
-            ⊖
+            ×
           </button>
           <h3 className={contact.titre}>On papote ?</h3>
           {visiteur && (

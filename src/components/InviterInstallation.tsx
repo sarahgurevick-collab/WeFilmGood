@@ -109,7 +109,7 @@ export default function InviterInstallation() {
   return (
     <div className={styles.fenetre} role="dialog" aria-labelledby="installer-titre">
       <button type="button" className={styles.fermer} onClick={plusTard} aria-label="Fermer">
-        ⊖
+        ×
       </button>
 
       <div className={styles.entete}>

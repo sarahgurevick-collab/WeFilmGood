@@ -63,7 +63,7 @@ export default function ChercheurPortrait() {
             Portrait choisi : {choisi.titre} — {choisi.source}. Il sera enregistré avec le personnage.
           </span>
           <button type="button" onClick={() => setChoisi(null)} aria-label="Annuler ce choix">
-            ⊖
+            ×
           </button>
         </p>
       )}

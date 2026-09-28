@@ -71,7 +71,7 @@ export default function BoutonContact({
             onClick={() => setEtat("ferme")}
             aria-label="Fermer"
           >
-            ⊖
+            ×
           </button>
 
           {etat === "envoye" ? (

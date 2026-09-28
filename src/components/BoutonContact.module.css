@@ -33,7 +33,7 @@
   color: var(--fg);
 }
 
-/* Le rond ⊖ pour refermer, comme partout sur le site — jamais une croix. */
+/* La croix × pour refermer, comme partout sur le site (28/09). */
 .fermer {
   position: absolute;
   top: 10px;

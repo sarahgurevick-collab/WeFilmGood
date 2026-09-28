@@ -585,7 +585,7 @@ export default async function ProjetPage({
                     <input type="hidden" name="libelle" value={x.libelle} />
                     <input type="hidden" name="geste" value="retirer" />
                     <button type="submit" title="Retirer cette sélection" aria-label={`Retirer ${x.libelle}`} style={{ marginLeft: 4, background: "none", border: 0, color: "inherit", cursor: "pointer", font: "inherit" }}>
-                      ⊖
+                      Retirer
                     </button>
                   </form>
                 </span>
