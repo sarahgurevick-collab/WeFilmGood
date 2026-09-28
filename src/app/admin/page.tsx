@@ -2,5 +2,6 @@ import { redirect } from "next/navigation";
 
 /** L'administration s'ouvre sur la page qui sert vingt fois par jour. */
 export default function AdminPage() {
-  redirect("/admin/fiches-a-valider");
+  // Le premier onglet : les projets en attente (28/09).
+  redirect("/admin/projets-en-attente");
 }
