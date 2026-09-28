@@ -299,7 +299,7 @@ export default function TableauFiches({
                       <>
                         {(selectionsDe[l.projetId] ?? []).map((sel) => (
                           <form key={sel} action={modifierSelection} className={styles.selectionLigne}>
-                            <input type="hidden" name="project_id" value={l.projetId} />
+                            <input type="hidden" name="project_id" value={l.projetId ?? ""} />
                             <input type="hidden" name="libelle" value={sel} />
                             <input type="hidden" name="geste" value="retirer" />
                             <input type="hidden" name="retour" value={retour} />
@@ -310,7 +310,7 @@ export default function TableauFiches({
                           </form>
                         ))}
                         <form action={modifierSelection} className={styles.selectionLigne}>
-                          <input type="hidden" name="project_id" value={l.projetId} />
+                          <input type="hidden" name="project_id" value={l.projetId ?? ""} />
                           <input type="hidden" name="retour" value={retour} />
                           <input
                             type="text"
