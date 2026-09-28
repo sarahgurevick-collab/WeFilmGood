@@ -63,7 +63,11 @@ export default async function ProjetsPage({
 
   const adherent = await peutVoirLeNuage();
 
-  const { data: genres } = await supabase.from("genres").select("slug, label_fr").order("position");
+  const [{ data: genres }, { data: selections }, { data: comediens }] = await Promise.all([
+    supabase.from("genres").select("slug, label_fr").order("position"),
+    supabase.rpc("selections_disponibles"),
+    supabase.rpc("comediens_disponibles"),
+  ]);
 
   // L'ordre vient de la base (fonction « pitchotheque ») : labellisés
   // d'abord, puis par tranche de remplissage, tirés au sort chaque nuit.
@@ -119,14 +123,19 @@ export default async function ProjetsPage({
   return (
     <PageShell title="Pitchothèque" nav="pitchotheque" connecte={!!user}>
       <Finder adherent={adherent} filtres={filtres} />
-      <RechercheAvancee filtres={filtres} genres={genres ?? []} />
+      <RechercheAvancee
+        filtres={filtres}
+        genres={genres ?? []}
+        selections={(selections ?? []) as { libelle: string; effectif: number }[]}
+        comediens={(comediens ?? []) as { libelle: string; effectif: number }[]}
+      />
 
       {!projects || projects.length === 0 ? (
         <p className={formStyles.hint}>
           {nbFiltres > 0 ? (
             <>
               Aucun projet ne correspond à ces filtres.{" "}
-              <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null, equipe: null })}>
+              <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null, equipe: null, selection: null, comedien: null })}>
                 Tout effacer
               </Link>
               .

@@ -153,11 +153,13 @@ export default async function ProjetPage({
     >();
 
   const { data: estAdmin } = await supabase.rpc("is_admin");
-  // Les sélections de la Maison des Scénaristes (Cannes 2019, PCDV 2022…),
-  // reprises de WFG 1 : pour l'administration seule (28/09).
-  const { data: selections } = estAdmin
-    ? await supabase.from("project_selections").select("libelle").eq("project_id", id).order("libelle")
-    : { data: null };
+  // Les sélections de la Maison des Scénaristes (Cannes 2019, PCDV 2022…)
+  // et les comédiens envisagés par l'auteur, repris de WFG 1 (28/09) :
+  // visibles des membres, et filtres de la recherche avancée.
+  const [{ data: selections }, { data: comediens }] = await Promise.all([
+    supabase.from("project_selections").select("libelle").eq("project_id", id).order("libelle"),
+    supabase.from("project_actors").select("libelle").eq("project_id", id).order("libelle"),
+  ]);
 
 
   // « Où en est mon projet ? » — la réponse que l'auteur allait chercher
@@ -369,10 +371,14 @@ export default async function ProjetPage({
       )}
 
       {/* Le bandeau posé sur la vignette : l'administration seule le choisit. */}
-      {estAdmin && (selections ?? []).length > 0 && (
+      {(selections ?? []).length > 0 && (
         <p className={formStyles.hint} style={{ marginTop: 24 }}>
-          Sélections de la Maison des Scénaristes (visible en admin uniquement) :{" "}
-          {(selections ?? []).map((s) => s.libelle).join(" · ")}
+          Sélection de la Maison des Scénaristes : {(selections ?? []).map((s) => s.libelle).join(" · ")}
+        </p>
+      )}
+      {(comediens ?? []).length > 0 && (
+        <p className={formStyles.hint} style={{ marginTop: 8 }}>
+          Comédien·ne·s envisagé·e·s : {(comediens ?? []).map((c) => c.libelle).join(" · ")}
         </p>
       )}
 

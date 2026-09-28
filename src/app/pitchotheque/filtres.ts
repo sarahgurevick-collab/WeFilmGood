@@ -11,11 +11,15 @@ export type Filtres = {
   bandeau: string | null;
   /** Équipe déjà en place : « producteur », « realisateur » ou « tous » (l'un ou l'autre). */
   equipe: string | null;
+  /** Une sélection de la Maison des Scénaristes (« Cannes 2019 »). */
+  selection: string | null;
+  /** Un comédien ou une comédienne envisagé(e) par l'auteur. */
+  comedien: string | null;
 };
 
-export const CLES: (keyof Filtres)[] = ["format", "genre", "audience", "budget", "bandeau", "equipe"];
+export const CLES: (keyof Filtres)[] = ["format", "genre", "audience", "budget", "bandeau", "equipe", "selection", "comedien"];
 
-export const AUCUN: Filtres = { format: null, genre: null, audience: null, budget: null, bandeau: null, equipe: null };
+export const AUCUN: Filtres = { format: null, genre: null, audience: null, budget: null, bandeau: null, equipe: null, selection: null, comedien: null };
 
 export function lireFiltres(params: Record<string, string | string[] | undefined>): Filtres {
   const lire = (cle: keyof Filtres) => {
@@ -23,7 +27,7 @@ export function lireFiltres(params: Record<string, string | string[] | undefined
     const s = Array.isArray(v) ? v[0] : v;
     return s && s.trim() ? s.trim() : null;
   };
-  return { format: lire("format"), genre: lire("genre"), audience: lire("audience"), budget: lire("budget"), bandeau: lire("bandeau"), equipe: lire("equipe") };
+  return { format: lire("format"), genre: lire("genre"), audience: lire("audience"), budget: lire("budget"), bandeau: lire("bandeau"), equipe: lire("equipe"), selection: lire("selection"), comedien: lire("comedien") };
 }
 
 export function nombreDeFiltres(f: Filtres) {
@@ -48,5 +52,7 @@ export function parametresRpc(f: Filtres) {
     p_budget: f.budget,
     p_bandeau: f.bandeau,
     p_equipe: f.equipe,
+    p_selection: f.selection,
+    p_comedien: f.comedien,
   };
 }

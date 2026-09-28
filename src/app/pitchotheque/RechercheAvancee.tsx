@@ -14,9 +14,13 @@ import styles from "./projets.module.css";
 export default function RechercheAvancee({
   filtres,
   genres,
+  selections,
+  comediens,
 }: {
   filtres: Filtres;
   genres: { slug: string; label_fr: string }[];
+  selections: { libelle: string; effectif: number }[];
+  comediens: { libelle: string; effectif: number }[];
 }) {
   const actifs = nombreDeFiltres(filtres);
 
@@ -100,10 +104,40 @@ export default function RechercheAvancee({
             <option value="realisateur">Avec un réalisateur (casting)</option>
           </select>
         </label>
+        {/* Les sélections de la Maison des Scénaristes (28/09) : un
+            producteur rencontré à Cannes retrouve le projet qui lui a plu. */}
+        {selections.length > 0 && (
+          <label className={formStyles.field}>
+            <span>Sélection de la Maison des Scénaristes</span>
+            <select name="selection" defaultValue={filtres.selection ?? ""}>
+              <option value="">Toutes</option>
+              {selections.map((s) => (
+                <option key={s.libelle} value={s.libelle}>
+                  {s.libelle} ({s.effectif})
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {/* Les comédiens envisagés par les auteurs : pour les directeurs de
+            casting et les comédiens eux-mêmes. */}
+        {comediens.length > 0 && (
+          <label className={formStyles.field}>
+            <span>Comédien·ne envisagé·e</span>
+            <select name="comedien" defaultValue={filtres.comedien ?? ""}>
+              <option value="">Tous</option>
+              {comediens.map((c) => (
+                <option key={c.libelle} value={c.libelle}>
+                  {c.libelle}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
         <div className={styles.avanceeActions}>
           {actifs > 0 && (
-            <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null, equipe: null })}>
+            <Link href={adresse({ format: null, genre: null, audience: null, budget: null, bandeau: null, equipe: null, selection: null, comedien: null })}>
               Tout effacer
             </Link>
           )}
