@@ -393,9 +393,7 @@ export default function TableauFiches({
 function Statut({ ligne }: { ligne: LigneFiche }) {
   if (ligne.statut !== "À valider") return null;
   const lettre = (
-    <span className={styles.statutA} title={ligne.statut} aria-label={ligne.statut}>
-      A
-    </span>
+    <span className={styles.statutA} title={ligne.statut} aria-label={ligne.statut} />
   );
   return ligne.lienFiche ? <a href={ligne.lienFiche}>{lettre}</a> : lettre;
 }
