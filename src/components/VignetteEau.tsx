@@ -217,6 +217,10 @@ export default function VignetteEau({ src }: { src: string }) {
   // Le survol se lit sur toute la carte (image et légende), comme avant.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Sur un écran tactile (téléphone, tablette), pas de survol : l'effet
+    // se déclenchait au toucher et faisait sauter l'image (28/09). Il est
+    // réservé aux écrans avec une souris.
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     const carte = racine.current?.closest("a");
     if (!carte) return;
     let sortie = 0;
