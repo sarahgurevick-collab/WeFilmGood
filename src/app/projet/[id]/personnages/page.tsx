@@ -103,11 +103,7 @@ function FormulairePersonnage({
         {photo ? (
           <img src={photo} alt="" />
         ) : (
-          <span>
-            Portrait
-            <br />
-            (facultatif)
-          </span>
+          <span>Portrait</span>
         )}
       </div>
 
@@ -164,7 +160,7 @@ function FormulairePersonnage({
         </label>
 
         <label className={formStyles.field}>
-          <span>{photo ? "Remplacer le portrait" : "Portrait (JPG ou PNG, facultatif)"}</span>
+          <span>{photo ? "Remplacer le portrait" : "Portrait (JPG ou PNG)"}</span>
           <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" />
         </label>
 
