@@ -111,7 +111,7 @@ export default async function IdentitePage({
             placeholder="https://www.imdb.com/name/…"
           />
           <span className={formStyles.hint}>
-            Obligatoire pour un producteur ou un autre talent : votre page IMDb, votre Vimeo
+            Obligatoire pour un producteur ou un autre talent : votre page IMDb, Unifrance
             ou votre site — de quoi montrer au moins une expérience sur un film, un court
             métrage ou un clip. C&apos;est sur cette référence que l&apos;administration
             valide votre profil.
