@@ -14,7 +14,7 @@ const CATEGORIES = [
   {
     value: "talent",
     label: "Autre talent",
-    hint: "Réalisateur, compositeur, comédien, directeur photo, monteur… Validation par un administrateur.",
+    hint: "Réalisateur, compositeur, comédien, directeur photo, monteur… Validation par l'équipe de la Maison des Scénaristes/WeFilmGood.",
   },
 ];
 

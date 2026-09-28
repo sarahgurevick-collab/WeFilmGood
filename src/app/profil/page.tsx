@@ -142,7 +142,7 @@ export default async function ProfilPage({
             )}
           </p>
           {profil?.validation_status === "en_attente" && (
-            <p className={styles.afficheAttente}>En attente de validation par un administrateur</p>
+            <p className={styles.afficheAttente}>En attente de validation par l&apos;équipe de la Maison des Scénaristes/WeFilmGood</p>
           )}
 
           <div className={styles.pastilles}>
