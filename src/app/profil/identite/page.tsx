@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import formStyles from "@/components/form.module.css";
 import { PAYS } from "@/lib/pays";
@@ -178,10 +177,7 @@ export default async function IdentitePage({
 
         </fieldset>
 
-        <div className={styles.pied}>
-          <Link href="/profil" className={styles.lienDiscret}>
-            Passer ce bloc
-          </Link>
+        <div className={styles.pied} style={{ justifyContent: "flex-end" }}>
           <button type="submit" className={formStyles.submit}>
             Enregistrer et continuer →
           </button>
