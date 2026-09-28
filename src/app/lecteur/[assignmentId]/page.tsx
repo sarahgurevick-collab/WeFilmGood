@@ -126,7 +126,8 @@ export default async function RedactionFichePage({
 
         <p className={formStyles.hint}>
           Au-delà de 150, la fiche labellise le projet. Elle devra ensuite être
-          validée définitivement par un administrateur.
+          validée définitivement par un membre de l&apos;équipe de la Maison des
+          Scénaristes/WeFilmGood.
         </p>
 
         <button type="submit" className={formStyles.submit}>

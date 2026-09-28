@@ -27,8 +27,9 @@ export default async function CguvPage() {
         </div>
       ) : (
         <p className={formStyles.hint}>
-          Le texte des conditions n&apos;a pas encore été rédigé. Un
-          administrateur peut le saisir depuis l&apos;espace d&apos;administration.
+          Le texte des conditions n&apos;a pas encore été rédigé. Un membre de
+          l&apos;équipe de la Maison des Scénaristes/WeFilmGood peut le saisir
+          depuis l&apos;espace d&apos;administration.
         </p>
       )}
     </PageShell>

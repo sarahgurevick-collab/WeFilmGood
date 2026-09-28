@@ -105,8 +105,9 @@ export default async function LecteurPage() {
 
       {(assignments ?? []).length === 0 ? (
         <p className={formStyles.hint}>
-          Aucun projet en attente. L&apos;administrateur vous en attribuera un
-          lorsque votre voyant sera au vert.
+          Aucun projet en attente. Un membre de l&apos;équipe de la Maison des
+          Scénaristes/WeFilmGood vous en attribuera un lorsque votre voyant sera
+          au vert.
         </p>
       ) : (
         <ul className={styles.list}>
