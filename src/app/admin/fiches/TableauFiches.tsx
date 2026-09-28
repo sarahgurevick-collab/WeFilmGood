@@ -105,7 +105,7 @@ export default function TableauFiches({
   const [ouvertes, setOuvertes] = useState<Set<string>>(new Set());
   // La colonne en plus (28/09) : les sélections de la Maison des
   // Scénaristes, ou le bandeau — rarement les deux, la page reste courte.
-  const [colonne, setColonne] = useState<"aucune" | "selection" | "bandeau">("aucune");
+  const [colonne, setColonne] = useState<"aucune" | "selection" | "bandeau" | "satisfaction">("aucune");
 
   const affichees = useMemo(() => {
     const mots = sansAccents(recherche).split(/\s+/).filter(Boolean);
@@ -184,6 +184,7 @@ export default function TableauFiches({
             <option value="aucune">Aucune</option>
             <option value="selection">Sélection MdS</option>
             <option value="bandeau">Bandeau</option>
+            <option value="satisfaction">Satisfaction de l&apos;auteur</option>
           </select>
         </label>
         <div className={styles.formats}>
@@ -228,7 +229,7 @@ export default function TableauFiches({
               <tr>
                 {COLONNES.map(({ cle, libelle }) => entete(cle, libelle))}
                 <th>Analyse</th>
-                {entete("satisfaction", "Satisfaction")}
+                {colonne === "satisfaction" && entete("satisfaction", "Satisfaction")}
                 {colonne === "selection" && <th>Sélection MdS</th>}
                 {colonne === "bandeau" && <th>Bandeau</th>}
               </tr>
@@ -289,6 +290,7 @@ export default function TableauFiches({
                       "—"
                     )}
                   </td>
+                  {colonne === "satisfaction" && (
                   <td
                     className={`${styles.serre} ${styles.etoiles}`}
                     aria-label={
@@ -308,6 +310,7 @@ export default function TableauFiches({
                       </span>
                     ))}
                   </td>
+                  )}
                   {colonne === "bandeau" && (
                     <td className={styles.selection}>
                       {l.projetId ? (
