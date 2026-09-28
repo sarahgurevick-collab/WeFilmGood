@@ -28,11 +28,11 @@ export const INFORMATIONS_PAR_DEFAUT = `Connexion et inscription
 - L'inscription demande prénom, nom, email et l'acceptation des conditions d'utilisation. Le profil se complète ensuite, à son rythme.
 
 Profil (menu « Mon profil »)
-- Bloc 1 « Qui êtes-vous ? » (2 minutes) : auteur, producteur ou talent ; référence professionnelle ; langues ; ville et pays. Nécessaire pour déposer un projet. Les coordonnées ne sont jamais montrées aux autres membres.
-- Bloc 2 « Votre parcours » (biofilmographie obligatoire, le reste facultatif) : biofilmographie, compétences, genres de prédilection, agent, réseaux. Visible des membres connectés.
+- Bloc 1 « Qui êtes-vous ? » (2 minutes) : auteur, producteur ou talent ; référence professionnelle ; langues ; ville et pays. Nécessaire pour déposer un projet. Les coordonnées sont réservées uniquement à l'équipe de la Maison des Scénaristes/WeFilmGood afin de joindre la personne ; aucun talent connecté à la plateforme ne peut les voir.
+- Bloc 2 « Votre parcours » (le parcours est obligatoire, le reste facultatif) : parcours, autres compétences, genres de prédilection, site internet (auteurs), agent, réseaux. Chaque liste de pastilles finit par « Un autre métier… » ou « Un autre genre… » avec un champ libre facultatif ; pour le site, l'agent et les réseaux, un interrupteur oui/non (non = rien à renseigner), ce qui permet à chacun d'atteindre 100 %. Visible des membres connectés.
 - Bloc 3 « Mieux vous connaître » (facultatif) : le portrait chinois, vingt questions « si j'étais… ».
 - Un profil complet est mieux repéré par les producteurs.
-- Validation : un auteur est actif immédiatement. Un producteur ou un talent (réalisateur, compositeur, comédien…) indique une référence (IMDb, Vimeo, site) montrant au moins une expérience sur un film, un court métrage ou un clip ; avec une référence, le profil est validé d'office, sauf si l'équipe juge la référence fausse. Sans référence, il reste en attente.
+- Validation : un auteur est actif immédiatement. Un producteur ou un talent (réalisateur, compositeur, comédien…) indique une référence (IMDb, Unifrance, site) montrant au moins une expérience sur un film, un court métrage ou un clip ; avec une référence, le profil est validé d'office, sauf si l'équipe juge la référence fausse. Sans référence, il reste en attente.
 - « Fermer mon accès » ne supprime pas le compte : le profil quitte l'annuaire, les projets restent en ligne. Pour un effacement définitif, il faut écrire à l'équipe.
 
 Fiche projet (menu « Créer une fiche projet »)
