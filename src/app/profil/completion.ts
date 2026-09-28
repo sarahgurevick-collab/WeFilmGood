@@ -70,7 +70,7 @@ export async function calculerCompletion(
     supabase
       .from("profiles")
       .select(
-        "full_name, first_name, category, validation_status, city, country, biofilmo, website, agent_name, personality_answers",
+        "full_name, first_name, category, validation_status, city, country, biofilmo, website, agent_name, agent_reponse, reseaux_reponse, autre_metier_actif, autre_genre_actif, personality_answers",
       )
       .eq("id", userId)
       .maybeSingle(),
@@ -97,15 +97,22 @@ export async function calculerCompletion(
   const portrait = Object.keys((profil?.personality_answers as object | null) ?? {}).length;
   const totalQuestions = questionsPortrait ?? 20;
 
+  // « Un autre métier… » / « Un autre genre… » coché vaut réponse ; « Non »
+  // à l'agent ou aux réseaux aussi : chacun doit pouvoir atteindre 100 %.
+  const metierRenseigne = (metiers ?? 0) > 0 || !!profil?.autre_metier_actif;
+  const genreRenseigne = (genres ?? 0) > 0 || !!profil?.autre_genre_actif;
+  const agentRenseigne = profil?.agent_reponse === false || !!profil?.agent_name;
+  const reseauxRenseignes = profil?.reseaux_reponse === false || (reseaux ?? 0) > 0;
+
   const reperes = [
     !!profil?.category,
     !!profil?.city,
     !!profil?.country,
     !!profil?.biofilmo,
     !!profil?.website,
-    (metiers ?? 0) > 0,
+    metierRenseigne,
     (langues ?? 0) > 0,
-    (genres ?? 0) > 0,
+    genreRenseigne,
     portrait >= 10,
   ];
   const pourcent = Math.round((reperes.filter(Boolean).length / reperes.length) * 100);
@@ -124,10 +131,10 @@ export async function calculerCompletion(
 
   const criteresParcours = [
     !!profil?.biofilmo,
-    (metiers ?? 0) > 0,
-    (genres ?? 0) > 0,
-    !!profil?.agent_name,
-    (reseaux ?? 0) > 0,
+    metierRenseigne,
+    genreRenseigne,
+    agentRenseigne,
+    reseauxRenseignes,
   ];
 
   return {
@@ -139,7 +146,7 @@ export async function calculerCompletion(
     },
     fait: {
       identite: !!profil?.category,
-      parcours: !!profil?.biofilmo || !!profil?.website || (metiers ?? 0) > 0 || (genres ?? 0) > 0,
+      parcours: !!profil?.biofilmo || !!profil?.website || metierRenseigne || genreRenseigne,
       gouts: portrait > 0,
     },
     profil: profil

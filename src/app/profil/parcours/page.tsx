@@ -6,6 +6,8 @@ import BlocProfil from "../BlocProfil";
 import { saveParcours } from "../actions";
 import { metiersPourCategorie } from "../metiers";
 import styles from "../profil.module.css";
+import CaseAutre from "./CaseAutre";
+import OuiNon from "./OuiNon";
 import ReseauxSociaux from "./ReseauxSociaux";
 
 const RESEAUX = [
@@ -32,7 +34,9 @@ export default async function ParcoursPage({
     await Promise.all([
       supabase
         .from("profiles")
-        .select("category, biofilmo, agent_name")
+        .select(
+          "category, biofilmo, agent_name, agent_reponse, reseaux_reponse, autre_metier_actif, autre_metier, autre_genre_actif, autre_genre",
+        )
         .eq("id", user.id)
         .maybeSingle(),
       supabase.from("profile_social_links").select("network, url").eq("profile_id", user.id),
@@ -90,6 +94,13 @@ export default async function ParcoursPage({
                   {m.label}
                 </label>
               ))}
+              <CaseAutre
+                libelle="Un autre métier…"
+                nomCase="autre_metier_actif"
+                nomTexte="autre_metier"
+                actif={!!profil?.autre_metier_actif}
+                texte={profil?.autre_metier ?? ""}
+              />
             </div>
           </div>
         ) : (
@@ -109,15 +120,36 @@ export default async function ParcoursPage({
                 {g.label_fr}
               </label>
             ))}
+            <CaseAutre
+              libelle="Un autre genre…"
+              nomCase="autre_genre_actif"
+              nomTexte="autre_genre"
+              actif={!!profil?.autre_genre_actif}
+              texte={profil?.autre_genre ?? ""}
+            />
           </div>
         </div>
 
-        <label className={formStyles.field}>
-          <span>Nom de votre agent, si vous en avez un</span>
-          <input placeholder=" " type="text" name="agent_name" defaultValue={profil?.agent_name ?? ""} />
-        </label>
+        <OuiNon
+          question="Avez-vous un agent ?"
+          nom="agent_reponse"
+          initial={profil?.agent_reponse ?? null}
+        >
+          <input
+            placeholder="Nom de votre agent"
+            type="text"
+            name="agent_name"
+            defaultValue={profil?.agent_name ?? ""}
+          />
+        </OuiNon>
 
-        <ReseauxSociaux reseaux={RESEAUX} valeurs={valeursReseaux} />
+        <OuiNon
+          question="Avez-vous des réseaux ou des sites professionnels ?"
+          nom="reseaux_reponse"
+          initial={profil?.reseaux_reponse ?? (Object.keys(valeursReseaux).length ? true : null)}
+        >
+          <ReseauxSociaux reseaux={RESEAUX} valeurs={valeursReseaux} />
+        </OuiNon>
 
         <div className={styles.pied}>
           <Link href="/profil" className={styles.lienDiscret}>

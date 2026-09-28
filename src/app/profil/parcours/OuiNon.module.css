@@ -1,0 +1,29 @@
+.boutons {
+  display: flex;
+  gap: 8px;
+}
+
+.bouton {
+  font-size: 12px;
+  min-width: 64px;
+  padding: 8px 18px;
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.oui {
+  background: var(--rouge-wfg);
+  border-color: var(--rouge-wfg);
+  color: #fff;
+}
+
+.non {
+  background: #9a9a9a;
+  border-color: #9a9a9a;
+  color: #fff;
+}

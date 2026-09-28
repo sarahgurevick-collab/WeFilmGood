@@ -25,6 +25,11 @@ async function requireUser(retour = "/profil") {
 const texte = (formData: FormData, cle: string) =>
   (formData.get(cle) as string)?.trim() || null;
 
+const reponseOuiNon = (formData: FormData, cle: string) => {
+  const v = formData.get(cle);
+  return v === "oui" ? true : v === "non" ? false : null;
+};
+
 /**
  * Bloc 1 — Qui êtes-vous ? : prénom et nom (le nom affiché partout — un
  * nom de plume se met là), catégorie, langues, téléphone, ville, pays,
@@ -144,7 +149,13 @@ export async function saveParcours(formData: FormData) {
     .from("profiles")
     .update({
       biofilmo,
-      agent_name: texte(formData, "agent_name"),
+      agent_name: formData.get("agent_reponse") === "oui" ? texte(formData, "agent_name") : null,
+      agent_reponse: reponseOuiNon(formData, "agent_reponse"),
+      reseaux_reponse: reponseOuiNon(formData, "reseaux_reponse"),
+      autre_metier_actif: formData.get("autre_metier_actif") === "1",
+      autre_metier: formData.get("autre_metier_actif") === "1" ? texte(formData, "autre_metier") : null,
+      autre_genre_actif: formData.get("autre_genre_actif") === "1",
+      autre_genre: formData.get("autre_genre_actif") === "1" ? texte(formData, "autre_genre") : null,
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
