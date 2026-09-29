@@ -54,7 +54,7 @@ export default function ChoixCredits() {
           {recherche ? (
             <>
               <strong>5 crédits recherche par semaine</strong>
-              <span>Cinq projets à ouvrir chaque semaine, à choisir dans la carte des étoiles.</span>
+              <span>Cinq projets à ouvrir chaque semaine, à choisir dans la Carte des étoiles.</span>
             </>
           ) : (
             <>

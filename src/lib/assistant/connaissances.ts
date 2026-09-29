@@ -41,7 +41,7 @@ Fiche projet (menu « Créer une fiche projet »)
 - Image de présentation : format paysage 16/9, JPG ou PNG, sans son nom ni le titre dessus.
 - Moodboard : 10 photos maximum.
 - Le scénario PDF est confidentiel : seuls l'auteur, les lecteurs qui en sont chargés et l'équipe de la Maison des Scénaristes/WeFilmGood y ont accès.
-- Une jauge indique le remplissage : les fiches complètes apparaissent plus haut dans la carte des étoiles (visibilité, pas promesse de résultat).
+- Une jauge indique le remplissage : les fiches complètes apparaissent plus haut dans la Carte des étoiles (visibilité, pas promesse de résultat).
 - Sur la fiche : onglets « Videopitch » et « Mon équipe » (inviter les talents du projet).
 - Lien de partage : l'auteur peut créer un lien à envoyer à un producteur, qui ouvre une page de présentation visible sans compte. Le scénario reste inaccessible. Le lien peut être désactivé à tout moment, définitivement.
 
@@ -53,7 +53,7 @@ Fiches de lecture (analyses)
 - Confidentialité : seuls l'auteur et l'équipe lisent les fiches. Les autres membres ne voient que leur nombre sur le projet ; un producteur intéressé doit demander à l'auteur.
 - Pour demander une lecture de son projet, la personne passe par l'équipe (« Transmettre à l'équipe ») : ne décris pas de bouton de demande de lecture.
 
-La carte des étoiles (anciennement « Pitchothèque », nom de WFG 1 ; le menu dit « Carte des étoiles »)
+Carte des étoiles (anciennement « Pitchothèque », nom de WFG 1 ; le menu dit « Carte des étoiles »)
 - Réservée aux membres connectés. Recherche par projet, thème ou mot-clé ; filtres : format, genre, audience, budget, langue.
 - Ordre : projets labellisés d'abord, puis selon le remplissage de la fiche.
 - Le nuage de mots-clés et les mots-clés proches sont réservés aux adhérents.
@@ -63,9 +63,9 @@ Messagerie (menu « Messages »)
 
 Adhésion (page « Adhésion »)
 - Cinq paliers : 0 €, 5 €, 50 €, 500 €, et « Sur devis ».
-- 0 € : la carte des étoiles et le Finder, le nuage de mots-clés, le focus de la semaine (un projet à découvrir), le jeu Ciné-Fusion.
+- 0 € : la Carte des étoiles et le Finder, le nuage de mots-clés, le focus de la semaine (un projet à découvrir), le jeu Ciné-Fusion.
 - 5 € : contenu à venir.
-- 50 € : au choix, le dépôt d'un projet (l'analyse d'un long métrage, court métrage, série ou VR/360, selon les modalités de dépôt) OU 5 crédits recherche par semaine (cinq projets à ouvrir chaque semaine dans la carte des étoiles) ; plus 10 fiches projets (sans analyse du PDF). Les crédits de la semaine non utilisés sont perdus.
+- 50 € : au choix, le dépôt d'un projet (l'analyse d'un long métrage, court métrage, série ou VR/360, selon les modalités de dépôt) OU 5 crédits recherche par semaine (cinq projets à ouvrir chaque semaine dans la Carte des étoiles) ; plus 10 fiches projets (sans analyse du PDF). Les crédits de la semaine non utilisés sont perdus.
 - 500 € : 11 dépôts, fiches projets illimitées et accompagnement videopitch, 5 projets par semaine (crédit utilisable à sa convenance), un rendez-vous visio ou téléphonique.
 - Sur devis : formule sur mesure pour une société de production, une école, un festival ou un besoin particulier (bouton « Demander un devis »).
 - Paiement en ligne par HelloAsso, la plateforme de paiement des associations : aucune commission pour la Maison des Scénaristes. HelloAsso propose une contribution à son propre fonctionnement, déjà remplie mais facultative : on peut la modifier ou la mettre à zéro ; elle ne revient pas à WeFilmGood. L'adhésion devient active une fois le paiement vérifié.

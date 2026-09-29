@@ -324,7 +324,7 @@ export type PersonnageTrouve = {
   projet: string;
 };
 
-/** Les personnages des projets de la carte des étoiles (29/09). */
+/** Les personnages des projets de la Carte des étoiles (29/09). */
 export async function rechercherPersonnages(
   requete: string,
 ): Promise<{ personnages: PersonnageTrouve[]; total: number }> {

@@ -156,7 +156,7 @@ function FormulairePersonnage({
           <textarea
             name="biography"
             rows={4}
-            placeholder="Qui est-il ? Que veut-il ? Qu'est-ce qui l'en empêche ? Si vous pensez à un·e comédien·ne pour ce rôle, nommez-le·la ici (« dans l'esprit de Juliette Binoche ») : les producteurs et directeurs de casting le retrouveront dans la carte des étoiles."
+            placeholder="Qui est-il ? Que veut-il ? Qu'est-ce qui l'en empêche ? Si vous pensez à un·e comédien·ne pour ce rôle, nommez-le·la ici (« dans l'esprit de Juliette Binoche ») : les producteurs et directeurs de casting le retrouveront dans la Carte des étoiles."
             defaultValue={personnage?.biography ?? ""}
           />
         </label>

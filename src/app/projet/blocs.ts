@@ -23,7 +23,7 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     numero: 2,
     titre: "Documents",
     resume:
-      "L'image de présentation, celle qui représente votre projet dans la carte des étoiles · le Moodboard, visible sur la fiche seulement · le scénario en PDF.",
+      "L'image de présentation, celle qui représente votre projet dans la Carte des étoiles · le Moodboard, visible sur la fiche seulement · le scénario en PDF.",
     duree: "3 minutes",
   },
   {
