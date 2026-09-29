@@ -271,3 +271,121 @@ export async function peutVoirLeNuage(): Promise<boolean> {
   ]);
   return adherent === true || admin === true;
 }
+
+export type TalentTrouve = {
+  id: string;
+  nom: string;
+  photo: string | null;
+  metiers: string[];
+  ville: string | null;
+};
+
+/** Les talents (29/09) : jamais les lecteurs, filtrés par la base. */
+export async function rechercherTalents(
+  requete: string,
+): Promise<{ talents: TalentTrouve[]; total: number }> {
+  const q = requete.trim();
+  if (!q) return { talents: [], total: 0 };
+
+  const supabase = await createClient();
+  const { data: trouves } = await supabase.rpc("rechercher_talents", { q, p_limite: LIMITE });
+  const lignes = (trouves ?? []) as { id: string; total: number; metiers: string[] }[];
+  if (lignes.length === 0) return { talents: [], total: 0 };
+
+  const { data: profils } = await supabase
+    .from("profiles")
+    .select("id, full_name, display_name, avatar_url, city")
+    .in("id", lignes.map((l) => l.id))
+    .returns<
+      { id: string; full_name: string | null; display_name: string | null; avatar_url: string | null; city: string | null }[]
+    >();
+  const parId = new Map((profils ?? []).map((p) => [p.id, p]));
+
+  const talents = lignes.flatMap((l) => {
+    const p = parId.get(l.id);
+    if (!p) return [];
+    return [{
+      id: p.id,
+      nom: p.display_name ?? p.full_name ?? "Membre",
+      photo: p.avatar_url,
+      metiers: l.metiers ?? [],
+      ville: p.city,
+    }];
+  });
+  return { talents, total: Number(lignes[0]?.total ?? 0) };
+}
+
+export type PersonnageTrouve = {
+  id: string;
+  nom: string;
+  portrait: string | null;
+  comedien: string | null;
+  projetId: string;
+  projet: string;
+};
+
+/** Les personnages des projets de la Carte du ciel (29/09). */
+export async function rechercherPersonnages(
+  requete: string,
+): Promise<{ personnages: PersonnageTrouve[]; total: number }> {
+  const q = requete.trim();
+  if (!q) return { personnages: [], total: 0 };
+
+  const supabase = await createClient();
+  const { data: trouves } = await supabase.rpc("rechercher_personnages", { q, p_limite: LIMITE });
+  const lignes = (trouves ?? []) as { id: string; total: number }[];
+  if (lignes.length === 0) return { personnages: [], total: 0 };
+
+  const { data: fiches } = await supabase
+    .from("characters")
+    .select("id, name, photo_path, actor_name, project:projects(id, title)")
+    .in("id", lignes.map((l) => l.id))
+    .returns<
+      {
+        id: string;
+        name: string;
+        photo_path: string | null;
+        actor_name: string | null;
+        project: { id: string; title: string } | null;
+      }[]
+    >();
+
+  const chemins = (fiches ?? []).map((f) => f.photo_path).filter((c): c is string => Boolean(c));
+  const { data: signes } = chemins.length
+    ? await supabase.storage.from("project-media").createSignedUrls(chemins, 60 * 60)
+    : { data: [] };
+  const urlDe = new Map((signes ?? []).map((s) => [s.path, s.signedUrl]));
+  const parId = new Map((fiches ?? []).map((f) => [f.id, f]));
+
+  const personnages = lignes.flatMap((l) => {
+    const f = parId.get(l.id);
+    if (!f || !f.project) return [];
+    return [{
+      id: f.id,
+      nom: f.name,
+      portrait: f.photo_path ? (urlDe.get(f.photo_path) ?? null) : null,
+      comedien: f.actor_name,
+      projetId: f.project.id,
+      projet: f.project.title,
+    }];
+  });
+  return { personnages, total: Number(lignes[0]?.total ?? 0) };
+}
+
+export type Categorie = "projets" | "talents" | "personnages";
+
+/**
+ * La catégorie en tête de la recherche, selon le métier (29/09, décision
+ * de Sarah) : les comédiens cherchent d'abord un personnage, tous les
+ * autres un projet.
+ */
+export async function categorieDeDepart(): Promise<Categorie> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return "projets";
+  const { data } = await supabase.rpc("metiers_du_membre", { uid: user.id });
+  const metiers = (data ?? []) as string[];
+  return metiers.includes("comedien") && !metiers.includes("producteur") ? "personnages" : "projets";
+}

@@ -4,12 +4,18 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   motsClesProches,
+  rechercherPersonnages,
   rechercherProjets,
+  rechercherTalents,
+  type Categorie,
   type MotCle,
+  type PersonnageTrouve,
   type ProjetTrouve,
+  type TalentTrouve,
 } from "@/app/pitchotheque/actions";
 import { AUCUN, type Filtres } from "@/app/pitchotheque/filtres";
 import Bandeau from "./Bandeau";
+import Logo from "./Logo";
 import formStyles from "./form.module.css";
 import NuageDisque from "./NuageDisque";
 import styles from "./Finder.module.css";
@@ -23,16 +29,32 @@ const DEFAUT = 80;
 const G_MINIMUM = 20;
 // Le petit disque de la barre : peu de mots, pour que la forme se lise.
 const ICONE_MOTS = 30;
+// Les rangées 2 et 3 : un aperçu d'une ligne.
+const APERCU = 5;
+
+const CATEGORIES: { cle: Categorie; pastille: string; titre: string }[] = [
+  { cle: "projets", pastille: "un projet", titre: "Projets" },
+  { cle: "talents", pastille: "un talent", titre: "Talents" },
+  { cle: "personnages", pastille: "un personnage", titre: "Personnages" },
+];
 
 export default function Finder({
   adherent = false,
   filtres = AUCUN,
+  premiere = "projets",
 }: {
   adherent?: boolean;
   /** Les filtres de la recherche avancée, qui s'ajoutent au mot cherché. */
   filtres?: Filtres;
+  /** La catégorie en tête en arrivant, selon le métier du membre. */
+  premiere?: Categorie;
 }) {
   const [requete, setRequete] = useState("");
+  // Un seul champ pour trois catégories (29/09) : celle choisie passe en
+  // tête, en grand ; les deux autres suivent en aperçu.
+  const [choisie, setChoisie] = useState<Categorie>(premiere);
+  const [talents, setTalents] = useState<{ liste: TalentTrouve[]; total: number } | null>(null);
+  const [personnages, setPersonnages] = useState<{ liste: PersonnageTrouve[]; total: number } | null>(null);
   const [resultats, setResultats] = useState<ProjetTrouve[] | null>(null);
   // Les mots-clés voisins par le sens qui ont complété la recherche.
   const [parLeSens, setParLeSens] = useState<string[]>([]);
@@ -81,16 +103,24 @@ export default function Finder({
     const q = requete.trim();
     if (!q) {
       setResultats(null);
+      setTalents(null);
+      setPersonnages(null);
       setEnCours(false);
       return;
     }
 
     setEnCours(true);
     minuteur.current = setTimeout(async () => {
-      const { projets, total, parLeSens: sens } = await rechercherProjets(q, filtres);
+      const [{ projets, total, parLeSens: sens }, t, p] = await Promise.all([
+        rechercherProjets(q, filtres),
+        rechercherTalents(q),
+        rechercherPersonnages(q),
+      ]);
       setResultats(projets);
       setTotal(total);
       setParLeSens(sens ?? []);
+      setTalents({ liste: t.talents, total: t.total });
+      setPersonnages({ liste: p.personnages, total: p.total });
       setEnCours(false);
     }, 300);
 
@@ -169,6 +199,21 @@ export default function Finder({
             )}
           </button>
         )}
+      </div>
+
+      <div className={styles.pastilles} role="group" aria-label="Catégorie en tête des résultats">
+        <span className={styles.pastillesIntro}>Je cherche d&apos;abord&nbsp;:</span>
+        {CATEGORIES.map((c) => (
+          <button
+            key={c.cle}
+            type="button"
+            className={`${styles.pastille} ${choisie === c.cle ? styles.pastilleChoisie : ""}`}
+            aria-pressed={choisie === c.cle}
+            onClick={() => setChoisie(c.cle)}
+          >
+            {c.pastille}
+          </button>
+        ))}
       </div>
 
       {nuageAffiche && (
@@ -250,68 +295,156 @@ export default function Finder({
         <div className={styles.resultats}>
           {enCours ? (
             <p className={styles.indice}>Recherche…</p>
-          ) : resultats && resultats.length > 0 ? (
-            <>
-              <p className={styles.indice}>
-                {total} résultat{total > 1 ? "s" : ""} pour «&nbsp;{requete}&nbsp;»
-                {total > resultats.length &&
-                  ` — les ${resultats.length} plus récents affichés`}
-                {parLeSens.length > 0 && (
-                  <>
-                    {" "}
-                    · dont des projets proches par le sens&nbsp;: {parLeSens.join(", ")}
-                  </>
-                )}
-              </p>
-              <ul className={projetsStyles.grille}>
-                {resultats.map((p) => (
-                  <li key={p.id}>
-                    <Link href={`/projet/${p.id}`} className={projetsStyles.carte}>
-                      <div className={projetsStyles.vignette}>
-                        <Bandeau valeur={p.bandeau} />
-                        {p.vignette ? (
-                          <>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img src={p.vignette} alt="" loading="lazy" />
-                          </>
-                        ) : (
-                          <span className={projetsStyles.sansImage}>Sans vignette</span>
-                        )}
-                      </div>
-                      <div className={projetsStyles.legende}>
-                        <strong>{p.title}</strong>
-                        {p.genre?.label_fr && (
-                          <span className={projetsStyles.genre}>{p.genre.label_fr}</span>
-                        )}
-                        {p.logline && <p className={projetsStyles.logline}>{p.logline}</p>}
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </>
           ) : (
-            <p className={styles.indice}>
-              Aucun résultat pour «&nbsp;{requete}&nbsp;».{" "}
-              {adherent ? (
-                !nuageAffiche && (
-                  <button
-                    type="button"
-                    className={styles.lienNuage}
-                    onClick={() => setNuageDemande(true)}
-                  >
-                    Voir les mots-clés proches
-                  </button>
-                )
-              ) : (
-                <Link href="/adhesion" className={styles.lienNuage}>
-                  Les mots-clés proches sont réservés aux adhérents
-                </Link>
-              )}
-            </p>
+            [choisie, ...CATEGORIES.map((c) => c.cle).filter((c) => c !== choisie)].map((cle, rang) => {
+              const titre = CATEGORIES.find((c) => c.cle === cle)!.titre;
+              const nombre =
+                cle === "projets" ? total : cle === "talents" ? (talents?.total ?? 0) : (personnages?.total ?? 0);
+              const enTete = rang === 0;
+              return (
+                <section key={cle} className={`${styles.rangee} ${enTete ? styles.rangeeEnTete : ""}`}>
+                  <div className={styles.rangeeTete}>
+                    <h2>
+                      <span className={styles.rang}>{rang + 1}</span>
+                      {titre}
+                    </h2>
+                    {!enTete && nombre > 0 ? (
+                      <button type="button" className={styles.voirTout} onClick={() => setChoisie(cle)}>
+                        Voir les {nombre} {titre.toLowerCase()} →
+                      </button>
+                    ) : (
+                      <span className={styles.compte}>
+                        {nombre} résultat{nombre > 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
+                  {cle === "projets" && enTete && total > 0 && (
+                    <p className={styles.indice}>
+                      {total > (resultats?.length ?? 0) && `Les ${resultats?.length} premiers affichés.`}
+                      {parLeSens.length > 0 && (
+                        <> Dont des projets proches par le sens&nbsp;: {parLeSens.join(", ")}.</>
+                      )}
+                    </p>
+                  )}
+                  {nombre === 0 ? (
+                    <p className={styles.indice}>
+                      Aucun résultat pour «&nbsp;{requete}&nbsp;».{" "}
+                      {cle === "projets" &&
+                        (adherent ? (
+                          !nuageAffiche && (
+                            <button
+                              type="button"
+                              className={styles.lienNuage}
+                              onClick={() => setNuageDemande(true)}
+                            >
+                              Voir les mots-clés proches
+                            </button>
+                          )
+                        ) : (
+                          <Link href="/adhesion" className={styles.lienNuage}>
+                            Les mots-clés proches sont réservés aux adhérents
+                          </Link>
+                        ))}
+                    </p>
+                  ) : cle === "projets" ? (
+                    <ul className={`${projetsStyles.grille} ${enTete ? "" : styles.apercu}`}>
+                      {(enTete ? resultats ?? [] : (resultats ?? []).slice(0, APERCU)).map((p) => (
+                        <li key={p.id}>
+                          <CarteProjet p={p} />
+                        </li>
+                      ))}
+                    </ul>
+                  ) : cle === "talents" ? (
+                    <ul className={`${styles.grilleTalents} ${enTete ? "" : styles.apercu}`}>
+                      {(enTete ? talents?.liste ?? [] : (talents?.liste ?? []).slice(0, APERCU)).map((t) => (
+                        <li key={t.id}>
+                          <CarteTalent t={t} />
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <ul className={`${styles.grillePersonnages} ${enTete ? "" : styles.apercu}`}>
+                      {(enTete ? personnages?.liste ?? [] : (personnages?.liste ?? []).slice(0, APERCU)).map((c) => (
+                        <li key={c.id}>
+                          <CartePersonnage c={c} />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              );
+            })
           )}
         </div>
       )}
     </div>
+  );
+}
+
+function CarteProjet({ p }: { p: ProjetTrouve }) {
+  return (
+    <Link href={`/projet/${p.id}`} className={projetsStyles.carte}>
+      <div className={projetsStyles.vignette}>
+        <Bandeau valeur={p.bandeau} />
+        {p.vignette ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={p.vignette} alt="" loading="lazy" />
+          </>
+        ) : (
+          <span className={projetsStyles.sansImage}>Sans vignette</span>
+        )}
+      </div>
+      <div className={projetsStyles.legende}>
+        <strong>
+          {p.title}
+          {p.status === "labellise" && (
+            <span className={projetsStyles.label} title="Projet labellisé WeFilmGood">
+              <Logo size={14} />
+            </span>
+          )}
+        </strong>
+        {p.genre?.label_fr && <span className={projetsStyles.genre}>{p.genre.label_fr}</span>}
+        {p.logline && <p className={projetsStyles.logline}>{p.logline}</p>}
+      </div>
+    </Link>
+  );
+}
+
+/** Un talent : rond, comme sa photo de profil. Sans photo, l'initiale. */
+function CarteTalent({ t }: { t: TalentTrouve }) {
+  return (
+    <Link href={`/membres/${t.id}`} className={styles.talent}>
+      <span className={styles.talentPhoto}>
+        {t.photo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={t.photo} alt="" loading="lazy" />
+        ) : (
+          <span>{t.nom.trim().charAt(0).toUpperCase()}</span>
+        )}
+      </span>
+      <strong>{t.nom}</strong>
+      {t.metiers.length > 0 && <span className={styles.detail}>{t.metiers.join(", ")}</span>}
+      {t.ville && <span className={styles.detail}>{t.ville}</span>}
+    </Link>
+  );
+}
+
+/** Un personnage : son portrait, et le projet d'où il vient. */
+function CartePersonnage({ c }: { c: PersonnageTrouve }) {
+  return (
+    <Link href={`/projet/${c.projetId}`} className={styles.personnage}>
+      <span className={styles.portrait}>
+        {c.portrait ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={c.portrait} alt="" loading="lazy" />
+        ) : (
+          <span>{c.nom.trim().charAt(0).toUpperCase()}</span>
+        )}
+      </span>
+      <strong>{c.nom}</strong>
+      <span className={styles.detail}>{c.projet}</span>
+      {c.comedien && <span className={styles.detail}>{c.comedien}</span>}
+    </Link>
   );
 }

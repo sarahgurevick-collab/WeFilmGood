@@ -174,3 +174,192 @@
   width: 100%;
   height: 100%;
 }
+
+/* Un seul champ, trois catégories (29/09) : la pastille choisie fait
+   passer sa rangée en tête. */
+.pastilles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pastillesIntro {
+  color: var(--dim);
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+.pastille {
+  border: 1px solid var(--dim);
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pastilleChoisie {
+  background: var(--rouge-wfg);
+  border-color: var(--rouge-wfg);
+  color: #fff;
+}
+
+.rangee {
+  border-top: 1px solid var(--bordure-douce);
+  padding: 20px 0 8px;
+}
+
+.rangee:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.rangeeTete {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.rangeeTete h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rang {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--dim);
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.rangeeEnTete .rang {
+  background: var(--rouge-wfg);
+  border-color: var(--rouge-wfg);
+  color: #fff;
+}
+
+.compte {
+  color: var(--dim);
+  font-size: 14px;
+}
+
+.voirTout {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Les rangées 2 et 3 : une seule ligne, plus petite. */
+.apercu {
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 16px !important;
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .apercu {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  .apercu > li:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+.grilleTalents,
+.grillePersonnages {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 24px;
+}
+
+@media (max-width: 1100px) {
+  .grilleTalents,
+  .grillePersonnages {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .grilleTalents,
+  .grillePersonnages {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+.talent,
+.personnage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.talent strong,
+.personnage strong {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.detail {
+  color: var(--dim);
+  font-size: 12px;
+}
+
+.talentPhoto,
+.portrait {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  background: #1a1a1a;
+  color: #bbb;
+  font-size: 28px;
+}
+
+/* Rond comme la photo de profil. */
+.talentPhoto {
+  aspect-ratio: 1;
+  max-width: 120px;
+  border-radius: 50%;
+}
+
+/* En portrait, comme une photo de casting. */
+.portrait {
+  aspect-ratio: 3 / 4;
+  max-width: 150px;
+  border-radius: 8px;
+}
+
+.talentPhoto img,
+.portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

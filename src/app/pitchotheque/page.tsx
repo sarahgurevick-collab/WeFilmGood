@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import Logo from "@/components/Logo";
 import Finder from "@/components/Finder";
 import VignetteEau from "@/components/VignetteEau";
-import { peutVoirLeNuage } from "./actions";
+import { categorieDeDepart, peutVoirLeNuage } from "./actions";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
@@ -62,7 +62,7 @@ export default async function ProjetsPage({
     redirect(`/connexion?next=${encodeURIComponent(adresse(filtres, page))}`);
   }
 
-  const adherent = await peutVoirLeNuage();
+  const [adherent, premiere] = await Promise.all([peutVoirLeNuage(), categorieDeDepart()]);
 
   const [{ data: genres }, { data: selections }, { data: comediens }] = await Promise.all([
     supabase.from("genres").select("slug, label_fr").order("position"),
@@ -135,7 +135,7 @@ export default async function ProjetsPage({
       nav="pitchotheque"
       connecte={!!user}
     >
-      <Finder adherent={adherent} filtres={filtres} />
+      <Finder adherent={adherent} filtres={filtres} premiere={premiere} />
       <RechercheAvancee
         filtres={filtres}
         genres={genres ?? []}
