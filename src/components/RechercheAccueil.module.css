@@ -64,3 +64,43 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* Sur le fond noir de l'en-tête « galaxie ». */
+.sombre {
+  margin: 0;
+}
+
+.sombre .champ {
+  background: #161616;
+  border: 2px solid #ededed;
+  border-radius: 999px;
+  color: #ededed;
+  font-size: 18px;
+  padding: 16px 22px;
+}
+
+.sombre .champ::placeholder {
+  color: #8f8a85;
+}
+
+.sombre .champ:focus {
+  outline: 3px solid rgba(218, 44, 37, 0.55);
+  outline-offset: 2px;
+}
+
+.sombre .compteurs {
+  justify-content: flex-start;
+}
+
+.sombre .compteurs span,
+.sombre .attente {
+  color: #a8a39e;
+}
+
+.sombre .appel {
+  color: #ededed;
+}
+
+.sombre .lien {
+  color: #ff6b63;
+}

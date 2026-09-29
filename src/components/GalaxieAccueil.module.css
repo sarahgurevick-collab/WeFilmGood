@@ -1,0 +1,451 @@
+/* L'en-tête « galaxie » de l'accueil : fond noir, l'univers. */
+
+.galaxie {
+  --bleu: #3b8ef5;
+  --bleu-texte: #7ab4ff;
+  --rouge: #da2c25;
+  --rouge-texte: #ff6b63;
+  --jaune: #f2c230;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 110px 48px 64px;
+  background: #0b0b0b;
+  color: #ededed;
+}
+
+.texte {
+  flex: 0 1 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.titre {
+  margin: 0;
+  font-size: clamp(40px, 5vw, 70px);
+  font-weight: 900;
+  line-height: 1.03;
+  letter-spacing: -0.02em;
+}
+
+.rouge {
+  color: var(--rouge);
+}
+
+.sousTitre {
+  margin: 0;
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.5;
+  color: #bdb7b0;
+}
+
+/* ---------- la scène ---------- */
+
+.cadreScene {
+  flex: 0 1 700px;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.cercles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-dasharray: 3 8;
+}
+
+.cerclePersonnages {
+  stroke: #2c3f5e;
+}
+
+.cercleEquipe {
+  stroke: #5a2a27;
+}
+
+.centre {
+  position: absolute;
+  left: 32.14%;
+  top: 32.14%;
+  width: 35.71%;
+  aspect-ratio: 1;
+  box-sizing: border-box;
+  padding: 4.3cqw;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9cqw;
+  text-align: center;
+  background: #161616;
+  color: #ededed;
+  text-decoration: none;
+  box-shadow:
+    0 0 0 3px var(--jaune),
+    0 22px 50px rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.centreGenre {
+  font-size: max(9px, 1.7cqw);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--jaune);
+}
+
+.centreTitre {
+  font-size: max(15px, 4.2cqw);
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.centreLogline {
+  font-size: 1.85cqw;
+  line-height: 1.4;
+  color: #bdb7b0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@container (max-width: 520px) {
+  .centreLogline {
+    display: none;
+  }
+}
+
+/* Les anneaux tournent ; chaque rond tourne en sens inverse pour rester droit. */
+.anneau {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.anneauPersonnages {
+  animation: tourne 90s linear infinite;
+}
+
+.anneauPersonnages .droit {
+  animation: detourne 90s linear infinite;
+}
+
+.anneauEquipe {
+  animation: detourne 140s linear infinite;
+}
+
+.anneauEquipe .droit {
+  animation: tourne 140s linear infinite;
+}
+
+.scene:hover .anneau,
+.scene:hover .droit,
+.enPause .anneau,
+.enPause .droit {
+  animation-play-state: paused;
+}
+
+@keyframes tourne {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes detourne {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.place {
+  position: absolute;
+  aspect-ratio: 1;
+}
+
+.droit {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.noeud {
+  pointer-events: auto;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 4px solid #0b0b0b;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #262626;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: transform 0.3s ease;
+}
+
+.noeud img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.noeud:hover {
+  transform: scale(1.08);
+}
+
+.noeud:focus-visible {
+  outline: 3px solid var(--rouge);
+  outline-offset: 4px;
+}
+
+.noeud.personnage {
+  box-shadow:
+    0 0 0 3px var(--bleu),
+    0 10px 24px rgba(0, 0, 0, 0.55);
+}
+
+.noeud.equipe {
+  box-shadow:
+    0 0 0 3px var(--rouge),
+    0 10px 24px rgba(0, 0, 0, 0.55);
+}
+
+.noeud.choisi {
+  box-shadow:
+    0 0 0 5px #ededed,
+    0 10px 24px rgba(0, 0, 0, 0.55);
+}
+
+.bulle {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 10px);
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+  background: #161616;
+  border: 1px solid #333333;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.bulleEtiquette {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bulleEtiquette.personnage {
+  color: var(--bleu-texte);
+}
+
+.bulleEtiquette.equipe {
+  color: var(--rouge-texte);
+}
+
+.bulleNom {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ededed;
+}
+
+/* Le nom de chaque cercle, posé dessus et immobile. */
+.nomCercle {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  background: #0b0b0b;
+  border-radius: 14px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.nomCercle i,
+.legende i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: block;
+}
+
+.nomPersonnages {
+  left: 22.86%;
+  color: var(--bleu-texte);
+  border: 1px solid #2c3f5e;
+}
+
+.nomPersonnages i,
+.nomPersonnagesLegende i {
+  background: var(--bleu);
+}
+
+.nomEquipe {
+  left: 92.86%;
+  color: var(--rouge-texte);
+  border: 1px solid #5a2a27;
+}
+
+.nomEquipe i,
+.nomEquipeLegende i {
+  background: var(--rouge);
+}
+
+/* Sur petit écran, les noms des cercles passent sous la scène. */
+.legende {
+  display: none;
+}
+
+@container (max-width: 560px) {
+  .nomCercle {
+    display: none;
+  }
+
+  .legende {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 18px 0 0;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .legende span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nomPersonnagesLegende {
+    color: var(--bleu-texte);
+  }
+
+  .nomEquipeLegende {
+    color: var(--rouge-texte);
+  }
+}
+
+/* ---------- la fiche d'un rond ---------- */
+
+.fiche {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(330px, 92%);
+  box-sizing: border-box;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 22px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+  z-index: 4;
+}
+
+.ficheHaut {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ficheImage {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.ficheNoms {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.ficheNom {
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.fermer {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #262626;
+  color: #ededed;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ficheBio {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #bdb7b0;
+}
+
+.ficheLien {
+  align-self: flex-start;
+  color: var(--rouge-texte);
+  font-weight: 800;
+  font-size: 14px;
+  text-underline-offset: 3px;
+}
+
+/* ---------- téléphone ---------- */
+
+@media (max-width: 900px) {
+  .galaxie {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 36px;
+    padding: 96px 16px 48px;
+  }
+
+  .texte,
+  .cadreScene {
+    flex: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anneau,
+  .droit {
+    animation: none !important;
+  }
+}

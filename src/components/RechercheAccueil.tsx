@@ -15,7 +15,14 @@ import styles from "./RechercheAccueil.module.css";
  * Le décompte vient d'une fonction de la base qui ne renvoie que des
  * totaux : le contenu ne transite jamais jusqu'au navigateur.
  */
-export default function RechercheAccueil() {
+export default function RechercheAccueil({
+  placeholder = "Trouvez des projets, des talents, des personnages",
+  sombre = false,
+}: {
+  placeholder?: string;
+  /** Sur le fond noir de l'en-tête « galaxie ». */
+  sombre?: boolean;
+} = {}) {
   const [requete, setRequete] = useState("");
   const [decompte, setDecompte] = useState<DecompteRecherche | null>(null);
   const [enCours, setEnCours] = useState(false);
@@ -43,12 +50,12 @@ export default function RechercheAccueil() {
     : 0;
 
   return (
-    <div className={styles.zone}>
+    <div className={`${styles.zone} ${sombre ? styles.sombre : ""}`}>
       <span className={formStyles.recherche}>
         <input
           type="search"
           className={styles.champ}
-          placeholder="Trouvez des projets, des talents, des personnages"
+          placeholder={placeholder}
           value={requete}
           onChange={(e) => setRequete(e.target.value)}
           aria-label="Chercher dans la plateforme"
