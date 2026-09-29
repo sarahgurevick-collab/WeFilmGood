@@ -88,7 +88,7 @@ export default async function RetourPaiementPage({
             </dl>
           )}
           <Link href="/pitchotheque" className={formStyles.submit}>
-            Aller à la Carte du ciel
+            Aller à la carte des étoiles
           </Link>
         </section>
       </PageShell>

@@ -31,7 +31,7 @@ export default async function BarreNav({
     estAdmin = admin === true;
   }
   const onglets = [
-    { cle: "pitchotheque", href: "/pitchotheque", label: "Carte du ciel" },
+    { cle: "pitchotheque", href: "/pitchotheque", label: "Carte des étoiles" },
     // La liste de ses fiches (ou la création s'il n'en a aucune). Un
     // visiteur non connecté n'a rien à y faire : pas d'onglet (26/09).
     ...(connecte ? [{ cle: "deposer", href: "/mes-projets", label: "Mes projets" }] as const : []),

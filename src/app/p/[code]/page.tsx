@@ -133,8 +133,8 @@ export default async function ProjetPartagePage({
           <p>
             Créez votre profil pour contacter {projet.author_name ?? "l'auteur"}
             {nombreProjets > 1
-              ? ` et découvrir les ${nombreProjets} projets de la Carte du ciel.`
-              : " et découvrir la Carte du ciel."}
+              ? ` et découvrir les ${nombreProjets} projets de la carte des étoiles.`
+              : " et découvrir la carte des étoiles."}
           </p>
           <Link href="/inscription" className={styles.bouton}>
             Créer mon profil
