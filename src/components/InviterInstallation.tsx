@@ -121,7 +121,7 @@ export default function InviterInstallation() {
           </p>
           <p className={styles.texte}>
             Sur votre écran d&apos;accueil, comme une application : un geste pour retrouver
-            la pitchothèque, vos projets et vos messages.
+            la Carte du ciel, vos projets et vos messages.
           </p>
         </div>
       </div>

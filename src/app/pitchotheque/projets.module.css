@@ -358,3 +358,11 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* « l'ancienne Pitchothèque », sous le titre de la Carte du ciel. */
+.ancienNom {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--dim);
+}

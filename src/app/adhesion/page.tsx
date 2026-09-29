@@ -69,7 +69,7 @@ export default async function AdhesionPage({
         contenus={[
           <ul key="0" className={styles.avantages}>
             <AvantageAdhesion icone="loupe">
-              La Pitchothèque et le Finder — pour savoir combien de projets
+              La Carte du ciel et le Finder — pour savoir combien de projets
               répondent à vos envies.
             </AvantageAdhesion>
             <AvantageAdhesion icone="motscles">
@@ -87,7 +87,7 @@ export default async function AdhesionPage({
 
           <ul key="50" className={styles.avantages}>
             <AvantageAdhesion icone="loupe">
-              La Pitchothèque et le Finder — pour savoir combien de projets
+              La Carte du ciel et le Finder — pour savoir combien de projets
               répondent à vos envies.
             </AvantageAdhesion>
             <AvantageAdhesion icone="motscles">
@@ -106,7 +106,7 @@ export default async function AdhesionPage({
 
           <ul key="500" className={styles.avantages}>
             <AvantageAdhesion icone="loupe">
-              La Pitchothèque et le Finder — pour savoir combien de projets
+              La Carte du ciel et le Finder — pour savoir combien de projets
               répondent à vos envies.
             </AvantageAdhesion>
             <AvantageAdhesion icone="motscles">

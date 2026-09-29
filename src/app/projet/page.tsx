@@ -48,7 +48,7 @@ export default async function NouvelleFichePage({
         <label className={formStyles.field}>
           <span>L&apos;image de présentation</span>
           <span className={formStyles.hint}>
-            C&apos;est elle qui représente votre projet dans la pitchothèque, et en haut de votre
+            C&apos;est elle qui représente votre projet dans la Carte du ciel, et en haut de votre
             fiche. Format 16/9 (paysage), JPG ou PNG. N&apos;y faites figurer ni votre nom ni le
             titre.
           </span>

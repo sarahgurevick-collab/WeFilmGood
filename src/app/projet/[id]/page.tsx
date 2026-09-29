@@ -408,13 +408,13 @@ export default async function ProjetPage({
             <p className={formStyles.remplissageTexte}>
               Votre fiche est complète. Rien ne vous garantit pour autant
               qu&apos;un producteur vous contactera — mais elle est mieux
-              placée dans la pitchothèque, et elle donne une bonne image de
+              placée dans la Carte du ciel, et elle donne une bonne image de
               votre travail.
             </p>
           )}
           {aFaire && (
             <p className={formStyles.hint} style={{ margin: "8px 0 0" }}>
-              Les fiches complètes apparaissent plus haut dans la pitchothèque.
+              Les fiches complètes apparaissent plus haut dans la Carte du ciel.
               C&apos;est une question de visibilité, pas une promesse de
               résultat.
             </p>

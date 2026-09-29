@@ -30,7 +30,7 @@ type Projet = {
   files: { storage_path: string; kind: string }[];
 };
 
-export const metadata: Metadata = { title: "Pitchothèque — WeFilmGood" };
+export const metadata: Metadata = { title: "Carte du ciel — WeFilmGood" };
 
 // Cinq projets par ligne, dix lignes.
 const PAR_PAGE = 50;
@@ -127,7 +127,14 @@ export default async function ProjetsPage({
   };
 
   return (
-    <PageShell title="Pitchothèque" nav="pitchotheque" connecte={!!user}>
+    <PageShell
+      title="Carte du ciel"
+      // Pour les membres de WFG 1, qui la connaissent sous son ancien nom
+      // (changement du 29/09/2026).
+      apresTitre={<span className={styles.ancienNom}>l&apos;ancienne Pitchothèque</span>}
+      nav="pitchotheque"
+      connecte={!!user}
+    >
       <Finder adherent={adherent} filtres={filtres} />
       <RechercheAvancee
         filtres={filtres}
@@ -157,8 +164,8 @@ export default async function ProjetsPage({
         <>
           <p className={formStyles.hint}>
             {total > projects.length
-              ? `Projets ${((page - 1) * PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * PAR_PAGE + projects.length).toLocaleString("fr-FR")} sur ${total.toLocaleString("fr-FR")} ${nbFiltres > 0 ? "correspondant à vos filtres" : "dans la pitchothèque"}.`
-              : `${total.toLocaleString("fr-FR")} projet${total > 1 ? "s" : ""} ${nbFiltres > 0 ? `correspond${total > 1 ? "ent" : ""} à vos filtres` : "dans la pitchothèque"}.`}
+              ? `Projets ${((page - 1) * PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * PAR_PAGE + projects.length).toLocaleString("fr-FR")} sur ${total.toLocaleString("fr-FR")} ${nbFiltres > 0 ? "correspondant à vos filtres" : "dans la Carte du ciel"}.`
+              : `${total.toLocaleString("fr-FR")} projet${total > 1 ? "s" : ""} ${nbFiltres > 0 ? `correspond${total > 1 ? "ent" : ""} à vos filtres` : "dans la Carte du ciel"}.`}
           </p>
 
           <ul className={styles.grille}>
@@ -204,7 +211,7 @@ export default async function ProjetsPage({
           </ul>
 
           {pages > 1 && (
-            <nav className={styles.pagination} aria-label="Pages de la pitchothèque">
+            <nav className={styles.pagination} aria-label="Pages de la Carte du ciel">
               {page > 1 ? (
                 <Link href={adresse(filtres, page - 1)}>← Précédents</Link>
               ) : (
