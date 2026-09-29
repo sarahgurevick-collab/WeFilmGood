@@ -4,9 +4,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   motsClesProches,
-  rechercherPersonnages,
-  rechercherProjets,
-  rechercherTalents,
   type Categorie,
   type MotCle,
   type PersonnageTrouve,
@@ -110,21 +107,42 @@ export default function Finder({
     }
 
     setEnCours(true);
+    // Une recherche par arrêt de frappe ; celle d'avant est annulée, pour
+    // que les résultats de « arc » n'arrivent jamais après « architecte ».
+    const annulation = new AbortController();
     minuteur.current = setTimeout(async () => {
-      const [{ projets, total, parLeSens: sens }, t, p] = await Promise.all([
-        rechercherProjets(q, filtres),
-        rechercherTalents(q),
-        rechercherPersonnages(q),
-      ]);
-      setResultats(projets);
-      setTotal(total);
-      setParLeSens(sens ?? []);
-      setTalents({ liste: t.talents, total: t.total });
-      setPersonnages({ liste: p.personnages, total: p.total });
-      setEnCours(false);
-    }, 300);
+      const params = new URLSearchParams({ q });
+      for (const [cle, valeur] of Object.entries(filtres)) if (valeur) params.set(cle, valeur);
+      try {
+        const reponse = await fetch(`/api/recherche?${params}`, { signal: annulation.signal });
+        if (!reponse.ok) throw new Error(String(reponse.status));
+        const r = (await reponse.json()) as {
+          projets: ProjetTrouve[];
+          total: number;
+          parLeSens: string[];
+          talents: TalentTrouve[];
+          totalTalents: number;
+          personnages: PersonnageTrouve[];
+          totalPersonnages: number;
+        };
+        setResultats(r.projets);
+        setTotal(r.total);
+        setParLeSens(r.parLeSens);
+        setTalents({ liste: r.talents, total: r.totalTalents });
+        setPersonnages({ liste: r.personnages, total: r.totalPersonnages });
+        setEnCours(false);
+      } catch (e) {
+        if ((e as Error).name === "AbortError") return;
+        setResultats([]);
+        setTotal(0);
+        setTalents({ liste: [], total: 0 });
+        setPersonnages({ liste: [], total: 0 });
+        setEnCours(false);
+      }
+    }, 350);
 
     return () => {
+      annulation.abort();
       if (minuteur.current) clearTimeout(minuteur.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- les filtres sont comparés par valeur
