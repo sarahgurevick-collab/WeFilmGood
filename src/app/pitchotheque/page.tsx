@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Bandeau from "@/components/Bandeau";
 import { redirect } from "next/navigation";
+import Logo from "@/components/Logo";
 import Finder from "@/components/Finder";
 import VignetteEau from "@/components/VignetteEau";
 import { peutVoirLeNuage } from "./actions";
@@ -126,7 +127,16 @@ export default async function ProjetsPage({
   };
 
   return (
-    <PageShell title="Pitchothèque" nav="pitchotheque" connecte={!!user}>
+    <PageShell
+      title="Pitchothèque"
+      apresTitre={
+        <span style={{ marginLeft: "0.5rem", display: "inline-flex", verticalAlign: "middle" }}>
+          <Logo size={26} />
+        </span>
+      }
+      nav="pitchotheque"
+      connecte={!!user}
+    >
       <Finder adherent={adherent} filtres={filtres} />
       <RechercheAvancee
         filtres={filtres}
