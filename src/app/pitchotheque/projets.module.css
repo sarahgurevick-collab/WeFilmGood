@@ -153,6 +153,13 @@
   font-size: 14px;
 }
 
+/* Le petit disque WeFilmGood des projets labellisés, après le titre. */
+.label {
+  display: inline-flex;
+  vertical-align: -2px;
+  margin-left: 6px;
+}
+
 .genre {
   display: block;
   font-size: 11px;

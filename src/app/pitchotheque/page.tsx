@@ -127,16 +127,7 @@ export default async function ProjetsPage({
   };
 
   return (
-    <PageShell
-      title="Pitchothèque"
-      apresTitre={
-        <span style={{ marginLeft: "0.5rem", display: "inline-flex", verticalAlign: "middle" }}>
-          <Logo size={26} />
-        </span>
-      }
-      nav="pitchotheque"
-      connecte={!!user}
-    >
+    <PageShell title="Pitchothèque" nav="pitchotheque" connecte={!!user}>
       <Finder adherent={adherent} filtres={filtres} />
       <RechercheAvancee
         filtres={filtres}
@@ -193,7 +184,14 @@ export default async function ProjetsPage({
                       )}
                     </div>
                     <div className={styles.legende}>
-                      <strong>{p.title}</strong>
+                      <strong>
+                        {p.title}
+                        {p.status === "labellise" && (
+                          <span className={styles.label} title="Projet labellisé WeFilmGood">
+                            <Logo size={14} />
+                          </span>
+                        )}
+                      </strong>
                       {p.genre?.label_fr && (
                         <span className={styles.genre}>{p.genre.label_fr}</span>
                       )}
