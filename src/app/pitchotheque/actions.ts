@@ -377,7 +377,7 @@ export type Categorie = "projets" | "talents" | "personnages";
 /**
  * La catégorie en tête de la recherche, selon le métier (29/09, décision
  * de Sarah) : les comédiens cherchent d'abord un personnage, tous les
- * autres un projet.
+ * autres un projet. Seul le métier principal compte.
  */
 export async function categorieDeDepart(): Promise<Categorie> {
   const supabase = await createClient();
@@ -387,5 +387,6 @@ export async function categorieDeDepart(): Promise<Categorie> {
   if (!user) return "projets";
   const { data } = await supabase.rpc("metiers_du_membre", { uid: user.id });
   const metiers = (data ?? []) as string[];
-  return metiers.includes("comedien") && !metiers.includes("producteur") ? "personnages" : "projets";
+  // Le métier principal seul : un réalisateur qui joue aussi garde les projets.
+  return metiers[0] === "comedien" ? "personnages" : "projets";
 }
