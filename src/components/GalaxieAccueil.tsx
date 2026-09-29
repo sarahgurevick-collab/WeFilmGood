@@ -7,7 +7,7 @@ import RechercheAccueil from "./RechercheAccueil";
 import styles from "./GalaxieAccueil.module.css";
 
 /**
- * L'en-tête de l'accueil : « Explorer l'Univers WeFilmGood ».
+ * L'en-tête de l'accueil : « Explorez l'Univers WeFilmGood ».
  *
  * Un projet au centre, comme un soleil ; ses personnages tournent sur le
  * premier cercle, son équipe sur le second. Chaque rond se présente à
@@ -104,7 +104,7 @@ export default function GalaxieAccueil({ projet }: { projet: ProjetOrbite | null
     <section className={styles.galaxie}>
       <div className={styles.texte}>
         <h1 className={styles.titre}>
-          Explorer l’Univers <span className={styles.rouge}>We</span>Film
+          Explorez l’Univers <span className={styles.rouge}>We</span>Film
           <span className={styles.rouge}>Good</span>
         </h1>
         <p className={styles.sousTitre}>
