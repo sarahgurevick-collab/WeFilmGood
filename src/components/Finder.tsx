@@ -346,23 +346,21 @@ export default function Finder({
                   )}
                   {nombre === 0 ? (
                     <p className={styles.indice}>
-                      Aucun résultat pour «&nbsp;{requete}&nbsp;».{" "}
-                      {cle === "projets" &&
-                        (adherent ? (
-                          !nuageAffiche && (
-                            <button
-                              type="button"
-                              className={styles.lienNuage}
-                              onClick={() => setNuageDemande(true)}
-                            >
-                              Voir les mots-clés proches
-                            </button>
-                          )
-                        ) : (
-                          <Link href="/adhesion" className={styles.lienNuage}>
-                            Les mots-clés proches sont réservés aux adhérents
-                          </Link>
-                        ))}
+                      {/* Phrase de Sarah (30/09) ; le nuage s'ouvre d'un clic pour les adhérents. */}
+                      Aucun résultat. Utilisez le{" "}
+                      {adherent ? (
+                        <button
+                          type="button"
+                          className={styles.lienNuage}
+                          onClick={() => setNuageDemande(true)}
+                        >
+                          nuage de mots-clés
+                        </button>
+                      ) : (
+                        <Link href="/adhesion" className={styles.lienNuage} title="Le nuage de mots-clés est réservé aux adhérents">
+                          nuage de mots-clés
+                        </Link>
+                      )}
                     </p>
                   ) : cle === "projets" ? (
                     <ul className={`${projetsStyles.grille} ${enTete ? "" : styles.apercu}`}>
