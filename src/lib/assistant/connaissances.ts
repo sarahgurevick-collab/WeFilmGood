@@ -56,7 +56,7 @@ Fiches de lecture (analyses)
 Carte des étoiles (anciennement « Pitchothèque », nom de WFG 1 ; le menu dit « Carte des étoiles »)
 - Réservée aux membres connectés. Recherche par projet, thème ou mot-clé ; filtres : format, genre, audience, budget, langue.
 - Ordre : projets labellisés d'abord, puis selon le remplissage de la fiche.
-- Le nuage de mots-clés et les mots-clés proches sont réservés aux adhérents.
+- Le nuage de mots-clés et les mots-clés proches sont ouverts à tous les membres connectés (adhérents ou non).
 
 Messagerie (menu « Messages »)
 - Un membre peut écrire à l'auteur d'un projet (« Contacter l'auteur »). L'auteur reçoit un email le prévenant d'un message. Pour lire ses messages, il faut une adhésion active.
