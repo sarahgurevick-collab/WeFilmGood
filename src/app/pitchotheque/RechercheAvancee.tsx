@@ -34,7 +34,10 @@ export default function RechercheAvancee({
         <span className={styles.avanceeFermer} aria-hidden="true">×</span>
       </summary>
 
-      <form method="get" action="/pitchotheque" className={styles.avanceePanneau}>
+      {/* La clé force les menus à se remettre à leur valeur quand les
+          filtres changent : sans elle, « Tout effacer » vidait le compteur
+          mais laissait « Court métrage » sélectionné (30/09). */}
+      <form key={adresse(filtres)} method="get" action="/pitchotheque" className={styles.avanceePanneau}>
         <label className={formStyles.field}>
           <span>Format du projet</span>
           <select name="format" defaultValue={filtres.format ?? ""}>
