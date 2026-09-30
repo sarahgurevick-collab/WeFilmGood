@@ -64,11 +64,7 @@ export default async function ProjetsPage({
 
   const [adherent, premiere] = await Promise.all([peutVoirLeNuage(), categorieDeDepart()]);
 
-  const [{ data: genres }, { data: selections }, { data: comediens }] = await Promise.all([
-    supabase.from("genres").select("slug, label_fr").order("position"),
-    supabase.rpc("selections_disponibles"),
-    supabase.rpc("comediens_disponibles"),
-  ]);
+  const { data: genres } = await supabase.from("genres").select("slug, label_fr").order("position");
 
   // L'ordre vient de la base (fonction « pitchotheque ») : labellisés
   // d'abord, puis par tranche de remplissage, tirés au sort chaque nuit.
@@ -136,12 +132,7 @@ export default async function ProjetsPage({
       connecte={!!user}
     >
       <Finder adherent={adherent} filtres={filtres} premiere={premiere} requeteInitiale={typeof params.q === "string" ? params.q : ""} />
-      <RechercheAvancee
-        filtres={filtres}
-        genres={genres ?? []}
-        selections={(selections ?? []) as { libelle: string; effectif: number }[]}
-        comediens={(comediens ?? []) as { libelle: string; effectif: number }[]}
-      />
+      <RechercheAvancee filtres={filtres} genres={genres ?? []} />
 
       {!projects || projects.length === 0 ? (
         <p className={formStyles.hint}>
