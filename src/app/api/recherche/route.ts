@@ -28,6 +28,10 @@ export async function GET(request: Request) {
     rechercherTalents(q),
     rechercherPersonnages(q),
   ]);
+  // Rien nulle part : noté dans le journal des recherches sans résultat.
+  if (p.total === 0 && t.total === 0 && c.total === 0) {
+    await supabase.rpc("noter_recherche_sans_resultat", { q });
+  }
   return Response.json({
     projets: p.projets,
     total: p.total,

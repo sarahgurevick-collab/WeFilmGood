@@ -39,14 +39,17 @@ export default function Finder({
   adherent = false,
   filtres = AUCUN,
   premiere = "projets",
+  requeteInitiale = "",
 }: {
   adherent?: boolean;
   /** Les filtres de la recherche avancée, qui s'ajoutent au mot cherché. */
   filtres?: Filtres;
   /** La catégorie en tête en arrivant, selon le métier du membre. */
   premiere?: Categorie;
+  /** Une recherche déjà écrite en arrivant (?q=…), depuis le journal de l'administration. */
+  requeteInitiale?: string;
 }) {
-  const [requete, setRequete] = useState("");
+  const [requete, setRequete] = useState(requeteInitiale);
   // Un seul champ pour trois catégories (29/09) : celle choisie passe en
   // tête, en grand ; les deux autres suivent en aperçu.
   const [choisie, setChoisie] = useState<Categorie>(premiere);

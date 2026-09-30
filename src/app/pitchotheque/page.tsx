@@ -135,7 +135,7 @@ export default async function ProjetsPage({
       nav="pitchotheque"
       connecte={!!user}
     >
-      <Finder adherent={adherent} filtres={filtres} premiere={premiere} />
+      <Finder adherent={adherent} filtres={filtres} premiere={premiere} requeteInitiale={typeof params.q === "string" ? params.q : ""} />
       <RechercheAvancee
         filtres={filtres}
         genres={genres ?? []}
