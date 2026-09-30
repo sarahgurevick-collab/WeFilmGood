@@ -24,6 +24,8 @@ export type ResultatRecherche = {
 
 // En dessous, la recherche par les lettres est complétée par le sens.
 const PEU_DE_RESULTATS = 8;
+// Un mot-clé compte comme voisin de sens à partir de cette proximité (0 à 1) — pour le nuage.
+const PROXIMITE_MINIMALE = 0.45;
 // Une fiche (titre, tagline, logline) compte comme proche par le sens à
 // partir de cette proximité — réglée sur des essais : « boulangerie »
 // trouve « Pain Perdu » (0,41), « banane » ne trouve rien (0,39 au mieux).
