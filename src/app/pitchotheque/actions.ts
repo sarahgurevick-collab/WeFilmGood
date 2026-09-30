@@ -24,8 +24,6 @@ export type ResultatRecherche = {
 
 // En dessous, la recherche par les lettres est complétée par le sens.
 const PEU_DE_RESULTATS = 8;
-// Un mot-clé compte comme voisin de sens à partir de cette proximité (0 à 1).
-const PROXIMITE_MINIMALE = 0.45;
 // Une fiche (titre, tagline, logline) compte comme proche par le sens à
 // partir de cette proximité — réglée sur des essais : « boulangerie »
 // trouve « Pain Perdu » (0,41), « banane » ne trouve rien (0,39 au mieux).
@@ -46,32 +44,14 @@ async function projetsParLeSens(
   const v = await vecteur(q);
   if (!v) return { ids: [], mots: [] };
   const supabase = await createClient();
-  const { data } = await supabase.rpc("mots_cles_par_sens", { p_vecteur: enTexte(v), p_limite: 12 });
-  const proches = ((data ?? []) as { keyword_id: number; label_fr: string; effectif: number; proximite: number }[])
-    .filter((m) => m.proximite >= PROXIMITE_MINIMALE && m.effectif > 0 && m.label_fr.toLowerCase() !== q.toLowerCase());
-  if (proches.length === 0) return { ids: [], mots: [] };
-
   const ids: string[] = [];
   const mots: string[] = [];
-  for (const m of proches) {
-    if (ids.length >= limite) break;
-    // Les mêmes filtres que la recherche par les lettres.
-    const { data: trouves } = await supabase.rpc("rechercher_projets", {
-      q: m.label_fr,
-      p_limite: limite,
-      ...parametresRpc(filtres),
-    });
-    let ajoutes = 0;
-    for (const t of (trouves ?? []) as { id: string }[]) {
-      if (dejaTrouves.has(t.id) || ids.length >= limite) continue;
-      dejaTrouves.add(t.id);
-      ids.push(t.id);
-      ajoutes++;
-    }
-    if (ajoutes > 0) mots.push(m.label_fr);
-  }
+  // Les mots-clés voisins par le sens ne complètent plus la recherche
+  // (30/09/2026) : sur un mot rare, le modèle rapproche par les lettres
+  // (« tricot » → trilingue, triade, péniche…), et Sarah a trouvé le
+  // résultat absurde. Ils restent dans le nuage, comme suggestion.
 
-  // Puis le texte même des fiches (0097) : un projet qui parle de
+  // Le texte même des fiches (0097) : un projet qui parle de
   // poissons ou de pêcheurs remonte pour « sardine », même sans le mot.
   if (ids.length < limite) {
     const { data: fiches } = await supabase.rpc("projets_par_sens", {
