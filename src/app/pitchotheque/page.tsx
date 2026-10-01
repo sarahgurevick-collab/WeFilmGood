@@ -186,7 +186,7 @@ export default async function ProjetsPage({
                         {p.title}
                         {p.status === "labellise" && (
                           <span className={styles.label} title="Projet labellisé WeFilmGood">
-                            <LogoComplet hauteur={22} couleur="var(--engagement, #da2c25)" />
+                            <LogoComplet hauteur={22} />
                           </span>
                         )}
                       </strong>

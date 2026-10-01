@@ -419,7 +419,7 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
           {p.title}
           {p.status === "labellise" && (
             <span className={projetsStyles.label} title="Projet labellisé WeFilmGood">
-              <LogoComplet hauteur={22} couleur="var(--engagement, #da2c25)" />
+              <LogoComplet hauteur={22} />
             </span>
           )}
         </strong>
