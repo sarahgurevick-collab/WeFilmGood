@@ -69,10 +69,10 @@ export default async function ProjetPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ message?: string; enregistre?: string }>;
+  searchParams: Promise<{ message?: string; enregistre?: string; depuis?: string }>;
 }) {
   const { id } = await params;
-  const { enregistre } = await searchParams;
+  const { enregistre, depuis } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -328,6 +328,11 @@ export default async function ProjetPage({
 
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
+        retourSaisie={
+          isOwner || estAdmin
+            ? hrefBloc(id, BLOCS.find((b) => b.cle === depuis)?.cle ?? "fiche")
+            : null
+        }
         equipe={equipe}
         personnages={(characters ?? []).map((c) => ({
           id: c.id,

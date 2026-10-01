@@ -54,12 +54,6 @@ export default async function BlocProjet({
     <PageShell nav="deposer" connecte>
       <div className={styles.scene}>
         <div className={styles.colonneAffiche}>
-          {/* Nouvelle fiche : pas de lien de retour, le menu mène déjà à la pitchothèque. */}
-          {projet && (
-            <Link href={`/projet/${projet.id}`} className={styles.retour}>
-              ← Retour à la fiche
-            </Link>
-          )}
           <AfficheProjet
             initial={{
               title: projet?.title ?? "",
@@ -75,7 +69,7 @@ export default async function BlocProjet({
             vignette={vignette}
             enDirect={actif === "fiche"}
             lienFiche={actif === "fiche" || !projet ? null : hrefBloc(projet.id, "fiche")}
-            lienComplet={projet ? `/projet/${projet.id}` : null}
+            lienComplet={projet ? `/projet/${projet.id}?depuis=${actif}` : null}
           />
         </div>
 

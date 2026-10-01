@@ -50,6 +50,7 @@ export default function CadreEquipe({
   image,
   bandeau,
   avis,
+  retourSaisie,
 }: {
   /** Les photos du moodboard (adresses signées). */
   moodboard: string[];
@@ -63,6 +64,8 @@ export default function CadreEquipe({
   bandeau?: string | null;
   /** Le videopitch (identifiants Vimeo), s'il y en a un. */
   videopitch?: { fr: string | null; en: string | null; titre: string };
+  /** Pour l'auteur et l'admin : la page de saisie où ramène un clic sur l'image. */
+  retourSaisie?: string | null;
 }) {
   const avecMoodboard = moodboard.length > 0;
   const avecPersonnages = personnages.length > 0;
@@ -169,6 +172,7 @@ export default function CadreEquipe({
         <CoteFiche
           image={image}
           bandeau={bandeau ?? null}
+          lienRetour={retourSaisie ?? null}
           onVideo={() => setVideoLancee(true)}
           videopitch={
             videopitch && (videopitch.fr || videopitch.en) ? (

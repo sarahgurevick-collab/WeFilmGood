@@ -216,16 +216,6 @@ a.manque:hover {
   gap: 12px;
 }
 
-.retour {
-  font-size: 13px;
-  color: var(--dim);
-  text-decoration: none;
-}
-
-.retour:hover {
-  color: var(--fg);
-}
-
 .colonneFormulaire {
   min-width: 0;
   max-width: 720px;

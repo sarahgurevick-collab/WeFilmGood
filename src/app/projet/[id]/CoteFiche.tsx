@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import styles from "./cadre.module.css";
 import Bandeau from "@/components/Bandeau";
@@ -15,6 +16,7 @@ export default function CoteFiche({
   bandeau,
   videopitch,
   onVideo,
+  lienRetour,
 }: {
   image: string | null;
   bandeau?: string | null;
@@ -22,7 +24,11 @@ export default function CoteFiche({
   /** Prévient quand on lance la vidéo (le cadre affiche alors le
       bouton de langue). */
   onVideo?: () => void;
+  /** Pour l'auteur et l'admin : la page de saisie d'où l'on vient. Un clic
+      sur l'image y ramène — on sort du « zoom » (01/10). */
+  lienRetour?: string | null;
 }) {
+  const router = useRouter();
   const [video, setVideo] = useState(false);
 
   if (video && videopitch) {
@@ -30,7 +36,22 @@ export default function CoteFiche({
   }
 
   return (
-    <div className={styles.coteFiche}>
+    <div
+      className={lienRetour ? `${styles.coteFiche} ${styles.coteFicheRetour}` : styles.coteFiche}
+      {...(lienRetour
+        ? {
+            role: "link",
+            tabIndex: 0,
+            "aria-label": "Revenir à la saisie de la fiche",
+            onClick: (e: React.MouseEvent) => {
+              if (!(e.target as Element).closest("button")) router.push(lienRetour);
+            },
+            onKeyDown: (e: React.KeyboardEvent) => {
+              if (e.key === "Enter" && e.target === e.currentTarget) router.push(lienRetour);
+            },
+          }
+        : {})}
+    >
       <Bandeau valeur={bandeau ?? null} grand />
       {image && (
         // eslint-disable-next-line @next/next/no-img-element
