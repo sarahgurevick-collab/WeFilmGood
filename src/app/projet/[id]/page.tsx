@@ -330,6 +330,11 @@ export default async function ProjetPage({
         })()}
       </p>
 
+      {/* La tagline et la logline, sous le titre, avant le cadre : sous le
+          cadre, elles se perdaient (01/10). */}
+      {project.logline && <p style={{ marginTop: 12 }}>{project.logline}</p>}
+      {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
+
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
         retourSaisie={
@@ -362,11 +367,8 @@ export default async function ProjetPage({
         }
       />
 
-      {/* Sous le cadre, d'abord ce qui compte pour tous : la tagline, la
-          logline, les prix — puis les sélections et comédiens repris de
-          WFG 1, en petit (28/09 : page allégée à la demande de Sarah). */}
-      {project.logline && <p style={{ marginTop: 24 }}>{project.logline}</p>}
-      {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
+      {/* Sous le cadre : les prix — puis les sélections et comédiens repris
+          de WFG 1, en petit (28/09 : page allégée à la demande de Sarah). */}
       {project.has_awards && (
         <p className={presentation.prix}>
           <strong>Projet primé</strong>
