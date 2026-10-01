@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import Logo from "./Logo";
 import LogoAnime from "./LogoAnime";
 import styles from "./BarreNav.module.css";
 
@@ -63,15 +62,12 @@ export default async function BarreNav({
               .filter(Boolean)
               .join(" ")}
           >
-            {/* « Galaxie WFG » : le logo tient la place des trois lettres, et
-                tourne sur vert, jaune, bleu — pas le rouge, celui de
-                l'onglet actif, sur lequel il disparaîtrait (01/10). */}
+            {/* « Galaxie WFG » : le logo complet tient la place des trois
+                lettres et change de couleur avec celui du haut (01/10). */}
             {o.cle === "pitchotheque" ? (
               <>
                 Galaxie{" "}
-                <span className={styles.logoOnglet}>
-                  <Logo size={16} couleur="currentColor" />
-                </span>
+                <span className={styles.logoOnglet} role="img" aria-label="WeFilmGood" />
               </>
             ) : (
               o.label

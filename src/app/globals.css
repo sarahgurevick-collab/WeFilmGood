@@ -66,12 +66,21 @@
   initial-value: #ffffff;
 }
 
+/* La même couleur, pour un dessin posé sur du rouge (le logo de l'onglet
+   actif « Galaxie ») : au tour du rouge, il passe au blanc au lieu de
+   disparaître. */
+@property --engagement-sur-rouge {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+
 @keyframes engagements {
-  0%, 18.75% { --engagement: #da2c25; --engagement-texte: #ffffff; }
-  25%, 43.75% { --engagement: #35b05e; --engagement-texte: #ffffff; }
-  50%, 68.75% { --engagement: #f2c230; --engagement-texte: #1a1a1a; }
-  75%, 93.75% { --engagement: #3b8ef5; --engagement-texte: #ffffff; }
-  100% { --engagement: #da2c25; --engagement-texte: #ffffff; }
+  0%, 18.75% { --engagement: #da2c25; --engagement-texte: #ffffff; --engagement-sur-rouge: #ffffff; }
+  25%, 43.75% { --engagement: #35b05e; --engagement-texte: #ffffff; --engagement-sur-rouge: #35b05e; }
+  50%, 68.75% { --engagement: #f2c230; --engagement-texte: #1a1a1a; --engagement-sur-rouge: #f2c230; }
+  75%, 93.75% { --engagement: #3b8ef5; --engagement-texte: #ffffff; --engagement-sur-rouge: #3b8ef5; }
+  100% { --engagement: #da2c25; --engagement-texte: #ffffff; --engagement-sur-rouge: #ffffff; }
 }
 
 :root {

@@ -45,28 +45,24 @@
   color: #fff;
 }
 
-/* Le logo de l'onglet « Galaxie » : les trois couleurs des engagements,
-   3,6 s chacune comme l'horloge du site, sans le rouge. */
+/* Le logo de l'onglet « Galaxie » : le logo complet, lettres comprises,
+   peint à travers le fichier original (pochoir, comme LogoAnime). Il suit
+   l'horloge du site, rouge compris, pour changer en même temps que le
+   logo du haut. Sur l'onglet actif, rouge lui aussi, le tour du rouge
+   devient blanc. */
 .logoOnglet {
   display: inline-block;
   vertical-align: middle;
-  margin: -4px 0 -2px 3px;
-  line-height: 0;
-  color: #35b05e;
-  animation: couleursGalaxie 10.8s linear infinite;
+  width: 32px;
+  height: 26px;
+  margin: -8px -2px -6px 4px;
+  background-color: var(--engagement, #da2c25);
+  -webkit-mask: url("/label-wfg.png") center / contain no-repeat;
+  mask: url("/label-wfg.png") center / contain no-repeat;
 }
 
-@keyframes couleursGalaxie {
-  0%, 25% { color: #35b05e; }
-  33.33%, 58.33% { color: #f2c230; }
-  66.67%, 91.67% { color: #3b8ef5; }
-  100% { color: #35b05e; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .logoOnglet {
-    animation: none;
-  }
+.ongletActif .logoOnglet {
+  background-color: var(--engagement-sur-rouge, #ffffff);
 }
 
 /* Le nombre de messages non lus, à côté du mot et non plus caché dans
