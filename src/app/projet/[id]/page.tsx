@@ -305,9 +305,9 @@ export default async function ProjetPage({
       {enregistre && <p className={profilStyles.ok}>Modifications enregistrées.</p>}
 
       {/* Sous le titre, sur une seule ligne : genre, format, langue, budget,
-          audience, puis les mots-clés — écrits comme du texte, pas en
-          boutons : ils ne sont pas cliquables. Un mot-clé qui répète le
-          genre (« drame ») n'est pas écrit deux fois. */}
+          audience, puis, pour l'admin seulement, les mots-clés — écrits
+          comme du texte, pas en boutons : ils ne sont pas cliquables. Un
+          mot-clé qui répète le genre (« drame ») n'est pas écrit deux fois. */}
       <p className={formStyles.hint}>
         {(() => {
           const reperes = [
@@ -318,6 +318,10 @@ export default async function ProjetPage({
             project.format !== "court_metrage" && project.budget_range ? BUDGET_LISIBLE[project.budget_range] : null,
             project.format !== "court_metrage" && project.target_audience ? AUDIENCE_LISIBLE[project.target_audience] : null,
           ].filter((x): x is string => Boolean(x));
+          // Les mots-clés servent à la recherche, en coulisse : seule
+          // l'admin les voit ici, pour comprendre pourquoi un projet sort
+          // dans une recherche (01/10).
+          if (!estAdmin) return reperes.join(" · ");
           const deja = new Set(reperes.map((r) => r.toLowerCase()));
           const mots = (motsCles ?? [])
             .map((m) => m.keyword?.label_fr)
