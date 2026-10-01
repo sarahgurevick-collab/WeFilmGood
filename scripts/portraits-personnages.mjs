@@ -308,10 +308,14 @@ if (commande === "reste") {
                   texte(p.nom, { bold: true, size: 20 }),
                   texte(`« ${p.projet} »`, { italics: true }),
                   new Paragraph({ children: [new ExternalHyperlink({ link: lien, children: [new TextRun({ text: "Ouvrir les personnages du projet", style: "Hyperlink", size: 18 })] })] }),
-                  // Une recherche toute prête sur Unsplash (photos gratuites), avec les
+                  // Une recherche toute prête sur Unsplash et Adobe Stock (photos gratuites), avec les
                   // mots qui ont servi chez Pixabay : Sarah y choisit à la main.
                   ...(s.requete && !s.requete.startsWith("WIKI:")
-                    ? [new Paragraph({ children: [new ExternalHyperlink({ link: `https://unsplash.com/fr/s/photos/${encodeURIComponent(s.requete.replace(/\s+/g, "-"))}`, children: [new TextRun({ text: "Chercher une autre photo sur Unsplash", style: "Hyperlink", size: 18 })] })] })]
+                    ? [
+                        new Paragraph({ children: [new ExternalHyperlink({ link: `https://unsplash.com/fr/s/photos/${encodeURIComponent(s.requete.replace(/\s+/g, "-"))}`, children: [new TextRun({ text: "Chercher une autre photo sur Unsplash", style: "Hyperlink", size: 18 })] })] }),
+                        // La collection gratuite d'Adobe Stock (adresse vérifiée par Sarah le 01/10).
+                        new Paragraph({ children: [new ExternalHyperlink({ link: `https://stock.adobe.com/fr/search/free?k=${encodeURIComponent(s.requete)}`, children: [new TextRun({ text: "Chercher sur Adobe Stock (gratuit)", style: "Hyperlink", size: 18 })] })] }),
+                      ]
                     : []),
                 ],
                 largeurs[0],
