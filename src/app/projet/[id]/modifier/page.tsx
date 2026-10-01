@@ -41,8 +41,9 @@ export default async function ModifierProjetPage({
         <ChampsFiche valeurs={projet} genres={genres ?? []} />
 
         <div className={profilStyles.pied}>
-          <Link href={`/projet/${id}`} className={profilStyles.lienDiscret}>
-            Annuler
+          {/* Rien n'est enregistré sans le bouton : la flèche ramène à « Mes projets » (01/10). */}
+          <Link href={`/mes-projets?projet=${id}`} className={profilStyles.lienDiscret}>
+            ← Annuler
           </Link>
           <button type="submit" className={formStyles.submit}>
             Enregistrer
