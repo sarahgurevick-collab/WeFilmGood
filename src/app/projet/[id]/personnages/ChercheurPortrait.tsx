@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import formStyles from "@/components/form.module.css";
 import styles from "../../blocs.module.css";
-import { PORTRAIT_CHOISI } from "./CasePortrait";
+import { PORTRAIT_CHOISI, PORTRAIT_RETIRE } from "./CasePortrait";
 
 type Portrait = { apercu: string; url: string; titre: string; source: string };
 
@@ -14,7 +14,9 @@ type Portrait = { apercu: string; url: string; titre: string; source: string };
  *
  * Depuis le 01/10 : les propositions s'affichent d'elles-mêmes dès qu'un
  * nom est tapé, sans passer par le bouton, et le portrait cliqué se pose
- * aussitôt dans la case « Portrait » du personnage (CasePortrait).
+ * aussitôt dans la case « Portrait » du personnage (CasePortrait). Les
+ * propositions s'effacent alors, et le bouton « Enregistrer ce portrait »
+ * apparaît ; la croix de la case retire le choix et les fait revenir.
  */
 export default function ChercheurPortrait({ nomInitial }: { nomInitial: string }) {
   const [q, setQ] = useState(nomInitial);
@@ -52,12 +54,19 @@ export default function ChercheurPortrait({ nomInitial }: { nomInitial: string }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, aTape]);
 
-  const choisir = (p: Portrait | null) => {
+  const choisir = (p: Portrait) => {
     setChoisi(p);
-    racine.current
-      ?.closest("form")
-      ?.dispatchEvent(new CustomEvent(PORTRAIT_CHOISI, { detail: p?.apercu ?? null }));
+    racine.current?.closest("form")?.dispatchEvent(new CustomEvent(PORTRAIT_CHOISI, { detail: p.apercu }));
   };
+
+  // La croix de la case « Portrait » retire le choix.
+  useEffect(() => {
+    const formulaire = racine.current?.closest("form");
+    if (!formulaire) return;
+    const retirer = () => setChoisi(null);
+    formulaire.addEventListener(PORTRAIT_RETIRE, retirer);
+    return () => formulaire.removeEventListener(PORTRAIT_RETIRE, retirer);
+  }, []);
 
   return (
     <div ref={racine} className={styles.chercheur}>
@@ -79,26 +88,27 @@ export default function ChercheurPortrait({ nomInitial }: { nomInitial: string }
                 chercher();
               }
             }}
-            placeholder="Juliette Binoche"
           />
-          <button type="button" onClick={() => chercher()} disabled={enCours} className={styles.chercheurBouton}>
-            {enCours ? "Recherche…" : "Proposition de portrait"}
-          </button>
+          {choisi ? (
+            <button type="submit" className={styles.chercheurBouton}>
+              Enregistrer ce portrait
+            </button>
+          ) : (
+            enCours && <span className={formStyles.hint}>Recherche…</span>
+          )}
         </span>
       </label>
 
-      {portraits && portraits.length === 0 && (
+      {!choisi && portraits && portraits.length === 0 && (
         <p className={formStyles.hint}>Aucune photo trouvée pour « {q} ».</p>
       )}
-      {portraits && portraits.length > 0 && (
+      {!choisi && portraits && portraits.length > 0 && (
         <ul className={styles.chercheurResultats}>
           {portraits.map((p) => (
             <li key={p.url}>
               <button
                 type="button"
-                onClick={() => choisir(choisi?.url === p.url ? null : p)}
-                className={choisi?.url === p.url ? styles.chercheurRetenu : undefined}
-                aria-pressed={choisi?.url === p.url}
+                onClick={() => choisir(p)}
                 title={`${p.titre} — ${p.source}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -5,6 +5,8 @@ import styles from "../../blocs.module.css";
 
 /** Le nom du signal envoyé par ChercheurPortrait au formulaire du personnage. */
 export const PORTRAIT_CHOISI = "portrait-choisi";
+/** Le signal inverse : la croix de la case retire le portrait choisi. */
+export const PORTRAIT_RETIRE = "portrait-retire";
 
 /**
  * La case « Portrait » d'un personnage. Un portrait cliqué dans les
@@ -31,6 +33,21 @@ export default function CasePortrait({ photo }: { photo: string | null }) {
         <img src={image} alt="" />
       ) : (
         <span>Portrait</span>
+      )}
+      {/* La croix : retire le portrait qu'on vient de choisir (pas celui
+          déjà enregistré), et les propositions reviennent. */}
+      {choisi && (
+        <button
+          type="button"
+          className={styles.portraitRetirer}
+          aria-label="Retirer ce portrait"
+          onClick={() => {
+            setChoisi(null);
+            cadre.current?.closest("form")?.dispatchEvent(new CustomEvent(PORTRAIT_RETIRE));
+          }}
+        >
+          ×
+        </button>
       )}
     </div>
   );
