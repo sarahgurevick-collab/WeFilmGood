@@ -35,14 +35,15 @@ entrée par personnage de la part.
 - Animal, créature, robot, voix, groupe, lieu, objet : écris `""` (chaîne
   vide). Ces personnages n'auront pas de portrait.
 
-## Étape 2 — chercher
+## Étape 2 — chercher (ce n'est pas toi)
 
-Lance, depuis `/home/wfg/projects/wefilmgood` :
+La recherche des photos est lancée par la séance principale, une part à la
+fois (`node scripts/portraits-personnages.mjs chercher <dossier> <N>`) : en
+parallèle, la banque refuse une vignette sur deux. Elle fabrique
+`<dossier>/feuilles-<N>-1.jpg`, `-2.jpg`… : six personnages par feuille, et
+pour chacun jusqu'à douze photos numérotées de 0 à 11.
 
-    node scripts/portraits-personnages.mjs chercher <dossier> <N>
-
-Cela fabrique `<dossier>/feuilles-<N>-1.jpg`, `-2.jpg`… : six personnages par
-feuille, et pour chacun jusqu'à douze photos numérotées de 0 à 11.
+On te confie soit l'étape 1, soit l'étape 3 : ne fais que celle demandée.
 
 ## Étape 3 — choisir
 

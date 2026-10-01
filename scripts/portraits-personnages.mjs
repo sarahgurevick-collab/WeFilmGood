@@ -6,11 +6,13 @@
 //   node scripts/portraits-personnages.mjs reste
 //   node scripts/portraits-personnages.mjs lot 250 50 <dossier>
 //       → <dossier>/part-1.json … (50 personnages par part)
-//   un sous-agent par part (consignes : scripts/portraits-consignes.md)
-//       écrit requetes-N.json, lance « chercher », regarde les feuilles,
-//       écrit choix-N.json
+//   un sous-agent par part (consignes : scripts/portraits-consignes.md,
+//       étape 1) écrit requetes-N.json
 //   node scripts/portraits-personnages.mjs chercher <dossier> <N>
 //       → candidats-N.json, feuilles-N-*.jpg (6 personnages par feuille)
+//       UNE PART À LA FOIS, jamais en parallèle : la banque refuse sinon
+//       une vignette sur deux
+//   un sous-agent par part (étape 3) regarde les feuilles, écrit choix-N.json
 //   node scripts/portraits-personnages.mjs poser <dossier> <N>
 //       → copie le portrait retenu sur le site, marque photo_proposee,
 //         note le suivi (table portraits_suivi, migration 0121)
@@ -88,6 +90,17 @@ async function wikipedia(nom) {
   return c;
 }
 
+// Une vignette de la banque, avec trois essais : en allant trop vite (cinq
+// parts à la fois, le 01/10), près d'une vignette sur deux était refusée.
+async function vignette(adresse) {
+  for (let essai = 0; ; essai++) {
+    const r = await fetch(adresse, { headers: AGENT });
+    if (r.ok) return Buffer.from(await r.arrayBuffer());
+    if (essai === 2) throw new Error(`vignette ${r.status}`);
+    await pause(3000 * (essai + 1));
+  }
+}
+
 const etiquette = (texte, largeur, hauteur, taille, fond, couleur) =>
   Buffer.from(
     `<svg width="${largeur}" height="${hauteur}"><rect width="${largeur}" height="${hauteur}" fill="${fond}"/>` +
@@ -144,11 +157,19 @@ if (commande === "reste") {
     } catch (e) {
       console.log(p.k, "ERREUR", e.message);
     }
-    c = c.filter((x, i) => c.findIndex((y) => y.source_id === x.source_id) === i).slice(0, 12);
+    c = c.filter((x, i) => c.findIndex((y) => y.source_id === x.source_id) === i);
+    // Pixabay classe par popularité : les mêmes têtes d'affiche reviennent
+    // d'un personnage à l'autre. On garde les 4 premières et on tire les 8
+    // autres au hasard dans la suite, pour varier les visages proposés.
+    if (c.length > 12 && c[0].source === "pixabay") {
+      const suite = c.slice(4).sort(() => Math.random() - 0.5);
+      c = [...c.slice(0, 4), ...suite.slice(0, 8)];
+    }
+    c = c.slice(0, 12);
     const pieces = [];
     for (let i = 0; i < c.length; i++) {
       try {
-        const b = Buffer.from(await (await fetch(c[i].apercu, { headers: AGENT })).arrayBuffer());
+        const b = await vignette(c[i].apercu);
         const t = await sharp(b).resize(156, 156, { fit: "contain", background: "#fff" }).toBuffer();
         const pos = { left: (i % 4) * 160 + 2, top: Math.floor(i / 4) * 160 + 2 };
         pieces.push({ input: t, ...pos }, { input: etiquette(i, 30, 22, 16, "black", "yellow"), ...pos });
@@ -160,8 +181,8 @@ if (commande === "reste") {
     await sharp({ create: { width: 640, height: 480, channels: 3, background: "#fff" } }).composite(pieces).jpeg({ quality: 78 }).toFile(planche);
     candidats[p.k] = c;
     planches.push({ k: p.k, planche });
-    // Cinq parts cherchent en même temps : Pixabay accepte 100 demandes par minute.
-    await pause(4000);
+    // Une seule part à la fois : Pixabay accepte 100 demandes par minute.
+    await pause(1500);
   }
   writeFileSync(join(dossier, `candidats-${n}.json`), JSON.stringify(candidats));
   for (let f = 0; f * 6 < planches.length; f++) {
@@ -178,7 +199,11 @@ if (commande === "reste") {
   }
   console.log(`${planches.length} personnages, ${Math.ceil(planches.length / 6)} feuilles : ${dossier}/feuilles-${n}-*.jpg`);
 } else if (commande === "poser") {
-  const [dossier, n] = args;
+  const [dossier, n, option] = args;
+  // « sans-rien » : les personnages sans portrait ne sont pas notés au
+  // suivi, ils repasseront dans un prochain lot (quand la recherche a été
+  // amputée par des vignettes manquantes).
+  const sansRien = option === "sans-rien";
   const part = lire(join(dossier, `part-${n}.json`));
   const requetes = lire(join(dossier, `requetes-${n}.json`));
   const candidats = lire(join(dossier, `candidats-${n}.json`));
@@ -197,9 +222,15 @@ if (commande === "reste") {
     let avis = ["bon", "moyen"].includes(c.avis) && c.n !== null && c.n !== undefined ? c.avis : "rien";
     let note = c.note ?? null;
     const image = avis === "rien" ? null : candidats[p.k]?.[c.n];
-    if (avis !== "rien" && (!image || (image.source === "pixabay" && pris.has(image.source_id)))) {
+    // Photo déjà donnée à un autre personnage : rien n'est noté, le
+    // personnage repassera dans un prochain lot avec d'autres photos.
+    if (avis !== "rien" && image?.source === "pixabay" && pris.has(image.source_id)) {
+      bilan.saute++;
+      continue;
+    }
+    if (avis !== "rien" && !image) {
       avis = "rien";
-      note = image ? "Photo déjà donnée à un autre personnage" : "Choix illisible";
+      note = "Choix illisible";
     }
     const { data: perso } = await supabase
       .from("characters")
@@ -232,6 +263,10 @@ if (commande === "reste") {
       }
       await pause(300);
     }
+    if (avis === "rien" && sansRien) {
+      bilan.saute++;
+      continue;
+    }
     const suivi = await supabase.from("portraits_suivi").upsert({
       character_id: p.id,
       lot,
@@ -249,7 +284,7 @@ if (commande === "reste") {
   const [dossier] = args;
   const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, ImageRun, WidthType, HeadingLevel, ExternalHyperlink } = await import("docx");
   const lot = basename(dossier);
-  const suivi = await tout("portraits_suivi", "character_id, avis, note", (q) => q.eq("lot", lot));
+  const suivi = await tout("portraits_suivi", "character_id, avis, note, requete", (q) => q.eq("lot", lot));
   const parts = readdirSync(dossier).filter((f) => /^part-\d+\.json$/.test(f)).flatMap((f) => lire(join(dossier, f)));
   const parId = new Map(parts.map((p) => [p.id, p]));
   const cellule = (enfants, largeur) => new TableCell({ children: enfants, width: { size: largeur, type: WidthType.PERCENTAGE } });
@@ -273,6 +308,11 @@ if (commande === "reste") {
                   texte(p.nom, { bold: true, size: 20 }),
                   texte(`« ${p.projet} »`, { italics: true }),
                   new Paragraph({ children: [new ExternalHyperlink({ link: lien, children: [new TextRun({ text: "Ouvrir les personnages du projet", style: "Hyperlink", size: 18 })] })] }),
+                  // Une recherche toute prête sur Unsplash (photos gratuites), avec les
+                  // mots qui ont servi chez Pixabay : Sarah y choisit à la main.
+                  ...(s.requete && !s.requete.startsWith("WIKI:")
+                    ? [new Paragraph({ children: [new ExternalHyperlink({ link: `https://unsplash.com/fr/s/photos/${encodeURIComponent(s.requete.replace(/\s+/g, "-"))}`, children: [new TextRun({ text: "Chercher une autre photo sur Unsplash", style: "Hyperlink", size: 18 })] })] })]
+                    : []),
                 ],
                 largeurs[0],
               ),
