@@ -126,7 +126,7 @@ export default async function BlocProjet({
           {children}
           <p className={profilStyles.menuNote} style={{ marginTop: 28 }}>
             {projet
-              ? "Chaque bloc s'enregistre seul. Vous pouvez partir et revenir quand vous voulez."
+              ? "Chaque étape s'enregistre séparément : pensez à cliquer sur Enregistrer avant de quitter la page."
               : "Les documents et les personnages s'ouvrent dès que la fiche est créée."}
           </p>
         </div>
