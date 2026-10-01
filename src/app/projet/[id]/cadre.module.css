@@ -90,6 +90,7 @@
 
 .voir {
   padding: 6px 14px;
+  border-radius: 999px;
   background: var(--engagement, #da2c25);
   color: var(--engagement-texte, #ffffff);
   font-size: 14px;
