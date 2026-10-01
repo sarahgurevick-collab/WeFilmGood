@@ -160,7 +160,12 @@ function FormulairePersonnage({
           <span>{photo ? "Remplacer le portrait" : "Portrait (JPG ou PNG)"}</span>
           <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" />
         </label>
-        <ChercheurPortrait nomInitial={personnage?.actor_name ?? ""} />
+        <ChercheurPortrait
+          nomInitial={personnage?.actor_name ?? ""}
+          sansPortrait={!photo}
+          genreInitial={personnage?.gender ?? ""}
+          ageInitial={personnage?.age_range ?? ""}
+        />
 
         <div className={styles.piedPersonnage}>
           {personnage ? (

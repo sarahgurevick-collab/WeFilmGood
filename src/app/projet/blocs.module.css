@@ -260,3 +260,21 @@
   object-fit: cover;
 }
 
+
+/* « D'autres portraits » : relance le tirage des propositions. */
+.lienAutres {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--dim);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.lienAutres:hover {
+  color: var(--fg);
+}
