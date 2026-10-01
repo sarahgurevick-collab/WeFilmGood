@@ -104,9 +104,9 @@ export default async function MesProjetsPage({
     <PageShell nav="deposer" connecte>
       <h1 className={profilStyles.titre}>Mes projets</h1>
       <p className={profilStyles.chapeau}>
-        {tous.length === 1 ? "Votre fiche projet" : `Vos ${tous.length} fiches projet`}, telles que
-        les voient les talents. Une nouvelle version de votre scénario se dépose depuis le bloc
-        « Documents » de la fiche : inutile de créer une seconde fiche pour le même projet.
+        Une nouvelle version de votre scénario se dépose depuis l&apos;étape n°2 « Documents ». Créer
+        une nouvelle fiche projet avec le même titre seulement si vous l&apos;adaptez dans un autre
+        format. Sinon, il faut rester sur la même fiche projet.
       </p>
 
       {/* Le bouton de création en haut, bien visible (28/09), à côté du
