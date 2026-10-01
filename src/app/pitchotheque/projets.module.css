@@ -153,11 +153,12 @@
   font-size: 14px;
 }
 
-/* Le petit disque WeFilmGood des projets labellisés, après le titre. */
+/* Le logo WeFilmGood des projets labellisés, après le titre : en entier,
+   lettres comprises — le disque seul avait l'air tronqué (01/10). */
 .label {
   display: inline-flex;
-  vertical-align: -2px;
-  margin-left: 6px;
+  vertical-align: -6px;
+  margin: -4px 0 -4px 6px;
 }
 
 .genre {

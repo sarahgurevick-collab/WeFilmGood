@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Bandeau from "@/components/Bandeau";
 import { redirect } from "next/navigation";
-import Logo from "@/components/Logo";
+import LogoComplet from "@/components/LogoComplet";
 import Finder from "@/components/Finder";
 import VignetteEau from "@/components/VignetteEau";
 import { categorieDeDepart, peutVoirLeNuage } from "./actions";
@@ -186,7 +186,7 @@ export default async function ProjetsPage({
                         {p.title}
                         {p.status === "labellise" && (
                           <span className={styles.label} title="Projet labellisé WeFilmGood">
-                            <Logo size={14} />
+                            <LogoComplet hauteur={22} />
                           </span>
                         )}
                       </strong>

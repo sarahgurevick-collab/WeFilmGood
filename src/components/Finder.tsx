@@ -12,7 +12,7 @@ import {
 } from "@/app/pitchotheque/actions";
 import { AUCUN, type Filtres } from "@/app/pitchotheque/filtres";
 import Bandeau from "./Bandeau";
-import Logo from "./Logo";
+import LogoComplet from "./LogoComplet";
 import formStyles from "./form.module.css";
 import NuageDisque from "./NuageDisque";
 import styles from "./Finder.module.css";
@@ -419,7 +419,7 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
           {p.title}
           {p.status === "labellise" && (
             <span className={projetsStyles.label} title="Projet labellisé WeFilmGood">
-              <Logo size={14} />
+              <LogoComplet hauteur={22} />
             </span>
           )}
         </strong>
