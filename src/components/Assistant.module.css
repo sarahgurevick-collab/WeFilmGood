@@ -56,6 +56,13 @@
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
 }
 
+/* Le rond lui-même : la chouette est en partie rouge, elle disparaissait
+   sur le rouge. Au tour du rouge, le rond passe au blanc, comme le logo
+   de l'onglet « Galaxie » (01/10). */
+button.rond {
+  background: var(--engagement-sur-rouge, #ffffff);
+}
+
 .membre {
   align-self: flex-end;
   max-width: 85%;

@@ -152,7 +152,7 @@ export default function Assistant({
     <>
       <button
         type="button"
-        className={contact.bouton}
+        className={`${contact.bouton} ${styles.rond}`}
         onClick={() => setOuvert((o) => !o)}
         aria-label="Poser une question"
       >
