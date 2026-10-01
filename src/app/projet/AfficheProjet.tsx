@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import styles from "./affiche.module.css";
 
 /**
@@ -40,6 +41,7 @@ export default function AfficheProjet({
   vignette,
   enDirect,
   lienFiche,
+  lienComplet,
 }: {
   initial: ValeursAffiche;
   /** Libellés lisibles des valeurs des menus : format, genre, budget, audience. */
@@ -49,7 +51,38 @@ export default function AfficheProjet({
   enDirect: boolean;
   /** Lien vers le bloc qui remplit ce qui manque, hors bloc « La fiche ». */
   lienFiche: string | null;
+  /** La fiche complète, ouverte d'un clic sur l'affiche (le « zoom ») ; null pour une fiche pas encore créée. */
+  lienComplet: string | null;
 }) {
+  const router = useRouter();
+  // Une saisie pas encore enregistrée : le zoom quitterait la page et la
+  // perdrait. On demande d'enregistrer d'abord (01/10).
+  const saisieEnCours = useRef(false);
+  const [avertir, setAvertir] = useState(false);
+
+  useEffect(() => {
+    const noter = () => {
+      saisieEnCours.current = true;
+    };
+    document.addEventListener("input", noter);
+    document.addEventListener("change", noter);
+    return () => {
+      document.removeEventListener("input", noter);
+      document.removeEventListener("change", noter);
+    };
+  }, []);
+
+  const zoomer = (cible: EventTarget | null) => {
+    if (!lienComplet) return;
+    // Un lien « ce qui manque » dans l'affiche garde son propre chemin.
+    if (cible instanceof Element && cible.closest("a")) return;
+    if (saisieEnCours.current) {
+      setAvertir(true);
+      return;
+    }
+    router.push(lienComplet);
+  };
+
   const [v, setV] = useState(initial);
   // L'image choisie dans le formulaire, montrée avant même l'envoi.
   const [apercu, setApercu] = useState<string | null>(null);
@@ -91,7 +124,20 @@ export default function AfficheProjet({
     .map((valeur) => libelles[valeur] ?? valeur);
 
   return (
-    <section className={styles.affiche} aria-label="Aperçu de la fiche">
+    <section
+      className={lienComplet ? `${styles.affiche} ${styles.afficheZoom}` : styles.affiche}
+      aria-label="Aperçu de la fiche"
+      {...(lienComplet
+        ? {
+            role: "link",
+            tabIndex: 0,
+            onClick: (e: React.MouseEvent) => zoomer(e.target),
+            onKeyDown: (e: React.KeyboardEvent) => {
+              if (e.key === "Enter" && e.target === e.currentTarget) zoomer(null);
+            },
+          }
+        : {})}
+    >
       <p className={styles.surtitre}>Ce que voit un talent connecté</p>
 
       <div className={styles.image}>
@@ -119,6 +165,12 @@ export default function AfficheProjet({
       </div>
 
       <p className={styles.logline}>{v.synopsis.trim() || manque("+ votre logline, l'histoire en quelques phrases")}</p>
+
+      {avertir && (
+        <p className={styles.avantZoom} role="alert">
+          Enregistrez vos modifications avant d&apos;ouvrir la fiche complète.
+        </p>
+      )}
     </section>
   );
 }

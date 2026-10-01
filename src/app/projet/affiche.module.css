@@ -197,16 +197,18 @@ a.manque:hover {
   background: var(--rouge-wfg);
 }
 
-/* ---- Disposition : l'affiche à gauche, le reste à droite ---- */
+/* ---- Disposition : le formulaire à gauche, l'affiche à droite (01/10) ;
+   sur téléphone l'affiche reste en haut ---- */
 
 .scene {
   display: grid;
-  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
   gap: 40px;
   align-items: start;
 }
 
 .colonneAffiche {
+  order: 2;
   position: sticky;
   top: 110px;
   display: flex;
@@ -236,6 +238,7 @@ a.manque:hover {
   }
 
   .colonneAffiche {
+    order: 0;
     position: static;
   }
 }
@@ -244,4 +247,22 @@ a.manque:hover {
   .generique {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* L'affiche se clique : elle ouvre la fiche complète, comme un zoom. */
+.afficheZoom {
+  cursor: zoom-in;
+  transition: border-color 0.15s ease;
+}
+
+.afficheZoom:hover,
+.afficheZoom:focus-visible {
+  border-color: var(--fg);
+}
+
+.avantZoom {
+  margin: 14px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--rouge-wfg);
 }

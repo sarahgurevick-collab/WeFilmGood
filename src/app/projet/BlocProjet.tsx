@@ -11,8 +11,8 @@ import styles from "./affiche.module.css";
 
 /**
  * Un bloc de la fiche projet, présenté comme le sommaire du profil : à
- * gauche l'affiche (la fiche telle que la verra un producteur, remplie en
- * direct sur le bloc « La fiche »), à droite le générique des trois blocs
+ * droite (depuis le 01/10 ; en haut sur téléphone) l'affiche (la fiche telle que la verra un producteur, remplie en
+ * direct sur le bloc « La fiche »), à gauche le générique des trois blocs
  * puis le formulaire. Sans projet (nouvelle fiche), seul le premier bloc
  * est ouvert : les deux autres attendent la création.
  */
@@ -75,6 +75,7 @@ export default async function BlocProjet({
             vignette={vignette}
             enDirect={actif === "fiche"}
             lienFiche={actif === "fiche" || !projet ? null : hrefBloc(projet.id, "fiche")}
+            lienComplet={projet ? `/projet/${projet.id}` : null}
           />
         </div>
 
