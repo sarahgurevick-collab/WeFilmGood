@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import Bandeau from "@/components/Bandeau";
-import formStyles from "@/components/form.module.css";
 import profilStyles from "@/app/profil/profil.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { tauxDeRemplissage } from "@/lib/remplissage";
@@ -45,7 +44,7 @@ type Projet = {
  * pour chaque fiche, à gauche ce que voit un talent connecté (l'affiche),
  * à droite « Fiche complétée » avec sa jauge et les trois blocs à remplir.
  * Une nouvelle version du scénario se dépose depuis le bloc Documents ;
- * un autre projet se crée en bas.
+ * un autre projet se crée depuis la dernière ligne du sélecteur.
  */
 export default async function MesProjetsPage({
   searchParams,
@@ -109,13 +108,16 @@ export default async function MesProjetsPage({
         format. Sinon, il faut rester sur la même fiche projet.
       </p>
 
-      {/* Le bouton de création en haut, bien visible (28/09), à côté du
-          sélecteur quand il y a plusieurs projets. */}
+      <p className={profilStyles.chapeau}>
+        Créez des fiches projets pour l&apos;ensemble de vos projets en cours d&apos;écriture (même à
+        un stade peu développé). En partageant la diversité de vos projets et de vos univers, vous
+        multipliez les opportunités de correspondre avec le bon partenaire créatif.
+      </p>
+
+      {/* Le sélecteur, toujours là même avec un seul projet : la création
+          d'une fiche est sa dernière ligne, plus un bouton à part (01/10). */}
       <div className={styles.entete}>
-        {tous.length > 1 && <SelecteurProjet projets={tous.map((p) => ({ id: p.id, titre: p.title }))} courant={courant.id} />}
-        <Link href="/projet" className={formStyles.submit} style={{ display: "inline-block" }}>
-          Nouvelle fiche projet
-        </Link>
+        <SelecteurProjet projets={tous.map((p) => ({ id: p.id, titre: p.title }))} courant={courant.id} />
       </div>
 
       {projets.map((p, i) => {
