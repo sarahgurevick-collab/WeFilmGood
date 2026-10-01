@@ -43,10 +43,13 @@ async function openverse(q: string): Promise<Portrait[]> {
 /**
  * Les portraits proposés d'après les menus du personnage (01/10/2026) :
  * « Le personnage est… » et « Âge » deviennent quelques mots anglais,
- * auxquels Openverse répond bien (« old man portrait » : des centaines de
- * photos ; une phrase française : rien). Douze recherches possibles en
- * tout : chacune est gardée en mémoire une journée — Openverse limite les
- * appels anonymes — et l'on en tire six portraits au hasard à chaque fois.
+ * cherchés dans la banque de photos Pixabay (catégorie « people », filtre
+ * tous publics) — à l'essai, deux fois plus de bons portraits qu'Openverse.
+ * Douze recherches possibles en tout : chacune est gardée en mémoire une
+ * journée, comme le demandent les conditions de Pixabay, et l'on en tire
+ * six portraits au hasard à chaque fois. Les adresses rendues ne servent
+ * qu'à l'affichage des propositions : le portrait retenu est copié sur
+ * le site à l'enregistrement (pas de lien permanent vers Pixabay).
  */
 const MOTS_PROFIL: Record<string, Record<string, string>> = {
   homme: { enfant: "boy", adolescent: "teenage boy", adulte: "man", senior: "old man", "": "man" },
@@ -59,29 +62,28 @@ const reserve = new Map<string, { quand: number; portraits: Portrait[] }>();
 
 async function portraitsDuProfil(genre: string, age: string): Promise<Portrait[]> {
   const mots = (MOTS_PROFIL[genre] ?? MOTS_PROFIL[""])[age] ?? "";
-  if (!mots) return [];
+  const cle = process.env.PIXABAY_API_KEY;
+  if (!mots || !cle) return [];
   const garde = reserve.get(mots);
   if (garde && Date.now() - garde.quand < UN_JOUR) return garde.portraits;
-  const pages = await Promise.allSettled(
-    [1, 2, 3].map(async (page) => {
-      const adresse =
-        `https://api.openverse.org/v1/images/?q=${encodeURIComponent(`${mots} portrait`)}` +
-        `&page_size=20&page=${page}&category=photograph&mature=false`;
-      const r = await fetch(adresse, { headers: { "User-Agent": AGENT }, signal: AbortSignal.timeout(6000) });
-      if (!r.ok) return [];
-      const d = (await r.json()) as { results?: { title: string; thumbnail: string; url: string; license: string }[] };
-      return (d.results ?? []).map((x) => ({
-        apercu: x.thumbnail,
-        url: x.url,
-        titre: x.title,
-        source: `Openverse (${x.license.toUpperCase()})`,
+  let portraits: Portrait[] = [];
+  try {
+    const adresse =
+      `https://pixabay.com/api/?key=${cle}&q=${encodeURIComponent(`${mots} portrait face`)}` +
+      `&lang=en&image_type=photo&category=people&per_page=80&safesearch=true`;
+    const r = await fetch(adresse, { signal: AbortSignal.timeout(6000) });
+    if (r.ok) {
+      const d = (await r.json()) as { hits?: { tags: string; webformatURL: string; largeImageURL: string }[] };
+      portraits = (d.hits ?? []).map((x) => ({
+        apercu: x.webformatURL,
+        url: x.largeImageURL,
+        titre: x.tags,
+        source: "Pixabay",
       }));
-    }),
-  );
-  const vus = new Set<string>();
-  const portraits = pages
-    .flatMap((p) => (p.status === "fulfilled" ? p.value : []))
-    .filter((p) => !vus.has(p.url) && vus.add(p.url));
+    }
+  } catch {
+    // Pas de proposition cette fois.
+  }
   // Un échec n'est pas gardé : la prochaine demande réessaiera.
   if (portraits.length) reserve.set(mots, { quand: Date.now(), portraits });
   return portraits;

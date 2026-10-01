@@ -67,7 +67,8 @@ export async function enregistrerPersonnage(formData: FormData) {
         age_range: ageRange,
         biography,
         actor_name: actorName,
-        ...(photoPath ? { photo_path: photoPath } : {}),
+        // Un portrait choisi par l'auteur n'est plus « proposé par la plateforme » (0120).
+        ...(photoPath ? { photo_path: photoPath, photo_proposee: false } : {}),
       })
       .eq("id", characterId)
       .eq("project_id", id);
