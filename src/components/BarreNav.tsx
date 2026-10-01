@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import Logo from "./Logo";
 import LogoAnime from "./LogoAnime";
 import styles from "./BarreNav.module.css";
 
@@ -31,7 +32,7 @@ export default async function BarreNav({
     estAdmin = admin === true;
   }
   const onglets = [
-    { cle: "pitchotheque", href: "/pitchotheque", label: "Carte des étoiles" },
+    { cle: "pitchotheque", href: "/pitchotheque", label: "Galaxie WFG" },
     // La liste de ses fiches (ou la création s'il n'en a aucune). Un
     // visiteur non connecté n'a rien à y faire : pas d'onglet (26/09).
     ...(connecte ? [{ cle: "deposer", href: "/mes-projets", label: "Mes projets" }] as const : []),
@@ -62,7 +63,19 @@ export default async function BarreNav({
               .filter(Boolean)
               .join(" ")}
           >
-            {o.label}
+            {/* « Galaxie WFG » : le logo tient la place des trois lettres, et
+                tourne sur vert, jaune, bleu — pas le rouge, celui de
+                l'onglet actif, sur lequel il disparaîtrait (01/10). */}
+            {o.cle === "pitchotheque" ? (
+              <>
+                Galaxie{" "}
+                <span className={styles.logoOnglet}>
+                  <Logo size={16} couleur="currentColor" />
+                </span>
+              </>
+            ) : (
+              o.label
+            )}
             {o.cle === "messages" && messagesNonLus > 0 && (
               <span className={styles.pastille}>
                 {messagesNonLus}
