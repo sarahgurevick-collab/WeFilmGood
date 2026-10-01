@@ -236,33 +236,14 @@
   border-color: var(--engagement, #da2c25);
 }
 
+/* Le portrait retenu : il est aussi dans la case « Portrait ». */
+.chercheurResultats button.chercheurRetenu {
+  border-color: var(--engagement, #da2c25);
+}
+
 .chercheurResultats img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.chercheurChoix {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0;
-  font-size: 13px;
-  text-transform: none;
-  letter-spacing: normal;
-}
-
-.chercheurChoix img {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.chercheurChoix button {
-  border: 0;
-  background: none;
-  color: inherit;
-  font-size: 18px;
-  cursor: pointer;
-}

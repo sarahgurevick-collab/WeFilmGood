@@ -3,6 +3,7 @@ import profilStyles from "@/app/profil/profil.module.css";
 import BlocProjet from "../../BlocProjet";
 import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
+import CasePortrait from "./CasePortrait";
 import ChercheurPortrait from "./ChercheurPortrait";
 import { signerImages } from "../fichiers";
 import { enregistrerPersonnage, retirerPersonnage } from "./actions";
@@ -101,13 +102,7 @@ function FormulairePersonnage({
       <input type="hidden" name="project_id" value={projectId} />
       {personnage && <input type="hidden" name="character_id" value={personnage.id} />}
 
-      <div className={styles.portrait}>
-        {photo ? (
-          <img src={photo} alt="" />
-        ) : (
-          <span>Portrait</span>
-        )}
-      </div>
+      <CasePortrait photo={photo ?? null} />
 
       <div className={styles.personnageChamps}>
         <label className={formStyles.field}>
