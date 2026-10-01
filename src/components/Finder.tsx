@@ -223,7 +223,7 @@ export default function Finder({
       </div>
 
       <div className={styles.pastilles} role="group" aria-label="Catégorie en tête des résultats">
-        <span className={styles.pastillesIntro}>Je cherche d&apos;abord&nbsp;:</span>
+        <span className={styles.pastillesIntro}>Je cherche avant tout&nbsp;:</span>
         {CATEGORIES.map((c) => (
           <button
             key={c.cle}
@@ -419,7 +419,7 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
           {p.title}
           {p.status === "labellise" && (
             <span className={projetsStyles.label} title="Projet labellisé WeFilmGood">
-              <LogoComplet hauteur={22} />
+              <LogoComplet hauteur={22} couleur="var(--engagement, #da2c25)" />
             </span>
           )}
         </strong>
