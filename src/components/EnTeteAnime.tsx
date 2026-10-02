@@ -22,7 +22,7 @@ const ELEMENTS_MENU = [
   // rouge WeFilmGood, « Fusion » suit la même horloge que le logo — les
   // trois couleurs des engagements, Planet, Humanity, Education. Un
   // battement sur quatre, les deux mots sont au rouge : la fusion.
-  { label: "CinéFusion", href: "/cinefusion", special: true },
+  { label: "CinéCrush", href: "/cinefusion", special: true },
 ];
 
 /**

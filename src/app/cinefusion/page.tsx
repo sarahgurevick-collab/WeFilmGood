@@ -13,7 +13,7 @@ export default async function CinefusionPage() {
     data: { user },
   } = await supabase.auth.getUser();
   return (
-    <PageShell eyebrow="À venir" title="CinéFusion" enTeteAnime connecte={!!user}>
+    <PageShell eyebrow="À venir" title="CinéCrush" enTeteAnime connecte={!!user}>
       <p className={formStyles.hint}>
         Provoquer le hasard cinématographique. Le jeu n&apos;est pas encore
         construit — revenez bientôt.

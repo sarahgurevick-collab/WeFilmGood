@@ -75,6 +75,9 @@ export default async function AdhesionPage({
               La Galaxie de Talents (noms et photo non visibles)
             </AvantageAdhesion>
             <AvantageAdhesion>La Galaxie de Personnages</AvantageAdhesion>
+            <AvantageAdhesion icone="loupe">
+              La barre de Recherche — pour savoir combien de projets répondent à vos envies.
+            </AvantageAdhesion>
             <AvantageAdhesion icone="motscles">
               Le nuage de mots-clés — les {motsCles.toLocaleString("fr-FR")} thèmes
               portés par les projets, avec leurs chiffres, à ouvrir aussi large
@@ -82,7 +85,7 @@ export default async function AdhesionPage({
             </AvantageAdhesion>
             <AvantageAdhesion icone="oeil">Focus de la semaine : 1 projet à découvrir</AvantageAdhesion>
             <AvantageAdhesion>
-              Jeu Ciné-Fusion : provoquer le hasard cinématographique.
+              Jeu CinéCrush : provoquer le hasard cinématographique.
             </AvantageAdhesion>
           </ul>,
 
