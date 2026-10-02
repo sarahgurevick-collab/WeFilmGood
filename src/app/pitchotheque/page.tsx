@@ -31,7 +31,7 @@ type Projet = {
   files: { storage_path: string; kind: string }[];
 };
 
-export const metadata: Metadata = { title: "Carte des étoiles — WeFilmGood" };
+export const metadata: Metadata = { title: "Galaxies — WeFilmGood" };
 
 // Cinq projets par ligne, dix lignes.
 const PAR_PAGE = 50;
@@ -85,14 +85,14 @@ export default async function ProjetsPage({
     const lien = (n: number) => `/pitchotheque?voir=${voir}${n > 1 ? `&page=${n}` : ""}`;
     return (
       <PageShell
-        title="Carte des étoiles"
+        title="Galaxies"
         apresTitre={<span className={styles.ancienNom}>l&apos;ancienne Pitchothèque</span>}
         nav="pitchotheque"
         connecte={!!user}
       >
         <Finder adherent={adherent} premiere={voir} />
         <p className={formStyles.hint}>
-          {`${voir === "personnages" ? "Personnages" : "Talents"} ${((page - 1) * GALAXIE_PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * GALAXIE_PAR_PAGE + affiches).toLocaleString("fr-FR")} sur ${totalGalaxie.toLocaleString("fr-FR")} dans la Carte des étoiles.`}
+          {`${voir === "personnages" ? "Personnages" : "Talents"} ${((page - 1) * GALAXIE_PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * GALAXIE_PAR_PAGE + affiches).toLocaleString("fr-FR")} sur ${totalGalaxie.toLocaleString("fr-FR")} dans les Galaxies.`}
         </p>
         {voir === "personnages" ? (
           <ul className={finderStyles.grillePersonnages}>
@@ -112,7 +112,7 @@ export default async function ProjetsPage({
           </ul>
         )}
         {pagesGalaxie > 1 && (
-          <nav className={styles.pagination} aria-label="Pages de la Carte des étoiles">
+          <nav className={styles.pagination} aria-label="Pages des Galaxies">
             {page > 1 ? <Link href={lien(page - 1)}>← Précédents</Link> : <span />}
             <span>
               Page {page} sur {pagesGalaxie}
@@ -184,7 +184,7 @@ export default async function ProjetsPage({
 
   return (
     <PageShell
-      title="Carte des étoiles"
+      title="Galaxies"
       // Pour les membres de WFG 1, qui la connaissent sous son ancien nom
       // (changement du 29/09/2026).
       apresTitre={<span className={styles.ancienNom}>l&apos;ancienne Pitchothèque</span>}
@@ -215,8 +215,8 @@ export default async function ProjetsPage({
         <>
           <p className={formStyles.hint}>
             {total > projects.length
-              ? `Projets ${((page - 1) * PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * PAR_PAGE + projects.length).toLocaleString("fr-FR")} sur ${total.toLocaleString("fr-FR")} ${nbFiltres > 0 ? "correspondant à vos filtres" : "dans la Carte des étoiles"}.`
-              : `${total.toLocaleString("fr-FR")} projet${total > 1 ? "s" : ""} ${nbFiltres > 0 ? `correspond${total > 1 ? "ent" : ""} à vos filtres` : "dans la Carte des étoiles"}.`}
+              ? `Projets ${((page - 1) * PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * PAR_PAGE + projects.length).toLocaleString("fr-FR")} sur ${total.toLocaleString("fr-FR")} ${nbFiltres > 0 ? "correspondant à vos filtres" : "dans les Galaxies"}.`
+              : `${total.toLocaleString("fr-FR")} projet${total > 1 ? "s" : ""} ${nbFiltres > 0 ? `correspond${total > 1 ? "ent" : ""} à vos filtres` : "dans les Galaxies"}.`}
           </p>
 
           <ul className={styles.grille}>
@@ -262,7 +262,7 @@ export default async function ProjetsPage({
           </ul>
 
           {pages > 1 && (
-            <nav className={styles.pagination} aria-label="Pages de la Carte des étoiles">
+            <nav className={styles.pagination} aria-label="Pages des Galaxies">
               {page > 1 ? (
                 <Link href={adresse(filtres, page - 1)}>← Précédents</Link>
               ) : (

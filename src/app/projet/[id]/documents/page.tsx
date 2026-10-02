@@ -67,7 +67,7 @@ export default async function DocumentsPage({
 
         <h2 className={styles.sousTitre}>L&apos;image de présentation</h2>
         <p className={formStyles.hint}>
-          C&apos;est elle qui représente votre projet dans la Carte des étoiles, et en haut de votre
+          C&apos;est elle qui représente votre projet dans les Galaxies, et en haut de votre
           fiche. Format 16/9 (paysage), JPG ou PNG. N&apos;y faites figurer ni votre nom ni le
           titre.
         </p>

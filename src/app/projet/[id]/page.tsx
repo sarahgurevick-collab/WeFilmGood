@@ -420,13 +420,13 @@ export default async function ProjetPage({
             <p className={formStyles.remplissageTexte}>
               Votre fiche est complète. Rien ne vous garantit pour autant
               qu&apos;un producteur vous contactera — mais elle est mieux
-              placée dans la Carte des étoiles, et elle donne une bonne image de
+              placée dans les Galaxies, et elle donne une bonne image de
               votre travail.
             </p>
           )}
           {aFaire && (
             <p className={formStyles.hint} style={{ margin: "8px 0 0" }}>
-              Les fiches complètes apparaissent plus haut dans la Carte des étoiles.
+              Les fiches complètes apparaissent plus haut dans les Galaxies.
               C&apos;est une question de visibilité, pas une promesse de
               résultat.
             </p>

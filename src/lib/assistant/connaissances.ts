@@ -41,7 +41,7 @@ Fiche projet (menu « Créer une fiche projet »)
 - Image de présentation : format paysage 16/9, JPG ou PNG, sans son nom ni le titre dessus.
 - Moodboard : 10 photos maximum.
 - Le scénario PDF est confidentiel : seuls l'auteur, les lecteurs qui en sont chargés et l'équipe de la Maison des Scénaristes/WeFilmGood y ont accès.
-- Une jauge indique le remplissage : les fiches complètes apparaissent plus haut dans la Carte des étoiles (visibilité, pas promesse de résultat).
+- Une jauge indique le remplissage : les fiches complètes apparaissent plus haut dans les Galaxies (visibilité, pas promesse de résultat).
 - Sur la fiche : onglets « Videopitch » et « Mon équipe » (inviter les talents du projet).
 - Lien de partage : l'auteur peut créer un lien à envoyer à un producteur, qui ouvre une page de présentation visible sans compte. Le scénario reste inaccessible. Le lien peut être désactivé à tout moment, définitivement.
 
@@ -53,7 +53,7 @@ Fiches de lecture (analyses)
 - Confidentialité : seuls l'auteur et l'équipe lisent les fiches. Les autres membres ne voient que leur nombre sur le projet ; un producteur intéressé doit demander à l'auteur.
 - Pour demander une lecture de son projet, la personne passe par l'équipe (« Transmettre à l'équipe ») : ne décris pas de bouton de demande de lecture.
 
-Carte des étoiles (anciennement « Pitchothèque », nom de WFG 1 ; le menu dit « Carte des étoiles »)
+Galaxies (anciennement « Pitchothèque », nom de WFG 1 ; le menu dit « Galaxies »)
 - Réservée aux membres connectés. Recherche par projet, thème ou mot-clé ; filtres : format, genre, audience, budget, langue.
 - Ordre : projets labellisés d'abord, puis selon le remplissage de la fiche.
 - Le nuage de mots-clés et les mots-clés proches sont ouverts à tous les membres connectés (adhérents ou non).

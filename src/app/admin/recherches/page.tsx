@@ -23,7 +23,7 @@ export default async function RecherchesAdminPage() {
   return (
     <PageShell nav="admin" avantTitre={<NavAdmin />} title="Recherches sans résultat" theme="clair">
       <p className={formStyles.hint}>
-        Ce que les membres ont tapé dans la Carte des étoiles sans rien trouver, ni projet, ni
+        Ce que les membres ont tapé dans les Galaxies sans rien trouver, ni projet, ni
         talent, ni personnage. Les frappes intermédiaires d&apos;une même recherche ne sont
         comptées qu&apos;une fois.
       </p>

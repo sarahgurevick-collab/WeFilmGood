@@ -31,13 +31,13 @@ export default async function BarreNav({
     estAdmin = admin === true;
   }
   const onglets = [
-    { cle: "pitchotheque", href: "/pitchotheque", label: "Galaxie WFG" },
+    { cle: "pitchotheque", href: "/pitchotheque", label: "Galaxies" },
     // La liste de ses fiches (ou la création s'il n'en a aucune). Un
     // visiteur non connecté n'a rien à y faire : pas d'onglet (26/09).
     ...(connecte ? [{ cle: "deposer", href: "/mes-projets", label: "Mes projets" }] as const : []),
-    ...(connecte ? [{ cle: "messages", href: "/mes-messages", label: "Messages" }] as const : []),
+    ...(connecte ? [{ cle: "messages", href: "/mes-messages", label: "Mes messages" }] as const : []),
     connecte
-      ? { cle: "profil", href: "/profil", label: "Profil" }
+      ? { cle: "profil", href: "/profil", label: "Mon profil" }
       : { cle: "profil", href: "/connexion", label: "Connexion" },
     // L'administration, pour qui en a le droit (26/09) : jusqu'ici, seul
     // le lien de la page Menu y menait.
@@ -62,16 +62,9 @@ export default async function BarreNav({
               .filter(Boolean)
               .join(" ")}
           >
-            {/* « Galaxie WFG » : le logo complet tient la place des trois
-                lettres et change de couleur avec celui du haut (01/10). */}
-            {o.cle === "pitchotheque" ? (
-              <>
-                Galaxie{" "}
-                <span className={styles.logoOnglet} role="img" aria-label="WeFilmGood" />
-              </>
-            ) : (
-              o.label
-            )}
+            {/* « Galaxies », « Mes projets », « Mes messages », « Mon profil »
+                (02/10) ; avant : « Galaxie WFG » avec le logo. */}
+            {o.label}
             {o.cle === "messages" && messagesNonLus > 0 && (
               <span className={styles.pastille}>
                 {messagesNonLus}

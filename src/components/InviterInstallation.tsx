@@ -121,7 +121,7 @@ export default function InviterInstallation() {
           </p>
           <p className={styles.texte}>
             Sur votre écran d&apos;accueil, comme une application : un geste pour retrouver
-            la Carte des étoiles, vos projets et vos messages.
+            les Galaxies, vos projets et vos messages.
           </p>
         </div>
       </div>
