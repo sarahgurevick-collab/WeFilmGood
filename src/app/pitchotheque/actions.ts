@@ -1,5 +1,6 @@
 "use server";
 
+import { createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { AUCUN, parametresRpc, type Filtres } from "./filtres";
 import { enTexte, vecteur } from "@/lib/vecteurs";
@@ -313,7 +314,12 @@ async function fichesTalents(
     return [{
       id: p.id,
       nom: masque ? "" : (p.display_name ?? p.full_name ?? "Membre"),
-      photo: p.avatar_url,
+      // Masqué : jamais l'adresse de la photo d'origine, seulement celle
+      // de la copie floutée (« v » la renouvelle quand la photo change).
+      photo:
+        masque && p.avatar_url
+          ? `/api/talents/photo?id=${p.id}&v=${createHash("sha256").update(p.avatar_url).digest("hex").slice(0, 8)}`
+          : p.avatar_url,
       masque,
       metiers: l.metiers ?? [],
       ville: p.city,

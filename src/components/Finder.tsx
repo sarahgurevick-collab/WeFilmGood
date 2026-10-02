@@ -443,7 +443,7 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
 export function CarteTalent({ t }: { t: TalentTrouve }) {
   return (
     <Link href={`/membres/${t.id}`} className={styles.talent}>
-      <span className={`${styles.talentPhoto} ${t.masque ? styles.talentFlou : ""}`}>
+      <span className={styles.talentPhoto}>
         {t.photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={t.photo} alt="" loading="lazy" />

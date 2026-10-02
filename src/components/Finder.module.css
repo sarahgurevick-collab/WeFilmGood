@@ -363,10 +363,3 @@
   height: 100%;
   object-fit: cover;
 }
-
-/* Photo d'un talent légèrement floutée (02/10) : on devine une présence,
-   pas un visage. L'agrandissement cache le bord clair du flou. */
-.talentFlou img {
-  filter: blur(4px);
-  transform: scale(1.12);
-}
