@@ -31,6 +31,7 @@
 
 .carte {
   display: block;
+  min-width: 0;
 }
 
 .vignette {
@@ -147,6 +148,10 @@
 
 .legende {
   margin-top: 12px;
+  min-width: 0;
+  /* Un titre ou une phrase sans espace (« dddd… », « ------ ») doit
+     passer à la ligne au lieu de déborder sur la carte voisine. */
+  overflow-wrap: anywhere;
 }
 
 /* Essai du 02/10 (Nicolas trouve le lettrage petit) : titre à 16,
