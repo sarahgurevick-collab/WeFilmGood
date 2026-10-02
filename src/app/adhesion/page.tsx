@@ -119,8 +119,12 @@ export default async function AdhesionPage({
 
           // Le 5 € par mois : la même adhésion que le 50 € par an (02/10).
           <ul key="5" className={styles.avantages}>
-            <AvantageAdhesion icone="projets">La Galaxie de Projets</AvantageAdhesion>
-            <AvantageAdhesion icone="talents">La Galaxie de Talents</AvantageAdhesion>
+            <AvantageAdhesion icone="projets">
+              La Galaxie de Projets (<OeilBarre /> videopitch non visible)
+            </AvantageAdhesion>
+            <AvantageAdhesion icone="talents">
+              La Galaxie de Talents (<OeilBarre /> noms et photo non visibles)
+            </AvantageAdhesion>
             <AvantageAdhesion icone="personnages">La Galaxie de Personnages</AvantageAdhesion>
             {suite}
             <ChoixCredits />
@@ -131,8 +135,12 @@ export default async function AdhesionPage({
           </ul>,
 
           <ul key="50" className={styles.avantages}>
-            <AvantageAdhesion icone="projets">La Galaxie de Projets</AvantageAdhesion>
-            <AvantageAdhesion icone="talents">La Galaxie de Talents</AvantageAdhesion>
+            <AvantageAdhesion icone="projets">
+              La Galaxie de Projets (<OeilBarre /> videopitch non visible)
+            </AvantageAdhesion>
+            <AvantageAdhesion icone="talents">
+              La Galaxie de Talents (<OeilBarre /> noms et photo non visibles)
+            </AvantageAdhesion>
             <AvantageAdhesion icone="personnages">La Galaxie de Personnages</AvantageAdhesion>
             {suite}
             <ChoixCredits />
@@ -144,8 +152,12 @@ export default async function AdhesionPage({
           </ul>,
 
           <ul key="500" className={styles.avantages}>
-            <AvantageAdhesion icone="projets">La Galaxie de Projets</AvantageAdhesion>
-            <AvantageAdhesion icone="talents">La Galaxie de Talents</AvantageAdhesion>
+            <AvantageAdhesion icone="projets">
+              La Galaxie de Projets (<OeilBarre /> videopitch non visible)
+            </AvantageAdhesion>
+            <AvantageAdhesion icone="talents">
+              La Galaxie de Talents (<OeilBarre /> noms et photo non visibles)
+            </AvantageAdhesion>
             <AvantageAdhesion icone="personnages">La Galaxie de Personnages</AvantageAdhesion>
             {suite}
             <AvantageAdhesion icone="nuage">11 dépôts</AvantageAdhesion>

@@ -5,8 +5,8 @@
 }
 
 /* L'interrupteur de WFG 1 : piste cerclée de noir, le mot d'un côté,
-   le rond blanc de l'autre. Ils échangent leur place au clic. Rouge
-   pour le dépôt, vert pour l'accès. */
+   le rond de l'autre. Ils échangent leur place au clic. Rouge (mot et
+   rond blancs) pour le dépôt, blanc (mot et rond rouges) pour l'accès. */
 .interrupteur {
   position: relative;
   flex-shrink: 0;
@@ -22,7 +22,7 @@
 }
 
 .cote {
-  background: #1d8a4a;
+  background: #fff;
 }
 
 .interrupteur:focus-visible {
@@ -30,8 +30,9 @@
   outline-offset: 3px;
 }
 
-/* Le mot, dans la place laissée libre par le rond. */
-.mot {
+/* Le mot, dans la place laissée libre par le rond. Le sélecteur à deux
+   classes passe devant le gris des lignes d'avantages (« li span »). */
+.interrupteur .mot {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -60,9 +61,14 @@
   transition: left 200ms ease;
 }
 
-.cote .mot {
+.interrupteur.cote .mot {
   left: 6px;
   right: 32px;
+  color: #da2c25;
+}
+
+.cote .rond {
+  background: #da2c25;
 }
 
 .cote .rond {

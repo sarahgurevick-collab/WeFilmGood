@@ -6,7 +6,7 @@ import styles from "./ChoixCredits.module.css";
 
 /**
  * Le choix de l'adhésion à 5 € par mois ou 50 € par an : le DÉPÔT (rouge,
- * par défaut) ou l'ACCÈS (vert). Un seul interrupteur — celui de WFG 1,
+ * par défaut) ou l'ACCÈS (blanc). Un seul interrupteur — celui de WFG 1,
  * piste et rond blanc — avec le mot écrit dans la piste. Les quatre
  * lignes sont toujours écrites : celles du côté choisi sont en blanc,
  * les autres en gris (02/10, mots de Sarah).
