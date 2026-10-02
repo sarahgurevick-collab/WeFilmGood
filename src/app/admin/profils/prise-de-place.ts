@@ -76,7 +76,8 @@ export async function prendreLaPlace(formData: FormData) {
   });
   if (bascule) redirect("/admin/profils?erreur=bascule");
 
-  redirect("/");
+  // Comme le membre lui-même après connexion : la Carte des étoiles.
+  redirect("/pitchotheque");
 }
 
 export async function revenirAMonCompte() {

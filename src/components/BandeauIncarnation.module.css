@@ -1,13 +1,21 @@
+/* Fixé tout en haut ; le menu, fixé lui aussi, descend d'autant (variable
+   --haut-bandeau posée par PageShell) : avant le 02/10, le bandeau le
+   recouvrait et on ne pouvait plus naviguer. */
 .bandeau {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  height: var(--haut-bandeau);
+  box-sizing: border-box;
+  overflow: hidden;
   z-index: 300;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 10px 20px;
+  gap: 6px 16px;
+  padding: 6px 20px;
   background: #e2231a;
   color: #fff;
   font-size: 14px;

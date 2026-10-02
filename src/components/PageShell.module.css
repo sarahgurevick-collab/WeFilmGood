@@ -11,7 +11,7 @@
   max-width: 1440px;
   width: 100%;
   margin: 0 auto;
-  padding: 110px 32px 96px;
+  padding: calc(110px + var(--haut-bandeau, 0px)) 32px 96px;
   text-transform: none;
   letter-spacing: normal;
 }
@@ -57,5 +57,17 @@
     max-width: none;
     margin: 0;
     padding: 0;
+  }
+}
+
+/* L'administration agit à la place d'un membre : la hauteur du bandeau
+   rouge, dont le menu et le contenu se décalent. */
+.incarnee {
+  --haut-bandeau: 48px;
+}
+
+@media (max-width: 820px) {
+  .incarnee {
+    --haut-bandeau: 104px;
   }
 }

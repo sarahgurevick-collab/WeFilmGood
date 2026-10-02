@@ -3,7 +3,7 @@
   z-index: 40;
   left: 0;
   right: 0;
-  top: 0;
+  top: var(--haut-bandeau, 0px);
   display: flex;
   align-items: center;
   gap: 40px;

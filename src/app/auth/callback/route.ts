@@ -63,6 +63,8 @@ export async function GET(request: NextRequest) {
   if (next === "/") {
     const { data: estAdmin } = await supabase.rpc("is_admin");
     if (estAdmin === true) return vers("/admin/fiches-a-valider");
+    // Un membre déjà inscrit arrive sur la Carte des étoiles (02/10).
+    return vers("/pitchotheque");
   }
   return vers(next);
 }

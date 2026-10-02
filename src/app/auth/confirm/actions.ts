@@ -39,6 +39,10 @@ export async function confirmerLien(formData: FormData) {
   if (next === "/") {
     const { data: admin } = await supabase.rpc("is_admin");
     if (admin === true) redirect("/admin/fiches-a-valider");
+    // Un membre arrive sur la Carte des étoiles, pas sur la vitrine ni sur
+    // son profil : une fois rempli, il n'y revient guère (02/10). Un
+    // lecteur est renvoyé de lui-même vers son espace.
+    redirect("/pitchotheque");
   }
 
   redirect(next);

@@ -46,7 +46,7 @@ export default async function PageShell({
   }
 
   return (
-    <div className={`${styles.page} ${theme === "clair" ? "clair" : ""}`}>
+    <div className={`${styles.page} ${theme === "clair" ? "clair" : ""} ${incarne ? styles.incarnee : ""}`}>
       {incarne && <BandeauIncarnation />}
       {enTeteAnime ? (
         <EnTeteAnime connecte={estConnecte} />
