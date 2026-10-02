@@ -83,7 +83,16 @@ export default async function AdhesionPage({
             </AvantageAdhesion>
           </ul>,
 
-          <p key="5" style={{ margin: 0 }}>Contenu à venir.</p>,
+          // Le 5 € est un achat à l'unité, sans adhésion (02/10, mots de Sarah).
+          <ul key="5" className={styles.avantages}>
+            <AvantageAdhesion icone="oeil">
+              1 projet à l&apos;unité, pour un talent qui ne souhaite pas adhérer
+            </AvantageAdhesion>
+            <AvantageAdhesion>
+              L&apos;enregistrement d&apos;1 videopitch pour 1 projet, pour un comédien
+            </AvantageAdhesion>
+            <AvantageAdhesion>1 place à un ScénarioLab</AvantageAdhesion>
+          </ul>,
 
           <ul key="50" className={styles.avantages}>
             <AvantageAdhesion icone="loupe">
@@ -101,6 +110,14 @@ export default async function AdhesionPage({
             </li>
             <AvantageAdhesion>
               10 fiches projets (sans analyse du document PDF)
+            </AvantageAdhesion>
+            <AvantageAdhesion>
+              Les 5 projets de la semaine ne sont pas cumulables : s&apos;ils ne sont pas pris
+              dans la semaine, ils ne sont pas récupérés la semaine suivante
+            </AvantageAdhesion>
+            <AvantageAdhesion>Le ScénarioLab offert, limité à 50 places</AvantageAdhesion>
+            <AvantageAdhesion>
+              Adhésion pour 1 an, sans annulation possible avant 12 mois
             </AvantageAdhesion>
           </ul>,
 
@@ -126,6 +143,10 @@ export default async function AdhesionPage({
             <AvantageAdhesion icone="telephone">
               Un rendez-vous visio ou téléphonique pour répondre à vos
               besoins particuliers
+            </AvantageAdhesion>
+            <AvantageAdhesion>Le ScénarioLab offert, limité à 50 places</AvantageAdhesion>
+            <AvantageAdhesion>
+              Adhésion pour 1 an, sans annulation possible avant 12 mois
             </AvantageAdhesion>
           </ul>,
 
