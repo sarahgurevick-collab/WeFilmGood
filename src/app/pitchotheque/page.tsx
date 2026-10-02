@@ -3,10 +3,10 @@ import Link from "next/link";
 import Bandeau from "@/components/Bandeau";
 import { redirect } from "next/navigation";
 import LogoComplet from "@/components/LogoComplet";
-import Finder, { CartePersonnage } from "@/components/Finder";
+import Finder, { CartePersonnage, CarteTalent } from "@/components/Finder";
 import finderStyles from "@/components/Finder.module.css";
 import VignetteEau from "@/components/VignetteEau";
-import { categorieDeDepart, peutVoirLeNuage, personnagesDeLaGalaxie } from "./actions";
+import { categorieDeDepart, peutVoirLeNuage, personnagesDeLaGalaxie, talentsDeLaGalaxie } from "./actions";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
@@ -35,8 +35,8 @@ export const metadata: Metadata = { title: "Carte des étoiles — WeFilmGood" }
 
 // Cinq projets par ligne, dix lignes.
 const PAR_PAGE = 50;
-// Six personnages par ligne, dix lignes.
-const PERSONNAGES_PAR_PAGE = 60;
+// Talents et personnages : six par ligne, dix lignes.
+const GALAXIE_PAR_PAGE = 60;
 
 const SELECTION =
   "id, title, logline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)";
@@ -67,12 +67,22 @@ export default async function ProjetsPage({
 
   const [adherent, premiere] = await Promise.all([peutVoirLeNuage(), categorieDeDepart()]);
 
-  // Sans mot cherché, le bouton « Personnages » de la recherche amène ici
-  // avec ?voir=personnages : les personnages à la place des projets (02/10).
-  if (params.voir === "personnages") {
-    const { personnages, total: totalPersonnages } = await personnagesDeLaGalaxie(page, PERSONNAGES_PAR_PAGE);
-    const pagesPersonnages = Math.max(1, Math.ceil(totalPersonnages / PERSONNAGES_PAR_PAGE));
-    const lien = (n: number) => `/pitchotheque?voir=personnages${n > 1 ? `&page=${n}` : ""}`;
+  // Sans mot cherché, les boutons « Talents » et « Personnages » de la
+  // recherche amènent ici avec ?voir=… : eux à la place des projets (02/10).
+  if (params.voir === "personnages" || params.voir === "talents") {
+    const voir = params.voir;
+    const [{ personnages, total: totalPersonnages }, { talents, total: totalTalents }] = await Promise.all([
+      voir === "personnages"
+        ? personnagesDeLaGalaxie(page, GALAXIE_PAR_PAGE)
+        : Promise.resolve({ personnages: [], total: 0 }),
+      voir === "talents"
+        ? talentsDeLaGalaxie(page, GALAXIE_PAR_PAGE)
+        : Promise.resolve({ talents: [], total: 0 }),
+    ]);
+    const totalGalaxie = voir === "personnages" ? totalPersonnages : totalTalents;
+    const affiches = voir === "personnages" ? personnages.length : talents.length;
+    const pagesGalaxie = Math.max(1, Math.ceil(totalGalaxie / GALAXIE_PAR_PAGE));
+    const lien = (n: number) => `/pitchotheque?voir=${voir}${n > 1 ? `&page=${n}` : ""}`;
     return (
       <PageShell
         title="Carte des étoiles"
@@ -80,24 +90,34 @@ export default async function ProjetsPage({
         nav="pitchotheque"
         connecte={!!user}
       >
-        <Finder adherent={adherent} premiere="personnages" />
+        <Finder adherent={adherent} premiere={voir} />
         <p className={formStyles.hint}>
-          {`Personnages ${((page - 1) * PERSONNAGES_PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * PERSONNAGES_PAR_PAGE + personnages.length).toLocaleString("fr-FR")} sur ${totalPersonnages.toLocaleString("fr-FR")} dans la Carte des étoiles.`}
+          {`${voir === "personnages" ? "Personnages" : "Talents"} ${((page - 1) * GALAXIE_PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * GALAXIE_PAR_PAGE + affiches).toLocaleString("fr-FR")} sur ${totalGalaxie.toLocaleString("fr-FR")} dans la Carte des étoiles.`}
         </p>
-        <ul className={finderStyles.grillePersonnages}>
-          {personnages.map((c) => (
-            <li key={c.id}>
-              <CartePersonnage c={c} />
-            </li>
-          ))}
-        </ul>
-        {pagesPersonnages > 1 && (
+        {voir === "personnages" ? (
+          <ul className={finderStyles.grillePersonnages}>
+            {personnages.map((c) => (
+              <li key={c.id}>
+                <CartePersonnage c={c} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <ul className={finderStyles.grilleTalents}>
+            {talents.map((t) => (
+              <li key={t.id}>
+                <CarteTalent t={t} />
+              </li>
+            ))}
+          </ul>
+        )}
+        {pagesGalaxie > 1 && (
           <nav className={styles.pagination} aria-label="Pages de la Carte des étoiles">
             {page > 1 ? <Link href={lien(page - 1)}>← Précédents</Link> : <span />}
             <span>
-              Page {page} sur {pagesPersonnages}
+              Page {page} sur {pagesGalaxie}
             </span>
-            {page < pagesPersonnages ? <Link href={lien(page + 1)}>Suivants →</Link> : <span />}
+            {page < pagesGalaxie ? <Link href={lien(page + 1)}>Suivants →</Link> : <span />}
           </nav>
         )}
       </PageShell>

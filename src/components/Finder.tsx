@@ -234,10 +234,10 @@ export default function Finder({
             aria-pressed={choisie === c.cle}
             onClick={() => {
               setChoisie(c.cle);
-              // Sans mot cherché, la page elle-même change : les
-              // personnages à la place des projets, et retour (02/10).
-              if (!requete.trim() && c.cle !== "talents") {
-                router.push(c.cle === "personnages" ? "/pitchotheque?voir=personnages" : adresse(filtres));
+              // Sans mot cherché, la page elle-même change : les talents
+              // ou les personnages à la place des projets, et retour (02/10).
+              if (!requete.trim()) {
+                router.push(c.cle === "projets" ? adresse(filtres) : `/pitchotheque?voir=${c.cle}`);
               }
             }}
           >
@@ -440,7 +440,7 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
 }
 
 /** Un talent : rond, comme sa photo de profil. Sans photo, l'initiale. */
-function CarteTalent({ t }: { t: TalentTrouve }) {
+export function CarteTalent({ t }: { t: TalentTrouve }) {
   return (
     <Link href={`/membres/${t.id}`} className={styles.talent}>
       <span className={styles.talentPhoto}>

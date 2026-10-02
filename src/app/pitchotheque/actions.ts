@@ -264,7 +264,30 @@ export async function rechercherTalents(
 
   const supabase = await createClient();
   const { data: trouves } = await supabase.rpc("rechercher_talents", { q, p_limite: LIMITE });
-  const lignes = (trouves ?? []) as { id: string; total: number; metiers: string[] }[];
+  return fichesTalents(supabase, (trouves ?? []) as { id: string; total: number; metiers: string[] }[]);
+}
+
+/**
+ * La Galaxie de Talents sans mot cherché (02/10) : tous les talents que la
+ * recherche peut montrer, ceux qui ont une photo d'abord.
+ */
+export async function talentsDeLaGalaxie(
+  page: number,
+  parPage: number,
+): Promise<{ talents: TalentTrouve[]; total: number }> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("galaxie_talents", {
+    p_limite: parPage,
+    p_decalage: (Math.max(1, page) - 1) * parPage,
+  });
+  return fichesTalents(supabase, (data ?? []) as { id: string; total: number; metiers: string[] }[]);
+}
+
+/** Les fiches (nom, photo, métiers, ville) des talents trouvés, dans l'ordre reçu. */
+async function fichesTalents(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  lignes: { id: string; total: number; metiers: string[] }[],
+): Promise<{ talents: TalentTrouve[]; total: number }> {
   if (lignes.length === 0) return { talents: [], total: 0 };
 
   const { data: profils } = await supabase
