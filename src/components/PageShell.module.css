@@ -35,7 +35,7 @@
 @media (max-width: 720px) {
   .main {
     /* place pour la barre d'onglets, fixée en bas du pouce */
-    padding: 40px 16px calc(96px + env(safe-area-inset-bottom));
+    padding: calc(40px + var(--haut-bandeau, 0px)) 16px calc(96px + env(safe-area-inset-bottom));
   }
 }
 
