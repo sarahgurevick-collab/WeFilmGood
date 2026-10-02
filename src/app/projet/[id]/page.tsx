@@ -295,12 +295,13 @@ export default async function ProjetPage({
     }
   }
 
-  // À part : si les colonnes n'existent pas encore dans la base, la
-  // fiche s'affiche quand même, sans videopitch.
+  // Les videopitchs sont dans une table à part, sous verrou (migration
+  // 0125) : la base ne les rend qu'à l'auteur, son équipe, l'administration
+  // et les adhérents. Pour les autres, rien ne revient.
   const { data: videopitch } = await supabase
-    .from("projects")
+    .from("project_videopitchs")
     .select("videopitch_fr, videopitch_en")
-    .eq("id", id)
+    .eq("project_id", id)
     .maybeSingle<{ videopitch_fr: string | null; videopitch_en: string | null }>();
 
   const { data: motsCles } = await supabase
