@@ -253,6 +253,8 @@ export type TalentTrouve = {
   photo: string | null;
   metiers: string[];
   ville: string | null;
+  /** Nom retiré et photo floutée : tout le monde sauf l'administration (02/10). */
+  masque: boolean;
 };
 
 /** Les talents (29/09) : jamais les lecteurs, filtrés par la base. */
@@ -290,6 +292,12 @@ async function fichesTalents(
 ): Promise<{ talents: TalentTrouve[]; total: number }> {
   if (lignes.length === 0) return { talents: [], total: 0 };
 
+  // Décision de Sarah (02/10) : dans la Galaxie de Talents, les noms ne
+  // sont pas visibles et les photos sont floutées. Le nom n'est pas envoyé
+  // du tout au navigateur ; seule l'administration voit tout.
+  const { data: estAdmin } = await supabase.rpc("is_admin");
+  const masque = estAdmin !== true;
+
   const { data: profils } = await supabase
     .from("profiles")
     .select("id, full_name, display_name, avatar_url, city")
@@ -304,8 +312,9 @@ async function fichesTalents(
     if (!p) return [];
     return [{
       id: p.id,
-      nom: p.display_name ?? p.full_name ?? "Membre",
+      nom: masque ? "" : (p.display_name ?? p.full_name ?? "Membre"),
       photo: p.avatar_url,
+      masque,
       metiers: l.metiers ?? [],
       ville: p.city,
     }];

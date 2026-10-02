@@ -443,15 +443,21 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
 export function CarteTalent({ t }: { t: TalentTrouve }) {
   return (
     <Link href={`/membres/${t.id}`} className={styles.talent}>
-      <span className={styles.talentPhoto}>
+      <span className={`${styles.talentPhoto} ${t.masque ? styles.talentFlou : ""}`}>
         {t.photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={t.photo} alt="" loading="lazy" />
+        ) : t.masque ? (
+          // Sans photo et sans nom : une silhouette plutôt qu'une initiale.
+          <svg viewBox="0 0 24 24" width="40%" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
         ) : (
           <span>{t.nom.trim().charAt(0).toUpperCase()}</span>
         )}
       </span>
-      <strong>{t.nom}</strong>
+      {!t.masque && <strong>{t.nom}</strong>}
       {t.metiers.length > 0 && <span className={styles.detail}>{t.metiers.join(", ")}</span>}
       {t.ville && <span className={styles.detail}>{t.ville}</span>}
     </Link>
