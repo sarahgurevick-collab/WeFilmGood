@@ -22,6 +22,10 @@ type Membre = {
  * pas publics. Le profil d'un lecteur n'est vu que de lui-même et de
  * l'administration : un auteur n'en connaît que le prénom, et ne doit pas
  * pouvoir le retrouver par ici.
+ *
+ * Comme dans la Galaxie de Talents (02/10, décision de Sarah) : pour un
+ * autre membre, pas de nom, pas de site, et la photo floutée dans l'image
+ * elle-même. Le membre lui-même et l'administration voient tout.
  */
 export default async function ProfilMembrePage({
   params,
@@ -44,6 +48,7 @@ export default async function ProfilMembrePage({
 
   if (!membre) notFound();
 
+  let masque = false;
   if (membre.id !== user.id) {
     const [{ data: lecteur }, { data: isAdmin }] = await Promise.all([
       supabase
@@ -55,9 +60,10 @@ export default async function ProfilMembrePage({
       supabase.rpc("is_admin"),
     ]);
     if (lecteur && !isAdmin) notFound();
+    masque = isAdmin !== true;
   }
 
-  const nom = membre.display_name ?? membre.full_name ?? "Membre";
+  const nom = masque ? "Membre" : (membre.display_name ?? membre.full_name ?? "Membre");
 
   return (
     <PageShell eyebrow="Membre" title={nom}>
@@ -65,9 +71,9 @@ export default async function ProfilMembrePage({
       <div className={styles.photo} aria-hidden="true">
         {membre.avatar_url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={membre.avatar_url} alt="" />
+          <img src={masque ? `/api/talents/photo?id=${membre.id}` : membre.avatar_url} alt="" />
         ) : (
-          <span>{nom.trim().charAt(0).toUpperCase()}</span>
+          !masque && <span>{nom.trim().charAt(0).toUpperCase()}</span>
         )}
       </div>
 
@@ -79,7 +85,7 @@ export default async function ProfilMembrePage({
         </p>
       )}
 
-      {membre.website && (
+      {membre.website && !masque && (
         <p className={formStyles.linkRow} style={{ marginTop: 24 }}>
           <a href={membre.website} target="_blank" rel="noopener noreferrer">
             Son site
