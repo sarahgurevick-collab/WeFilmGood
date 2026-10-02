@@ -262,6 +262,16 @@ export default async function ProjetPage({
     }
   }
 
+  // Sans adhésion (02/10, décision de Sarah) : pas de videopitch, pas de
+  // message à l'auteur, pas de noms ni de liens vers les profils, et les
+  // photos de l'équipe floutées. L'auteur, son équipe, l'administration
+  // et les adhérents voient tout.
+  const dansEquipe = !!user && equipe.some((m) => m.profileId === user.id && !m.enAttente);
+  const { data: adherent } = user
+    ? await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id })
+    : { data: false };
+  const restreint = !isOwner && estAdmin !== true && !dansEquipe && adherent !== true;
+
   // La phrase d'encouragement des lecteurs, pour un projet labellisé.
   const { data: avisWfg } = await supabase.rpc("avis_wfg_projet", { p_project_id: id });
 
@@ -273,7 +283,16 @@ export default async function ProjetPage({
       .select("id, avatar_url")
       .in("id", idsEquipe);
     const parId = new Map((photos ?? []).map((ph) => [ph.id as string, ph.avatar_url as string | null]));
-    for (const m of equipe) m.photo = m.profileId ? (parId.get(m.profileId) ?? null) : null;
+    for (const m of equipe) {
+      const photo = m.profileId ? (parId.get(m.profileId) ?? null) : null;
+      m.photo = restreint && photo ? `/api/talents/photo?id=${m.profileId}` : photo;
+    }
+  }
+  if (restreint) {
+    for (const m of equipe) {
+      m.nom = "";
+      m.profileId = null;
+    }
   }
 
   // À part : si les colonnes n'existent pas encore dans la base, la
@@ -362,7 +381,7 @@ export default async function ProjetPage({
         bandeau={project.bandeau ?? null}
         avis={(avisWfg as string | null) ?? null}
         videopitch={
-          videopitchVisible && (videopitch?.videopitch_fr || videopitch?.videopitch_en)
+          !restreint && videopitchVisible && (videopitch?.videopitch_fr || videopitch?.videopitch_en)
             ? { fr: videopitch.videopitch_fr, en: videopitch.videopitch_en, titre: project.title }
             : undefined
         }
@@ -559,7 +578,13 @@ export default async function ProjetPage({
 
       {/* Contacter l'auteur : plus de formulaire sur la fiche (26/09), un
           bouton qui mène à l'onglet Messages, le projet déjà indiqué. */}
-      {!isOwner && (
+      {!isOwner && restreint && (
+        // Phrase validée par Sarah : rien d'autre, pas un mot sur la validation.
+        <p style={{ marginTop: 40 }}>
+          <Link href="/adhesion">Pour contacter cet auteur, vous avez besoin d&apos;une adhésion.</Link>
+        </p>
+      )}
+      {!isOwner && !restreint && (
         <p style={{ marginTop: 40 }}>
           <Link
             href={user ? `/mes-messages/nouveau?projet=${project.id}` : `/connexion?next=/projet/${project.id}`}

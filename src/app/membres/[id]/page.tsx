@@ -24,8 +24,8 @@ type Membre = {
  * pouvoir le retrouver par ici.
  *
  * Comme dans la Galaxie de Talents (02/10, décision de Sarah) : pour un
- * autre membre, pas de nom, pas de site, et la photo floutée dans l'image
- * elle-même. Le membre lui-même et l'administration voient tout.
+ * autre membre, pas de nom, pas de site, pas de biographie (elle cite
+ * souvent le nom), et la photo floutée dans l'image elle-même. Le membre lui-même et l'administration voient tout.
  */
 export default async function ProfilMembrePage({
   params,
@@ -77,7 +77,7 @@ export default async function ProfilMembrePage({
         )}
       </div>
 
-      {membre.biofilmo ? (
+      {masque ? null : membre.biofilmo ? (
         <p style={{ marginTop: 24, whiteSpace: "pre-wrap" }}>{membre.biofilmo}</p>
       ) : (
         <p className={formStyles.hint} style={{ marginTop: 24 }}>

@@ -47,6 +47,13 @@ export async function contacterAuteur(formData: FormData) {
     redirect(`/mes-messages/nouveau?projet=${projectId}&message=vide`);
   }
 
+  // Écrire à un auteur demande une adhésion (02/10) ; l'administration passe.
+  const [{ data: adherent }, { data: estAdmin }] = await Promise.all([
+    supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id }),
+    supabase.rpc("is_admin"),
+  ]);
+  if (adherent !== true && estAdmin !== true) redirect("/adhesion");
+
   await supabase.from("project_messages").insert({
     project_id: projectId,
     sender_id: user.id,

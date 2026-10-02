@@ -441,8 +441,8 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
 
 /** Un talent : rond, comme sa photo de profil. Sans photo, l'initiale. */
 export function CarteTalent({ t }: { t: TalentTrouve }) {
-  return (
-    <Link href={`/membres/${t.id}`} className={styles.talent}>
+  const contenu = (
+    <>
       <span className={styles.talentPhoto}>
         {t.photo ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -460,6 +460,15 @@ export function CarteTalent({ t }: { t: TalentTrouve }) {
       {!t.masque && <strong>{t.nom}</strong>}
       {t.metiers.length > 0 && <span className={styles.detail}>{t.metiers.join(", ")}</span>}
       {t.ville && <span className={styles.detail}>{t.ville}</span>}
+    </>
+  );
+  // Masqué : pas de lien vers le profil, dont la biographie cite souvent
+  // le nom (02/10).
+  return t.masque ? (
+    <div className={styles.talent}>{contenu}</div>
+  ) : (
+    <Link href={`/membres/${t.id}`} className={styles.talent}>
+      {contenu}
     </Link>
   );
 }

@@ -39,6 +39,13 @@ export default async function NouveauMessagePage({
   // Son propre projet : rien à s'écrire.
   if (projet.owner_id === user.id) redirect(`/projet/${projet.id}`);
 
+  // Écrire à un auteur demande une adhésion (02/10) ; l'administration passe.
+  const [{ data: adherent }, { data: estAdmin }] = await Promise.all([
+    supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id }),
+    supabase.rpc("is_admin"),
+  ]);
+  if (adherent !== true && estAdmin !== true) redirect("/adhesion");
+
   const auteur = projet.owner?.first_name ?? projet.owner?.full_name ?? "l'auteur";
 
   return (
