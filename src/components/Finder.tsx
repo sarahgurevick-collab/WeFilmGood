@@ -30,9 +30,9 @@ const ICONE_MOTS = 30;
 const APERCU = 5;
 
 const CATEGORIES: { cle: Categorie; pastille: string; titre: string }[] = [
-  { cle: "projets", pastille: "Galaxie Projets", titre: "Projets" },
-  { cle: "talents", pastille: "Galaxie Talents", titre: "Talents" },
-  { cle: "personnages", pastille: "Galaxie Personnages", titre: "Personnages" },
+  { cle: "projets", pastille: "Projets", titre: "Projets" },
+  { cle: "talents", pastille: "Talents", titre: "Talents" },
+  { cle: "personnages", pastille: "Personnages", titre: "Personnages" },
 ];
 
 export default function Finder({
@@ -223,7 +223,7 @@ export default function Finder({
       </div>
 
       <div className={styles.pastilles} role="group" aria-label="Catégorie en tête des résultats">
-        <span className={styles.pastillesIntro}>J&apos;explore mes galaxies</span>
+        <span className={styles.pastillesIntro}>J&apos;explore ma galaxie…</span>
         {CATEGORIES.map((c) => (
           <button
             key={c.cle}
