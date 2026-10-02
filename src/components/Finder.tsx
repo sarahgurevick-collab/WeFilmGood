@@ -223,7 +223,7 @@ export default function Finder({
       </div>
 
       <div className={styles.pastilles} role="group" aria-label="Catégorie en tête des résultats">
-        <span className={styles.pastillesIntro}>J&apos;explore ma galaxie…</span>
+        <span className={styles.pastillesIntro}>J&apos;explore mes galaxies…</span>
         {CATEGORIES.map((c) => (
           <button
             key={c.cle}
