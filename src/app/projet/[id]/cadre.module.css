@@ -292,6 +292,40 @@
   overflow: hidden;
 }
 
+/* Chaque personnage est un bouton (02/10) : un clic déplie sa biographie
+   en entier, sur toute la largeur ; un second clic la replie. */
+.personnageBouton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.personnagesCadre li.personnageOuvert {
+  width: 100%;
+  max-width: 620px;
+  flex-basis: 100%;
+  margin: 0 auto;
+}
+
+.personnageOuvert .bio {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-line;
+  text-align: left;
+}
+
 /* Côté « Moodboard » (25/09) : les photos en mosaïque, sur fond noir. */
 .coteMoodboard {
   align-items: flex-start;

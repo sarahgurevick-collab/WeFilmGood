@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import VideopitchLecteur from "@/components/VideopitchLecteur";
 import CoteFiche from "./CoteFiche";
 import styles from "./cadre.module.css";
@@ -51,7 +51,10 @@ export default function CadreEquipe({
   bandeau,
   avis,
   retourSaisie,
+  personnageOuvert,
 }: {
+  /** Le personnage sur lequel on arrive depuis la recherche : biographie dépliée. */
+  personnageOuvert?: string | null;
   /** Les photos du moodboard (adresses signées). */
   moodboard: string[];
   /** La phrase d'encouragement des lecteurs, pour un projet labellisé. */
@@ -69,9 +72,16 @@ export default function CadreEquipe({
 }) {
   const avecMoodboard = moodboard.length > 0;
   const avecPersonnages = personnages.length > 0;
+  const arrivee = personnages.some((c) => c.id === personnageOuvert) ? (personnageOuvert as string) : null;
+  // En arrivant sur un personnage, ses voisins passent avant le moodboard.
   const [vue, setVue] = useState<"moodboard" | "personnages">(
-    avecMoodboard ? "moodboard" : "personnages",
+    avecMoodboard && !arrivee ? "moodboard" : "personnages",
   );
+  // Un clic sur un personnage déplie sa biographie ; un second la replie.
+  const [ouvert, setOuvert] = useState<string | null>(arrivee);
+  useEffect(() => {
+    if (arrivee) document.getElementById(`personnage-${arrivee}`)?.scrollIntoView({ block: "center" });
+  }, [arrivee]);
   const [videoLancee, setVideoLancee] = useState(false);
   const [langue, setLangue] = useState<"fr" | "en">(videopitch?.fr ? "fr" : "en");
 
@@ -111,18 +121,29 @@ export default function CadreEquipe({
     <div className={styles.coteEquipe}>
       <ul className={styles.personnagesCadre}>
         {personnages.map((c) => (
-          <li key={c.id}>
-            <span className={styles.portrait} aria-hidden="true">
-              {c.portrait ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={c.portrait} alt="" />
-              ) : (
-                <span>{c.nom.trim().charAt(0).toUpperCase()}</span>
-              )}
-            </span>
-            <span className={styles.nom}>{c.nom}</span>
-            {c.infos && <span className={styles.infos}>{c.infos}</span>}
-            {c.bio && <span className={styles.bio}>{c.bio}</span>}
+          <li
+            key={c.id}
+            id={`personnage-${c.id}`}
+            className={ouvert === c.id ? styles.personnageOuvert : undefined}
+          >
+            <button
+              type="button"
+              className={styles.personnageBouton}
+              aria-expanded={ouvert === c.id}
+              onClick={() => setOuvert(ouvert === c.id ? null : c.id)}
+            >
+              <span className={styles.portrait} aria-hidden="true">
+                {c.portrait ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={c.portrait} alt="" />
+                ) : (
+                  <span>{c.nom.trim().charAt(0).toUpperCase()}</span>
+                )}
+              </span>
+              <span className={styles.nom}>{c.nom}</span>
+              {c.infos && <span className={styles.infos}>{c.infos}</span>}
+              {c.bio && <span className={styles.bio}>{c.bio}</span>}
+            </button>
           </li>
         ))}
       </ul>

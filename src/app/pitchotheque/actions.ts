@@ -308,7 +308,30 @@ export async function rechercherPersonnages(
 
   const supabase = await createClient();
   const { data: trouves } = await supabase.rpc("rechercher_personnages", { q, p_limite: LIMITE });
-  const lignes = (trouves ?? []) as { id: string; total: number }[];
+  return fichesPersonnages(supabase, (trouves ?? []) as { id: string; total: number }[]);
+}
+
+/**
+ * La Galaxie de Personnages sans mot cherché (02/10) : tous les personnages
+ * des projets de la Carte des étoiles, ceux qui ont un portrait d'abord.
+ */
+export async function personnagesDeLaGalaxie(
+  page: number,
+  parPage: number,
+): Promise<{ personnages: PersonnageTrouve[]; total: number }> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("galaxie_personnages", {
+    p_limite: parPage,
+    p_decalage: (Math.max(1, page) - 1) * parPage,
+  });
+  return fichesPersonnages(supabase, (data ?? []) as { id: string; total: number }[]);
+}
+
+/** Les fiches (nom, portrait signé, projet) des personnages trouvés, dans l'ordre reçu. */
+async function fichesPersonnages(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  lignes: { id: string; total: number }[],
+): Promise<{ personnages: PersonnageTrouve[]; total: number }> {
   if (lignes.length === 0) return { personnages: [], total: 0 };
 
   const { data: fiches } = await supabase

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   motsClesProches,
@@ -10,7 +11,7 @@ import {
   type ProjetTrouve,
   type TalentTrouve,
 } from "@/app/pitchotheque/actions";
-import { AUCUN, type Filtres } from "@/app/pitchotheque/filtres";
+import { AUCUN, adresse, type Filtres } from "@/app/pitchotheque/filtres";
 import Bandeau from "./Bandeau";
 import LogoComplet from "./LogoComplet";
 import formStyles from "./form.module.css";
@@ -49,6 +50,7 @@ export default function Finder({
   /** Une recherche déjà écrite en arrivant (?q=…), depuis le journal de l'administration. */
   requeteInitiale?: string;
 }) {
+  const router = useRouter();
   const [requete, setRequete] = useState(requeteInitiale);
   // Un seul champ pour trois catégories (29/09) : celle choisie passe en
   // tête, en grand ; les deux autres suivent en aperçu.
@@ -230,7 +232,14 @@ export default function Finder({
             type="button"
             className={`${styles.pastille} ${choisie === c.cle ? styles.pastilleChoisie : ""}`}
             aria-pressed={choisie === c.cle}
-            onClick={() => setChoisie(c.cle)}
+            onClick={() => {
+              setChoisie(c.cle);
+              // Sans mot cherché, la page elle-même change : les
+              // personnages à la place des projets, et retour (02/10).
+              if (!requete.trim() && c.cle !== "talents") {
+                router.push(c.cle === "personnages" ? "/pitchotheque?voir=personnages" : adresse(filtres));
+              }
+            }}
           >
             {c.pastille}
           </button>
@@ -450,9 +459,10 @@ function CarteTalent({ t }: { t: TalentTrouve }) {
 }
 
 /** Un personnage : son portrait, et le projet d'où il vient. */
-function CartePersonnage({ c }: { c: PersonnageTrouve }) {
+export function CartePersonnage({ c }: { c: PersonnageTrouve }) {
   return (
-    <Link href={`/projet/${c.projetId}`} className={styles.personnage}>
+    // La fiche du projet s'ouvre sur ce personnage, biographie dépliée.
+    <Link href={`/projet/${c.projetId}?personnage=${c.id}#personnage-${c.id}`} className={styles.personnage}>
       <span className={styles.portrait}>
         {c.portrait ? (
           // eslint-disable-next-line @next/next/no-img-element

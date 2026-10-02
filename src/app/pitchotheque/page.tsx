@@ -3,9 +3,10 @@ import Link from "next/link";
 import Bandeau from "@/components/Bandeau";
 import { redirect } from "next/navigation";
 import LogoComplet from "@/components/LogoComplet";
-import Finder from "@/components/Finder";
+import Finder, { CartePersonnage } from "@/components/Finder";
+import finderStyles from "@/components/Finder.module.css";
 import VignetteEau from "@/components/VignetteEau";
-import { categorieDeDepart, peutVoirLeNuage } from "./actions";
+import { categorieDeDepart, peutVoirLeNuage, personnagesDeLaGalaxie } from "./actions";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
@@ -34,6 +35,8 @@ export const metadata: Metadata = { title: "Carte des étoiles — WeFilmGood" }
 
 // Cinq projets par ligne, dix lignes.
 const PAR_PAGE = 50;
+// Six personnages par ligne, dix lignes.
+const PERSONNAGES_PAR_PAGE = 60;
 
 const SELECTION =
   "id, title, logline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)";
@@ -63,6 +66,43 @@ export default async function ProjetsPage({
   }
 
   const [adherent, premiere] = await Promise.all([peutVoirLeNuage(), categorieDeDepart()]);
+
+  // Sans mot cherché, le bouton « Personnages » de la recherche amène ici
+  // avec ?voir=personnages : les personnages à la place des projets (02/10).
+  if (params.voir === "personnages") {
+    const { personnages, total: totalPersonnages } = await personnagesDeLaGalaxie(page, PERSONNAGES_PAR_PAGE);
+    const pagesPersonnages = Math.max(1, Math.ceil(totalPersonnages / PERSONNAGES_PAR_PAGE));
+    const lien = (n: number) => `/pitchotheque?voir=personnages${n > 1 ? `&page=${n}` : ""}`;
+    return (
+      <PageShell
+        title="Carte des étoiles"
+        apresTitre={<span className={styles.ancienNom}>l&apos;ancienne Pitchothèque</span>}
+        nav="pitchotheque"
+        connecte={!!user}
+      >
+        <Finder adherent={adherent} premiere="personnages" />
+        <p className={formStyles.hint}>
+          {`Personnages ${((page - 1) * PERSONNAGES_PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * PERSONNAGES_PAR_PAGE + personnages.length).toLocaleString("fr-FR")} sur ${totalPersonnages.toLocaleString("fr-FR")} dans la Carte des étoiles.`}
+        </p>
+        <ul className={finderStyles.grillePersonnages}>
+          {personnages.map((c) => (
+            <li key={c.id}>
+              <CartePersonnage c={c} />
+            </li>
+          ))}
+        </ul>
+        {pagesPersonnages > 1 && (
+          <nav className={styles.pagination} aria-label="Pages de la Carte des étoiles">
+            {page > 1 ? <Link href={lien(page - 1)}>← Précédents</Link> : <span />}
+            <span>
+              Page {page} sur {pagesPersonnages}
+            </span>
+            {page < pagesPersonnages ? <Link href={lien(page + 1)}>Suivants →</Link> : <span />}
+          </nav>
+        )}
+      </PageShell>
+    );
+  }
 
   const { data: genres } = await supabase.from("genres").select("slug, label_fr").order("position");
 
