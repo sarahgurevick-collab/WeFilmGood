@@ -33,6 +33,95 @@ const ICONES = {
       <circle cx="12" cy="12" r="3" />
     </svg>
   ),
+  // Le clap : la Galaxie de Projets.
+  projets: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3Z" />
+      <path d="m6.2 5.3 3.1 3.9" />
+      <path d="m12.4 3.4 3.1 4" />
+      <path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z" />
+    </svg>
+  ),
+  // La silhouette : la Galaxie de Talents.
+  talents: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  ),
+  // Le masque de théâtre : la Galaxie de Personnages.
+  personnages: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4 4h16v7a8 8 0 0 1-16 0Z" />
+      <path d="M8 9h2" />
+      <path d="M14 9h2" />
+      <path d="M9 14c1.5 1.3 4.5 1.3 6 0" />
+    </svg>
+  ),
+  // Le cœur : le jeu CinéCrush (portrait chinois).
+  coeur: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  ),
+  // La fiole de laboratoire : le ScénarioLab.
+  fiole: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M9 3h6" />
+      <path d="M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3" />
+      <path d="M7.5 15h9" />
+    </svg>
+  ),
   // L'œil barré : ce qui n'est pas visible à ce palier.
   oeilBarre: (
     <svg
@@ -104,15 +193,18 @@ const ICONES = {
 
 export default function AvantageAdhesion({
   icone,
+  actif,
   children,
 }: {
   icone?: keyof typeof ICONES;
+  /** Ligne mise en avant (en blanc) : celles du côté choisi, dépôt ou accès. */
+  actif?: boolean;
   children: ReactNode;
 }) {
   return (
     <li>
       {icone && ICONES[icone]}
-      <span>{children}</span>
+      <span style={actif ? { color: "var(--fg)" } : undefined}>{children}</span>
     </li>
   );
 }

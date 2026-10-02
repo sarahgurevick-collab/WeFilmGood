@@ -4,19 +4,13 @@
   margin: 8px 0 4px;
 }
 
-.ligne {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-/* L'interrupteur de WFG 1 : piste cerclée de noir, le logo d'un côté,
+/* L'interrupteur de WFG 1 : piste cerclée de noir, le mot d'un côté,
    le rond blanc de l'autre. Ils échangent leur place au clic. Rouge
-   pour le dépôt d'un projet, vert pour les crédits recherche. */
+   pour le dépôt, vert pour l'accès. */
 .interrupteur {
   position: relative;
   flex-shrink: 0;
-  width: 96px;
+  width: 128px;
   height: 40px;
   padding: 0;
   border: 3px solid #000;
@@ -36,20 +30,21 @@
   outline-offset: 3px;
 }
 
-.logo {
+/* Le mot, dans la place laissée libre par le rond. */
+.mot {
   position: absolute;
-  top: 50%;
-  left: 40px;
-  width: 24px;
-  height: 24px;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
+  left: 32px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   pointer-events: none;
-  transition: left 200ms ease;
-}
-
-.logo svg {
-  width: 100%;
-  height: 100%;
 }
 
 .rond {
@@ -65,33 +60,11 @@
   transition: left 200ms ease;
 }
 
-.cote .logo {
-  left: 12px;
+.cote .mot {
+  left: 6px;
+  right: 32px;
 }
 
 .cote .rond {
   left: calc(100% - 30px);
-}
-
-.texte {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-height: 44px;
-  justify-content: center;
-}
-
-.texte strong {
-  color: var(--fg);
-  font-size: 15px;
-  text-transform: none;
-  letter-spacing: normal;
-}
-
-.texte span {
-  color: var(--dim);
-  font-size: 13px;
-  line-height: 1.5;
-  text-transform: none;
-  letter-spacing: normal;
 }
