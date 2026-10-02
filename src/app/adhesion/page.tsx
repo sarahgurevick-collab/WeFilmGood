@@ -68,10 +68,13 @@ export default async function AdhesionPage({
         }
         contenus={[
           <ul key="0" className={styles.avantages}>
-            <AvantageAdhesion icone="loupe">
-              La Carte des étoiles et le Finder — pour savoir combien de projets
-              répondent à vos envies.
+            <AvantageAdhesion icone="oeilBarre">
+              La Galaxie de Projets (videopitch non visible)
             </AvantageAdhesion>
+            <AvantageAdhesion icone="oeilBarre">
+              La Galaxie de Talents (noms et photo non visibles)
+            </AvantageAdhesion>
+            <AvantageAdhesion>La Galaxie de Personnages</AvantageAdhesion>
             <AvantageAdhesion icone="motscles">
               Le nuage de mots-clés — les {motsCles.toLocaleString("fr-FR")} thèmes
               portés par les projets, avec leurs chiffres, à ouvrir aussi large
