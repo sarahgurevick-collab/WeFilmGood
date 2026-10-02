@@ -89,16 +89,34 @@ export default async function AdhesionPage({
             </AvantageAdhesion>
           </ul>,
 
-          // Le 5 € est un achat à l'unité, sans adhésion (02/10, mots de Sarah).
+          // Le 5 € par mois : la même adhésion que le 50 € par an (02/10).
           <ul key="5" className={styles.avantages}>
-            <AvantageAdhesion icone="oeil">
-              1 projet à l&apos;unité, pour un talent qui ne souhaite pas adhérer
+            <AvantageAdhesion icone="loupe">
+              La Carte des étoiles et le Finder — pour savoir combien de projets
+              répondent à vos envies.
+            </AvantageAdhesion>
+            <AvantageAdhesion icone="motscles">
+              Le nuage de mots-clés — les {motsCles.toLocaleString("fr-FR")} thèmes
+              portés par les projets, avec leurs chiffres, à ouvrir aussi large
+              que vous voulez
+            </AvantageAdhesion>
+            <AvantageAdhesion icone="oeil">Focus de la semaine : 1 projet à découvrir</AvantageAdhesion>
+            <li>
+              <ChoixCredits />
+            </li>
+            <AvantageAdhesion>
+              10 fiches projets (sans analyse du document PDF)
             </AvantageAdhesion>
             <AvantageAdhesion>
-              L&apos;enregistrement d&apos;1 videopitch pour 1 projet, pour un comédien
+              Les 5 projets de la semaine ne sont pas cumulables : s&apos;ils ne sont pas pris
+              dans la semaine, ils ne sont pas récupérés la semaine suivante
             </AvantageAdhesion>
-            <AvantageAdhesion>1 place à un ScénarioLab</AvantageAdhesion>
+            <AvantageAdhesion>Le ScénarioLab offert, limité à 50 places</AvantageAdhesion>
+            <AvantageAdhesion>
+              Adhésion pour 1 an, sans annulation possible avant 12 mois
+            </AvantageAdhesion>
           </ul>,
+
 
           <ul key="50" className={styles.avantages}>
             <AvantageAdhesion icone="loupe">
@@ -125,6 +143,7 @@ export default async function AdhesionPage({
             <AvantageAdhesion>
               Adhésion pour 1 an, sans annulation possible avant 12 mois
             </AvantageAdhesion>
+            <AvantageAdhesion>2 mois offerts</AvantageAdhesion>
           </ul>,
 
           <ul key="500" className={styles.avantages}>
@@ -166,6 +185,21 @@ export default async function AdhesionPage({
           </div>,
         ]}
       />
+
+      {/* L'achat à l'unité, sans adhésion : à part des paliers, pour ne pas
+          le confondre avec l'adhésion à 5 € par mois (02/10, mots de Sarah). */}
+      <section className={styles.unite}>
+        <h2 className={styles.uniteTitre}>Service supplémentaire à 5 €</h2>
+        <ul className={styles.avantages}>
+          <AvantageAdhesion icone="oeil">
+            1 projet à l&apos;unité, pour un talent qui ne souhaite pas adhérer
+          </AvantageAdhesion>
+          <AvantageAdhesion>
+            L&apos;enregistrement d&apos;1 videopitch pour 1 projet, pour un comédien
+          </AvantageAdhesion>
+          <AvantageAdhesion>1 place à un ScénarioLab</AvantageAdhesion>
+        </ul>
+      </section>
     </PageShell>
   );
 }

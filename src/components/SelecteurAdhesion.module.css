@@ -51,6 +51,13 @@
   color: var(--dim);
 }
 
+/* « par mois », « par an », sous le montant. */
+.rythme {
+  margin-top: -6px;
+  font-size: 11px;
+  color: var(--dim);
+}
+
 .contenu {
   max-width: none;
   font-size: 14px;

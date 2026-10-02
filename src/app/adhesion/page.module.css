@@ -21,3 +21,17 @@
   letter-spacing: normal;
   line-height: 1.5;
 }
+
+/* « Service supplémentaire à 5 € », sous les paliers. */
+.unite {
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--bordure-douce);
+}
+
+.uniteTitre {
+  margin: 0 0 16px;
+  font-size: 16px;
+  text-transform: none;
+  letter-spacing: normal;
+}

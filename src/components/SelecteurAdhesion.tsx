@@ -5,6 +5,9 @@ import styles from "./SelecteurAdhesion.module.css";
 
 const PALIERS = ["0 €", "5 €", "50 €", "500 €", "Sur devis"];
 
+// Le 5 € et le 50 € sont la même adhésion, payée au mois ou à l'année (02/10).
+const RYTHMES: Record<number, string> = { 1: "par mois", 2: "par an" };
+
 // Les paliers qui se paient en ligne, par HelloAsso (5, 50 et 500 €).
 const PAYANTS = [1, 2, 3];
 
@@ -35,6 +38,7 @@ export default function SelecteurAdhesion({
               className={`${styles.point} ${choix === i ? styles.pointActif : ""}`}
             />
             <span className={styles.montant}>{montant}</span>
+            {RYTHMES[i] && <span className={styles.rythme}>{RYTHMES[i]}</span>}
           </button>
         ))}
       </div>
