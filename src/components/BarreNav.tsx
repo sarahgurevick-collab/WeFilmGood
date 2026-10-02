@@ -63,8 +63,15 @@ export default async function BarreNav({
               .join(" ")}
           >
             {/* « Galaxies », « Mes projets », « Mes messages », « Mon profil »
-                (02/10) ; avant : « Galaxie WFG » avec le logo. */}
+                (02/10). Le logo complet suit « Galaxies » et change de
+                couleur avec celui du haut (01/10). */}
             {o.label}
+            {o.cle === "pitchotheque" && (
+              <>
+                {" "}
+                <span className={styles.logoOnglet} role="img" aria-label="WeFilmGood" />
+              </>
+            )}
             {o.cle === "messages" && messagesNonLus > 0 && (
               <span className={styles.pastille}>
                 {messagesNonLus}
