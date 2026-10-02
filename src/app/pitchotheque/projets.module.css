@@ -149,8 +149,10 @@
   margin-top: 12px;
 }
 
+/* Essai du 02/10 (Nicolas trouve le lettrage petit) : titre à 16,
+   tagline à 15 — avant : 14 et 13. */
 .legende strong {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 /* Le logo WeFilmGood des projets labellisés, après le titre : en entier,
@@ -169,7 +171,7 @@
 }
 
 .logline {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--dim);
   line-height: 1.5;
   margin: 8px 0 0;
