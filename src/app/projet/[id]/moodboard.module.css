@@ -37,6 +37,23 @@
   object-fit: cover;
 }
 
+/* Dans le cadre de droite (grand écran) : le cadre a la hauteur de la
+   fenêtre du videopitch, les photos se partagent toute cette hauteur. */
+.remplit {
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 0;
+}
+
+.remplit li {
+  min-height: 0;
+}
+
+.remplit .vignette {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
 /* La photo en grand : plein écran sur fond noir. */
 .fond {
   position: fixed;
