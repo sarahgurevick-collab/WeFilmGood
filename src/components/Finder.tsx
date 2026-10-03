@@ -179,6 +179,8 @@ export default function Finder({
   // pas le premier. Sinon un mot populaire placé loin dans la liste
   // s'affichait démesurément gros (ex. "comédie dramatique", 292
   // projets, comparé à un premier mot n'en ayant qu'un seul).
+  const nombreEnTete =
+    choisie === "projets" ? total : choisie === "talents" ? (talents?.total ?? 0) : (personnages?.total ?? 0);
   const effectifMax = Math.max(1, ...(nuage ?? []).map((m) => m.effectif));
   const tailleDe = (effectif: number) => {
     const ratio = Math.min(1, effectif / effectifMax);
@@ -197,9 +199,21 @@ export default function Finder({
             onChange={(e) => setRequete(e.target.value)}
           />
         </span>
-        {/* La place est gardée même au repos : rien ne bouge quand les billes apparaissent. */}
-        <span className={styles.emplacementBilles}>{enCours && <TroisBilles libelle="Recherche…" />}</span>
-        {adherent && (
+        {/* Un seul emplacement, à droite du champ (03/10, demande de Sarah) : les
+            billes pendant la recherche, puis le nombre de résultats quand elles
+            s'arrêtent. Sans mot cherché, c'est le petit disque du nuage. */}
+        {requete.trim() && (
+          <span className={styles.emplacementResultat} aria-live="polite">
+            {enCours ? (
+              <TroisBilles libelle="Recherche…" />
+            ) : (
+              <span className={styles.compte}>
+                {nombreEnTete} résultat{nombreEnTete > 1 ? "s" : ""}
+              </span>
+            )}
+          </span>
+        )}
+        {adherent && !requete.trim() && (
           <button
             type="button"
             className={`${styles.iconeG} ${nuageAffiche ? styles.iconeGOuverte : ""}`}
@@ -344,9 +358,11 @@ export default function Finder({
                         Voir les {nombre} {titre.toLowerCase()} →
                       </button>
                     ) : (
-                      <span className={styles.compte}>
-                        {nombre} résultat{nombre > 1 ? "s" : ""}
-                      </span>
+                      !enTete && (
+                        <span className={styles.compte}>
+                          {nombre} résultat{nombre > 1 ? "s" : ""}
+                        </span>
+                      )
                     )}
                   </div>
                   {cle === "projets" && enTete && total > 0 && (

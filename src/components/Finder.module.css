@@ -26,14 +26,14 @@
   outline-offset: 1px;
 }
 
-/* Les billes de recherche, juste à droite du champ (03/10). */
-.emplacementBilles {
+/* À droite du champ : les billes, puis le nombre de résultats (03/10). */
+.emplacementResultat {
   flex: none;
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 56px;
+  min-width: 56px;
   height: 52px;
+  padding-left: 4px;
 }
 
 .nuage {
@@ -264,6 +264,7 @@
 .compte {
   color: var(--dim);
   font-size: 14px;
+  white-space: nowrap;
 }
 
 .voirTout {
