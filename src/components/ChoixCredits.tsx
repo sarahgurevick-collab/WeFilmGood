@@ -8,8 +8,8 @@ import styles from "./ChoixCredits.module.css";
  * par défaut) ou l'ACCÈS (blanc). Un seul interrupteur — celui de WFG 1,
  * piste et rond blanc — avec le mot écrit dans la piste. Les deux
  * lignes du côté choisi sont affichées, celles de l'autre côté disparaissent
- * (03/10, mots de Sarah). Sur les adhésions à 50 € et à 500 € (les lignes sont données par la page) ; celle à 5 € a une
- * seule ligne de crédits.
+ * (03/10, mots de Sarah). Sur les adhésions à 50 € et à 500 € (les lignes sont données par la page) ; celle à 5 € est
+ * verrouillée sur ACCÈS.
  *
  * Le choix n'est pas encore enregistré : la page présente l'offre.
  *
@@ -20,11 +20,14 @@ import styles from "./ChoixCredits.module.css";
 export default function ChoixCredits({
   lignesDepot,
   lignesAcces,
+  verrouille = false,
 }: {
   lignesDepot: ReactNode;
   lignesAcces: ReactNode;
+  /** Sur ACCÈS, sans pouvoir revenir au DÉPÔT (adhésion à 5 €). */
+  verrouille?: boolean;
 }) {
-  const [acces, setAcces] = useState(false);
+  const [acces, setAcces] = useState(verrouille);
 
   return (
     <>
@@ -36,6 +39,7 @@ export default function ChoixCredits({
             aria-checked={acces}
             aria-label={acces ? "Accès" : "Dépôt"}
             className={`${styles.interrupteur} ${acces ? styles.cote : ""}`}
+            disabled={verrouille}
             onClick={() => setAcces((v) => !v)}
           >
             <span className={styles.mot}>{acces ? "ACCÈS" : "DÉPÔT"}</span>

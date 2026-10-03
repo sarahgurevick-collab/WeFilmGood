@@ -120,10 +120,13 @@ export default async function AdhesionPage({
               La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
             </AvantageAdhesion>
             {suite}
-            <AvantageAdhesion icone="loupe">
-              5 crédits / semaine à choisir dans la Galaxie Projets, Talents, Personnages (non
-              cumulables)
-            </AvantageAdhesion>
+            <ChoixCredits
+              verrouille
+              lignesDepot={null}
+              lignesAcces={
+                <AvantageAdhesion icone="oeil">5 Projets / semaine (non cumulables)</AvantageAdhesion>
+              }
+            />
             <AvantageAdhesion icone="fiole">
               Le ScénarioLab offert, place prioritaire (limité à 50 places)
             </AvantageAdhesion>
@@ -144,19 +147,14 @@ export default async function AdhesionPage({
                     L&apos;analyse d&apos;un projet de long métrage, court métrage, série ou VR/360,
                     selon les modalités de dépôt.
                   </AvantageAdhesion>
-                  <AvantageAdhesion icone="projets">
+                  <AvantageAdhesion icone="fiche">
                     Création de fiches projets (sans analyse du document PDF / 10 maximum)
                   </AvantageAdhesion>
-                  <AvantageAdhesion>Accompagnement au vidéopitch si besoin</AvantageAdhesion>
+                  <AvantageAdhesion icone="camera">Accompagnement au vidéopitch si besoin</AvantageAdhesion>
                 </>
               }
               lignesAcces={
-                <>
-                  <AvantageAdhesion icone="loupe">
-                    5 crédits / semaine à choisir dans la Galaxie Projets, Talents, Personnages
-                    (non cumulables)
-                  </AvantageAdhesion>
-                </>
+                <AvantageAdhesion icone="oeil">5 Projets / semaine (non cumulables)</AvantageAdhesion>
               }
             />
             <AvantageAdhesion icone="fiole">
@@ -184,8 +182,7 @@ export default async function AdhesionPage({
               }
               lignesAcces={
                 <AvantageAdhesion icone="oeil">
-                  5 projets par semaine. Possibilité d&apos;utiliser le crédit à
-                  votre convenance
+                  5 projets par semaine (260 projets à utiliser à votre convenance)
                 </AvantageAdhesion>
               }
             />
@@ -193,8 +190,8 @@ export default async function AdhesionPage({
               Un rendez-vous visio ou téléphonique pour répondre à vos
               besoins particuliers
             </AvantageAdhesion>
-            <AvantageAdhesion>Fiches projets illimité</AvantageAdhesion>
-            <AvantageAdhesion>Accompagnement au vidéopitch si besoin</AvantageAdhesion>
+            <AvantageAdhesion icone="fiche">Fiches projets illimitées</AvantageAdhesion>
+            <AvantageAdhesion icone="camera">Accompagnement au vidéopitch si besoin</AvantageAdhesion>
             <AvantageAdhesion icone="fiole">
               Le ScénarioLab offert, place prioritaire (limité à 50 places)
             </AvantageAdhesion>
