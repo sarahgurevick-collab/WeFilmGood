@@ -362,7 +362,7 @@ export default function Finder({
                   </div>
                   {enTete && nombre > 0 && (
                     <p className={styles.indice}>
-                      {nombre > nombreAffiche(cle) && `Les ${nombreAffiche(cle)} premiers affichés.`}
+                      {`${titre} 1 à ${nombreAffiche(cle).toLocaleString("fr-FR")} sur ${nombre.toLocaleString("fr-FR")}.`}
                       {cle === "projets" && parLeSens.length > 0 && (
                         <> Dont des projets proches par le sens&nbsp;: {parLeSens.join(", ")}.</>
                       )}
