@@ -127,7 +127,10 @@ export default async function AdhesionPage({
             </AvantageAdhesion>
             <AvantageAdhesion icone="personnages">La Galaxie de Personnages</AvantageAdhesion>
             {suite}
-            <ChoixCredits />
+            <AvantageAdhesion icone="loupe">
+              5 crédits / semaine à choisir dans la Galaxie Projets, Talents, Personnages (non
+              cumulables)
+            </AvantageAdhesion>
             <AvantageAdhesion icone="fiole">Le ScénarioLab offert, limité à 50 places</AvantageAdhesion>
             <AvantageAdhesion>
               Adhésion pour 1 an, sans annulation possible avant 12 mois
