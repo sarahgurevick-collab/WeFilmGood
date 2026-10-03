@@ -6,6 +6,7 @@ import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { MAX_MOODBOARD, signerImages } from "../fichiers";
 import { enregistrerDocuments, retirerImage } from "./actions";
+import ImagePresentation from "./ImagePresentation";
 
 type Fichier = { id: string; kind: string; storage_path: string; original_name: string | null };
 
@@ -33,10 +34,13 @@ export default async function DocumentsPage({
     .returns<Fichier[]>();
 
   const vignette = (fichiers ?? []).filter((f) => f.kind === "vignette").at(-1) ?? null;
+  // L'image complète, pour pouvoir la repositionner : l'origine si elle existe.
+  const origine = (fichiers ?? []).filter((f) => f.kind === "vignette_origine").at(-1) ?? null;
+  const aPositionner = origine ?? vignette;
   const moodboard = (fichiers ?? []).filter((f) => f.kind === "moodboard");
   const scenario = (fichiers ?? []).filter((f) => f.kind === "scenario").at(-1) ?? null;
   const urls = await signerImages(supabase, [
-    vignette?.storage_path,
+    aPositionner?.storage_path,
     ...moodboard.map((m) => m.storage_path),
   ]);
   const accept = "image/jpeg,image/png,image/webp";
@@ -71,18 +75,11 @@ export default async function DocumentsPage({
           fiche. Format 16/9 (paysage), JPG ou PNG. N&apos;y faites figurer ni votre nom ni le
           titre.
         </p>
-        {vignette && urls.get(vignette.storage_path) && (
-          <div className={styles.apercu}>
-            <img src={urls.get(vignette.storage_path)} alt="" />
-          </div>
-        )}
-        <label className={formStyles.field}>
-          <span>{vignette ? "Remplacer l'image" : "Choisir une image"}</span>
-          <input type="file" name="vignette" accept={accept} />
-          <span className={formStyles.hint}>
-            Inutile de la compresser : nous nous en chargeons.
-          </span>
-        </label>
+        <ImagePresentation
+          urlActuelle={aPositionner ? (urls.get(aPositionner.storage_path) ?? null) : null}
+          accept={accept}
+          aUneImage={!!vignette}
+        />
 
         <h2 className={styles.sousTitre}>Moodboard</h2>
         <p className={formStyles.hint}>

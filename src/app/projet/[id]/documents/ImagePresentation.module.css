@@ -1,0 +1,10 @@
+/* Une image qu'on peut faire glisser dans son cadre. */
+.glisse {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.glisse:active {
+  cursor: grabbing;
+}

@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { chargerProjetAModifier } from "../../blocs";
-import { IMAGES, MAX_MOODBOARD, deposerImage, deposerScenario, retirerImages } from "../fichiers";
+import { IMAGES, MAX_MOODBOARD, deposerImage, deposerScenario, recadrerEn16x9, retirerImages } from "../fichiers";
 
 /**
  * Bloc 2 — enregistre l'image de présentation (une seule : la nouvelle
@@ -42,35 +42,56 @@ export async function enregistrerDocuments(formData: FormData) {
     echec(`Le Moodboard tient en ${MAX_MOODBOARD} photos au plus.`);
   }
 
-  if (vignette && vignette.size > 0) {
-    const chemin = await deposerImage(supabase, projet.owner_id, id, vignette, "vignette");
-    if (!chemin) {
-      echec("L'image de présentation n'a pas pu être enregistrée. Réessayez, ou écrivez-nous.");
-    }
+  // L'image de présentation (03/10) : l'image complète est gardée (kind
+  // « vignette_origine »), la vignette affichée partout est une copie 16/9
+  // recadrée sur la partie choisie. Sans nouveau fichier, on peut seulement
+  // avoir déplacé l'image : on recadre alors l'origine (ou la vignette
+  // actuelle, qui devient l'origine).
+  const nombre = (v: FormDataEntryValue | null) => (v === null || v === "" ? 50 : Number(v));
+  const aDeplace = formData.get("vignette_x") !== null || formData.get("vignette_y") !== null;
+  const posX = nombre(formData.get("vignette_x"));
+  const posY = nombre(formData.get("vignette_y"));
+  const nouvelle = !!vignette && vignette.size > 0;
+
+  if (nouvelle || aDeplace) {
     const { data: anciennes } = await supabase
       .from("project_files")
-      .select("id, storage_path")
+      .select("id, kind, storage_path")
       .eq("project_id", id)
-      .eq("kind", "vignette")
-      .returns<{ id: string; storage_path: string }[]>();
-    await supabase.from("project_files").insert({
-      project_id: id,
-      storage_path: chemin,
-      kind: "vignette",
-      original_name: vignette.name,
-    });
-    if (anciennes?.length) {
-      await supabase
-        .from("project_files")
-        .delete()
-        .in(
-          "id",
-          anciennes.map((a) => a.id),
-        );
-      await retirerImages(
-        supabase,
-        anciennes.map((a) => a.storage_path),
-      );
+      .in("kind", ["vignette", "vignette_origine"])
+      .returns<{ id: string; kind: string; storage_path: string }[]>();
+    const vignetteActuelle = (anciennes ?? []).find((a) => a.kind === "vignette");
+    const origineActuelle = (anciennes ?? []).find((a) => a.kind === "vignette_origine");
+
+    let cheminOrigine: string | null;
+    if (nouvelle) {
+      cheminOrigine = await deposerImage(supabase, projet.owner_id, id, vignette, "vignette");
+      if (!cheminOrigine) {
+        echec("L'image de présentation n'a pas pu être enregistrée. Réessayez, ou écrivez-nous.");
+      }
+    } else {
+      cheminOrigine = origineActuelle?.storage_path ?? vignetteActuelle?.storage_path ?? null;
+    }
+
+    if (cheminOrigine) {
+      const copie = await recadrerEn16x9(supabase, projet.owner_id, id, cheminOrigine, posX, posY);
+      if (!copie) {
+        echec("L'image de présentation n'a pas pu être recadrée. Réessayez, ou écrivez-nous.");
+      }
+      await supabase.from("project_files").insert([
+        { project_id: id, storage_path: copie, kind: "vignette", original_name: vignette?.name || "vignette" },
+        ...(nouvelle || !origineActuelle
+          ? [{ project_id: id, storage_path: cheminOrigine, kind: "vignette_origine", original_name: vignette?.name || null }]
+          : []),
+      ]);
+      // On retire les anciennes lignes, et les fichiers qui ne servent plus.
+      const aGarder = new Set([cheminOrigine]);
+      const aRetirer = (anciennes ?? []).filter((a) => !(a.kind === "vignette_origine" && !nouvelle) && !aGarder.has(a.storage_path));
+      const anciennesLignes = (anciennes ?? []).filter((a) => !(a.kind === "vignette_origine" && !nouvelle));
+      if (anciennesLignes.length) {
+        await supabase.from("project_files").delete().in("id", anciennesLignes.map((a) => a.id));
+      }
+      await retirerImages(supabase, aRetirer.map((a) => a.storage_path));
     }
   }
 

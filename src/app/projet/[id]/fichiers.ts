@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import sharp from "sharp";
 import { alleger } from "@/lib/image";
 
 /**
@@ -82,4 +83,50 @@ export async function deposerScenario(
     original_name: fichier.name,
   });
   return !ligne;
+}
+
+/**
+ * Recadre une image stockée en 16/9, en gardant la partie choisie (x et y
+ * en %, 50 = au centre), et la dépose. Renvoie le chemin de la copie
+ * recadrée, ou null en cas d'échec. Une image déjà en 16/9 est recopiée telle quelle.
+ */
+export async function recadrerEn16x9(
+  supabase: SupabaseClient,
+  ownerId: string,
+  projectId: string,
+  source: string,
+  x: number,
+  y: number,
+): Promise<string | null> {
+  const { data, error } = await supabase.storage.from(BUCKET_IMAGES).download(source);
+  if (error || !data) return null;
+  try {
+    const origine = Buffer.from(await data.arrayBuffer());
+    const image = sharp(origine, { failOn: "none" }).rotate();
+    const { width = 0, height = 0 } = await sharp(await image.clone().toBuffer()).metadata();
+    if (!width || !height) return null;
+    let largeur = width;
+    let hauteur = height;
+    if (width / height > 16 / 9) largeur = Math.round((height * 16) / 9);
+    else hauteur = Math.round((width * 9) / 16);
+    const gauche = Math.round((width - largeur) * (Math.min(100, Math.max(0, x)) / 100));
+    const haut = Math.round((height - hauteur) * (Math.min(100, Math.max(0, y)) / 100));
+    const rogne = await image
+      .extract({ left: gauche, top: haut, width: largeur, height: hauteur })
+      .flatten({ background: "#ffffff" })
+      .jpeg({ quality: 82, mozjpeg: true })
+      .toBuffer();
+    const chemin = `${ownerId}/${projectId}-vignette-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const { error: depot } = await supabase.storage
+      .from(BUCKET_IMAGES)
+      .upload(chemin, rogne, { contentType: "image/jpeg" });
+    if (depot) {
+      console.error("Dépôt de la vignette recadrée refusé :", depot.message);
+      return null;
+    }
+    return chemin;
+  } catch (e) {
+    console.error("Recadrage de la vignette en échec :", e);
+    return null;
+  }
 }
