@@ -131,7 +131,9 @@ export default async function AdhesionPage({
               5 crédits / semaine à choisir dans la Galaxie Projets, Talents, Personnages (non
               cumulables)
             </AvantageAdhesion>
-            <AvantageAdhesion icone="fiole">Le ScénarioLab offert, limité à 50 places</AvantageAdhesion>
+            <AvantageAdhesion icone="fiole">
+              Le ScénarioLab offert, place prioritaire (limité à 50 places)
+            </AvantageAdhesion>
             <AvantageAdhesion>
               Adhésion pour 1 an, sans annulation possible avant 12 mois
             </AvantageAdhesion>
@@ -171,7 +173,9 @@ export default async function AdhesionPage({
                 </>
               }
             />
-            <AvantageAdhesion icone="fiole">Le ScénarioLab offert, limité à 50 places</AvantageAdhesion>
+            <AvantageAdhesion icone="fiole">
+              Le ScénarioLab offert, place prioritaire (limité à 50 places)
+            </AvantageAdhesion>
             <AvantageAdhesion>
               Adhésion pour 1 an, sans annulation possible avant 12 mois
             </AvantageAdhesion>
