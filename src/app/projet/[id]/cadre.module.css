@@ -502,13 +502,8 @@ a.membreLien:hover .portrait {
     display: none;
   }
 
-  /* À la hauteur de la fenêtre du videopitch (03/10, Sarah) : le grand
-     cadre fait 800 px, moins ses 26 px de bord et de marge, en 16 / 10. */
   .detailMoodboard {
-    display: flex;
-    flex-direction: column;
-    height: calc((800px - 26px) * 10 / 16 + 26px);
-    padding: 22px 20px 20px;
+    padding: 22px 20px 14px;
   }
 
   .detailMoodboard .dessousTitre {

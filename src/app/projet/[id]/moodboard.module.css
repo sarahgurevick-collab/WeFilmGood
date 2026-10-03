@@ -1,5 +1,4 @@
-/* Les photos du moodboard en petit, sur la largeur du cadre : dix photos,
-   cinq par ligne sur grand écran. */
+/* Les photos du moodboard en petit, sur la largeur du cadre : neuf photos. */
 .mosaique {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -35,23 +34,6 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-/* Dans le cadre de droite (grand écran) : le cadre a la hauteur de la
-   fenêtre du videopitch, les photos se partagent toute cette hauteur. */
-.remplit {
-  flex: 1;
-  min-height: 0;
-  padding-bottom: 0;
-}
-
-.remplit li {
-  min-height: 0;
-}
-
-.remplit .vignette {
-  height: 100%;
-  aspect-ratio: auto;
 }
 
 /* La photo en grand : plein écran sur fond noir. */

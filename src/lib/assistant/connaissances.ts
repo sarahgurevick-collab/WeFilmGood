@@ -39,7 +39,7 @@ Fiche projet (menu « Créer une fiche projet »)
 - Trois blocs, enregistrés séparément (on peut partir et revenir) : 1) la fiche : titre, tagline, logline, format, genre, budget, audience, prix reçus ; 2) documents : image de présentation, moodboard, scénario PDF ; 3) personnages : nom, portrait facultatif, deux ou trois lignes.
 - Obligatoires : titre, tagline, format, genre principal. Tagline : 300 caractères maximum (une phrase d'accroche). Logline : 600 caractères maximum (un petit résumé).
 - Image de présentation : format paysage 16/9, JPG ou PNG, sans son nom ni le titre dessus.
-- Moodboard : 10 photos maximum.
+- Moodboard : 9 photos maximum.
 - Le scénario PDF est confidentiel : seuls l'auteur, les lecteurs qui en sont chargés et l'équipe de la Maison des Scénaristes/WeFilmGood y ont accès.
 - Une jauge indique le remplissage : les fiches complètes apparaissent plus haut dans les Galaxies (visibilité, pas promesse de résultat).
 - Sur la fiche : onglets « Videopitch » et « Mon équipe » (inviter les talents du projet).

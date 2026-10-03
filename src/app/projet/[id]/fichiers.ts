@@ -8,7 +8,8 @@ import { alleger } from "@/lib/image";
  * été refusé — l'appelant prévient alors l'auteur, au lieu de se taire.
  */
 export const IMAGES = ["image/jpeg", "image/png", "image/webp"];
-export const MAX_MOODBOARD = 10;
+// Neuf photos (03/10, Sarah) : trois rangées de trois dans le cadre du moodboard.
+export const MAX_MOODBOARD = 9;
 
 const BUCKET_IMAGES = "project-media";
 

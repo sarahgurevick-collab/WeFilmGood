@@ -10,24 +10,13 @@ import styles from "./moodboard.module.css";
  * « 3 / 10 », les flèches (ou les touches ← →, ou un glissement du doigt)
  * pour passer à la suivante, et la croix × pour refermer.
  */
-export default function MoodboardPhotos({
-  photos,
-  remplir = false,
-}: {
-  photos: string[];
-  /** Dans le cadre de droite (grand écran) : les photos se répartissent pour remplir toute la hauteur. */
-  remplir?: boolean;
-}) {
+export default function MoodboardPhotos({ photos }: { photos: string[] }) {
   const [ouverte, setOuverte] = useState<number | null>(null);
   // La vignette cliquée, pour lui rendre le focus à la fermeture.
   const retour = useRef<HTMLElement | null>(null);
   const departToucher = useRef<number | null>(null);
   const total = photos.length;
   const estOuverte = ouverte !== null;
-  // Remplir le cadre : autant de colonnes que le nombre de photos le demande,
-  // et les rangées se partagent la hauteur (9 photos : 3 × 3 ; 10 : 4 × 3).
-  const colonnes = total <= 2 ? 1 : total <= 4 ? 2 : total <= 9 ? 3 : 4;
-  const rangees = Math.ceil(total / colonnes);
 
   const aller = useCallback(
     (delta: number) => setOuverte((i) => (i === null ? i : (i + delta + total) % total)),
@@ -57,14 +46,7 @@ export default function MoodboardPhotos({
 
   return (
     <>
-      <ul
-        className={`${styles.mosaique} ${remplir ? styles.remplit : ""}`}
-        style={
-          remplir
-            ? { gridTemplateColumns: `repeat(${colonnes}, 1fr)`, gridTemplateRows: `repeat(${rangees}, minmax(0, 1fr))` }
-            : undefined
-        }
-      >
+      <ul className={styles.mosaique}>
         {photos.map((src, i) => (
           <li key={src}>
             <button

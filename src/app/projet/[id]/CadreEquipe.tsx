@@ -328,7 +328,7 @@ export default function CadreEquipe({
           ) : (
             <>
               <p className={styles.dessousTitre}>Moodboard</p>
-              <MoodboardPhotos photos={moodboard} remplir />
+              <MoodboardPhotos photos={moodboard} />
             </>
           )}
         </aside>
