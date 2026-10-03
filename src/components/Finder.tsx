@@ -28,8 +28,6 @@ const MAX = 200;
 const DEFAUT = 80;
 // En dessous, trop peu de mots pour dessiner le disque : on les liste.
 const G_MINIMUM = 20;
-// Les rangées 2 et 3 : un aperçu d'une ligne.
-const APERCU = 5;
 
 const CATEGORIES: { cle: Categorie; pastille: string; titre: string }[] = [
   { cle: "projets", pastille: "Projets", titre: "Projets" },
@@ -179,8 +177,9 @@ export default function Finder({
   // pas le premier. Sinon un mot populaire placé loin dans la liste
   // s'affichait démesurément gros (ex. "comédie dramatique", 292
   // projets, comparé à un premier mot n'en ayant qu'un seul).
-  const nombreEnTete =
-    choisie === "projets" ? total : choisie === "talents" ? (talents?.total ?? 0) : (personnages?.total ?? 0);
+  const nombreDe = (cle: Categorie) =>
+    cle === "projets" ? total : cle === "talents" ? (talents?.total ?? 0) : (personnages?.total ?? 0);
+  const nombreEnTete = nombreDe(choisie);
   const effectifMax = Math.max(1, ...(nuage ?? []).map((m) => m.effectif));
   const tailleDe = (effectif: number) => {
     const ratio = Math.min(1, effectif / effectifMax);
@@ -245,6 +244,7 @@ export default function Finder({
             }}
           >
             {c.pastille}
+            {requete.trim() && !enCours && <span className={styles.nombrePastille}> ({nombreDe(c.cle)})</span>}
           </button>
         ))}
       </div>
@@ -324,87 +324,75 @@ export default function Finder({
         </div>
       )}
 
+      {/* Seule la catégorie choisie s'affiche (03/10, demande de Sarah) : ce qui
+          n'est pas demandé ne revient pas en dessous. Les autres catégories
+          restent à un clic, avec leur nombre sur les pastilles. */}
       {requete.trim() && (
         <div className={styles.resultats}>
           {enCours ? null : (
-            [choisie, ...CATEGORIES.map((c) => c.cle).filter((c) => c !== choisie)].map((cle, rang) => {
-              const titre = CATEGORIES.find((c) => c.cle === cle)!.titre;
-              const nombre =
-                cle === "projets" ? total : cle === "talents" ? (talents?.total ?? 0) : (personnages?.total ?? 0);
-              const enTete = rang === 0;
-              return (
-                <section key={cle} className={`${styles.rangee} ${enTete ? styles.rangeeEnTete : ""}`}>
-                  <div className={styles.rangeeTete}>
-                    <h2>
-                      <span className={styles.rang}>{rang + 1}</span>
-                      {titre}
-                    </h2>
-                    {!enTete && nombre > 0 ? (
-                      <button type="button" className={styles.voirTout} onClick={() => setChoisie(cle)}>
-                        Voir les {nombre} {titre.toLowerCase()} →
-                      </button>
-                    ) : (
-                      !enTete && (
-                        <span className={styles.compte}>
-                          {nombre} résultat{nombre > 1 ? "s" : ""}
-                        </span>
-                      )
+            <section className={`${styles.rangee} ${styles.rangeeEnTete}`}>
+              {(() => {
+                const cle = choisie;
+                const nombre = nombreEnTete;
+                const liste =
+                  cle === "projets" ? resultats ?? [] : cle === "talents" ? talents?.liste ?? [] : personnages?.liste ?? [];
+                return (
+                  <>
+                    {nombre > 0 && (
+                      <p className={styles.indice}>
+                        {nombre > liste.length && `Les ${liste.length} premiers affichés.`}
+                        {cle === "projets" && parLeSens.length > 0 && (
+                          <> Dont des projets proches par le sens&nbsp;: {parLeSens.join(", ")}.</>
+                        )}
+                      </p>
                     )}
-                  </div>
-                  {cle === "projets" && enTete && total > 0 && (
-                    <p className={styles.indice}>
-                      {total > (resultats?.length ?? 0) && `Les ${resultats?.length} premiers affichés.`}
-                      {parLeSens.length > 0 && (
-                        <> Dont des projets proches par le sens&nbsp;: {parLeSens.join(", ")}.</>
-                      )}
-                    </p>
-                  )}
-                  {nombre === 0 ? (
-                    <p className={styles.indice}>
-                      {/* Phrase de Sarah (30/09) ; le nuage s'ouvre d'un clic pour les adhérents. */}
-                      Aucun résultat. Utilisez le{" "}
-                      {adherent ? (
-                        <button
-                          type="button"
-                          className={styles.lienNuage}
-                          onClick={() => setNuageDemande(true)}
-                        >
-                          nuage de mots-clés
-                        </button>
-                      ) : (
-                        <Link href="/adhesion" className={styles.lienNuage} title="Le nuage de mots-clés est réservé aux adhérents">
-                          nuage de mots-clés
-                        </Link>
-                      )}
-                    </p>
-                  ) : cle === "projets" ? (
-                    <ul className={`${projetsStyles.grille} ${enTete ? "" : styles.apercu}`}>
-                      {(enTete ? resultats ?? [] : (resultats ?? []).slice(0, APERCU)).map((p) => (
-                        <li key={p.id}>
-                          <CarteProjet p={p} />
-                        </li>
-                      ))}
-                    </ul>
-                  ) : cle === "talents" ? (
-                    <ul className={`${styles.grilleTalents} ${enTete ? "" : styles.apercu}`}>
-                      {(enTete ? talents?.liste ?? [] : (talents?.liste ?? []).slice(0, APERCU)).map((t) => (
-                        <li key={t.id}>
-                          <CarteTalent t={t} />
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <ul className={`${styles.grillePersonnages} ${enTete ? "" : styles.apercu}`}>
-                      {(enTete ? personnages?.liste ?? [] : (personnages?.liste ?? []).slice(0, APERCU)).map((c) => (
-                        <li key={c.id}>
-                          <CartePersonnage c={c} />
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </section>
-              );
-            })
+                    {nombre === 0 ? (
+                      <p className={styles.indice}>
+                        {/* Phrase de Sarah (30/09) ; le nuage s'ouvre d'un clic pour les adhérents. */}
+                        Aucun résultat. Utilisez le{" "}
+                        {adherent ? (
+                          <button
+                            type="button"
+                            className={styles.lienNuage}
+                            onClick={() => setNuageDemande(true)}
+                          >
+                            nuage de mots-clés
+                          </button>
+                        ) : (
+                          <Link href="/adhesion" className={styles.lienNuage} title="Le nuage de mots-clés est réservé aux adhérents">
+                            nuage de mots-clés
+                          </Link>
+                        )}
+                      </p>
+                    ) : cle === "projets" ? (
+                      <ul className={projetsStyles.grille}>
+                        {(resultats ?? []).map((p) => (
+                          <li key={p.id}>
+                            <CarteProjet p={p} />
+                          </li>
+                        ))}
+                      </ul>
+                    ) : cle === "talents" ? (
+                      <ul className={styles.grilleTalents}>
+                        {(talents?.liste ?? []).map((t) => (
+                          <li key={t.id}>
+                            <CarteTalent t={t} />
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <ul className={styles.grillePersonnages}>
+                        {(personnages?.liste ?? []).map((c) => (
+                          <li key={c.id}>
+                            <CartePersonnage c={c} />
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </>
+                );
+              })()}
+            </section>
           )}
         </div>
       )}

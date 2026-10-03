@@ -374,3 +374,9 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* Le nombre de résultats, à côté du nom de la catégorie. */
+.nombrePastille {
+  opacity: 0.7;
+  font-weight: 400;
+}
