@@ -194,7 +194,7 @@ export default function CadreEquipe({
   const deuxLangues = Boolean(videopitch?.fr && videopitch?.en);
 
   return (
-    <div className={styles.rangee}>
+    <div>
     <section className={`${styles.cadre} ${styles.cadreComparateur}`}>
       {/* Plus de comparateur (27/09, Sarah : l'effet n'apportait rien) :
           la fiche seule dans le cadre, le reste en dessous. Page d'avant :
@@ -244,9 +244,8 @@ export default function CadreEquipe({
       )}
     </section>
 
-      {/* L'équipe a son propre cadre rouge (03/10), à droite du grand cadre
-          sur un écran large, dessous sinon : on la distingue d'un coup d'œil
-          et il n'y a plus de grand vide à côté du cadre. */}
+      {/* L'équipe a son propre cadre rouge (03/10), sous le grand cadre : on
+          la distingue d'un coup d'œil des personnages. */}
       {equipe.length > 0 && (
         <section className={`${styles.cadre} ${styles.cadreEquipe}`}>
           <p className={styles.dessousTitre}>{titreEquipe}</p>

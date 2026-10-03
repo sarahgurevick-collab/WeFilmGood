@@ -463,23 +463,9 @@
   cursor: zoom-out;
 }
 
-/* Le grand cadre et le cadre de l'équipe côte à côte quand l'écran le
-   permet, l'un sous l'autre sinon (03/10). */
-.rangee {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 0 28px;
-}
-
-.rangee > .cadre {
-  flex: 1 1 800px;
-  max-width: 800px;
-}
-
-.rangee > .cadreEquipe {
-  flex: 1 1 280px;
-  max-width: 800px;
+/* Le cadre de l'équipe est posé sous le grand cadre (03/10, Sarah : on
+   laisse l'auteur en dessous des personnages), même largeur. */
+.cadreEquipe {
   padding: 22px 20px 12px;
 }
 
