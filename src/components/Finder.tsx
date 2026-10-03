@@ -16,6 +16,7 @@ import Bandeau from "./Bandeau";
 import LogoComplet from "./LogoComplet";
 import formStyles from "./form.module.css";
 import NuageDisque from "./NuageDisque";
+import TroisBilles from "./TroisBilles";
 import styles from "./Finder.module.css";
 import projetsStyles from "@/app/pitchotheque/projets.module.css";
 
@@ -324,7 +325,7 @@ export default function Finder({
       {requete.trim() && (
         <div className={styles.resultats}>
           {enCours ? (
-            <p className={styles.indice}>Recherche…</p>
+            <TroisBilles libelle="Recherche…" />
           ) : (
             [choisie, ...CATEGORIES.map((c) => c.cle).filter((c) => c !== choisie)].map((cle, rang) => {
               const titre = CATEGORIES.find((c) => c.cle === cle)!.titre;
