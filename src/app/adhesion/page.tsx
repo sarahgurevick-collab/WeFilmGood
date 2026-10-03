@@ -108,14 +108,17 @@ export default async function AdhesionPage({
         }
         contenus={[
           <ul key="0" className={styles.avantages}>
-            {suite}
             <AvantageAdhesion>
               La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
             </AvantageAdhesion>
+            {suite}
           </ul>,
 
           // Le 5 € par mois : la même adhésion que le 50 € par an (02/10).
           <ul key="5" className={styles.avantages}>
+            <AvantageAdhesion>
+              La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
+            </AvantageAdhesion>
             {suite}
             <AvantageAdhesion icone="loupe">
               5 crédits / semaine à choisir dans la Galaxie Projets, Talents, Personnages (non
@@ -127,12 +130,12 @@ export default async function AdhesionPage({
             <AvantageAdhesion>
               Adhésion pour 1 an, sans annulation possible avant 12 mois
             </AvantageAdhesion>
-            <AvantageAdhesion>
-              La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
-            </AvantageAdhesion>
           </ul>,
 
           <ul key="50" className={styles.avantages}>
+            <AvantageAdhesion>
+              La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
+            </AvantageAdhesion>
             {suite}
             <ChoixCredits
               lignesDepot={
@@ -163,12 +166,12 @@ export default async function AdhesionPage({
               Adhésion pour 1 an, sans annulation possible avant 12 mois
             </AvantageAdhesion>
             <AvantageAdhesion>2 mois offerts</AvantageAdhesion>
-            <AvantageAdhesion>
-              La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
-            </AvantageAdhesion>
           </ul>,
 
           <ul key="500" className={styles.avantages}>
+            <AvantageAdhesion>
+              La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
+            </AvantageAdhesion>
             {suite}
             <ChoixCredits
               lignesDepot={
@@ -197,9 +200,6 @@ export default async function AdhesionPage({
             </AvantageAdhesion>
             <AvantageAdhesion>
               Adhésion pour 1 an, sans annulation possible avant 12 mois
-            </AvantageAdhesion>
-            <AvantageAdhesion>
-              La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
             </AvantageAdhesion>
           </ul>,
 
