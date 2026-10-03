@@ -12,6 +12,8 @@ import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
 import { createClient } from "@/lib/supabase/server";
 import RechercheAvancee from "./RechercheAvancee";
+import MarqueDejaOuvert from "@/components/MarqueDejaOuvert";
+import { projetsDejaOuverts } from "@/lib/vues";
 import { adresse, lireFiltres, nombreDeFiltres, parametresRpc } from "./filtres";
 
 /**
@@ -176,6 +178,8 @@ export default async function ProjetsPage({
     : { data: [] };
 
   const urlDe = new Map((signes ?? []).map((s) => [s.path, s.signedUrl]));
+  // Les fiches que ce membre a déjà ouvertes (03/10) : un petit œil sur la carte.
+  const dejaOuverts = await projetsDejaOuverts(supabase, (projects ?? []).map((p) => p.id));
 
   const vignetteDe = (p: Projet) => {
     const chemin = (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path;
@@ -230,6 +234,7 @@ export default async function ProjetsPage({
                   >
                     <div className={styles.vignette}>
                       <Bandeau valeur={p.bandeau} />
+                      {dejaOuverts.has(p.id) && <MarqueDejaOuvert />}
                       {vignette && EFFET_VIGNETTE === "eau" ? (
                         <VignetteEau src={vignette} />
                       ) : vignette ? (

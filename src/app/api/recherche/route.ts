@@ -1,6 +1,7 @@
 import { lireFiltres } from "@/app/pitchotheque/filtres";
 import { rechercherPersonnages, rechercherProjets, rechercherTalents } from "@/app/pitchotheque/actions";
 import { createClient } from "@/lib/supabase/server";
+import { projetsDejaOuverts } from "@/lib/vues";
 
 /**
  * La recherche de la Carte des étoiles : projets, talents et personnages
@@ -32,8 +33,9 @@ export async function GET(request: Request) {
   if (p.total === 0 && t.total === 0 && c.total === 0) {
     await supabase.rpc("noter_recherche_sans_resultat", { q });
   }
+  const dejaOuverts = await projetsDejaOuverts(supabase, p.projets.map((x) => x.id));
   return Response.json({
-    projets: p.projets,
+    projets: p.projets.map((x) => ({ ...x, vu: dejaOuverts.has(x.id) })),
     total: p.total,
     parLeSens: p.parLeSens ?? [],
     talents: t.talents,

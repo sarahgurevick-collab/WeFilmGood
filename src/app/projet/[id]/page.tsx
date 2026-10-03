@@ -153,6 +153,13 @@ export default async function ProjetPage({
     >();
 
   const { data: estAdmin } = await supabase.rpc("is_admin");
+
+  // Une fiche ouverte est une vue (03/10) : une fois par membre et par projet,
+  // l'équipe comptée ; la base écarte l'auteur, l'administration et les lecteurs.
+  // Le nombre de vues n'est donné qu'à l'auteur et à l'administration.
+  if (!isOwner) await supabase.rpc("enregistrer_vue", { p_projet: id });
+  const { data: nbVues } =
+    isOwner || estAdmin ? await supabase.rpc("compter_vues", { p_projet: id }) : { data: null };
   // Les sélections de la Maison des Scénaristes (Cannes 2019, PCDV 2022…)
   // et les comédiens envisagés par l'auteur, repris de WFG 1 (28/09) :
   // visibles des membres, et filtres de la recherche avancée.
@@ -374,6 +381,11 @@ export default async function ProjetPage({
           return [...reperes, ...mots].join(" · ");
         })()}
       </p>
+      {typeof nbVues === "number" && (
+        <p className={formStyles.hint}>
+          {nbVues} vue{nbVues > 1 ? "s" : ""}
+        </p>
+      )}
 
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe

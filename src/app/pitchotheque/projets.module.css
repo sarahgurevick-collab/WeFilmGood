@@ -47,6 +47,26 @@
   justify-content: center;
 }
 
+/* Le repère « déjà ouvert » : un petit œil dans un coin de la vignette. */
+.dejaOuvert {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.62);
+  color: #fff;
+}
+
+.dejaOuvert svg {
+  width: 16px;
+  height: 16px;
+}
+
 .vignette img {
   width: 100%;
   height: 100%;

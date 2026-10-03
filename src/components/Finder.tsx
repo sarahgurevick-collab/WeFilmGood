@@ -14,6 +14,7 @@ import {
 import { AUCUN, adresse, type Filtres } from "@/app/pitchotheque/filtres";
 import Bandeau from "./Bandeau";
 import LogoComplet from "./LogoComplet";
+import MarqueDejaOuvert from "./MarqueDejaOuvert";
 import formStyles from "./form.module.css";
 import NuageCouleurs from "./NuageCouleurs";
 import NuageDisque from "./NuageDisque";
@@ -416,6 +417,7 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
     <Link href={`/projet/${p.id}`} className={projetsStyles.carte}>
       <div className={projetsStyles.vignette}>
         <Bandeau valeur={p.bandeau} />
+        {p.vu && <MarqueDejaOuvert />}
         {p.vignette ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}

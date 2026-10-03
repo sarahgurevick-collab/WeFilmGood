@@ -13,6 +13,8 @@ export type ProjetTrouve = {
   bandeau: string | null;
   genre: { label_fr: string } | null;
   vignette: string | null;
+  /** Déjà ouvert par ce membre (03/10). */
+  vu?: boolean;
 };
 
 export type ResultatRecherche = {
