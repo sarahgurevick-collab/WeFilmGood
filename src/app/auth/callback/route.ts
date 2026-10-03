@@ -9,7 +9,15 @@ import { createClient } from "@/lib/supabase/server";
  * le sommaire du profil, comme après une inscription par email.
  */
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = request.nextUrl;
+  const { searchParams } = request.nextUrl;
+  // Derrière nginx, request.nextUrl.origin vaut « http://localhost:3000 » (le
+  // serveur écoute en interne) : après Google, la personne atterrissait sur
+  // localhost, alors qu'elle était bien connectée (03/10). On reprend l'hôte
+  // et le protocole transmis par nginx, comme au départ (auth/google).
+  const hote = request.headers.get("host") ?? "app.wefilmgood.com";
+  const protocole =
+    request.headers.get("x-forwarded-proto") ?? (hote.startsWith("localhost") ? "http" : "https");
+  const origin = `${protocole}://${hote}`;
   const code = searchParams.get("code");
   const next = cheminSur(searchParams.get("next"));
   const vers = (chemin: string) => NextResponse.redirect(new URL(chemin, origin));
