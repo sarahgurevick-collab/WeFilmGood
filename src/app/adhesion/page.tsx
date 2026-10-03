@@ -211,7 +211,9 @@ export default async function AdhesionPage({
             </AvantageAdhesion>
             <AvantageAdhesion>Fiches projets illimité</AvantageAdhesion>
             <AvantageAdhesion>Accompagnement au vidéopitch si besoin</AvantageAdhesion>
-            <AvantageAdhesion icone="fiole">Le ScénarioLab offert, limité à 50 places</AvantageAdhesion>
+            <AvantageAdhesion icone="fiole">
+              Le ScénarioLab offert, place prioritaire (limité à 50 places)
+            </AvantageAdhesion>
             <AvantageAdhesion>
               Adhésion pour 1 an, sans annulation possible avant 12 mois
             </AvantageAdhesion>
