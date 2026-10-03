@@ -85,32 +85,41 @@ export default function CadreEquipe({
   const [videoLancee, setVideoLancee] = useState(false);
   const [langue, setLangue] = useState<"fr" | "en">(videopitch?.fr ? "fr" : "en");
 
+  // Chaque membre est un lien : la photo, le nom et le rôle mènent au
+  // profil, comme un talent ou un personnage (plus de bouton « Voir le
+  // profil », 03/10). Sans profil (invitation en attente, adhésion
+  // manquante) : pas de lien.
   const portraits = (
     <div className={styles.coteEquipe}>
       <ul className={styles.portraits}>
-        {equipe.map((m) => (
-          <li key={m.cle} className={m.enAttente ? styles.attente : undefined}>
-            <span className={styles.portrait} aria-hidden="true">
-              {m.photo ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={m.photo} alt="" />
-              ) : (
-                <span>{m.nom.trim().charAt(0).toUpperCase()}</span>
-              )}
-            </span>
-            <span className={styles.nom}>{m.nom}</span>
-            {m.role && <strong className={styles.role}>{m.role}</strong>}
-            {m.enAttente ? (
-              <span className={styles.enAttente}>{m.enAttente}</span>
-            ) : (
-              m.profileId && (
-                <Link href={`/membres/${m.profileId}`} className={styles.voir}>
-                  Voir le profil
+        {equipe.map((m) => {
+          const contenu = (
+            <>
+              <span className={styles.portrait} aria-hidden="true">
+                {m.photo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={m.photo} alt="" />
+                ) : (
+                  <span>{m.nom.trim().charAt(0).toUpperCase()}</span>
+                )}
+              </span>
+              <span className={styles.nom}>{m.nom}</span>
+              {m.role && <strong className={styles.role}>{m.role}</strong>}
+              {m.enAttente && <span className={styles.enAttente}>{m.enAttente}</span>}
+            </>
+          );
+          return (
+            <li key={m.cle} className={m.enAttente ? styles.attente : undefined}>
+              {!m.enAttente && m.profileId ? (
+                <Link href={`/membres/${m.profileId}`} className={styles.membreLien}>
+                  {contenu}
                 </Link>
-              )
-            )}
-          </li>
-        ))}
+              ) : (
+                <div className={styles.membreLien}>{contenu}</div>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
@@ -165,8 +174,8 @@ export default function CadreEquipe({
 
   // Ce que montre le côté droit, et son étiquette (un bouton quand on
   // peut passer d'une vue à l'autre).
-  let droite = portraits;
-  let etiquetteDroite: ReactNode = titreEquipe;
+  let droite: ReactNode = null;
+  let etiquetteDroite: ReactNode = null;
   if (avecMoodboard && avecPersonnages) {
     droite = vue === "moodboard" ? coteMoodboard : cotePersonnages;
     etiquetteDroite = (
@@ -185,6 +194,7 @@ export default function CadreEquipe({
   const deuxLangues = Boolean(videopitch?.fr && videopitch?.en);
 
   return (
+    <div className={styles.rangee}>
     <section className={`${styles.cadre} ${styles.cadreComparateur}`}>
       {/* Plus de comparateur (27/09, Sarah : l'effet n'apportait rien) :
           la fiche seule dans le cadre, le reste en dessous. Page d'avant :
@@ -217,17 +227,10 @@ export default function CadreEquipe({
         )}
       </div>
 
-      <div className={styles.dessous}>
-        <p className={styles.dessousTitre}>{etiquetteDroite}</p>
-        {droite}
-      </div>
-
-      {/* « Mon équipe » reste toujours visible (remis le 28/09) : avant, il
-          disparaissait dès qu'il y avait un moodboard ou des personnages. */}
-      {droite !== portraits && equipe.length > 0 && (
+      {droite && (
         <div className={styles.dessous}>
-          <p className={styles.dessousTitre}>{titreEquipe}</p>
-          {portraits}
+          <p className={styles.dessousTitre}>{etiquetteDroite}</p>
+          {droite}
         </div>
       )}
 
@@ -240,5 +243,16 @@ export default function CadreEquipe({
         </figure>
       )}
     </section>
+
+      {/* L'équipe a son propre cadre rouge (03/10), à droite du grand cadre
+          sur un écran large, dessous sinon : on la distingue d'un coup d'œil
+          et il n'y a plus de grand vide à côté du cadre. */}
+      {equipe.length > 0 && (
+        <section className={`${styles.cadre} ${styles.cadreEquipe}`}>
+          <p className={styles.dessousTitre}>{titreEquipe}</p>
+          {portraits}
+        </section>
+      )}
+    </div>
   );
 }

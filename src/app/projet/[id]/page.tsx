@@ -355,6 +355,26 @@ export default async function ProjetPage({
       {project.logline && <p style={{ marginTop: 12 }}>{project.logline}</p>}
       {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
 
+      {/* Contacter l'auteur : plus de formulaire sur la fiche (26/09), remonté en haut de la page le 03/10 : c'est le bouton le plus important, un
+          bouton qui mène à l'onglet Messages, le projet déjà indiqué. */}
+      {!isOwner && restreint && (
+        // Phrase validée par Sarah : rien d'autre, pas un mot sur la validation.
+        <p style={{ marginTop: 20 }}>
+          <Link href="/adhesion">Pour contacter cet auteur, vous avez besoin d&apos;une adhésion.</Link>
+        </p>
+      )}
+      {!isOwner && !restreint && (
+        <p style={{ marginTop: 20 }}>
+          <Link
+            href={user ? `/mes-messages/nouveau?projet=${project.id}` : `/connexion?next=/projet/${project.id}`}
+            className={formStyles.submit}
+            style={{ display: "inline-block" }}
+          >
+            Contacter l&apos;auteur
+          </Link>
+        </p>
+      )}
+
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
         retourSaisie={
@@ -575,26 +595,6 @@ export default async function ProjetPage({
           </form>
 
         </>
-      )}
-
-      {/* Contacter l'auteur : plus de formulaire sur la fiche (26/09), un
-          bouton qui mène à l'onglet Messages, le projet déjà indiqué. */}
-      {!isOwner && restreint && (
-        // Phrase validée par Sarah : rien d'autre, pas un mot sur la validation.
-        <p style={{ marginTop: 40 }}>
-          <Link href="/adhesion">Pour contacter cet auteur, vous avez besoin d&apos;une adhésion.</Link>
-        </p>
-      )}
-      {!isOwner && !restreint && (
-        <p style={{ marginTop: 40 }}>
-          <Link
-            href={user ? `/mes-messages/nouveau?projet=${project.id}` : `/connexion?next=/projet/${project.id}`}
-            className={formStyles.submit}
-            style={{ display: "inline-block" }}
-          >
-            Contacter l&apos;auteur
-          </Link>
-        </p>
       )}
 
     </PageShell>

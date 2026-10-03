@@ -462,3 +462,55 @@
 .coteFicheRetour {
   cursor: zoom-out;
 }
+
+/* Le grand cadre et le cadre de l'équipe côte à côte quand l'écran le
+   permet, l'un sous l'autre sinon (03/10). */
+.rangee {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0 28px;
+}
+
+.rangee > .cadre {
+  flex: 1 1 800px;
+  max-width: 800px;
+}
+
+.rangee > .cadreEquipe {
+  flex: 1 1 280px;
+  max-width: 800px;
+  padding: 22px 20px 12px;
+}
+
+.cadreEquipe .dessousTitre {
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+/* Tout le membre est cliquable : photo, nom, rôle. */
+.membreLien {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.membreLien:hover .nom {
+  text-decoration: underline;
+}
+
+a.membreLien:hover .portrait {
+  outline: 2px solid var(--rouge-wfg);
+  outline-offset: 3px;
+}
+
+.cadreEquipe .coteEquipe {
+  position: static;
+  padding: 8px 0;
+  background: none;
+  overflow: visible;
+}
