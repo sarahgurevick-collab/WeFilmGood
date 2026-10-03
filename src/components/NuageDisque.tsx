@@ -7,43 +7,64 @@ import type { MotCle } from "@/app/pitchotheque/actions";
 import styles from "./NuageDisque.module.css";
 
 /**
- * Le nuage de mots-clés dessiné dans le disque du logo WeFilmGood — le
- * grand rond et son découpage en escalier —, dans les quatre couleurs de
- * la marque, à la main levée. Il remplace le « G » (27/09/2026) : un G
- * coloré sur une page de recherche faisait penser à Google.
+ * Le nuage de mots-clés, dans un vrai dessin de nuage — le même que celui du
+ * bouton qui l'ouvre (NuageCouleurs) —, avec les mots dans les quatre
+ * couleurs de la marque, à la main levée. C'était d'abord un « G » (un G
+ * coloré sur une page de recherche faisait penser à Google), puis le disque
+ * du logo ; c'est un nuage depuis le 03/10/2026 (le disque est gardé dans
+ * l'historique git).
  *
- * Le disque est découpé en lignes horizontales ; chaque ligne reçoit les
+ * Le nuage est découpé en lignes horizontales ; chaque ligne reçoit les
  * mots qui y tiennent, sans jamais être déformés. La taille de l'ensemble
  * s'ajuste pour que tous les mots trouvent leur place.
  */
 
 const manuscrite = Pacifico({ subsets: ["latin"], weight: "400", display: "swap" });
 
-// Le disque, mesuré sur le fichier du logo (public/label-wfg.png, 1381 × 1113).
-const CX = 609.5;
-const CY = 560;
-const R = 532;
-// Les trois marches de l'escalier, en bas à droite : à partir de chaque
-// hauteur, le disque s'arrête à cette abscisse.
-const MARCHES: [number, number][] = [
-  [359, 831],
-  [590, 644],
-  [823, 445],
+// Le nuage, dessiné sur une grille de 100 × 64 (comme NuageCouleurs) et
+// agrandi pour que les mots y soient lisibles : une base arrondie (une gélule)
+// et trois bosses.
+const ECHELLE = 14;
+const BASE = { gauche: 6, droite: 94, haut: 36, bas: 60 };
+const BOSSES: { cx: number; cy: number; r: number }[] = [
+  { cx: 30, cy: 38, r: 17 },
+  { cx: 52, cy: 28, r: 23 },
+  { cx: 73, cy: 40, r: 16 },
 ];
-const VUE = `${CX - R} ${CY - R} ${2 * R} ${2 * R}`;
+const HAUT = 28 - 23; // le sommet de la grande bosse
+const VUE = `${(BASE.gauche - 2) * ECHELLE} ${(HAUT - 1) * ECHELLE} ${(BASE.droite - BASE.gauche + 4) * ECHELLE} ${(BASE.bas - HAUT + 2) * ECHELLE}`;
 
 const COULEURS = ENGAGEMENTS.map((e) => e.couleur);
 
 type Intervalle = [number, number];
 
-/** La partie d'une ligne horizontale qui tombe dans le disque. */
-function intervallesA(y: number): Intervalle[] {
-  const dy = y - CY;
-  if (Math.abs(dy) >= R) return [];
-  const W = Math.sqrt(R * R - dy * dy);
-  let droite = CX + W;
-  for (const [hauteur, limite] of MARCHES) if (y >= hauteur) droite = Math.min(droite, limite);
-  return droite > CX - W ? [[CX - W, droite]] : [];
+/** La partie d'une ligne horizontale qui tombe dans le nuage. */
+function intervallesA(yBrut: number): Intervalle[] {
+  const y = yBrut / ECHELLE;
+  const parts: Intervalle[] = [];
+  // La base : ses deux bouts sont des demi-cercles.
+  if (y >= BASE.haut && y <= BASE.bas) {
+    const rayon = (BASE.bas - BASE.haut) / 2;
+    const dy = Math.abs(y - (BASE.haut + BASE.bas) / 2);
+    const retrait = rayon - Math.sqrt(Math.max(0, rayon * rayon - dy * dy));
+    parts.push([BASE.gauche + retrait, BASE.droite - retrait]);
+  }
+  for (const { cx, cy, r } of BOSSES) {
+    const dy = y - cy;
+    if (Math.abs(dy) < r) {
+      const w = Math.sqrt(r * r - dy * dy);
+      parts.push([cx - w, cx + w]);
+    }
+  }
+  // Les morceaux qui se recouvrent ne font qu'une seule étendue.
+  parts.sort((a, b) => a[0] - b[0]);
+  const reunis: Intervalle[] = [];
+  for (const [d, f] of parts) {
+    const dernier = reunis[reunis.length - 1];
+    if (dernier && d <= dernier[1]) dernier[1] = Math.max(dernier[1], f);
+    else reunis.push([d, f]);
+  }
+  return reunis.map(([d, f]) => [d * ECHELLE, f * ECHELLE]);
 }
 
 function intersecter(a: Intervalle[], b: Intervalle[]): Intervalle[] {
@@ -112,7 +133,7 @@ function disposer(mots: MotCle[], unite: number, mesure: Mesure) {
 
   const places: Place[] = [];
   let derniereCouleur = -1;
-  let y = CY - R;
+  let y = HAUT * ECHELLE;
 
   while (files.some((f) => f.length)) {
     // Le palier de la ligne : tiré au sort, en proportion de ce qu'il
@@ -126,7 +147,7 @@ function disposer(mots: MotCle[], unite: number, mesure: Mesure) {
     }
     const taille = unite * PALIERS[palier].taille;
     const hauteur = taille * 1.12;
-    if (y + hauteur > CY + R) break;
+    if (y + hauteur > BASE.bas * ECHELLE) break;
     const espace = taille * 0.28;
 
     for (const [a, b] of segmentsBande(y, y + hauteur)) {
@@ -166,15 +187,43 @@ function disposer(mots: MotCle[], unite: number, mesure: Mesure) {
   return { places, tousPlaces: files.every((f) => !f.length) };
 }
 
+/** Les pièces du nuage, pour le contour comme pour le calcul des lignes. */
+function Pieces() {
+  const rayon = (BASE.bas - BASE.haut) / 2;
+  return (
+    <>
+      <rect x={BASE.gauche} y={BASE.haut} width={BASE.droite - BASE.gauche} height={BASE.bas - BASE.haut} rx={rayon} />
+      {BOSSES.map((b) => (
+        <circle key={b.cx} cx={b.cx} cy={b.cy} r={b.r} />
+      ))}
+    </>
+  );
+}
+
+/**
+ * Un fin contour pour deviner le nuage entre les mots : les pièces sont
+ * tracées avec un trait épais, puis recouvertes à la couleur du fond, et il
+ * ne reste que le trait qui dépasse.
+ */
+function Contour() {
+  return (
+    <g transform={`scale(${ECHELLE})`} aria-hidden="true" pointerEvents="none">
+      <g fill="var(--bordure-forte)" stroke="var(--bordure-forte)" strokeWidth={0.4}>
+        <Pieces />
+      </g>
+      <g fill="var(--bg)">
+        <Pieces />
+      </g>
+    </g>
+  );
+}
+
 export default function NuageDisque({
   mots,
   onChoisir,
-  icone = false,
 }: {
   mots: MotCle[];
   onChoisir?: (label: string) => void;
-  /** Le petit disque de la barre de recherche : un simple dessin, rien de cliquable. */
-  icone?: boolean;
 }) {
   // La police manuscrite doit être chargée avant de mesurer les mots :
   // on recalcule le nuage une fois qu'elle est là.
@@ -223,29 +272,14 @@ export default function NuageDisque({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mots, policePrete]);
 
-  if (icone) {
-    return (
-      <svg
-        viewBox={VUE}
-        className={`${styles.icone} ${manuscrite.className}`}
-        aria-hidden="true"
-      >
-        {places.map((p) => (
-          <text key={p.mot.label} x={p.x} y={p.y} fontSize={p.taille} fill={p.couleur}>
-            {affiche(p.mot.label)}
-          </text>
-        ))}
-      </svg>
-    );
-  }
-
   return (
     <svg
       viewBox={VUE}
       className={`${styles.g} ${manuscrite.className}`}
       role="group"
-      aria-label="Mots-clés dans le disque du logo"
+      aria-label="Nuage de mots-clés"
     >
+      <Contour />
       {places.map((p) => (
         <text
           key={p.mot.label}
