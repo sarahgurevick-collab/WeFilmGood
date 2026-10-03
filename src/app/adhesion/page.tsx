@@ -1,6 +1,7 @@
 import AvantageAdhesion from "@/components/AvantageAdhesion";
 import BoutonDevis from "@/components/BoutonDevis";
 import ChoixCredits from "@/components/ChoixCredits";
+import ChoixUnSeul from "@/components/ChoixUnSeul";
 import PageShell from "@/components/PageShell";
 import SelecteurAdhesion from "@/components/SelecteurAdhesion";
 import formStyles from "@/components/form.module.css";
@@ -158,6 +159,7 @@ export default async function AdhesionPage({
                   <AvantageAdhesion icone="projets">
                     Création de fiches projets (sans analyse du document PDF / 10 maximum)
                   </AvantageAdhesion>
+                  <AvantageAdhesion>Accompagnement au vidéopitch si besoin</AvantageAdhesion>
                 </>
               }
               lignesAcces={
@@ -165,10 +167,6 @@ export default async function AdhesionPage({
                   <AvantageAdhesion icone="loupe">
                     5 crédits / semaine à choisir dans la Galaxie Projets, Talents, Personnages
                     (non cumulables)
-                  </AvantageAdhesion>
-                  <AvantageAdhesion icone="loupe">
-                    Les 5 crédits ne sont pas cumulables : s&apos;ils ne sont pas utilisés, ils ne
-                    peuvent pas être récupérés la semaine suivante.
                   </AvantageAdhesion>
                 </>
               }
@@ -193,14 +191,12 @@ export default async function AdhesionPage({
             {suite}
             <ChoixCredits
               lignesDepot={
-                <>
-                  <AvantageAdhesion icone="nuage">
-                    Au choix 11 projets analysés (1 gratuit)
-                  </AvantageAdhesion>
-                  <AvantageAdhesion>
-                    Un accompagnement longue durée sur un projet en particulier
-                  </AvantageAdhesion>
-                </>
+                <ChoixUnSeul
+                  lignes={[
+                    "11 projets analysés (1 gratuit)",
+                    "Accompagnement longue durée sur le projet de votre choix (modalités d'accompagnement à définir avec le Script Doctor)",
+                  ]}
+                />
               }
               lignesAcces={
                 <AvantageAdhesion icone="oeil">
@@ -209,14 +205,12 @@ export default async function AdhesionPage({
                 </AvantageAdhesion>
               }
             />
-            <AvantageAdhesion>
-              Fiches projets illimité et accompagnement vidéopitch pour
-              toutes vos fiches projets
-            </AvantageAdhesion>
             <AvantageAdhesion icone="telephone">
               Un rendez-vous visio ou téléphonique pour répondre à vos
               besoins particuliers
             </AvantageAdhesion>
+            <AvantageAdhesion>Fiches projets illimité</AvantageAdhesion>
+            <AvantageAdhesion>Accompagnement au vidéopitch si besoin</AvantageAdhesion>
             <AvantageAdhesion icone="fiole">Le ScénarioLab offert, limité à 50 places</AvantageAdhesion>
             <AvantageAdhesion>
               Adhésion pour 1 an, sans annulation possible avant 12 mois

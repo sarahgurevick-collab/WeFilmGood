@@ -1,0 +1,20 @@
+.ligne {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.pastille {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  accent-color: #da2c25;
+  cursor: pointer;
+}
+
+/* Le sélecteur à deux classes passe devant le gris des lignes d'avantages. */
+.ligne .actif {
+  color: var(--fg);
+}
