@@ -374,3 +374,14 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* Les pages de la recherche : des boutons qui ont l'allure des liens de la pagination. */
+.pagesRecherche button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}

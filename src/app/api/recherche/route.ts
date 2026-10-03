@@ -24,10 +24,14 @@ export async function GET(request: Request) {
   const q = (params.q ?? "").trim();
   if (!q) return Response.json({ projets: [], total: 0, talents: [], totalTalents: 0, personnages: [], totalPersonnages: 0 });
 
+  // La page demandée vaut pour la catégorie choisie ; les deux autres restent
+  // à leur première page, en aperçu.
+  const page = Math.max(1, Math.floor(Number(params.page)) || 1);
+  const pageDe = (cat: string) => (params.cat === cat ? page : 1);
   const [p, t, c] = await Promise.all([
-    rechercherProjets(q, lireFiltres(params)),
-    rechercherTalents(q),
-    rechercherPersonnages(q),
+    rechercherProjets(q, lireFiltres(params), pageDe("projets")),
+    rechercherTalents(q, pageDe("talents")),
+    rechercherPersonnages(q, pageDe("personnages")),
   ]);
   // Rien nulle part : noté dans le journal des recherches sans résultat.
   if (p.total === 0 && t.total === 0 && c.total === 0) {

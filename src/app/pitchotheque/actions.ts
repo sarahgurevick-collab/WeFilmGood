@@ -76,11 +76,14 @@ async function projetsParLeSens(
   return { ids, mots };
 }
 
+// Résultats par page ; la base ne connaît que la limite : pour la page n, on
+// lui demande les n × 60 premiers et on garde les 60 de la page (03/10).
 const LIMITE = 60;
 
 export async function rechercherProjets(
   requete: string,
   filtres: Filtres = AUCUN,
+  page = 1,
 ): Promise<ResultatRecherche> {
   const q = requete.trim();
   if (!q) return { projets: [], total: 0 };
@@ -90,12 +93,12 @@ export async function rechercherProjets(
   // Les filtres de la recherche avancée s'ajoutent au mot cherché.
   const { data: trouves } = await supabase.rpc("rechercher_projets", {
     q,
-    p_limite: LIMITE,
+    p_limite: LIMITE * page,
     ...parametresRpc(filtres),
   });
 
   const lignes = (trouves ?? []) as { id: string; score: number; total: number }[];
-  const ids: string[] = lignes.map((t) => t.id);
+  let ids: string[] = lignes.map((t) => t.id);
   let total = lignes[0]?.total ?? 0;
 
   // Peu de résultats par les lettres : on complète par le sens.
@@ -109,6 +112,8 @@ export async function rechercherProjets(
     }
   }
   if (ids.length === 0) return { projets: [], total: 0 };
+  ids = ids.slice((page - 1) * LIMITE, page * LIMITE);
+  if (ids.length === 0) return { projets: [], total };
 
   const { data: projects } = await supabase
     .from("projects")
@@ -263,13 +268,15 @@ export type TalentTrouve = {
 /** Les talents (29/09) : jamais les lecteurs, filtrés par la base. */
 export async function rechercherTalents(
   requete: string,
+  page = 1,
 ): Promise<{ talents: TalentTrouve[]; total: number }> {
   const q = requete.trim();
   if (!q) return { talents: [], total: 0 };
 
   const supabase = await createClient();
-  const { data: trouves } = await supabase.rpc("rechercher_talents", { q, p_limite: LIMITE });
-  return fichesTalents(supabase, (trouves ?? []) as { id: string; total: number; metiers: string[] }[]);
+  const { data: trouves } = await supabase.rpc("rechercher_talents", { q, p_limite: LIMITE * page });
+  const lignes = (trouves ?? []) as { id: string; total: number; metiers: string[] }[];
+  return fichesTalents(supabase, lignes.slice((page - 1) * LIMITE, page * LIMITE));
 }
 
 /**
@@ -342,13 +349,15 @@ export type PersonnageTrouve = {
 /** Les personnages des projets de la Carte des étoiles (29/09). */
 export async function rechercherPersonnages(
   requete: string,
+  page = 1,
 ): Promise<{ personnages: PersonnageTrouve[]; total: number }> {
   const q = requete.trim();
   if (!q) return { personnages: [], total: 0 };
 
   const supabase = await createClient();
-  const { data: trouves } = await supabase.rpc("rechercher_personnages", { q, p_limite: LIMITE });
-  return fichesPersonnages(supabase, (trouves ?? []) as { id: string; total: number }[]);
+  const { data: trouves } = await supabase.rpc("rechercher_personnages", { q, p_limite: LIMITE * page });
+  const lignes = (trouves ?? []) as { id: string; total: number }[];
+  return fichesPersonnages(supabase, lignes.slice((page - 1) * LIMITE, page * LIMITE));
 }
 
 /**

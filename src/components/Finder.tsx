@@ -22,6 +22,8 @@ import TroisBilles from "./TroisBilles";
 import styles from "./Finder.module.css";
 import projetsStyles from "@/app/pitchotheque/projets.module.css";
 
+// Résultats par page de recherche (le même nombre que côté serveur).
+const PAR_PAGE = 60;
 const PAS = 20;
 const MIN = 20;
 const MAX = 200;
@@ -62,6 +64,10 @@ export default function Finder({
   // Un seul champ pour trois catégories (29/09) : celle choisie passe en
   // tête, en grand ; les deux autres suivent en aperçu.
   const [choisie, setChoisie] = useState<Categorie>(premiere);
+  // La page des résultats de la catégorie choisie (03/10) ; elle revient à 1
+  // quand le mot, les filtres ou la catégorie changent.
+  const [pageRecherche, setPageRecherche] = useState(1);
+  const derniereRequete = useRef("");
   const [talents, setTalents] = useState<{ liste: TalentTrouve[]; total: number } | null>(null);
   const [personnages, setPersonnages] = useState<{ liste: PersonnageTrouve[]; total: number } | null>(null);
   const [resultats, setResultats] = useState<ProjetTrouve[] | null>(null);
@@ -119,11 +125,14 @@ export default function Finder({
     }
 
     setEnCours(true);
+    // Le délai ne sert qu'à la frappe : changer de page ou de catégorie part tout de suite.
+    const delai = derniereRequete.current === q ? 0 : 350;
+    derniereRequete.current = q;
     // Une recherche par arrêt de frappe ; celle d'avant est annulée, pour
     // que les résultats de « arc » n'arrivent jamais après « architecte ».
     const annulation = new AbortController();
     minuteur.current = setTimeout(async () => {
-      const params = new URLSearchParams({ q });
+      const params = new URLSearchParams({ q, cat: choisie, page: String(pageRecherche) });
       for (const [cle, valeur] of Object.entries(filtres)) if (valeur) params.set(cle, valeur);
       try {
         const reponse = await fetch(`/api/recherche?${params}`, { signal: annulation.signal });
@@ -151,14 +160,14 @@ export default function Finder({
         setPersonnages({ liste: [], total: 0 });
         setEnCours(false);
       }
-    }, 350);
+    }, delai);
 
     return () => {
       annulation.abort();
       if (minuteur.current) clearTimeout(minuteur.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- les filtres sont comparés par valeur
-  }, [requete, filtres.format, filtres.genre, filtres.audience, filtres.budget, filtres.bandeau, filtres.equipe, filtres.selection, filtres.comedien]);
+  }, [requete, choisie, pageRecherche, filtres.format, filtres.genre, filtres.audience, filtres.budget, filtres.bandeau, filtres.equipe, filtres.selection, filtres.comedien]);
 
   // Le nuage suit ce qui est tapé, tant qu'il est ouvert : il ne reste
   // jamais figé sur une liste générique une fois qu'on cherche quelque
@@ -185,6 +194,14 @@ export default function Finder({
   // pas le premier. Sinon un mot populaire placé loin dans la liste
   // s'affichait démesurément gros (ex. "comédie dramatique", 292
   // projets, comparé à un premier mot n'en ayant qu'un seul).
+  const choisir = (cle: Categorie) => {
+    setChoisie(cle);
+    setPageRecherche(1);
+  };
+  const changerDePage = (n: number) => {
+    setPageRecherche(n);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   const nombreAffiche = (cle: Categorie) =>
     (cle === "projets" ? resultats?.length : cle === "talents" ? talents?.liste.length : personnages?.liste.length) ?? 0;
   const nombreEnTete =
@@ -205,7 +222,10 @@ export default function Finder({
             className={styles.champ}
             placeholder="Chercher un projet, un thème, un mot-clé…"
             value={requete}
-            onChange={(e) => setRequete(e.target.value)}
+            onChange={(e) => {
+              setRequete(e.target.value);
+              setPageRecherche(1);
+            }}
           />
         </span>
         {/* Un seul emplacement, à droite du champ (03/10, demande de Sarah) : les
@@ -245,7 +265,7 @@ export default function Finder({
             className={`${styles.pastille} ${choisie === c.cle ? styles.pastilleChoisie : ""}`}
             aria-pressed={choisie === c.cle}
             onClick={() => {
-              setChoisie(c.cle);
+              choisir(c.cle);
               // Sans mot cherché, la page elle-même change : les talents
               // ou les personnages à la place des projets, et retour (02/10).
               if (!requete.trim()) {
@@ -308,6 +328,7 @@ export default function Finder({
               mots={nuage}
               onChoisir={(label) => {
                 setRequete(label);
+                setPageRecherche(1);
                 setNuageDemande(false);
               }}
             />
@@ -321,6 +342,7 @@ export default function Finder({
                   style={{ fontSize: tailleDe(m.effectif) }}
                   onClick={() => {
                     setRequete(m.label);
+                    setPageRecherche(1);
                     setNuageDemande(false);
                   }}
                   title={`${m.effectif} projet${m.effectif > 1 ? "s" : ""}`}
@@ -349,7 +371,7 @@ export default function Finder({
                       {titre}
                     </h2>
                     {!enTete && nombre > 0 ? (
-                      <button type="button" className={styles.voirTout} onClick={() => setChoisie(cle)}>
+                      <button type="button" className={styles.voirTout} onClick={() => choisir(cle)}>
                         Voir les {nombre} {titre.toLowerCase()} →
                       </button>
                     ) : (
@@ -362,7 +384,7 @@ export default function Finder({
                   </div>
                   {enTete && nombre > 0 && (
                     <p className={styles.indice}>
-                      {`${titre} 1 à ${nombreAffiche(cle).toLocaleString("fr-FR")} sur ${nombre.toLocaleString("fr-FR")}.`}
+                      {`${titre} ${((pageRecherche - 1) * PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((pageRecherche - 1) * PAR_PAGE + nombreAffiche(cle)).toLocaleString("fr-FR")} sur ${nombre.toLocaleString("fr-FR")}.`}
                       {cle === "projets" && parLeSens.length > 0 && (
                         <> Dont des projets proches par le sens&nbsp;: {parLeSens.join(", ")}.</>
                       )}
@@ -410,6 +432,27 @@ export default function Finder({
                         </li>
                       ))}
                     </ul>
+                  )}
+                  {enTete && nombre > PAR_PAGE && (
+                    <nav className={`${projetsStyles.pagination} ${styles.pagesRecherche}`} aria-label="Pages des résultats">
+                      {pageRecherche > 1 ? (
+                        <button type="button" onClick={() => changerDePage(pageRecherche - 1)}>
+                          ← Précédents
+                        </button>
+                      ) : (
+                        <span />
+                      )}
+                      <span>
+                        Page {pageRecherche} sur {Math.ceil(nombre / PAR_PAGE)}
+                      </span>
+                      {pageRecherche < Math.ceil(nombre / PAR_PAGE) ? (
+                        <button type="button" onClick={() => changerDePage(pageRecherche + 1)}>
+                          Suivants →
+                        </button>
+                      ) : (
+                        <span />
+                      )}
+                    </nav>
                   )}
                 </section>
               );
