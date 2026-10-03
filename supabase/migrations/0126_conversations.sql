@@ -10,7 +10,8 @@
 --     veut pas adhérer à nouveau laisse le message sans réponse ;
 --   * sans adhésion, on ne sait pas QUI a écrit (on sait seulement qu'un
 --     message attend, c'est la raison d'adhérer) ;
---   * on peut aussi écrire à un talent, depuis son profil, sans projet ;
+--   * on ne contacte un talent qu'à propos d'un projet (à venir : un projet
+--     « débloqué », cinq par semaine) ;
 --   * les lecteurs sont introuvables : on ne peut pas leur écrire.
 -- =====================================================================
 
@@ -88,6 +89,18 @@ begin
        where profile_id = p_destinataire and role_slug = 'lecteur'
      ) then
     raise exception 'destinataire introuvable';
+  end if;
+
+  -- Sans projet : seulement pour répondre à quelqu'un qui nous a écrit. On
+  -- ne contacte un talent qu'à propos d'un projet (Sarah, 03/10) ; la règle
+  -- du projet « débloqué » s'ajoutera avec les cinq visionnages par semaine.
+  if p_projet is null and not exists (
+    select 1 from public.project_messages m
+    where m.project_id is null
+      and m.sender_id = p_destinataire
+      and m.recipient_id = v_moi
+  ) then
+    raise exception 'projet requis';
   end if;
 
   -- À propos d'un projet : on écrit à son auteur, ou l'auteur répond à

@@ -8,9 +8,8 @@ import { emailDuMembre } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * Écrire à l'auteur d'un projet, écrire à un talent depuis son profil, ou
- * répondre dans une conversation (03/10) : le même envoi, les règles sont
- * dans la base (envoyer_message). Le message part toujours ; son
+ * Écrire à l'auteur d'un projet, ou répondre dans une conversation (03/10) :
+ * le même envoi, les règles sont dans la base (envoyer_message). Le message part toujours ; son
  * destinataire ne pourra le lire que si son adhésion est active, et sans
  * adhésion il ne saura pas qui lui a écrit.
  */
@@ -30,9 +29,7 @@ export async function ecrire(formData: FormData) {
   const ici =
     retour === "conversation"
       ? `/mes-messages/avec/${recipientId}${projectId ? `?projet=${projectId}` : ""}`
-      : retour === "membre"
-        ? `/mes-messages/nouveau?membre=${recipientId}`
-        : `/mes-messages/nouveau?projet=${projectId}`;
+      : `/mes-messages/nouveau?projet=${projectId}`;
   const avecParametre = (adresse: string, cle: string, valeur: string) =>
     `${adresse}${adresse.includes("?") ? "&" : "?"}${cle}=${valeur}`;
 
@@ -75,8 +72,8 @@ export async function ecrire(formData: FormData) {
   revalidatePath("/mes-messages");
   if (projectId) revalidatePath(`/projet/${projectId}`);
 
-  // On revient là où on a décidé d'écrire (03/10, Sarah) : la fiche du projet
-  // ou le profil du talent ; une réponse reste dans sa conversation.
+  // On revient là où on a décidé d'écrire (03/10, Sarah) : la fiche du projet ;
+  // une réponse reste dans sa conversation.
   if (retour === "conversation") redirect(ici);
-  redirect(retour === "membre" ? `/membres/${recipientId}?message=envoye` : `/projet/${projectId}?message=envoye`);
+  redirect(`/projet/${projectId}?message=envoye`);
 }

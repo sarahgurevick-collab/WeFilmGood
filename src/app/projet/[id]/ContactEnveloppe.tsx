@@ -23,14 +23,11 @@ const ENVELOPPE = (
 export default function ContactEnveloppe({
   href,
   adhesionRequise = false,
-  phrase = "Pour contacter cet auteur, vous avez besoin d'une adhésion.",
 }: {
   /** Où mène l'enveloppe : l'écran de message, le projet déjà indiqué. */
   href: string;
   /** Barrée, avec sa bulle, tant que le membre n'a pas d'adhésion. */
   adhesionRequise?: boolean;
-  /** La phrase de la bulle : celle de la fiche projet par défaut, une autre sur le profil d'un talent. */
-  phrase?: string;
 }) {
   const [ouverte, setOuverte] = useState(false);
   const zone = useRef<HTMLSpanElement>(null);
@@ -72,7 +69,7 @@ export default function ContactEnveloppe({
       </button>
       {/* Phrase validée par Sarah : rien d'autre, pas un mot sur la validation. */}
       <span className={`${styles.bulle} ${ouverte ? styles.bulleOuverte : ""}`} role="status">
-        <Link href="/adhesion">{phrase}</Link>
+        <Link href="/adhesion">Pour contacter cet auteur, vous avez besoin d&apos;une adhésion.</Link>
       </span>
     </span>
   );
