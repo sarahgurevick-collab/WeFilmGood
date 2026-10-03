@@ -63,9 +63,9 @@ export default async function NouveauMessagePage({
   } else {
     const { data: membre } = await supabase
       .from("profiles")
-      .select("id, first_name, display_name, full_name")
+      .select("id")
       .eq("id", membreId as string)
-      .maybeSingle<{ id: string; first_name: string | null; display_name: string | null; full_name: string | null }>();
+      .maybeSingle<{ id: string }>();
     // Un lecteur est introuvable : on ne lui écrit pas.
     const { data: lecteur } = membre
       ? await supabase
@@ -80,7 +80,9 @@ export default async function NouveauMessagePage({
     if (adherent !== true && estAdmin !== true) redirect("/adhesion");
 
     destinataire = membre.id;
-    titre = `Écrire à ${membre.first_name ?? membre.display_name ?? membre.full_name ?? "ce membre"}`;
+    // Pas de nom avant l'envoi : le profil d'un talent le masque (02/10) et cette
+    // page ne doit pas le dévoiler. Le nom complet apparaît dans la conversation.
+    titre = "Membre";
   }
 
   return (

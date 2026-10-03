@@ -61,7 +61,8 @@ export default async function ConversationPage({
       ? supabase.from("projects").select("id, title").eq("id", projetId).maybeSingle<{ id: string; title: string }>()
       : Promise.resolve({ data: null }),
   ]);
-  const nom = interlocuteur?.first_name ?? interlocuteur?.display_name ?? interlocuteur?.full_name ?? "Un membre";
+  // Le nom complet : écrire demande une adhésion, le contact est payé (03/10).
+  const nom = interlocuteur?.display_name ?? interlocuteur?.full_name ?? interlocuteur?.first_name ?? "Un membre";
 
   return (
     <PageShell eyebrow="Mes messages" title={nom} connecte nav="messages">

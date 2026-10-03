@@ -122,8 +122,10 @@ $$;
 grant execute on function public.envoyer_message(uuid, uuid, text) to authenticated;
 
 
--- La liste : une ligne par correspondant et par projet. Rien sans adhésion
--- (les messages en attente se montrent alors par la vue ci-dessus).
+-- La liste : une ligne par correspondant et par projet, avec son nom
+-- complet : écrire demande une adhésion, donc le contact est payé et son
+-- nom est dû (Sarah, 03/10). Rien sans adhésion (les messages en attente
+-- se montrent alors par la vue ci-dessus).
 create or replace function public.mes_conversations()
 returns table (
   autre_id uuid,
@@ -163,7 +165,7 @@ as $$
   )
   select
     d.autre,
-    coalesce(p.first_name, p.display_name, p.full_name),
+    coalesce(p.display_name, p.full_name, p.first_name),
     d.project_id,
     pr.title,
     d.body,
