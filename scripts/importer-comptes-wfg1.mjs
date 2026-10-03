@@ -45,6 +45,9 @@ const existants = await toutLire(() =>
   supabase.from("profiles").select("legacy_id").not("legacy_id", "is", null).order("id"),
 );
 const dejaLa = new Set(existants.map((p) => p.legacy_id));
+// Comptes de WFG 1 à ne jamais reprendre (décision de Sarah, 03/10/2026) :
+// 3866 = « David David », compte de test banni en 2019, supprimé de WFG 2.
+for (const id of ["3866"]) dejaLa.add(id);
 
 let crees = 0, sautes = 0, echoues = 0;
 const debut = Date.now();
