@@ -195,7 +195,7 @@ export default function CadreEquipe({
     </div>
   );
 
-  // Le cadre de droite (grand écran) : la biographie de celui ou celle sur qui on a cliqué.
+  // Le cadre de droite (grand écran) : le moodboard, remplacé par la biographie de celui ou celle sur qui on a cliqué.
   const personnageChoisi = ouvert ? personnages.find((c) => c.id === ouvert) : undefined;
   const membreChoisi = membreOuvert ? equipe.find((m) => m.cle === membreOuvert) : undefined;
   const detail = personnageChoisi
@@ -266,7 +266,7 @@ export default function CadreEquipe({
       {/* Un cadre rouge par contenu (03/10), sous le grand cadre : le moodboard,
           les personnages, puis l'équipe, qu'on distingue d'un coup d'œil. */}
       {avecMoodboard && (
-        <section className={`${styles.cadre} ${styles.cadreEquipe}`}>
+        <section className={`${styles.cadre} ${styles.cadreEquipe} ${styles.moodboardGauche}`}>
           <p className={styles.dessousTitre}>Moodboard</p>
           <MoodboardPhotos photos={moodboard} />
         </section>
@@ -287,37 +287,49 @@ export default function CadreEquipe({
       )}
     </div>
 
-      {detail && (
-        <aside className={styles.detail} aria-live="polite">
-          <button
-            type="button"
-            className={styles.detailFermer}
-            onClick={() => setChoix(null)}
-            aria-label="Fermer"
-          >
-            ×
-          </button>
-          <div className={styles.detailTete}>
-            <span className={styles.portrait} aria-hidden="true">
-              {detail.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={detail.image} alt="" />
-              ) : (
-                <span>{detail.nom.trim().charAt(0).toUpperCase()}</span>
+      {(detail || avecMoodboard) && (
+        <aside
+          className={`${styles.detail} ${detail ? "" : styles.detailMoodboard}`}
+          aria-live={detail ? "polite" : undefined}
+        >
+          {detail ? (
+            <>
+              <button
+                type="button"
+                className={styles.detailFermer}
+                onClick={() => setChoix(null)}
+                aria-label="Fermer"
+              >
+                ×
+              </button>
+              <div className={styles.detailTete}>
+                <span className={styles.portrait} aria-hidden="true">
+                  {detail.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={detail.image} alt="" />
+                  ) : (
+                    <span>{detail.nom.trim().charAt(0).toUpperCase()}</span>
+                  )}
+                </span>
+                <div>
+                  <h2 className={styles.detailNom}>{detail.nom}</h2>
+                  {detail.sous && <p className={styles.detailSous}>{detail.sous}</p>}
+                </div>
+              </div>
+              {detail.bio && <p className={styles.detailBio}>{detail.bio}</p>}
+              {detail.site && (
+                <p className={styles.detailBio}>
+                  <a href={detail.site} target="_blank" rel="noopener noreferrer">
+                    Son site
+                  </a>
+                </p>
               )}
-            </span>
-            <div>
-              <h2 className={styles.detailNom}>{detail.nom}</h2>
-              {detail.sous && <p className={styles.detailSous}>{detail.sous}</p>}
-            </div>
-          </div>
-          {detail.bio && <p className={styles.detailBio}>{detail.bio}</p>}
-          {detail.site && (
-            <p className={styles.detailBio}>
-              <a href={detail.site} target="_blank" rel="noopener noreferrer">
-                Son site
-              </a>
-            </p>
+            </>
+          ) : (
+            <>
+              <p className={styles.dessousTitre}>Moodboard</p>
+              <MoodboardPhotos photos={moodboard} />
+            </>
           )}
         </aside>
       )}

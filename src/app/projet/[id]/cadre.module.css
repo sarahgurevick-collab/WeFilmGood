@@ -466,8 +466,8 @@ a.membreLien:hover .portrait {
 /* ---- Biographie dans un cadre à droite (03/10, Sarah : « je croyais que
    ça s'ouvrait dans la partie droite ») ----
    Sur grand écran, la colonne des cadres garde sa largeur et un cadre rouge
-   se pose à sa droite avec la biographie de celui ou celle sur qui on a
-   cliqué ; il suit le défilement de la page. En dessous de cette largeur,
+   se pose à sa droite : le moodboard, remplacé par la biographie de celui
+   ou celle sur qui on a cliqué ; il suit le défilement de la page. En dessous de cette largeur,
    pas de place à droite : la biographie se déplie sous le portrait, comme
    avant. */
 .colonnes {
@@ -494,6 +494,21 @@ a.membreLien:hover .portrait {
     padding: 30px 28px 26px;
     border: 3px solid var(--rouge-wfg);
     border-radius: 14px;
+  }
+
+  /* Par défaut le cadre de droite montre le moodboard (03/10) : celui de
+     la colonne de gauche s'efface, il ne s'affiche qu'une fois. */
+  .moodboardGauche {
+    display: none;
+  }
+
+  .detailMoodboard {
+    padding: 22px 20px 14px;
+  }
+
+  .detailMoodboard .dessousTitre {
+    margin-bottom: 4px;
+    text-align: center;
   }
 
   .detailFermer {
