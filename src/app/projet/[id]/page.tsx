@@ -8,6 +8,7 @@ import PartageProjet from "./PartageProjet";
 import { choisirVisibilite, setShareLink } from "./actions";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
+import ContactEnveloppe from "./ContactEnveloppe";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";
@@ -373,33 +374,20 @@ export default async function ProjetPage({
         })()}
       </p>
 
-      {/* La tagline et la logline, sous le titre, avant le cadre : sous le
-          cadre, elles se perdaient (01/10). */}
-      {project.logline && <p style={{ marginTop: 12 }}>{project.logline}</p>}
-      {project.synopsis && <p className={formStyles.hint}>{project.synopsis}</p>}
-
-      {/* Contacter l'auteur : plus de formulaire sur la fiche (26/09), remonté en haut de la page le 03/10 : c'est le bouton le plus important, un
-          bouton qui mène à l'onglet Messages, le projet déjà indiqué. */}
-      {!isOwner && restreint && (
-        // Phrase validée par Sarah : rien d'autre, pas un mot sur la validation.
-        <p style={{ marginTop: 20 }}>
-          <Link href="/adhesion">Pour contacter cet auteur, vous avez besoin d&apos;une adhésion.</Link>
-        </p>
-      )}
-      {!isOwner && !restreint && (
-        <p style={{ marginTop: 20 }}>
-          <Link
-            href={user ? `/mes-messages/nouveau?projet=${project.id}` : `/connexion?next=/projet/${project.id}`}
-            className={formStyles.submit}
-            style={{ display: "inline-block" }}
-          >
-            Contacter l&apos;auteur
-          </Link>
-        </p>
-      )}
-
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
+        // La tagline, le résumé et l'enveloppe sont sous le moodboard, dans le
+        // cadre : plus sous le titre (03/10, Sarah).
+        accroche={project.logline}
+        resume={project.synopsis}
+        contact={
+          isOwner ? undefined : (
+            <ContactEnveloppe
+              href={user ? `/mes-messages/nouveau?projet=${project.id}` : `/connexion?next=/projet/${project.id}`}
+              adhesionRequise={restreint}
+            />
+          )
+        }
         retourSaisie={
           isOwner || estAdmin
             ? hrefBloc(id, BLOCS.find((b) => b.cle === depuis)?.cle ?? "fiche")

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import VideopitchLecteur from "@/components/VideopitchLecteur";
 import CoteFiche from "./CoteFiche";
 import MoodboardPhotos from "./MoodboardPhotos";
@@ -57,7 +57,16 @@ export default function CadreEquipe({
   avis,
   retourSaisie,
   personnageOuvert,
+  accroche,
+  resume,
+  contact,
 }: {
+  /** La tagline : l'accroche du projet, obligatoire. */
+  accroche?: string | null;
+  /** La logline : le résumé, en plus petit sous la tagline. */
+  resume?: string | null;
+  /** L'enveloppe pour écrire au porteur du projet (rien pour l'auteur lui-même). */
+  contact?: ReactNode;
   /** Le personnage sur lequel on arrive depuis la recherche : biographie dépliée. */
   personnageOuvert?: string | null;
   /** Les photos du moodboard (adresses signées). */
@@ -216,6 +225,18 @@ export default function CadreEquipe({
         }
       : null;
 
+  // Sous le moodboard (ou sa remplaçante, la biographie) : la tagline, le
+  // résumé et l'enveloppe pour écrire (03/10, Sarah). Toujours visibles : ils
+  // ne disparaissent pas quand on ouvre une biographie.
+  const avecAccroche = Boolean(accroche || resume || contact);
+  const blocAccroche = (
+    <>
+      {accroche && <p className={styles.accroche}>{accroche}</p>}
+      {resume && <p className={styles.resume}>{resume}</p>}
+      {contact && <div className={styles.contact}>{contact}</div>}
+    </>
+  );
+
   const deuxLangues = Boolean(videopitch?.fr && videopitch?.en);
 
   return (
@@ -272,6 +293,12 @@ export default function CadreEquipe({
         </section>
       )}
 
+      {avecAccroche && (
+        <section className={`${styles.cadre} ${styles.cadreEquipe} ${styles.accrocheGauche}`}>
+          {blocAccroche}
+        </section>
+      )}
+
       {avecPersonnages && (
         <section className={`${styles.cadre} ${styles.cadreEquipe}`}>
           <p className={styles.dessousTitre}>Les personnages</p>
@@ -287,6 +314,8 @@ export default function CadreEquipe({
       )}
     </div>
 
+      {(detail || avecMoodboard || avecAccroche) && (
+        <div className={styles.droite}>
       {(detail || avecMoodboard) && (
         <aside
           className={`${styles.detail} ${detail ? "" : styles.detailMoodboard}`}
@@ -332,6 +361,13 @@ export default function CadreEquipe({
             </>
           )}
         </aside>
+      )}
+      {avecAccroche && (
+        <section className={`${styles.cadre} ${styles.cadreEquipe} ${styles.accrocheDroite}`}>
+          {blocAccroche}
+        </section>
+      )}
+        </div>
       )}
     </div>
   );

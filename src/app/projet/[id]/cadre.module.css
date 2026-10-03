@@ -474,7 +474,8 @@ a.membreLien:hover .portrait {
   display: block;
 }
 
-.detail {
+.detail,
+.droite {
   display: none;
 }
 
@@ -486,11 +487,26 @@ a.membreLien:hover .portrait {
     align-items: start;
   }
 
-  .detail {
+  /* La colonne de droite suit le défilement : le moodboard ou la biographie,
+     puis l'accroche et l'enveloppe. Trop haute pour l'écran, elle défile
+     sur place. */
+  .droite {
     position: sticky;
-    top: 110px;
+    top: 66px;
     display: block;
-    margin-top: 44px;
+    max-height: calc(100vh - 82px);
+    margin: 0 -6px;
+    padding: 44px 6px 4px;
+    overflow-y: auto;
+  }
+
+  .droite > section {
+    margin-top: 24px;
+  }
+
+  .detail {
+    position: relative;
+    display: block;
     padding: 30px 28px 26px;
     border: 3px solid var(--rouge-wfg);
     border-radius: 14px;
@@ -498,7 +514,8 @@ a.membreLien:hover .portrait {
 
   /* Par défaut le cadre de droite montre le moodboard (03/10) : celui de
      la colonne de gauche s'efface, il ne s'affiche qu'une fois. */
-  .moodboardGauche {
+  .moodboardGauche,
+  .accrocheGauche {
     display: none;
   }
 
@@ -592,4 +609,23 @@ a.membreLien:hover .portrait {
     outline: 3px solid var(--rouge-wfg);
     outline-offset: 3px;
   }
+}
+
+/* L'accroche (la tagline), le résumé et l'enveloppe, sous le moodboard. */
+.accroche {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.resume {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--dim);
+  white-space: pre-line;
+}
+
+.contact {
+  margin-top: 18px;
 }

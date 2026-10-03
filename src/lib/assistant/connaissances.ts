@@ -59,7 +59,7 @@ Galaxies (anciennement « Pitchothèque », nom de WFG 1 ; le menu dit « Galaxi
 - Le nuage de mots-clés et les mots-clés proches sont ouverts à tous les membres connectés (adhérents ou non).
 
 Messagerie (menu « Messages »)
-- Un membre peut écrire à l'auteur d'un projet (« Contacter l'auteur »). L'auteur reçoit un email le prévenant d'un message. Pour lire ses messages, il faut une adhésion active.
+- Un membre peut écrire à l'auteur d'un projet (une petite enveloppe, sous le moodboard de la fiche projet ; barrée tant qu'on n'a pas d'adhésion). L'auteur reçoit un email le prévenant d'un message. Pour lire ses messages, il faut une adhésion active.
 
 Adhésion (page « Adhésion »)
 - Cinq paliers : 0 €, 5 €, 50 €, 500 €, et « Sur devis ».
