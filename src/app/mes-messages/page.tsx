@@ -5,23 +5,30 @@ import formStyles from "@/components/form.module.css";
 import styles from "./page.module.css";
 import { createClient } from "@/lib/supabase/server";
 
-type MessageRecu = {
-  id: string;
-  project_id: string;
-  project_title: string;
-  sender_id: string;
-  sender_name: string | null;
-  created_at: string;
-  body: string | null;
-  verrouille: boolean;
+type Conversation = {
+  autre_id: string;
+  autre_nom: string | null;
+  projet_id: string | null;
+  projet_titre: string | null;
+  dernier_corps: string;
+  dernier_le: string;
+  dernier_de_moi: boolean;
+  non_lus: number;
 };
 
-export default async function MesMessagesPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ envoye?: string }>;
-}) {
-  const { envoye } = await searchParams;
+type MessageEnAttente = {
+  id: string;
+  project_title: string | null;
+  created_at: string;
+};
+
+/**
+ * Mes messages (03/10) : une conversation par correspondant et par
+ * projet, avec les messages reçus et envoyés. Sans adhésion, on ne lit
+ * rien et on ne sait pas qui a écrit : seul compte le fait qu'un message
+ * attend, c'est la raison d'adhérer.
+ */
+export default async function MesMessagesPage() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -31,68 +38,79 @@ export default async function MesMessagesPage({
     redirect("/connexion?next=/mes-messages");
   }
 
-  const { data: messages } = await supabase
-    .from("mes_messages_recus")
-    .select("*")
-    .returns<MessageRecu[]>();
+  const { data: adherent } = await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id });
 
-  const liste = messages ?? [];
-  const nbVerrouilles = liste.filter((m) => m.verrouille).length;
-
-  // Marqués lus seulement s'ils sont lisibles : un message verrouillé
-  // faute d'adhésion continue de compter et de faire clignoter l'onglet.
-  await supabase.rpc("marquer_messages_lus");
+  const conversations =
+    adherent === true
+      ? ((await supabase.rpc("mes_conversations")).data as Conversation[] | null) ?? []
+      : [];
+  // Sans adhésion : les messages en attente, sans leur expéditeur.
+  const enAttente =
+    adherent === true
+      ? []
+      : (((await supabase.from("mes_messages_recus").select("id, project_title, created_at")).data as
+          | MessageEnAttente[]
+          | null) ?? []);
 
   return (
     <PageShell eyebrow="Mon profil" title="Mes messages" connecte nav="messages">
-      {envoye && (
-        <p className={formStyles.hint} style={{ color: "#2f7d4f" }}>
-          Message envoyé.
-        </p>
-      )}
-      {liste.length === 0 ? (
-        <p className={formStyles.hint}>Aucun message reçu pour l&apos;instant.</p>
-      ) : (
-        <>
-          {nbVerrouilles > 0 && (
-            <p className={formStyles.hint}>
-              {nbVerrouilles} message{nbVerrouilles > 1 ? "s" : ""} en attente de lecture —
-              réactivez votre adhésion pour les lire.
-            </p>
-          )}
-
+      {adherent === true ? (
+        conversations.length === 0 ? (
+          <p className={formStyles.hint}>Aucun message pour l&apos;instant.</p>
+        ) : (
           <ul className={styles.liste}>
-            {liste.map((m) => (
-              <li key={m.id} className={styles.carte}>
-                <div className={styles.entete}>
-                  <span className={styles.projet}>À propos de « {m.project_title} »</span>
-                  <span className={styles.date}>
-                    {new Date(m.created_at).toLocaleDateString("fr-FR")}
-                  </span>
-                </div>
-
-                {m.verrouille ? (
-                  <div className={styles.verrouille}>
-                    <p className={styles.verrouilleTexte}>
-                      {m.sender_name ?? "Un membre"} vous a écrit. Votre adhésion doit être
-                      active pour lire ce message.
-                    </p>
-                    <Link href="/adhesion" className={styles.verrouilleBouton}>
-                      Réactiver mon adhésion
-                    </Link>
+            {conversations.map((c) => (
+              <li key={`${c.autre_id}-${c.projet_id ?? ""}`}>
+                <Link
+                  href={`/mes-messages/avec/${c.autre_id}${c.projet_id ? `?projet=${c.projet_id}` : ""}`}
+                  className={`${styles.carte} ${styles.conversation}`}
+                >
+                  <div className={styles.entete}>
+                    <span className={styles.projet}>
+                      {c.autre_nom ?? "Un membre"}
+                      {c.non_lus > 0 && <span className={styles.pastille}>{c.non_lus}</span>}
+                    </span>
+                    <span className={styles.date}>
+                      {new Date(c.dernier_le).toLocaleDateString("fr-FR")}
+                    </span>
                   </div>
-                ) : (
-                  <>
-                    <p className={formStyles.hint} style={{ marginBottom: 6 }}>
-                      De {m.sender_name ?? "un membre"}
+                  {c.projet_titre && (
+                    <p className={formStyles.hint} style={{ margin: "0 0 6px" }}>
+                      À propos de « {c.projet_titre} »
                     </p>
-                    <p className={styles.corps}>{m.body}</p>
-                  </>
-                )}
+                  )}
+                  <p className={`${styles.apercu} ${c.non_lus > 0 ? styles.apercuNonLu : ""}`}>
+                    {c.dernier_de_moi && <span className={styles.vous}>Vous : </span>}
+                    {c.dernier_corps}
+                  </p>
+                </Link>
               </li>
             ))}
           </ul>
-        </>
+        )
+      ) : enAttente.length === 0 ? (
+        <p className={formStyles.hint}>Aucun message pour l&apos;instant.</p>
+      ) : (
+        <ul className={styles.liste}>
+          {enAttente.map((m) => (
+            <li key={m.id} className={styles.carte}>
+              <div className={styles.entete}>
+                <span className={styles.projet}>
+                  {m.project_title ? `À propos de « ${m.project_title} »` : "Un membre"}
+                </span>
+                <span className={styles.date}>{new Date(m.created_at).toLocaleDateString("fr-FR")}</span>
+              </div>
+              <div className={styles.verrouille}>
+                <p className={styles.verrouilleTexte}>
+                  Un membre vous a écrit. Votre adhésion doit être active pour lire ce message.
+                </p>
+                <Link href="/adhesion" className={styles.verrouilleBouton}>
+                  Réactiver mon adhésion
+                </Link>
+              </div>
+            </li>
+          ))}
+        </ul>
       )}
     </PageShell>
   );

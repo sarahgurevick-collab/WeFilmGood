@@ -65,3 +65,50 @@
   text-decoration: none;
   white-space: nowrap;
 }
+
+/* Les conversations (03/10) : une carte cliquable par correspondant et par projet. */
+.conversation {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s ease;
+}
+
+.conversation:hover,
+.conversation:focus-visible {
+  border-color: var(--rouge-wfg);
+}
+
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  margin-left: 10px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.apercu {
+  margin: 0;
+  color: var(--dim);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-line;
+}
+
+.apercuNonLu {
+  color: var(--fg);
+}
+
+.vous {
+  color: var(--dim);
+}

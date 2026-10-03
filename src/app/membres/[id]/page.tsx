@@ -3,6 +3,8 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./membre.module.css";
+import ContactEnveloppe from "@/app/projet/[id]/ContactEnveloppe";
+import profilStyles from "@/app/profil/profil.module.css";
 
 type Membre = {
   id: string;
@@ -29,10 +31,13 @@ type Membre = {
  */
 export default async function ProfilMembrePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ message?: string }>;
 }) {
   const { id } = await params;
+  const { message } = await searchParams;
   const supabase = await createClient();
 
   const {
@@ -49,6 +54,7 @@ export default async function ProfilMembrePage({
   if (!membre) notFound();
 
   let masque = false;
+  let estAdmin = false;
   if (membre.id !== user.id) {
     const [{ data: lecteur }, { data: isAdmin }] = await Promise.all([
       supabase
@@ -61,12 +67,20 @@ export default async function ProfilMembrePage({
     ]);
     if (lecteur && !isAdmin) notFound();
     masque = isAdmin !== true;
+    estAdmin = isAdmin === true;
   }
+
+  // L'enveloppe pour lui écrire (03/10) : barrée, avec sa bulle, sans adhésion.
+  const peutEcrire = membre.id !== user.id;
+  const { data: adherent } = peutEcrire
+    ? await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id })
+    : { data: null };
 
   const nom = masque ? "Membre" : (membre.display_name ?? membre.full_name ?? "Membre");
 
   return (
     <PageShell eyebrow="Membre" title={nom}>
+      {message === "envoye" && <p className={profilStyles.ok}>Message envoyé.</p>}
       {/* La photo, ronde comme le logo. Sans photo, l'initiale. */}
       <div className={styles.photo} aria-hidden="true">
         {membre.avatar_url ? (
@@ -91,6 +105,15 @@ export default async function ProfilMembrePage({
             Son site
           </a>
         </p>
+      )}
+
+      {peutEcrire && (
+        <div style={{ marginTop: 28 }}>
+          <ContactEnveloppe
+            href={`/mes-messages/nouveau?membre=${membre.id}`}
+            adhesionRequise={adherent !== true && !estAdmin}
+          />
+        </div>
       )}
     </PageShell>
   );
