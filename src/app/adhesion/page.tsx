@@ -146,7 +146,31 @@ export default async function AdhesionPage({
             </AvantageAdhesion>
             <AvantageAdhesion icone="personnages">La Galaxie de Personnages</AvantageAdhesion>
             {suite}
-            <ChoixCredits />
+            <ChoixCredits
+              lignesDepot={
+                <>
+                  <AvantageAdhesion icone="nuage">
+                    L&apos;analyse d&apos;un projet de long métrage, court métrage, série ou VR/360,
+                    selon les modalités de dépôt.
+                  </AvantageAdhesion>
+                  <AvantageAdhesion icone="projets">
+                    Création de fiches projets (sans analyse du document PDF / 10 maximum)
+                  </AvantageAdhesion>
+                </>
+              }
+              lignesAcces={
+                <>
+                  <AvantageAdhesion icone="loupe">
+                    5 crédits / semaine à choisir dans la Galaxie Projets, Talents, Personnages
+                    (non cumulables)
+                  </AvantageAdhesion>
+                  <AvantageAdhesion icone="loupe">
+                    Les 5 crédits ne sont pas cumulables : s&apos;ils ne sont pas utilisés, ils ne
+                    peuvent pas être récupérés la semaine suivante.
+                  </AvantageAdhesion>
+                </>
+              }
+            />
             <AvantageAdhesion icone="fiole">Le ScénarioLab offert, limité à 50 places</AvantageAdhesion>
             <AvantageAdhesion>
               Adhésion pour 1 an, sans annulation possible avant 12 mois
@@ -163,14 +187,27 @@ export default async function AdhesionPage({
             </AvantageAdhesion>
             <AvantageAdhesion icone="personnages">La Galaxie de Personnages</AvantageAdhesion>
             {suite}
-            <AvantageAdhesion icone="nuage">11 dépôts</AvantageAdhesion>
+            <ChoixCredits
+              lignesDepot={
+                <>
+                  <AvantageAdhesion icone="nuage">
+                    Au choix 11 projets analysés (1 gratuit)
+                  </AvantageAdhesion>
+                  <AvantageAdhesion>
+                    Un accompagnement longue durée sur un projet en particulier
+                  </AvantageAdhesion>
+                </>
+              }
+              lignesAcces={
+                <AvantageAdhesion icone="oeil">
+                  5 projets par semaine. Possibilité d&apos;utiliser le crédit à
+                  votre convenance
+                </AvantageAdhesion>
+              }
+            />
             <AvantageAdhesion>
               Fiches projets illimité et accompagnement vidéopitch pour
               toutes vos fiches projets
-            </AvantageAdhesion>
-            <AvantageAdhesion icone="oeil">
-              5 projets par semaine. Possibilité d&apos;utiliser le crédit à
-              votre convenance
             </AvantageAdhesion>
             <AvantageAdhesion icone="telephone">
               Un rendez-vous visio ou téléphonique pour répondre à vos
