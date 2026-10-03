@@ -15,6 +15,7 @@ import { AUCUN, adresse, type Filtres } from "@/app/pitchotheque/filtres";
 import Bandeau from "./Bandeau";
 import LogoComplet from "./LogoComplet";
 import formStyles from "./form.module.css";
+import NuageCouleurs from "./NuageCouleurs";
 import NuageDisque from "./NuageDisque";
 import TroisBilles from "./TroisBilles";
 import styles from "./Finder.module.css";
@@ -26,8 +27,6 @@ const MAX = 200;
 const DEFAUT = 80;
 // En dessous, trop peu de mots pour dessiner le disque : on les liste.
 const G_MINIMUM = 20;
-// Le petit disque de la barre : peu de mots, pour que la forme se lise.
-const ICONE_MOTS = 30;
 // Les rangées 2 et 3 : un aperçu d'une ligne.
 const APERCU = 5;
 
@@ -222,21 +221,7 @@ export default function Finder({
             aria-label={nuageAffiche ? "Fermer les mots-clés" : "Ouvrir les mots-clés"}
             title={nuageAffiche ? "Fermer les mots-clés" : "Explorer les mots-clés"}
           >
-            {nuage && nuage.length >= G_MINIMUM ? (
-              <NuageDisque mots={nuage.slice(0, ICONE_MOTS)} icone />
-            ) : (
-              // Trop peu de mots pour dessiner le nuage : le disque du logo,
-              // en rouge (27/09 ; c'était un « G », qui évoquait Google).
-              <svg viewBox="77 28 1066 1064" className={styles.iconeDisque} aria-hidden="true">
-                <mask id="disque-logo">
-                  <circle cx="609.5" cy="560" r="532" fill="#fff" />
-                  <rect x="831" y="359" width="400" height="800" fill="#000" />
-                  <rect x="644" y="590" width="400" height="800" fill="#000" />
-                  <rect x="445" y="823" width="400" height="800" fill="#000" />
-                </mask>
-                <rect x="0" y="0" width="1300" height="1200" fill="var(--rouge-wfg)" mask="url(#disque-logo)" />
-              </svg>
-            )}
+            <NuageCouleurs className={styles.iconeDisque} />
           </button>
         )}
       </div>
