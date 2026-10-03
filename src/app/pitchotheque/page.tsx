@@ -92,7 +92,8 @@ export default async function ProjetsPage({
         nav="pitchotheque"
         connecte={!!user}
       >
-        <Finder adherent={adherent} premiere={voir} />
+        {/* La liste des talents (ou personnages) disparaît dès qu'un mot est cherché. */}
+        <Finder adherent={adherent} premiere={voir}>
         <p className={formStyles.hint}>
           {`${voir === "personnages" ? "Personnages" : "Talents"} ${((page - 1) * GALAXIE_PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * GALAXIE_PAR_PAGE + affiches).toLocaleString("fr-FR")} sur ${totalGalaxie.toLocaleString("fr-FR")} dans les Galaxies.`}
         </p>
@@ -122,6 +123,7 @@ export default async function ProjetsPage({
             {page < pagesGalaxie ? <Link href={lien(page + 1)}>Suivants →</Link> : <span />}
           </nav>
         )}
+        </Finder>
       </PageShell>
     );
   }
