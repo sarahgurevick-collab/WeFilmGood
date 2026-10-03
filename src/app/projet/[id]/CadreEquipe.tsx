@@ -78,13 +78,19 @@ export default function CadreEquipe({
   const avecMoodboard = moodboard.length > 0;
   const avecPersonnages = personnages.length > 0;
   const arrivee = personnages.some((c) => c.id === personnageOuvert) ? (personnageOuvert as string) : null;
-  // Un clic sur un personnage déplie sa biographie ; un second la replie.
-  const [ouvert, setOuvert] = useState<string | null>(arrivee);
+  // Un clic sur un personnage ou sur un membre de l'équipe montre sa
+  // biographie ; un second clic la replie. Un seul à la fois : sur grand
+  // écran elle s'affiche dans le cadre de droite, sinon sous le portrait.
+  const [choix, setChoix] = useState<{ genre: "personnage" | "membre"; id: string } | null>(
+    arrivee ? { genre: "personnage", id: arrivee } : null,
+  );
+  const ouvert = choix?.genre === "personnage" ? choix.id : null;
+  const membreOuvert = choix?.genre === "membre" ? choix.id : null;
+  const setOuvert = (id: string | null) => setChoix(id ? { genre: "personnage", id } : null);
+  const setMembreOuvert = (id: string | null) => setChoix(id ? { genre: "membre", id } : null);
   useEffect(() => {
     if (arrivee) document.getElementById(`personnage-${arrivee}`)?.scrollIntoView({ block: "center" });
   }, [arrivee]);
-  // Un clic sur le portrait d'un membre déplie sa biographie ; un second la replie.
-  const [membreOuvert, setMembreOuvert] = useState<string | null>(null);
   const [videoLancee, setVideoLancee] = useState(false);
   const [langue, setLangue] = useState<"fr" | "en">(videopitch?.fr ? "fr" : "en");
 
@@ -189,9 +195,31 @@ export default function CadreEquipe({
     </div>
   );
 
+  // Le cadre de droite (grand écran) : la biographie de celui ou celle sur qui on a cliqué.
+  const personnageChoisi = ouvert ? personnages.find((c) => c.id === ouvert) : undefined;
+  const membreChoisi = membreOuvert ? equipe.find((m) => m.cle === membreOuvert) : undefined;
+  const detail = personnageChoisi
+    ? {
+        nom: personnageChoisi.nom,
+        image: personnageChoisi.portrait,
+        sous: personnageChoisi.infos,
+        bio: personnageChoisi.bio,
+        site: null as string | null | undefined,
+      }
+    : membreChoisi
+      ? {
+          nom: membreChoisi.nom,
+          image: membreChoisi.photo ?? null,
+          sous: membreChoisi.role,
+          bio: membreChoisi.bio || "Ce membre n'a pas encore rédigé sa biographie.",
+          site: membreChoisi.site,
+        }
+      : null;
+
   const deuxLangues = Boolean(videopitch?.fr && videopitch?.en);
 
   return (
+    <div className={styles.colonnes}>
     <div>
     <section className={`${styles.cadre} ${styles.cadreComparateur}`}>
       {/* Plus de comparateur (27/09, Sarah : l'effet n'apportait rien) :
@@ -256,6 +284,42 @@ export default function CadreEquipe({
           <p className={styles.dessousTitre}>{titreEquipe}</p>
           {portraits}
         </section>
+      )}
+    </div>
+
+      {detail && (
+        <aside className={styles.detail} aria-live="polite">
+          <button
+            type="button"
+            className={styles.detailFermer}
+            onClick={() => setChoix(null)}
+            aria-label="Fermer"
+          >
+            ×
+          </button>
+          <div className={styles.detailTete}>
+            <span className={styles.portrait} aria-hidden="true">
+              {detail.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={detail.image} alt="" />
+              ) : (
+                <span>{detail.nom.trim().charAt(0).toUpperCase()}</span>
+              )}
+            </span>
+            <div>
+              <h2 className={styles.detailNom}>{detail.nom}</h2>
+              {detail.sous && <p className={styles.detailSous}>{detail.sous}</p>}
+            </div>
+          </div>
+          {detail.bio && <p className={styles.detailBio}>{detail.bio}</p>}
+          {detail.site && (
+            <p className={styles.detailBio}>
+              <a href={detail.site} target="_blank" rel="noopener noreferrer">
+                Son site
+              </a>
+            </p>
+          )}
+        </aside>
       )}
     </div>
   );

@@ -462,3 +462,119 @@ a.membreLien:hover .portrait {
 .membreDetail a {
   color: var(--rouge-wfg);
 }
+
+/* ---- Biographie dans un cadre à droite (03/10, Sarah : « je croyais que
+   ça s'ouvrait dans la partie droite ») ----
+   Sur grand écran, la colonne des cadres garde sa largeur et un cadre rouge
+   se pose à sa droite avec la biographie de celui ou celle sur qui on a
+   cliqué ; il suit le défilement de la page. En dessous de cette largeur,
+   pas de place à droite : la biographie se déplie sous le portrait, comme
+   avant. */
+.colonnes {
+  display: block;
+}
+
+.detail {
+  display: none;
+}
+
+@media (min-width: 1240px) {
+  .colonnes {
+    display: grid;
+    grid-template-columns: minmax(0, 800px) minmax(300px, 560px);
+    gap: 0 36px;
+    align-items: start;
+  }
+
+  .detail {
+    position: sticky;
+    top: 110px;
+    display: block;
+    margin-top: 44px;
+    padding: 30px 28px 26px;
+    border: 3px solid var(--rouge-wfg);
+    border-radius: 14px;
+  }
+
+  .detailFermer {
+    position: absolute;
+    top: 6px;
+    right: 14px;
+    padding: 0 4px;
+    border: 0;
+    background: none;
+    color: #e2231a;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .detailFermer:hover {
+    opacity: 0.7;
+  }
+
+  .detailTete {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-right: 24px;
+  }
+
+  .detailTete .portrait {
+    flex: none;
+  }
+
+  .detailNom {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .detailSous {
+    margin: 6px 0 0;
+    font-size: 14px;
+    color: var(--dim);
+  }
+
+  .detailBio {
+    margin: 18px 0 0;
+    font-size: 15px;
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+
+  .detailBio a {
+    color: var(--rouge-wfg);
+  }
+
+  /* Dans la colonne, rien ne se déplie plus : le portrait choisi est
+     seulement cerclé de rouge, et sa biographie s'affiche à droite. */
+  .personnagesCadre li.personnageOuvert,
+  .portraits li.personnageOuvert {
+    width: 170px;
+    max-width: none;
+    flex-basis: auto;
+    margin: 0;
+  }
+
+  .personnageOuvert .bio {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 1.45;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .membreDetail {
+    display: none;
+  }
+
+  .personnageOuvert .portrait {
+    outline: 3px solid var(--rouge-wfg);
+    outline-offset: 3px;
+  }
+}
