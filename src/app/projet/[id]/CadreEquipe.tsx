@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import VideopitchLecteur from "@/components/VideopitchLecteur";
 import CoteFiche from "./CoteFiche";
+import MoodboardPhotos from "./MoodboardPhotos";
 import styles from "./cadre.module.css";
 
 export type PersonnageCadre = {
@@ -39,12 +40,12 @@ export type MembreEquipe = {
  * Le nombre de fiches de lecture n'est plus affiché sous le cadre (retiré
  * à la demande de Sarah le 24/09).
  *
- * Côté droit (25/09) : le moodboard s'il y a des photos, sinon les
- * personnages, sinon les talents. Quand il y a moodboard ET personnages,
- * l'étiquette du coin devient un bouton qui nomme l'autre vue. Côté
- * gauche, une fois la vidéo lancée : si le videopitch existe aussi en
- * anglais, l'étiquette devient le bouton « Version anglaise » (français
- * par défaut).
+ * Sous le grand cadre (03/10, Sarah : un seul bouton pour deux contenus ne
+ * se comprenait pas), un cadre par contenu, chacun avec son titre fixe et
+ * sans bouton pour passer de l'un à l'autre : le moodboard (s'il y a des
+ * photos), les personnages, puis l'équipe. Dans le grand cadre, une fois la
+ * vidéo lancée : si le videopitch existe aussi en anglais, l'étiquette
+ * devient le bouton « Version anglaise » (français par défaut).
  */
 export default function CadreEquipe({
   equipe,
@@ -77,10 +78,6 @@ export default function CadreEquipe({
   const avecMoodboard = moodboard.length > 0;
   const avecPersonnages = personnages.length > 0;
   const arrivee = personnages.some((c) => c.id === personnageOuvert) ? (personnageOuvert as string) : null;
-  // En arrivant sur un personnage, ses voisins passent avant le moodboard.
-  const [vue, setVue] = useState<"moodboard" | "personnages">(
-    avecMoodboard && !arrivee ? "moodboard" : "personnages",
-  );
   // Un clic sur un personnage déplie sa biographie ; un second la replie.
   const [ouvert, setOuvert] = useState<string | null>(arrivee);
   useEffect(() => {
@@ -192,38 +189,6 @@ export default function CadreEquipe({
     </div>
   );
 
-  const coteMoodboard = (
-    <div className={`${styles.coteEquipe} ${styles.coteMoodboard}`}>
-      <ul className={styles.moodboardCadre}>
-        {moodboard.map((src) => (
-          <li key={src}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt="" loading="lazy" draggable={false} />
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-
-  // Ce que montre le côté droit, et son étiquette (un bouton quand on
-  // peut passer d'une vue à l'autre).
-  let droite: ReactNode = null;
-  let etiquetteDroite: ReactNode = null;
-  if (avecMoodboard && avecPersonnages) {
-    droite = vue === "moodboard" ? coteMoodboard : cotePersonnages;
-    etiquetteDroite = (
-      <button type="button" onClick={() => setVue(vue === "moodboard" ? "personnages" : "moodboard")}>
-        {vue === "moodboard" ? "Les personnages" : "Moodboard"}
-      </button>
-    );
-  } else if (avecMoodboard) {
-    droite = coteMoodboard;
-    etiquetteDroite = "Moodboard";
-  } else if (avecPersonnages) {
-    droite = cotePersonnages;
-    etiquetteDroite = "Les personnages";
-  }
-
   const deuxLangues = Boolean(videopitch?.fr && videopitch?.en);
 
   return (
@@ -260,13 +225,6 @@ export default function CadreEquipe({
         )}
       </div>
 
-      {droite && (
-        <div className={styles.dessous}>
-          <p className={styles.dessousTitre}>{etiquetteDroite}</p>
-          {droite}
-        </div>
-      )}
-
       {/* Sous le cadre : l'« Avis WeFilmGood » d'un projet labellisé, la
           phrase d'encouragement des lecteurs. Rien s'il n'y en a pas. */}
       {avis && (
@@ -277,8 +235,22 @@ export default function CadreEquipe({
       )}
     </section>
 
-      {/* L'équipe a son propre cadre rouge (03/10), sous le grand cadre : on
-          la distingue d'un coup d'œil des personnages. */}
+      {/* Un cadre rouge par contenu (03/10), sous le grand cadre : le moodboard,
+          les personnages, puis l'équipe, qu'on distingue d'un coup d'œil. */}
+      {avecMoodboard && (
+        <section className={`${styles.cadre} ${styles.cadreEquipe}`}>
+          <p className={styles.dessousTitre}>Moodboard</p>
+          <MoodboardPhotos photos={moodboard} />
+        </section>
+      )}
+
+      {avecPersonnages && (
+        <section className={`${styles.cadre} ${styles.cadreEquipe}`}>
+          <p className={styles.dessousTitre}>Les personnages</p>
+          {cotePersonnages}
+        </section>
+      )}
+
       {equipe.length > 0 && (
         <section className={`${styles.cadre} ${styles.cadreEquipe}`}>
           <p className={styles.dessousTitre}>{titreEquipe}</p>

@@ -326,36 +326,6 @@
   text-align: left;
 }
 
-/* Côté « Moodboard » (25/09) : les photos en mosaïque, sur fond noir. */
-.coteMoodboard {
-  align-items: flex-start;
-  padding: 52px 4% 4%;
-}
-
-.moodboardCadre {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 8px;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.moodboardCadre li {
-  aspect-ratio: 4 / 3;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #1a1a1a;
-}
-
-.moodboardCadre img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 /* Sous le cadre : l'« Avis WeFilmGood », en citation. */
 .avis {
   margin: 18px 8px 8px;
@@ -420,42 +390,12 @@
   color: var(--engagement-texte, #ffffff);
 }
 
-.dessous {
-  margin-top: 18px;
-}
-
 .dessousTitre {
   margin: 0 0 12px;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-}
-
-.dessousTitre button {
-  padding: 6px 12px;
-  border: 1px solid var(--engagement, #da2c25);
-  border-radius: 999px;
-  background: none;
-  color: inherit;
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  cursor: pointer;
-}
-
-.dessousTitre button:hover {
-  background: var(--engagement, #da2c25);
-  color: var(--engagement-texte, #ffffff);
-}
-
-/* Dessous, le côté équipe / personnages / moodboard n'est plus posé sur
-   l'image : il prend sa hauteur naturelle. */
-.dessous .coteEquipe {
-  position: static;
-  padding: 8px 0;
-  background: none;
-  overflow: visible;
 }
 
 /* Pour l'auteur : un clic sur l'image ramène à la saisie, on sort du zoom. */

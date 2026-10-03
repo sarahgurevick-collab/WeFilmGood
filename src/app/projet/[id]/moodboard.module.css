@@ -1,0 +1,127 @@
+/* Les photos du moodboard en petit, sur la largeur du cadre : dix photos,
+   cinq par ligne sur grand écran. */
+.mosaique {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+}
+
+.vignette {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1a1a1a;
+  cursor: zoom-in;
+  transition: transform 150ms ease;
+}
+
+.vignette:hover,
+.vignette:focus-visible {
+  transform: scale(1.04);
+  outline: 2px solid var(--rouge-wfg);
+  outline-offset: 2px;
+}
+
+.vignette img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* La photo en grand : plein écran sur fond noir. */
+.fond {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 64px 64px;
+  background: rgba(0, 0, 0, 0.94);
+}
+
+.grande {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+  user-select: none;
+}
+
+.compteur {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  margin: 0;
+  color: #ededed;
+  font-size: 15px;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* La croix × rouge pour refermer, la même partout sur le site. */
+.fermer {
+  position: absolute;
+  top: 10px;
+  right: 18px;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  color: #e2231a;
+  font-size: 40px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fermer:hover {
+  opacity: 0.7;
+}
+
+.fleche {
+  position: absolute;
+  top: 50%;
+  width: 48px;
+  height: 64px;
+  transform: translateY(-50%);
+  border: 0;
+  background: none;
+  color: #ededed;
+  font-size: 56px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fleche:hover {
+  color: var(--engagement, #da2c25);
+}
+
+.precedente {
+  left: 8px;
+}
+
+.suivante {
+  right: 8px;
+}
+
+/* Sur téléphone : on glisse le doigt, les flèches se font discrètes. */
+@media (max-width: 720px) {
+  .fond {
+    padding: 56px 8px 56px;
+  }
+
+  .fleche {
+    width: 40px;
+    color: rgba(237, 237, 237, 0.6);
+  }
+}
