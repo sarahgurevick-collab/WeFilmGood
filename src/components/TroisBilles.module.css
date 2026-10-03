@@ -7,7 +7,6 @@
   position: relative;
   width: 56px;
   height: 56px;
-  margin: 0 0 16px;
   animation: tour 2s ease-in-out infinite;
 }
 

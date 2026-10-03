@@ -197,6 +197,8 @@ export default function Finder({
             onChange={(e) => setRequete(e.target.value)}
           />
         </span>
+        {/* La place est gardée même au repos : rien ne bouge quand les billes apparaissent. */}
+        <span className={styles.emplacementBilles}>{enCours && <TroisBilles libelle="Recherche…" />}</span>
         {adherent && (
           <button
             type="button"
@@ -324,9 +326,7 @@ export default function Finder({
 
       {requete.trim() && (
         <div className={styles.resultats}>
-          {enCours ? (
-            <TroisBilles libelle="Recherche…" />
-          ) : (
+          {enCours ? null : (
             [choisie, ...CATEGORIES.map((c) => c.cle).filter((c) => c !== choisie)].map((cle, rang) => {
               const titre = CATEGORIES.find((c) => c.cle === cle)!.titre;
               const nombre =
