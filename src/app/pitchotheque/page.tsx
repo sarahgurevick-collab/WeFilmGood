@@ -195,9 +195,16 @@ export default async function ProjetsPage({
       nav="pitchotheque"
       connecte={!!user}
     >
-      <Finder adherent={adherent} filtres={filtres} premiere={premiere} requeteInitiale={typeof params.q === "string" ? params.q : ""} />
-      <RechercheAvancee filtres={filtres} genres={genres ?? []} />
-
+      {/* La recherche avancée reste toujours là ; la liste des projets en dessous
+          disparaît dès qu'un mot est cherché : ce qu'on ne demande pas ne
+          revient pas après les résultats (03/10, demande de Sarah). */}
+      <Finder
+        adherent={adherent}
+        filtres={filtres}
+        premiere={premiere}
+        requeteInitiale={typeof params.q === "string" ? params.q : ""}
+        avance={<RechercheAvancee filtres={filtres} genres={genres ?? []} />}
+      >
       {!projects || projects.length === 0 ? (
         <p className={formStyles.hint}>
           {nbFiltres > 0 ? (
@@ -285,6 +292,7 @@ export default async function ProjetsPage({
           )}
         </>
       )}
+      </Finder>
     </PageShell>
   );
 }

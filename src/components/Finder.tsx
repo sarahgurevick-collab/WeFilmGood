@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   motsClesProches,
   type Categorie,
@@ -42,6 +42,8 @@ export default function Finder({
   filtres = AUCUN,
   premiere = "projets",
   requeteInitiale = "",
+  avance,
+  children,
 }: {
   adherent?: boolean;
   /** Les filtres de la recherche avancée, qui s'ajoutent au mot cherché. */
@@ -50,6 +52,10 @@ export default function Finder({
   premiere?: Categorie;
   /** Une recherche déjà écrite en arrivant (?q=…), depuis le journal de l'administration. */
   requeteInitiale?: string;
+  /** La recherche avancée : toujours affichée sous les résultats. */
+  avance?: ReactNode;
+  /** La liste qui suit : masquée dès qu'un mot est cherché. */
+  children?: ReactNode;
 }) {
   const router = useRouter();
   const [requete, setRequete] = useState(requeteInitiale);
@@ -179,6 +185,8 @@ export default function Finder({
   // pas le premier. Sinon un mot populaire placé loin dans la liste
   // s'affichait démesurément gros (ex. "comédie dramatique", 292
   // projets, comparé à un premier mot n'en ayant qu'un seul).
+  const nombreAffiche = (cle: Categorie) =>
+    (cle === "projets" ? resultats?.length : cle === "talents" ? talents?.liste.length : personnages?.liste.length) ?? 0;
   const nombreEnTete =
     choisie === "projets" ? total : choisie === "talents" ? (talents?.total ?? 0) : (personnages?.total ?? 0);
   const effectifMax = Math.max(1, ...(nuage ?? []).map((m) => m.effectif));
@@ -188,6 +196,7 @@ export default function Finder({
   };
 
   return (
+    <>
     <div className={styles.zone}>
       <div className={styles.barre}>
         <span className={`${formStyles.recherche} ${styles.champZone}`}>
@@ -351,10 +360,10 @@ export default function Finder({
                       )
                     )}
                   </div>
-                  {cle === "projets" && enTete && total > 0 && (
+                  {enTete && nombre > 0 && (
                     <p className={styles.indice}>
-                      {total > (resultats?.length ?? 0) && `Les ${resultats?.length} premiers affichés.`}
-                      {parLeSens.length > 0 && (
+                      {nombre > nombreAffiche(cle) && `Les ${nombreAffiche(cle)} premiers affichés.`}
+                      {cle === "projets" && parLeSens.length > 0 && (
                         <> Dont des projets proches par le sens&nbsp;: {parLeSens.join(", ")}.</>
                       )}
                     </p>
@@ -409,6 +418,9 @@ export default function Finder({
         </div>
       )}
     </div>
+    {avance}
+    {!requete.trim() && children}
+    </>
   );
 }
 
