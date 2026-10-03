@@ -73,7 +73,7 @@ export default async function ProjetPage({
   searchParams: Promise<{ message?: string; enregistre?: string; depuis?: string; personnage?: string }>;
 }) {
   const { id } = await params;
-  const { enregistre, depuis, personnage } = await searchParams;
+  const { enregistre, depuis, personnage, message } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -347,6 +347,7 @@ export default async function ProjetPage({
       }
     >
       {enregistre && <p className={profilStyles.ok}>Modifications enregistrées.</p>}
+      {message === "envoye" && <p className={profilStyles.ok}>Message envoyé.</p>}
 
       {/* Sous le titre, sur une seule ligne : genre, format, langue, budget,
           audience, puis, pour l'admin seulement, les mots-clés — écrits

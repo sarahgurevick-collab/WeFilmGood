@@ -83,7 +83,9 @@ export async function contacterAuteur(formData: FormData) {
   }
 
   revalidatePath(`/projet/${projectId}`);
-  redirect(`/mes-messages?envoye=1`);
+  // On revient sur la fiche, là où on a décidé d'écrire (03/10, Sarah) : la
+  // liste « Mes messages » ne montre que les messages reçus.
+  redirect(`/projet/${projectId}?message=envoye`);
 }
 
 
