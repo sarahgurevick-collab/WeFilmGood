@@ -112,6 +112,7 @@ export default async function ProfilMembrePage({
           <ContactEnveloppe
             href={`/mes-messages/nouveau?membre=${membre.id}`}
             adhesionRequise={adherent !== true && !estAdmin}
+            phrase="Pour contacter ce membre, vous avez besoin d'une adhésion."
           />
         </div>
       )}
