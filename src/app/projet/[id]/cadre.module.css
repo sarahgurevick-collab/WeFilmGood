@@ -500,3 +500,25 @@ a.membreLien:hover .portrait {
   background: none;
   overflow: visible;
 }
+
+/* Biographie dépliée sous le portrait d'un membre de l'équipe. */
+.portraits li.personnageOuvert {
+  width: 100%;
+  max-width: 620px;
+}
+
+.membreDetail {
+  width: 100%;
+  font-size: 14px;
+  line-height: 1.55;
+  text-align: left;
+}
+
+.membreDetail p {
+  margin: 8px 0 0;
+  white-space: pre-line;
+}
+
+.membreDetail a {
+  color: var(--rouge-wfg);
+}

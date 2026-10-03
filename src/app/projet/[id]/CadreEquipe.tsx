@@ -22,6 +22,10 @@ export type MembreEquipe = {
   /** Invitation pas encore acceptée — visible de l'auteur et de l'admin seulement. */
   enAttente: string | null;
   photo?: string | null;
+  /** Le portrait déplie biographie et site au clic (sinon : lien vers le profil). */
+  deplie?: boolean;
+  bio?: string | null;
+  site?: string | null;
 };
 
 /**
@@ -82,6 +86,8 @@ export default function CadreEquipe({
   useEffect(() => {
     if (arrivee) document.getElementById(`personnage-${arrivee}`)?.scrollIntoView({ block: "center" });
   }, [arrivee]);
+  // Un clic sur le portrait d'un membre déplie sa biographie ; un second la replie.
+  const [membreOuvert, setMembreOuvert] = useState<string | null>(null);
   const [videoLancee, setVideoLancee] = useState(false);
   const [langue, setLangue] = useState<"fr" | "en">(videopitch?.fr ? "fr" : "en");
 
@@ -108,9 +114,36 @@ export default function CadreEquipe({
               {m.enAttente && <span className={styles.enAttente}>{m.enAttente}</span>}
             </>
           );
+          const ouvertIci = membreOuvert === m.cle;
           return (
-            <li key={m.cle} className={m.enAttente ? styles.attente : undefined}>
-              {!m.enAttente && m.profileId ? (
+            <li
+              key={m.cle}
+              className={[m.enAttente ? styles.attente : "", ouvertIci ? styles.personnageOuvert : ""].join(" ").trim() || undefined}
+            >
+              {m.deplie ? (
+                <>
+                  <button
+                    type="button"
+                    className={`${styles.membreLien} ${styles.personnageBouton}`}
+                    aria-expanded={ouvertIci}
+                    onClick={() => setMembreOuvert(ouvertIci ? null : m.cle)}
+                  >
+                    {contenu}
+                  </button>
+                  {ouvertIci && (
+                    <div className={styles.membreDetail}>
+                      <p>{m.bio || "Ce membre n'a pas encore rédigé sa biographie."}</p>
+                      {m.site && (
+                        <p>
+                          <a href={m.site} target="_blank" rel="noopener noreferrer">
+                            Son site
+                          </a>
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </>
+              ) : !m.enAttente && m.profileId ? (
                 <Link href={`/membres/${m.profileId}`} className={styles.membreLien}>
                   {contenu}
                 </Link>

@@ -287,6 +287,27 @@ export default async function ProjetPage({
       const photo = m.profileId ? (parId.get(m.profileId) ?? null) : null;
       m.photo = restreint && photo ? `/api/talents/photo?id=${m.profileId}` : photo;
     }
+    // Biographie et site, dépliés au clic sur le portrait (03/10, décision
+    // de Sarah) : pour l'administration, le membre lui-même, l'équipe et les
+    // adhérents — jamais pour qui n'a pas d'adhésion, dont la base n'est
+    // même pas interrogée.
+    if (!restreint) {
+      const { data: details } = await supabase
+        .from("profiles")
+        .select("id, biofilmo, website")
+        .in("id", idsEquipe);
+      const parIdDetail = new Map(
+        (details ?? []).map((d) => [d.id as string, d as { biofilmo: string | null; website: string | null }]),
+      );
+      for (const m of equipe) {
+        const d = m.profileId ? parIdDetail.get(m.profileId) : null;
+        if (!m.enAttente && m.profileId) {
+          m.deplie = true;
+          m.bio = d?.biofilmo ?? null;
+          m.site = d?.website ?? null;
+        }
+      }
+    }
   }
   if (restreint) {
     for (const m of equipe) {
