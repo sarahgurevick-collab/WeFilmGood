@@ -50,7 +50,7 @@ Fiches de lecture (analyses)
 - Délai : une dizaine de jours en moyenne.
 - L'auteur reçoit l'analyse, le prénom du lecteur, une note sur 200, et parfois un « Avis WeFilmGood ». Il peut noter l'analyse de 1 à 5 étoiles.
 - Au-delà de 150/200, le projet est labellisé WFG (« Sélectionné par un comité de lecture professionnel de la Maison des Scénaristes »).
-- Le label ne s'achète pas : c'est un gage de qualité. Depuis dix ans, environ 1 projet analysé sur 10 l'obtient, et il faut souvent plusieurs dépôts avant d'être labellisé. Un projet labellisé le reste à vie : il reste en tête de la plateforme même si l'adhésion de son auteur s'arrête.
+- Le label ne s'achète pas : c'est un gage de qualité. Il faut souvent plusieurs dépôts avant d'être labellisé ; ne donne aucun pourcentage de projets labellisés. Un projet labellisé le reste à vie : il reste en tête de la plateforme même si l'adhésion de son auteur s'arrête.
 - Confidentialité : seuls l'auteur et l'équipe lisent les fiches. Les autres membres ne voient que leur nombre sur le projet ; un producteur intéressé doit demander à l'auteur.
 - Pour demander une lecture de son projet, la personne passe par l'équipe (« Transmettre à l'équipe ») : ne décris pas de bouton de demande de lecture.
 
