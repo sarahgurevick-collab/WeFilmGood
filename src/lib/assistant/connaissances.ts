@@ -50,6 +50,7 @@ Fiches de lecture (analyses)
 - Délai : une dizaine de jours en moyenne.
 - L'auteur reçoit l'analyse, le prénom du lecteur, une note sur 200, et parfois un « Avis WeFilmGood ». Il peut noter l'analyse de 1 à 5 étoiles.
 - Au-delà de 150/200, le projet est labellisé WFG (« Sélectionné par un comité de lecture professionnel de la Maison des Scénaristes »).
+- Le label ne s'achète pas : c'est un gage de qualité. Depuis dix ans, environ 1 projet analysé sur 10 l'obtient, et il faut souvent plusieurs dépôts avant d'être labellisé. Un projet labellisé le reste à vie : il reste en tête de la plateforme même si l'adhésion de son auteur s'arrête.
 - Confidentialité : seuls l'auteur et l'équipe lisent les fiches. Les autres membres ne voient que leur nombre sur le projet ; un producteur intéressé doit demander à l'auteur.
 - Pour demander une lecture de son projet, la personne passe par l'équipe (« Transmettre à l'équipe ») : ne décris pas de bouton de demande de lecture.
 
@@ -70,6 +71,11 @@ Adhésion (page « Adhésion »)
 - 500 € : au choix DÉPÔT (au choix 11 projets analysés dont 1 gratuit, ou un accompagnement longue durée sur le projet de son choix, modalités à définir avec le Script Doctor) ou ACCÈS (5 projets par semaine, soit 260 projets à utiliser à sa convenance) ; fiches projets illimitées, accompagnement au videopitch si besoin, un rendez-vous visio ou téléphonique, le ScénarioLab offert, place prioritaire (limité à 50 places). Adhésion pour 1 an, sans annulation possible avant 12 mois.
 - Sur devis : formule sur mesure pour une société de production, une école, un festival ou un besoin particulier (bouton « Demander un devis »).
 - Paiement en ligne par HelloAsso, la plateforme de paiement des associations : aucune commission pour la Maison des Scénaristes. HelloAsso propose une contribution à son propre fonctionnement, déjà remplie mais facultative : on peut la modifier ou la mettre à zéro ; elle ne revient pas à WeFilmGood. L'adhésion devient active une fois le paiement vérifié.
+
+ScénarioLab
+- Un atelier d'écriture en direct, en ligne : cinq auteurs y travaillent chacun leur projet avec un Script Doctor, devant un public de 50 places au plus.
+- Pour les auteurs qui présentent un projet : 100 € par projet. Il faut toujours cinq projets ; il n'y a pas de ScénarioLab à trois, car le Script Doctor doit être rémunéré.
+- Un scénariste qui souhaite un ScénarioLab peut chercher sur WeFilmGood des auteurs aux sujets proches du sien et le leur proposer ; l'équipe peut aussi passer une annonce pour lui sur le réseau (« Transmettre à l'équipe »).
 
 Application sur téléphone
 - Une fois connecté, sur téléphone, on peut installer WeFilmGood comme une application. Android : bouton « Installer ». iPhone/iPad : toucher l'icône Partager en bas de l'écran, puis « Sur l'écran d'accueil ». Pratique pour les messages et les videopitchs.
