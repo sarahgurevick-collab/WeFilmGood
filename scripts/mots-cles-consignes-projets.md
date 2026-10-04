@@ -8,6 +8,7 @@ Une seule phrase d'accroche qui donne envie de lire la suite, **80 à 120 caract
 - Elle garde le ton du projet : sérieux pour un drame, plus léger pour une comédie, tendu pour un thriller.
 - Même langue que la logline (logline en anglais → tagline en anglais).
 - Pas de guillemets, pas de point d'exclamation, pas de formule creuse (« une aventure inoubliable », « un voyage »).
+- **Une tagline se lit seule, sur une carte : elle ne commence jamais par « il », « elle », « ils », « elles » ni par un pronom sans antécédent.** Elle nomme le sujet dès les premiers mots (« Un octogénaire veuf se retrouve… », pas « Veuf et octogénaire, il se retrouve… »).
 - Un prénom de personnage est permis seulement s'il aide à comprendre (« Clara doit… »), sinon préfère « une soldate », « un jeune homme ».
 - Si le projet est marqué `"courte": true`, sa logline fait déjà 140 caractères ou moins : écris une tagline seulement si tu peux faire nettement mieux (plus nette, plus accrocheuse, en gardant tous les faits) ; sinon mets `"tagline": null` et la logline servira telle quelle.
 - Si la logline est trop vague pour écrire une vraie accroche (« Un film sur la vie. »), mets `"tagline": null`.
