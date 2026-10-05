@@ -131,7 +131,7 @@ export default function GalaxieAccueil({ projet }: { projet: ProjetOrbite | null
                 Projet{projet.genre ? ` · ${projet.genre}` : ""}
               </span>
               <span className={styles.centreTitre}>{projet.titre}</span>
-              <span className={styles.centreLogline}>{projet.logline}</span>
+              <span className={styles.centreLogline}>{projet.tagline}</span>
             </Link>
 
             <div className={`${styles.anneau} ${styles.anneauPersonnages}`}>

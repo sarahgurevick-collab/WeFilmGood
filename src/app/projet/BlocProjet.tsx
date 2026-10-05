@@ -57,8 +57,8 @@ export default async function BlocProjet({
           <AfficheProjet
             initial={{
               title: projet?.title ?? "",
+              tagline: projet?.tagline ?? "",
               logline: projet?.logline ?? "",
-              synopsis: projet?.synopsis ?? "",
               format: projet?.format ?? "",
               genre_slug: projet?.genre_slug ?? "",
               budget_range: projet?.budget_range ?? "",

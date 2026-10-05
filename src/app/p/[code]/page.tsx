@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 type ProjetPartage = {
   id: string;
   title: string;
-  logline: string | null;
+  tagline: string | null;
   format: string | null;
   country: string | null;
   genre_label: string | null;
@@ -61,13 +61,13 @@ export async function generateMetadata({
 
   return {
     title: `${resultat.projet.title} — WeFilmGood`,
-    description: resultat.projet.logline ?? undefined,
+    description: resultat.projet.tagline ?? undefined,
     // Cette page est destinée à un producteur précis, pas à une
     // recherche : elle ne doit jamais apparaître dans un moteur.
     robots: { index: false, follow: false },
     openGraph: {
       title: resultat.projet.title,
-      description: resultat.projet.logline ?? undefined,
+      description: resultat.projet.tagline ?? undefined,
       images: resultat.vignette ? [resultat.vignette] : undefined,
     },
   };
@@ -125,7 +125,7 @@ export default async function ProjetPartagePage({
             .join(" · ")}
         </p>
 
-        {projet.logline && <p className={styles.logline}>{projet.logline}</p>}
+        {projet.tagline && <p className={styles.logline}>{projet.tagline}</p>}
 
         <section className={styles.invitation}>
           <LogoComplet hauteur={34} />

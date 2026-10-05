@@ -33,8 +33,10 @@ export const AUDIENCES = [
 
 export type ValeursFiche = {
   title: string;
+  tagline: string | null;
+  /** vrai tant que la tagline est celle proposée par WeFilmGood (l'auteur ne l'a pas changée) */
+  tagline_proposee?: boolean | null;
   logline: string | null;
-  synopsis: string | null;
   format: string | null;
   genre_slug: string | null;
   budget_range: string | null;
@@ -127,21 +129,25 @@ export default function ChampsFiche({
       </div>
 
       <ChampAvecCompteur
-        nom="logline"
+        nom="tagline"
         libelle="Tagline"
-        indication="Votre phrase d'accroche — une ou deux phrases courtes"
+        indication={
+          valeurs?.tagline_proposee
+            ? "Proposée par WeFilmGood — vous pouvez la modifier"
+            : "Votre phrase d'accroche — une ou deux phrases courtes"
+        }
         limite={300}
         lignes={3}
-        valeurInitiale={valeurs?.logline ?? ""}
+        valeurInitiale={valeurs?.tagline ?? ""}
         requis
       />
       <ChampAvecCompteur
-        nom="synopsis"
+        nom="logline"
         libelle="Logline"
         indication="Un petit résumé de l'histoire, en quelques phrases"
         limite={600}
         lignes={6}
-        valeurInitiale={valeurs?.synopsis ?? ""}
+        valeurInitiale={valeurs?.logline ?? ""}
       />
 
       <label className={styles.question}>

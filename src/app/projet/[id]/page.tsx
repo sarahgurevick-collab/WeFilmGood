@@ -30,8 +30,8 @@ const FORMATS_LISIBLES: Record<string, string> = {
 type Project = {
   id: string;
   title: string;
+  tagline: string | null;
   logline: string | null;
-  synopsis: string | null;
   format: string | null;
   language: string | null;
   country: string | null;
@@ -92,7 +92,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, visible_pour, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
+      "id, title, tagline, logline, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, visible_pour, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -128,8 +128,8 @@ export default async function ProjetPage({
   // Limites introduites par WeFilmGood 2 : les fiches héritées de
   // l'ancienne plateforme gardent leurs textes, mais leur auteur est
   // informé de la nouvelle règle.
-  const taglineTropLongue = (project.logline?.length ?? 0) > 300;
-  const loglineTropLongue = (project.synopsis?.length ?? 0) > 600;
+  const taglineTropLongue = (project.tagline?.length ?? 0) > 300;
+  const loglineTropLongue = (project.logline?.length ?? 0) > 600;
 
   const entetes = await headers();
   const hote = entetes.get("host") ?? "localhost:3000";
@@ -199,8 +199,8 @@ export default async function ProjetPage({
 
   const etatFiche = {
     titre: project.title,
-    tagline: project.logline,
-    logline: project.synopsis,
+    tagline: project.tagline,
+    logline: project.logline,
     genre: project.genre_slug,
     format: project.format,
     aUneVignette: !!vignette,
@@ -391,8 +391,8 @@ export default async function ProjetPage({
       <CadreEquipe
         // La tagline, le résumé et l'enveloppe sont sous le moodboard, dans le
         // cadre : plus sous le titre (03/10, Sarah).
-        accroche={project.logline}
-        resume={project.synopsis}
+        accroche={project.tagline}
+        resume={project.logline}
         contact={
           isOwner ? undefined : (
             <ContactEnveloppe
@@ -543,10 +543,10 @@ export default async function ProjetPage({
           {(taglineTropLongue || loglineTropLongue) && (
             <p style={{ margin: "8px 0 0" }}>
               {taglineTropLongue && (
-                <>Votre tagline en compte {project.logline?.length}. </>
+                <>Votre tagline en compte {project.tagline?.length}. </>
               )}
               {loglineTropLongue && (
-                <>Votre logline en compte {project.synopsis?.length}. </>
+                <>Votre logline en compte {project.logline?.length}. </>
               )}
               {taglineTropLongue && loglineTropLongue
                 ? "Elles restent enregistrées telles quelles."

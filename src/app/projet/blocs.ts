@@ -63,7 +63,7 @@ export async function etatDesBlocs(
   const [{ data: projet }, { data: fichiers }, { count: personnages }] = await Promise.all([
     supabase
       .from("projects")
-      .select("logline, synopsis, format, genre_slug, budget_range, target_audience")
+      .select("tagline, logline, format, genre_slug, budget_range, target_audience")
       .eq("id", projectId)
       .maybeSingle(),
     supabase.from("project_files").select("kind").eq("project_id", projectId),
@@ -83,8 +83,8 @@ export async function etatDesBlocs(
   // comptent pas dans son remplissage.
   const court = projet?.format === "court_metrage";
   const criteresFiche = [
+    !!projet?.tagline?.trim(),
     !!projet?.logline?.trim(),
-    !!projet?.synopsis?.trim(),
     !!projet?.format,
     !!projet?.genre_slug,
     ...(court ? [] : [!!projet?.budget_range, !!projet?.target_audience]),
@@ -92,7 +92,7 @@ export async function etatDesBlocs(
 
   return {
     fait: {
-      fiche: !!projet?.logline?.trim() && !!projet?.synopsis?.trim(),
+      fiche: !!projet?.tagline?.trim() && !!projet?.logline?.trim(),
       documents: aVignette,
       personnages: nombrePersonnages > 0,
     },
@@ -108,8 +108,9 @@ export type ProjetAModifier = {
   id: string;
   owner_id: string;
   title: string;
+  tagline: string | null;
+  tagline_proposee: boolean | null;
   logline: string | null;
-  synopsis: string | null;
   format: string | null;
   genre_slug: string | null;
   budget_range: string | null;
@@ -136,7 +137,7 @@ export async function chargerProjetAModifier(id: string, cle: Bloc) {
     supabase
       .from("projects")
       .select(
-        "id, owner_id, title, logline, synopsis, format, genre_slug, budget_range, target_audience, has_awards, awards_detail",
+        "id, owner_id, title, tagline, tagline_proposee, logline, format, genre_slug, budget_range, target_audience, has_awards, awards_detail",
       )
       .eq("id", id)
       .maybeSingle<ProjetAModifier>(),

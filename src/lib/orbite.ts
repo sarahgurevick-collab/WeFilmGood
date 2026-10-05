@@ -17,7 +17,7 @@ export type ProjetOrbite = {
   id: string;
   titre: string;
   genre: string | null;
-  logline: string;
+  tagline: string;
   personnages: NoeudOrbite[];
   equipe: NoeudOrbite[];
 };
@@ -26,7 +26,7 @@ type Brut = {
   id: string;
   titre: string;
   genre: string | null;
-  logline: string;
+  tagline: string;
   personnages: { nom: string; age: string | null; photo: string; bio: string }[];
   equipe: { id: string; nom: string; role: string; avatar: string; bio: string }[];
 };
@@ -66,7 +66,7 @@ export async function chargerProjetOrbite(): Promise<ProjetOrbite | null> {
     id: brut.id,
     titre: brut.titre,
     genre: brut.genre,
-    logline: brut.logline,
+    tagline: brut.tagline,
     personnages,
     equipe: brut.equipe.slice(0, 4).map((m) => ({
       id: m.id,

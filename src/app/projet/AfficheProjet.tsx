@@ -15,8 +15,8 @@ import styles from "./affiche.module.css";
  */
 export type ValeursAffiche = {
   title: string;
+  tagline: string;
   logline: string;
-  synopsis: string;
   format: string;
   genre_slug: string;
   budget_range: string;
@@ -26,8 +26,8 @@ export type ValeursAffiche = {
 
 const CHAMPS = new Set<keyof ValeursAffiche>([
   "title",
+  "tagline",
   "logline",
-  "synopsis",
   "format",
   "genre_slug",
   "budget_range",
@@ -152,7 +152,7 @@ export default function AfficheProjet({
 
       <p className={styles.titre}>{v.title.trim() || manque("Titre du projet")}</p>
 
-      <p className={styles.tagline}>{v.logline.trim() || manque("+ votre tagline")}</p>
+      <p className={styles.tagline}>{v.tagline.trim() || manque("+ votre tagline")}</p>
 
       <div className={styles.pastilles}>
         {pastilles.map((p) => (
@@ -164,7 +164,7 @@ export default function AfficheProjet({
         {!v.genre_slug && <span className={`${styles.pastille} ${styles.pastilleVide}`}>+ genre</span>}
       </div>
 
-      <p className={styles.logline}>{v.synopsis.trim() || manque("+ votre logline, l'histoire en quelques phrases")}</p>
+      <p className={styles.logline}>{v.logline.trim() || manque("+ votre logline, l'histoire en quelques phrases")}</p>
 
       {avertir && (
         <p className={styles.avantZoom} role="alert">

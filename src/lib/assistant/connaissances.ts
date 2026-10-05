@@ -38,6 +38,8 @@ Profil (menu « Mon profil »)
 Fiche projet (menu « Créer une fiche projet »)
 - Trois blocs, enregistrés séparément (on peut partir et revenir) : 1) la fiche : titre, tagline, logline, format, genre, budget, audience, prix reçus ; 2) documents : image de présentation, moodboard, scénario PDF ; 3) personnages : nom, portrait facultatif, deux ou trois lignes.
 - Obligatoires : titre, tagline, format, genre principal. Tagline : 300 caractères maximum (une phrase d'accroche). Logline : 600 caractères maximum (un petit résumé).
+- Les cartes des Galaxies et les résultats de recherche affichent la tagline, pas la logline ; la logline reste lisible en entier sur la fiche du projet.
+- Pour les projets venus de l'ancienne plateforme, WeFilmGood a rédigé une tagline (une phrase d'accroche courte) à partir de la logline de l'auteur. Dans le formulaire, elle est signalée « Proposée par WeFilmGood — vous pouvez la modifier » ; dès que l'auteur la change, elle devient la sienne. La logline de l'auteur n'a pas été modifiée. Quelques projets n'ont pas de tagline proposée (logline absente ou trop vague) : l'auteur peut l'écrire depuis sa fiche.
 - Image de présentation : format paysage 16/9, JPG ou PNG, sans son nom ni le titre dessus.
 - Moodboard : 9 photos maximum.
 - Le scénario PDF est confidentiel : seuls l'auteur, les lecteurs qui en sont chargés et l'équipe de la Maison des Scénaristes/WeFilmGood y ont accès.

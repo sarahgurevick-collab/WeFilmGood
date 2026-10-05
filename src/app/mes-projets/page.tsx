@@ -28,8 +28,8 @@ const FORMATS: Record<string, string> = {
 type Projet = {
   id: string;
   title: string;
+  tagline: string | null;
   logline: string | null;
-  synopsis: string | null;
   format: string | null;
   genre_slug: string | null;
   status: string;
@@ -61,7 +61,7 @@ export default async function MesProjetsPage({
   const { data } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, synopsis, format, genre_slug, status, bandeau, created_at, genre:genres(label_fr), files:project_files(kind, storage_path)",
+      "id, title, tagline, logline, format, genre_slug, status, bandeau, created_at, genre:genres(label_fr), files:project_files(kind, storage_path)",
     )
     .eq("owner_id", user.id)
     .order("created_at", { ascending: false })
@@ -87,8 +87,8 @@ export default async function MesProjetsPage({
       ]);
       const taux = tauxDeRemplissage({
         titre: p.title,
-        tagline: p.logline,
-        logline: p.synopsis,
+        tagline: p.tagline,
+        logline: p.logline,
         genre: p.genre_slug,
         format: p.format,
         aUneVignette: p.files.some((f) => f.kind === "vignette"),
@@ -149,8 +149,8 @@ export default async function MesProjetsPage({
                 {" · "}
                 {STATUT_LISIBLE[p.status] ?? p.status}
               </p>
-              {p.logline ? (
-                <p className={styles.tagline}>{p.logline}</p>
+              {p.tagline ? (
+                <p className={styles.tagline}>{p.tagline}</p>
               ) : (
                 <Link href={hrefBloc(p.id, "fiche")} className={`${styles.tagline} ${profilStyles.manque}`}>
                   + votre tagline
