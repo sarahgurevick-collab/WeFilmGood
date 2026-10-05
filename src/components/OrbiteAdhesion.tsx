@@ -14,9 +14,10 @@ import styles from "./OrbiteAdhesion.module.css";
  * page Adhésion, reprises telles quelles.
  *
  * Même construction que GalaxieAccueil : scène dessinée sur 700 × 700,
- * réduite en pourcentages. Les halos des cercles, la lueur du centre et
- * le rond qui grossit au survol viennent de l'animation « Orbiting Skills »
- * que Sarah a fournie, réécrite sans Tailwind et aux couleurs du site.
+ * réduite en pourcentages. La lueur du centre et le rond qui grossit au
+ * survol viennent de l'animation « Orbiting Skills » que Sarah a fournie,
+ * réécrite sans Tailwind et aux couleurs du site ; les cercles sont restés
+ * en pointillés, elle les préfère aux halos.
  */
 const SCENE = 700;
 const RAYON_ADHESION = 175;
@@ -164,8 +165,10 @@ export default function OrbiteAdhesion() {
     <section className={styles.orbite}>
       <div className={styles.cadreScene}>
         <div className={`${styles.scene} ${choix ? styles.enPause : ""}`}>
-          <div className={`${styles.halo} ${styles.haloAdhesion}`} aria-hidden="true" />
-          <div className={`${styles.halo} ${styles.haloServices}`} aria-hidden="true" />
+          <svg className={styles.cercles} viewBox="0 0 700 700" aria-hidden="true">
+            <circle cx="350" cy="350" r={RAYON_ADHESION} className={styles.cercleAdhesion} />
+            <circle cx="350" cy="350" r={RAYON_SERVICES} className={styles.cercleServices} />
+          </svg>
 
           <div className={styles.centre}>
             <span>

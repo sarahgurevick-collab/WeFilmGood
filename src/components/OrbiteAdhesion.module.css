@@ -24,58 +24,22 @@
   aspect-ratio: 1;
 }
 
-/* Les deux cercles : un trait fin et un halo qui respire. */
-.halo {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  border: 1px solid var(--trait);
-  box-shadow: inset 0 0 2.9cqw var(--lueur-douce);
-  pointer-events: none;
-}
-
-.halo::before {
-  content: "";
+.cercles {
   position: absolute;
   inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    transparent 30%,
-    var(--lueur-douce) 70%,
-    var(--lueur) 100%
-  );
-  box-shadow:
-    0 0 8.5cqw var(--lueur),
-    inset 0 0 8.5cqw var(--lueur-douce);
-  animation: respire 4s ease-in-out infinite;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-dasharray: 3 8;
 }
 
-.haloAdhesion {
-  width: 50%;
-  --lueur: rgba(59, 142, 245, 0.4);
-  --lueur-douce: rgba(59, 142, 245, 0.2);
-  --trait: rgba(59, 142, 245, 0.3);
+.cercleAdhesion {
+  stroke: #2c3f5e;
 }
 
-.haloServices {
-  width: 85.71%;
-  --lueur: rgba(218, 44, 37, 0.4);
-  --lueur-douce: rgba(218, 44, 37, 0.2);
-  --trait: rgba(218, 44, 37, 0.3);
-}
-
-.haloServices::before {
-  animation-delay: 1.5s;
-}
-
-@keyframes respire {
-  50% {
-    opacity: 0.5;
-  }
+.cercleServices {
+  stroke: #5a2a27;
 }
 
 .centre {
@@ -115,6 +79,12 @@
   border-radius: 50%;
   z-index: -1;
   animation: respire 2s ease-in-out infinite;
+}
+
+@keyframes respire {
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .centre::before {
@@ -425,7 +395,6 @@
 @media (prefers-reduced-motion: reduce) {
   .anneau,
   .droit,
-  .halo::before,
   .centre::before,
   .centre::after {
     animation: none !important;
