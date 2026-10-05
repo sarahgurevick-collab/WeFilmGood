@@ -42,8 +42,8 @@ const DEPART_SERVICES = -Math.PI / 6;
 // Le temps que met un rond à rejoindre sa nouvelle place.
 const INERTIE_S = 0.45;
 // Le soleil change tout seul de position : le temps passé sur chacune.
-const DUREE_ADHESION_MS = 8000;
-const DUREE_ZERO_MS = 6000;
+const DUREE_ADHESION_MS = 6000;
+const DUREE_ZERO_MS = 4000;
 
 type Cercle = "adhesion" | "service";
 type Mode = "adhesion" | "zero";
@@ -100,7 +100,9 @@ const ADHESION: Noeud[] = [
     nom: "Fiche personnage (illimité)",
     icone: "fiche",
     texte: "Fiches personnages illimitées, et les talents associés à vos projets, en illimité",
-    aZero: "reste",
+    // Créer une fiche personnage suppose une fiche projet, qui n'est jamais
+    // gratuite : à 0 €, on voit les personnages, on n'en crée pas (Sarah, 05/10).
+    aZero: "payant",
   },
   {
     id: "scenariolab-spectateur",
@@ -439,10 +441,10 @@ export default function OrbiteAdhesion() {
 
         <p className={styles.legende}>
           <span className={styles.legendeAdhesion}>
-            <i aria-hidden="true" /> L’adhésion donne accès à tout cela
+            <i aria-hidden="true" /> L’adhésion à 5 €/mois donne accès à des services
           </span>
           <span className={styles.legendeServices}>
-            <i aria-hidden="true" /> Les Services
+            <i aria-hidden="true" /> Les services optionnels
           </span>
         </p>
       </div>
