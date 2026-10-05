@@ -131,7 +131,7 @@ const SERVICES: Noeud[] = [
     nom: "ScénarioLab (participant)",
     icone: "fiole",
     texte:
-      "« Propulse ton projet au niveau supérieur : challenge ton script en direct avec 4 scénaristes et un Script Doctor qui auront analysé ton projet. Teste instantanément tes idées face au public ! » Un lien privé te permettra de revoir la séance de travail et de reprendre ton projet sur de meilleures bases.",
+      "« Propulse ton projet au niveau supérieur : challenge ton script en direct avec 4 scénaristes et un Script Doctor qui auront analysé ton projet. Teste instantanément tes idées face au public ! » Un lien privé te permettra de revoir la séance de travail et de reprendre ton projet sur de meilleures bases. Auteur participant : 100 € — durée de l’atelier : 4 h.",
   },
   {
     id: "analyse",
