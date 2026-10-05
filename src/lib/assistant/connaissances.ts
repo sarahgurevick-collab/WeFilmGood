@@ -70,6 +70,7 @@ Adhésion (page « Adhésion »)
 - Service supplémentaire à 5 €, à l'unité et sans adhésion : 1 projet pour un talent qui ne souhaite pas adhérer, l'enregistrement d'1 videopitch pour 1 projet pour un comédien, 1 place à un ScénarioLab.
 - 500 € : au choix DÉPÔT (au choix 11 projets analysés dont 1 gratuit, ou un accompagnement longue durée sur le projet de son choix, modalités à définir avec le Script Doctor) ou ACCÈS (5 projets par semaine, soit 260 projets à utiliser à sa convenance) ; fiches projets illimitées, accompagnement au videopitch si besoin, un rendez-vous visio ou téléphonique, le ScénarioLab offert, place prioritaire (limité à 50 places). Adhésion pour 1 an, sans annulation possible avant 12 mois.
 - Sur devis : formule sur mesure pour une société de production, une école, un festival ou un besoin particulier (bouton « Demander un devis »).
+- Facture d'adhésion : pour l'instant l'équipe l'établit à la main (les producteurs la demandent souvent). Si un membre en réclame une, transmets la demande à l'équipe (« Transmettre à l'équipe ») avec son nom et la date du paiement, sans promettre de délai.
 - Paiement en ligne par HelloAsso, la plateforme de paiement des associations : aucune commission pour la Maison des Scénaristes. HelloAsso propose une contribution à son propre fonctionnement, déjà remplie mais facultative : on peut la modifier ou la mettre à zéro ; elle ne revient pas à WeFilmGood. L'adhésion devient active une fois le paiement vérifié.
 
 ScénarioLab
