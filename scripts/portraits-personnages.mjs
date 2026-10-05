@@ -255,7 +255,7 @@ if (commande === "reste") {
         const maj = await supabase.from("characters").update({ photo_path: chemin, photo_proposee: true }).eq("id", p.id).is("photo_path", null);
         if (maj.error) throw new Error(maj.error.message);
         if (image.source === "pixabay") pris.add(image.source_id);
-        writeFileSync(join(dossier, "images", `pose-${p.id}.jpg`), await sharp(donnees).resize(300, 300, { fit: "cover", position: "attention" }).jpeg({ quality: 80 }).toBuffer());
+        writeFileSync(join(dossier, "images", `pose-${p.id}.jpg`), await sharp(donnees).resize(300, 300, { fit: "contain", background: "#eee" }).jpeg({ quality: 80 }).toBuffer());
       } catch (e) {
         console.log(p.k, p.nom, "ÉCHEC", e.message);
         bilan.saute++;
