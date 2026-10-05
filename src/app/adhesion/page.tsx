@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AvantageAdhesion from "@/components/AvantageAdhesion";
 import BoutonDevis from "@/components/BoutonDevis";
+import OrbiteAdhesion from "@/components/OrbiteAdhesion";
 import PageShell from "@/components/PageShell";
 import SelecteurAdhesion from "@/components/SelecteurAdhesion";
 import formStyles from "@/components/form.module.css";
@@ -164,6 +165,8 @@ export default async function AdhesionPage({
       {paiement === "bientot" && (
         <p className={formStyles.hint}>Le paiement en ligne ouvre très bientôt.</p>
       )}
+      {/* L'adhésion en orbite, avant le détail des paliers (05/10, idée de Sarah). */}
+      <OrbiteAdhesion />
       <SelecteurAdhesion
         achats={[null, null, bouton("palier_50", "50 €"), null, null]}
         notePaiement={

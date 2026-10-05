@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-const ICONES = {
+export const ICONES = {
   loupe: (
     <svg
       width="20"
