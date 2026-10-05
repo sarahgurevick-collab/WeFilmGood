@@ -72,8 +72,6 @@ export default async function FactureAdhesionPage({
           94110 Arcueil
           <br />
           SIREN 539 745 471 · SIRET 539 745 471 00018
-          <br />
-          N° de TVA intracommunautaire FR02539745471
         </div>
         <div className={styles.destinataire}>
           <span className={formStyles.hint}>Facturé à</span>
