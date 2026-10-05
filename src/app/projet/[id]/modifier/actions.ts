@@ -34,7 +34,13 @@ export async function modifierProjet(formData: FormData) {
   const genreSlug = (formData.get("genre_slug") as string)?.trim();
   const budgetRange = formData.get("budget_range") as string;
   const targetAudience = formData.get("target_audience") as string;
-  const hasAwards = formData.get("has_awards") === "oui";
+  // Une sélection de la Maison des Scénaristes compte comme une distinction :
+  // l'auteur ne peut pas fermer l'interrupteur.
+  const { count: nbSelections } = await supabase
+    .from("project_selections")
+    .select("project_id", { count: "exact", head: true })
+    .eq("project_id", id);
+  const hasAwards = formData.get("has_awards") === "oui" || (nbSelections ?? 0) > 0;
   const awardsDetail = hasAwards ? (formData.get("awards_detail") as string)?.trim() || null : null;
 
   if (!title) echec("Le titre est obligatoire.");

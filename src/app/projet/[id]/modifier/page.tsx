@@ -20,6 +20,11 @@ export default async function ModifierProjetPage({
   const { supabase, projet, pourAutrui } = await chargerProjetAModifier(id, "fiche");
 
   const { data: genres } = await supabase.from("genres").select("slug, label_fr").order("position");
+  const { data: selections } = await supabase
+    .from("project_selections")
+    .select("libelle")
+    .eq("project_id", id)
+    .order("libelle");
 
   return (
     <BlocProjet actif="fiche" projet={projet}>
@@ -38,7 +43,7 @@ export default async function ModifierProjetPage({
         <input type="hidden" name="project_id" value={projet.id} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
-        <ChampsFiche valeurs={projet} genres={genres ?? []} />
+        <ChampsFiche valeurs={projet} genres={genres ?? []} selections={(selections ?? []).map((s) => s.libelle)} />
 
         <div className={profilStyles.pied}>
           {/* Rien n'est enregistré sans le bouton : la flèche ramène à « Mes projets » (01/10). */}

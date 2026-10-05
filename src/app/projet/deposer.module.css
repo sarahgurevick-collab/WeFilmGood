@@ -64,8 +64,16 @@
   display: none;
 }
 
-.formulaire:has(input[name="has_awards"]:checked) .prix {
+.formulaire:has(input[name="has_awards"]:checked) .prix,
+.formulaire:has(input[name="has_awards_verrou"]:checked) .prix {
   display: flex;
+}
+
+/* Les sélections de la Maison des Scénaristes : lues seulement, jamais modifiables par l'auteur. */
+.formulaire .selectionsMaison {
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
 }
 
 /* Le groupe des quatre menus déroulants — format, genre, budget,

@@ -60,9 +60,12 @@ export type ValeursFiche = {
 export default function ChampsFiche({
   valeurs,
   genres,
+  selections = [],
 }: {
   valeurs: ValeursFiche | null;
   genres: { slug: string; label_fr: string }[];
+  /** Les sélections de la Maison des Scénaristes (« Cannes 2013 »…), posées par l'administration seule. */
+  selections?: string[];
 }) {
   return (
     <>
@@ -162,10 +165,25 @@ export default function ChampsFiche({
       <label className={styles.question}>
         <span>Votre projet a-t-il eu des prix ?</span>
         <span className={styles.interrupteur}>
-          <input type="checkbox" name="has_awards" value="oui" defaultChecked={valeurs?.has_awards ?? false} />
+          {selections.length > 0 ? (
+            <>
+              {/* Une sélection de la Maison des Scénaristes : l'interrupteur reste sur OUI. */}
+              <input type="checkbox" name="has_awards_verrou" defaultChecked disabled />
+              <input type="hidden" name="has_awards" value="oui" />
+            </>
+          ) : (
+            <input type="checkbox" name="has_awards" value="oui" defaultChecked={valeurs?.has_awards ?? false} />
+          )}
           <span className={styles.rond} aria-hidden="true" />
         </span>
       </label>
+      {selections.length > 0 && (
+        <div className={`${styles.prix} ${styles.selectionsMaison}`}>
+          {selections.map((s) => (
+            <span key={s}>Sélection Maison des Scénaristes, {s}</span>
+          ))}
+        </div>
+      )}
       <label className={`${formStyles.field} ${styles.prix}`}>
         <span>Lesquels ?</span>
         <textarea

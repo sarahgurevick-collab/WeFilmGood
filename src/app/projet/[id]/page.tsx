@@ -436,18 +436,19 @@ export default async function ProjetPage({
 
       {/* Sous le cadre : les prix — puis les sélections et comédiens repris
           de WFG 1, en petit (28/09 : page allégée à la demande de Sarah). */}
-      {project.has_awards && (
+      {(project.has_awards || (selections ?? []).length > 0) && (
         <p className={presentation.prix}>
           <strong>Projet primé</strong>
+          {(selections ?? []).map((x) => (
+            <span key={x.libelle} style={{ display: "block" }}>
+              Sélection Maison des Scénaristes, {x.libelle}
+            </span>
+          ))}
           {project.awards_detail}
         </p>
       )}
-      {((selections ?? []).length > 0 || (comediens ?? []).length > 0) && (
+      {(comediens ?? []).length > 0 && (
         <p className={formStyles.hint} style={{ marginTop: 12 }}>
-          {(selections ?? []).length > 0 && (
-            <>Sélection de la Maison des Scénaristes : {(selections ?? []).map((x) => x.libelle).join(" · ")}</>
-          )}
-          {(selections ?? []).length > 0 && (comediens ?? []).length > 0 && <br />}
           {(comediens ?? []).length > 0 && (
             <>Comédien·ne·s envisagé·e·s : {(comediens ?? []).map((c) => c.libelle).join(" · ")}</>
           )}

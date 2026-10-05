@@ -40,6 +40,7 @@ Fiche projet (menu « Créer une fiche projet »)
 - Obligatoires : titre, tagline, format, genre principal. Tagline : 300 caractères maximum (une phrase d'accroche). Logline : 600 caractères maximum (un petit résumé).
 - Les cartes des Galaxies et les résultats de recherche affichent la tagline, pas la logline ; la logline reste lisible en entier sur la fiche du projet.
 - Pour les projets venus de l'ancienne plateforme, WeFilmGood a rédigé une tagline (une phrase d'accroche courte) à partir de la logline de l'auteur. Dans le formulaire, elle est signalée « Proposée par WeFilmGood — vous pouvez la modifier » ; dès que l'auteur la change, elle devient la sienne. La logline de l'auteur n'a pas été modifiée. Quelques projets n'ont pas de tagline proposée (logline absente ou trop vague) : l'auteur peut l'écrire depuis sa fiche.
+- Prix et distinctions : l'auteur déclare lui-même ses prix dans le formulaire. Quand un projet a été sélectionné par la Maison des Scénaristes (par exemple « Sélection Maison des Scénaristes, Cannes 2013 »), la mention s'affiche automatiquement avec « Projet primé » ; seule l'équipe la pose, l'auteur ne peut ni l'ajouter ni la retirer.
 - Image de présentation : format paysage 16/9, JPG ou PNG, sans son nom ni le titre dessus.
 - Moodboard : 9 photos maximum.
 - Le scénario PDF est confidentiel : seuls l'auteur, les lecteurs qui en sont chargés et l'équipe de la Maison des Scénaristes/WeFilmGood y ont accès.
