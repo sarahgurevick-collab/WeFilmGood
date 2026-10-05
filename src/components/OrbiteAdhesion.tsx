@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ICONES } from "./AvantageAdhesion";
 import styles from "./OrbiteAdhesion.module.css";
 
@@ -12,6 +12,14 @@ import styles from "./OrbiteAdhesion.module.css";
  * le premier cercle, les services sur le second. Un clic arrête l'orbite
  * et ouvre l'explication du rond. Les explications sont les phrases de la
  * page Adhésion, reprises telles quelles.
+ *
+ * Le soleil a deux positions (05/10, mots de Sarah) : « 5 €/mois » et
+ * « 0 € ». À 0 €, les ronds réservés à l'adhésion payante passent en rouge
+ * et rejoignent le cercle payant ; restent en bleu ceux qu'on garde quand
+ * même. « S'il y a trop de choses à 0 €, on n'ira pas vers les 5 €. »
+ *
+ * Les ronds sont déplacés image par image (et non par une animation CSS),
+ * pour pouvoir glisser d'un cercle à l'autre sans à-coup.
  *
  * Même construction que GalaxieAccueil : scène dessinée sur 700 × 700,
  * réduite en pourcentages. La lueur du centre et le rond qui grossit au
@@ -25,52 +33,77 @@ const RAYON_SERVICES = 300;
 const TAILLE_ADHESION = 72;
 const TAILLE_SERVICE = 84;
 const CADENCE_BULLE_MS = 2600;
+// Un tour complet, en secondes : lent, c'est le choix de Sarah.
+const TOUR_ADHESION_S = 110;
+const TOUR_SERVICES_S = 160;
+const DEPART_ADHESION = -Math.PI / 2;
+const DEPART_SERVICES = -Math.PI / 6;
+// Le temps que met un rond à rejoindre sa nouvelle place.
+const INERTIE_S = 0.45;
 
-type Famille = "adhesion" | "service";
+type Cercle = "adhesion" | "service";
+type Mode = "adhesion" | "zero";
 
 type Noeud = {
   id: string;
   nom: string;
   icone: keyof typeof ICONES;
   texte: string;
+  /** À 0 € : le rond reste en bleu, ou passe en rouge sur le cercle payant. */
+  aZero?: "reste" | "payant";
+  /** La phrase du palier 0 €, quand elle diffère de celle de l'adhésion. */
+  texteZero?: string;
 };
 
 const GALAXIES =
   "La Galaxie WeFilmGood : 1 crédit par jour pour l’une des 3 galaxies — Projets, Talents, Personnages";
+const GALAXIES_ZERO = "La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)";
 
 const ADHESION: Noeud[] = [
-  { id: "galaxie-projet", nom: "La Galaxie Projets", icone: "projets", texte: GALAXIES },
-  { id: "galaxie-talent", nom: "La Galaxie Talents", icone: "talents", texte: GALAXIES },
-  { id: "galaxie-personnage", nom: "La Galaxie Personnages", icone: "personnages", texte: GALAXIES },
+  { id: "galaxie-projet", nom: "La Galaxie Projets", icone: "projets", texte: GALAXIES, aZero: "payant" },
+  { id: "galaxie-talent", nom: "La Galaxie Talents", icone: "talents", texte: GALAXIES, aZero: "payant" },
+  {
+    id: "galaxie-personnage",
+    nom: "La Galaxie Personnages",
+    icone: "personnages",
+    texte: GALAXIES,
+    aZero: "reste",
+    texteZero: GALAXIES_ZERO,
+  },
   {
     id: "cinecrush",
     nom: "CinéCrush",
     icone: "coeur",
     texte: "CinéCrush : provoquer le hasard cinématographique.",
+    aZero: "reste",
   },
   {
     id: "cinematch",
     nom: "CinéMatch",
     icone: "popcorn",
     texte: "CinéMatch : le nom et les réponses de vos matchs (les contacter coûte un crédit)",
+    aZero: "payant",
   },
   {
     id: "fiche-projet",
     nom: "Fiche projet (illimité)",
     icone: "fiche",
     texte: "Fiches projets illimitées (avec le document PDF du projet, sans analyse)",
+    aZero: "payant",
   },
   {
     id: "fiche-personnage",
     nom: "Fiche personnage (illimité)",
     icone: "fiche",
     texte: "Fiches personnages illimitées, et les talents associés à vos projets, en illimité",
+    aZero: "reste",
   },
   {
     id: "scenariolab-spectateur",
     nom: "ScénarioLab (spectateur)",
     icone: "fiole",
     texte: "Le ScénarioLab offert, place prioritaire (limité à 50 places)",
+    aZero: "payant",
   },
 ];
 
@@ -96,102 +129,256 @@ const SERVICES: Noeud[] = [
   },
 ];
 
-type Place = Noeud & { style: CSSProperties; famille: Famille };
+type Rond = Noeud & { origine: Cercle };
 
-function placer(
-  noeuds: Noeud[],
-  rayon: number,
-  taille: number,
-  depart: number,
-  famille: Famille,
-): Place[] {
-  return noeuds.map((n, i) => {
-    const angle = depart + (i * 2 * Math.PI) / noeuds.length;
-    const x = SCENE / 2 + rayon * Math.cos(angle) - taille / 2;
-    const y = SCENE / 2 + rayon * Math.sin(angle) - taille / 2;
-    return {
-      ...n,
-      famille,
-      style: {
-        left: `${(x / SCENE) * 100}%`,
-        top: `${(y / SCENE) * 100}%`,
-        width: `${(taille / SCENE) * 100}%`,
-      },
-    };
-  });
+const RONDS: Rond[] = [
+  ...ADHESION.map((n) => ({ ...n, origine: "adhesion" as const })),
+  ...SERVICES.map((n) => ({ ...n, origine: "service" as const })),
+];
+
+const RAYON: Record<Cercle, number> = { adhesion: RAYON_ADHESION, service: RAYON_SERVICES };
+
+/** Le cercle où se trouve un rond, selon la position du soleil. */
+function cercleDe(n: Rond, mode: Mode): Cercle {
+  return mode === "zero" && n.aZero === "payant" ? "service" : n.origine;
 }
 
-const PLACES_ADHESION = placer(ADHESION, RAYON_ADHESION, TAILLE_ADHESION, -Math.PI / 2, "adhesion");
-const PLACES_SERVICES = placer(SERVICES, RAYON_SERVICES, TAILLE_SERVICE, -Math.PI / 6, "service");
-const TOUR = [...PLACES_ADHESION, ...PLACES_SERVICES];
+/**
+ * La place de chaque rond sur son cercle. `angle` vaut null pour les ronds
+ * qui changent de cercle : ils prennent la place libre la plus proche, qui
+ * dépend de l'endroit où ils se trouvent au moment de la bascule.
+ */
+function placesPour(mode: Mode): { places: (number | null)[]; libres: number[] } {
+  if (mode === "adhesion") {
+    return {
+      places: RONDS.map((n) =>
+        n.origine === "adhesion"
+          ? DEPART_ADHESION + (ADHESION.findIndex((a) => a.id === n.id) * 2 * Math.PI) / ADHESION.length
+          : DEPART_SERVICES + (SERVICES.findIndex((s) => s.id === n.id) * 2 * Math.PI) / SERVICES.length,
+      ),
+      libres: [],
+    };
+  }
+  const restes = ADHESION.filter((n) => n.aZero !== "payant");
+  const payants = ADHESION.filter((n) => n.aZero === "payant");
+  // Le cercle payant accueille les services et les ronds devenus payants.
+  const total = SERVICES.length + payants.length;
+  const pas = (2 * Math.PI) / total;
+  const prises = SERVICES.map((_, j) => Math.round((j * total) / SERVICES.length));
+  const libres: number[] = [];
+  for (let c = 0; c < total; c++) {
+    if (!prises.includes(c)) libres.push(DEPART_SERVICES + c * pas);
+  }
+  return {
+    places: RONDS.map((n) => {
+      if (n.origine === "service") {
+        return DEPART_SERVICES + prises[SERVICES.findIndex((s) => s.id === n.id)] * pas;
+      }
+      if (n.aZero === "payant") return null;
+      return -Math.PI / 4 + (restes.findIndex((r) => r.id === n.id) * 2 * Math.PI) / restes.length;
+    }),
+    libres,
+  };
+}
 
-const ETIQUETTE: Record<Famille, string> = { adhesion: "Adhésion", service: "Services" };
+/** L'écart entre deux angles, ramené entre -π et π : le chemin le plus court. */
+function ecart(angle: number): number {
+  return Math.atan2(Math.sin(angle), Math.cos(angle));
+}
+
+function deplacement(rayon: number, angle: number): string {
+  const x = ((rayon * Math.cos(angle)) / SCENE) * 100;
+  const y = ((rayon * Math.sin(angle)) / SCENE) * 100;
+  return `translate(${x.toFixed(3)}cqw, ${y.toFixed(3)}cqw)`;
+}
+
+const PLACES_DEPART = placesPour("adhesion").places as number[];
+
+// La place de départ, écrite dans la page : elle sert avant que l'orbite
+// ne se mette en mouvement. Elle ne change jamais, pour que React ne
+// vienne pas corriger ce que l'animation a déplacé.
+const STYLE_DEPART: CSSProperties[] = RONDS.map((n, i) => ({
+  ["--taille" as string]: `${((n.origine === "adhesion" ? TAILLE_ADHESION : TAILLE_SERVICE) / SCENE) * 100}%`,
+  transform: deplacement(RAYON[n.origine], PLACES_DEPART[i]),
+}));
+
+type Etat = { cercle: Cercle; angle: number; rayon: number; cibleAngle: number; cibleRayon: number };
+
+const ETIQUETTE: Record<Cercle, string> = { adhesion: "Adhésion", service: "Services" };
 
 export default function OrbiteAdhesion() {
-  const [choix, setChoix] = useState<Place | null>(null);
+  const [mode, setMode] = useState<Mode>("adhesion");
+  const [choix, setChoix] = useState<Rond | null>(null);
   const [vedette, setVedette] = useState(0);
-  const enVedette = choix ? null : TOUR[vedette].id;
+  const enVedette = choix ? null : RONDS[vedette].id;
+
+  const elements = useRef<(HTMLDivElement | null)[]>([]);
+  // L'angle de chaque cercle, et pour chaque rond sa place sur le sien.
+  const tours = useRef<Record<Cercle, number>>({ adhesion: 0, service: 0 });
+  const etats = useRef<Etat[]>(
+    RONDS.map((n, i) => ({
+      cercle: n.origine,
+      angle: PLACES_DEPART[i],
+      rayon: RAYON[n.origine],
+      cibleAngle: PLACES_DEPART[i],
+      cibleRayon: RAYON[n.origine],
+    })),
+  );
+  const survol = useRef(false);
+  const arret = useRef(false);
+
+  useEffect(() => {
+    arret.current = choix !== null;
+  }, [choix]);
 
   // Sur téléphone, les noms ne tiennent pas tous : chaque rond se présente
   // à tour de rôle, comme sur l'accueil.
   useEffect(() => {
     if (choix) return;
-    const minuteur = setInterval(() => setVedette((v) => (v + 1) % TOUR.length), CADENCE_BULLE_MS);
+    const minuteur = setInterval(() => setVedette((v) => (v + 1) % RONDS.length), CADENCE_BULLE_MS);
     return () => clearInterval(minuteur);
   }, [choix]);
 
-  const rond = (n: Place) => (
-    <div key={n.id} className={styles.place} style={n.style}>
-      <div className={styles.droit}>
-        <button
-          type="button"
-          className={`${styles.noeud} ${styles[n.famille]} ${choix?.id === n.id ? styles.choisi : ""}`}
-          onClick={() => setChoix(n)}
-          aria-label={n.nom}
-        >
-          {ICONES[n.icone]}
-        </button>
-        <span
-          className={`${styles.nom} ${enVedette === n.id ? styles.enVedette : ""}`}
-          aria-hidden="true"
-        >
-          {n.nom}
-        </span>
-      </div>
-    </div>
-  );
+  // La bascule : chaque rond reçoit sa nouvelle place, et y glisse.
+  useEffect(() => {
+    const { places, libres } = placesPour(mode);
+    const restants = [...libres];
+    RONDS.forEach((n, i) => {
+      const e = etats.current[i];
+      const cercle = cercleDe(n, mode);
+      if (cercle !== e.cercle) {
+        // Même endroit de la scène, exprimé sur le nouveau cercle.
+        e.angle = tours.current[e.cercle] + e.angle - tours.current[cercle];
+        e.cercle = cercle;
+      }
+      e.cibleRayon = RAYON[cercle];
+      const place = places[i];
+      if (place !== null) {
+        e.cibleAngle = place;
+        return;
+      }
+      let proche = 0;
+      restants.forEach((libre, k) => {
+        if (Math.abs(ecart(libre - e.angle)) < Math.abs(ecart(restants[proche] - e.angle))) proche = k;
+      });
+      e.cibleAngle = restants.splice(proche, 1)[0];
+    });
+  }, [mode]);
+
+  useEffect(() => {
+    const immobile = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const vitesseAdhesion = immobile ? 0 : (2 * Math.PI) / TOUR_ADHESION_S;
+    const vitesseServices = immobile ? 0 : (2 * Math.PI) / TOUR_SERVICES_S;
+    let image = 0;
+    let avant = performance.now();
+
+    const avancer = (maintenant: number) => {
+      const dt = Math.min((maintenant - avant) / 1000, 0.1);
+      avant = maintenant;
+      if (!survol.current && !arret.current) {
+        tours.current.adhesion += vitesseAdhesion * dt;
+        tours.current.service -= vitesseServices * dt;
+      }
+      const part = immobile ? 1 : 1 - Math.exp(-dt / INERTIE_S);
+      etats.current.forEach((e, i) => {
+        e.angle += ecart(e.cibleAngle - e.angle) * part;
+        e.rayon += (e.cibleRayon - e.rayon) * part;
+        const element = elements.current[i];
+        if (element) element.style.transform = deplacement(e.rayon, tours.current[e.cercle] + e.angle);
+      });
+      image = requestAnimationFrame(avancer);
+    };
+
+    image = requestAnimationFrame(avancer);
+    return () => cancelAnimationFrame(image);
+  }, []);
+
+  const basculer = (vers: Mode) => {
+    setChoix(null);
+    setMode(vers);
+  };
+
+  const couleurChoix = choix ? cercleDe(choix, mode) : "adhesion";
+  const devenuPayant = choix !== null && choix.origine === "adhesion" && couleurChoix === "service";
 
   return (
     <section className={styles.orbite}>
+      <div className={styles.bascule} role="group" aria-label="Adhésion">
+        <button type="button" aria-pressed={mode === "zero"} onClick={() => basculer("zero")}>
+          0 €
+        </button>
+        <button type="button" aria-pressed={mode === "adhesion"} onClick={() => basculer("adhesion")}>
+          5 €/mois
+        </button>
+      </div>
+
       <div className={styles.cadreScene}>
-        <div className={`${styles.scene} ${choix ? styles.enPause : ""}`}>
+        <div
+          className={styles.scene}
+          onPointerEnter={(e) => {
+            if (e.pointerType === "mouse") survol.current = true;
+          }}
+          onPointerLeave={() => {
+            survol.current = false;
+          }}
+        >
           <svg className={styles.cercles} viewBox="0 0 700 700" aria-hidden="true">
             <circle cx="350" cy="350" r={RAYON_ADHESION} />
             <circle cx="350" cy="350" r={RAYON_SERVICES} />
           </svg>
 
-          <div className={styles.centre}>
-            <span>
-              5 €<span className={styles.parMois}>/mois</span>
-            </span>
-          </div>
+          <button
+            type="button"
+            className={styles.centre}
+            onClick={() => basculer(mode === "zero" ? "adhesion" : "zero")}
+          >
+            {mode === "zero" ? (
+              <span>0 €</span>
+            ) : (
+              <span>
+                5 €<span className={styles.parMois}>/mois</span>
+              </span>
+            )}
+          </button>
 
-          <div className={`${styles.anneau} ${styles.anneauAdhesion}`}>
-            {PLACES_ADHESION.map(rond)}
-          </div>
-          <div className={`${styles.anneau} ${styles.anneauServices}`}>
-            {PLACES_SERVICES.map(rond)}
-          </div>
+          {RONDS.map((n, i) => {
+            const couleur = cercleDe(n, mode);
+            return (
+              <div
+                key={n.id}
+                ref={(element) => {
+                  elements.current[i] = element;
+                }}
+                className={styles.place}
+                style={STYLE_DEPART[i]}
+              >
+                <button
+                  type="button"
+                  className={`${styles.noeud} ${styles[couleur]} ${choix?.id === n.id ? styles.choisi : ""}`}
+                  onClick={() => setChoix(n)}
+                  aria-label={n.nom}
+                >
+                  {ICONES[n.icone]}
+                </button>
+                <span
+                  className={`${styles.nom} ${enVedette === n.id ? styles.enVedette : ""}`}
+                  aria-hidden="true"
+                >
+                  {n.nom}
+                </span>
+              </div>
+            );
+          })}
 
           {choix && (
             <div className={styles.fiche} role="dialog" aria-label={choix.nom}>
               <div className={styles.ficheHaut}>
-                <span className={`${styles.ficheIcone} ${styles[choix.famille]}`}>
+                <span className={`${styles.ficheIcone} ${styles[couleurChoix]}`}>
                   {ICONES[choix.icone]}
                 </span>
                 <div className={styles.ficheNoms}>
-                  <span className={`${styles.ficheEtiquette} ${styles[choix.famille]}`}>
-                    {ETIQUETTE[choix.famille]}
+                  <span className={`${styles.ficheEtiquette} ${styles[couleurChoix]}`}>
+                    {devenuPayant ? "Adhésion · 5 €/mois" : ETIQUETTE[couleurChoix]}
                   </span>
                   <span className={styles.ficheNom}>{choix.nom}</span>
                 </div>
@@ -204,7 +391,9 @@ export default function OrbiteAdhesion() {
                   ×
                 </button>
               </div>
-              <p className={styles.ficheTexte}>{choix.texte}</p>
+              <p className={styles.ficheTexte}>
+                {mode === "zero" && choix.texteZero ? choix.texteZero : choix.texte}
+              </p>
             </div>
           )}
         </div>
