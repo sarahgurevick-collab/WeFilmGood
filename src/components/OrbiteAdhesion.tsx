@@ -38,9 +38,9 @@ const GALAXIES =
   "La Galaxie WeFilmGood : 1 crédit par jour pour l’une des 3 galaxies — Projets, Talents, Personnages";
 
 const ADHESION: Noeud[] = [
-  { id: "galaxie-projet", nom: "La Galaxie Projet", icone: "projets", texte: GALAXIES },
-  { id: "galaxie-talent", nom: "La Galaxie Talent", icone: "talents", texte: GALAXIES },
-  { id: "galaxie-personnage", nom: "La Galaxie Personnage", icone: "personnages", texte: GALAXIES },
+  { id: "galaxie-projet", nom: "La Galaxie Projets", icone: "projets", texte: GALAXIES },
+  { id: "galaxie-talent", nom: "La Galaxie Talents", icone: "talents", texte: GALAXIES },
+  { id: "galaxie-personnage", nom: "La Galaxie Personnages", icone: "personnages", texte: GALAXIES },
   {
     id: "cinecrush",
     nom: "CinéCrush",
@@ -50,18 +50,18 @@ const ADHESION: Noeud[] = [
   {
     id: "cinematch",
     nom: "CinéMatch",
-    icone: "coeur",
+    icone: "popcorn",
     texte: "CinéMatch : le nom et les réponses de vos matchs (les contacter coûte un crédit)",
   },
   {
     id: "fiche-projet",
-    nom: "Fiche projet (∞)",
+    nom: "Fiche projet (illimité)",
     icone: "fiche",
     texte: "Fiches projets illimitées (avec le document PDF du projet, sans analyse)",
   },
   {
     id: "fiche-personnage",
-    nom: "Fiche personnage (∞)",
+    nom: "Fiche personnage (illimité)",
     icone: "fiche",
     texte: "Fiches personnages illimitées, et les talents associés à vos projets, en illimité",
   },
@@ -167,7 +167,11 @@ export default function OrbiteAdhesion() {
           <div className={`${styles.halo} ${styles.haloAdhesion}`} aria-hidden="true" />
           <div className={`${styles.halo} ${styles.haloServices}`} aria-hidden="true" />
 
-          <div className={styles.centre}>5 €</div>
+          <div className={styles.centre}>
+            <span>
+              5 €<span className={styles.parMois}>/mois</span>
+            </span>
+          </div>
 
           <div className={`${styles.anneau} ${styles.anneauAdhesion}`}>
             {PLACES_ADHESION.map(rond)}

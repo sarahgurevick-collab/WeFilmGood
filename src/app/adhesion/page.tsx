@@ -110,7 +110,7 @@ export default async function AdhesionPage({
         Le projet du jour, à découvrir (au hasard, proposé par WeFilmGood)
       </AvantageAdhesion>
       {suite}
-      <AvantageAdhesion icone="coeur">
+      <AvantageAdhesion icone="popcorn">
         CinéMatch : le nom et les réponses de vos matchs (les contacter coûte un crédit)
       </AvantageAdhesion>
       <AvantageAdhesion icone="fiche">
@@ -185,7 +185,7 @@ export default async function AdhesionPage({
               La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
             </AvantageAdhesion>
             {suite}
-            <AvantageAdhesion icone="coeur">
+            <AvantageAdhesion icone="popcorn">
               CinéMatch : 3 matchs à 50 % de réponses similaires, sans le nom ni les réponses
             </AvantageAdhesion>
           </ul>,

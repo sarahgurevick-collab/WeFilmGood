@@ -88,7 +88,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: max(22px, 8.5cqw);
+  font-size: max(20px, 7.5cqw);
   font-weight: 900;
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -98,6 +98,12 @@
     0 0 0 3px var(--jaune),
     0 22px 50px rgba(0, 0, 0, 0.6);
   z-index: 1;
+}
+
+.parMois {
+  font-size: max(11px, 3.2cqw);
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 /* La lueur du centre : une bleue, une rouge, qui respirent en décalé. */
@@ -131,19 +137,19 @@
 }
 
 .anneauAdhesion {
-  animation: tourne 32s linear infinite;
+  animation: tourne 110s linear infinite;
 }
 
 .anneauAdhesion .droit {
-  animation: detourne 32s linear infinite;
+  animation: detourne 110s linear infinite;
 }
 
 .anneauServices {
-  animation: detourne 54s linear infinite;
+  animation: detourne 160s linear infinite;
 }
 
 .anneauServices .droit {
-  animation: tourne 54s linear infinite;
+  animation: tourne 160s linear infinite;
 }
 
 .scene:hover .anneau,
