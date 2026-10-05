@@ -74,6 +74,9 @@ REQUETES = {
     "projet": PROJETS,
     "projet-fable": PROJETS + POUR_FABLE,
     "projet-sonnet": PROJETS + " and not (" + POUR_FABLE[5:] + ")",
+    # le groupe Sonnet dont la meilleure note de fiche de lecture est sous 100
+    "projet-sonnet-bas": PROJETS + " and not (" + POUR_FABLE[5:] + ")"
+    + " and (select max(r.final_mark) from public.legacy_reading_reports r where r.project_id = p.id) < 100",
 }
 
 
