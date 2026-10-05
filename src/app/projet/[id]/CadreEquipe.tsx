@@ -59,12 +59,15 @@ export default function CadreEquipe({
   personnageOuvert,
   accroche,
   resume,
+  plus,
   contact,
 }: {
   /** La tagline : l'accroche du projet, obligatoire. */
   accroche?: string | null;
   /** La logline : le résumé, en plus petit sous la tagline. */
   resume?: string | null;
+  /** « Plus… » : informations supplémentaires (lien vers un teaser, sélections…). */
+  plus?: string | null;
   /** L'enveloppe pour écrire au porteur du projet (rien pour l'auteur lui-même). */
   contact?: ReactNode;
   /** Le personnage sur lequel on arrive depuis la recherche : biographie dépliée. */
@@ -228,11 +231,12 @@ export default function CadreEquipe({
   // Sous le moodboard (ou sa remplaçante, la biographie) : la tagline, le
   // résumé et l'enveloppe pour écrire (03/10, Sarah). Toujours visibles : ils
   // ne disparaissent pas quand on ouvre une biographie.
-  const avecAccroche = Boolean(accroche || resume || contact);
+  const avecAccroche = Boolean(accroche || resume || plus || contact);
   const blocAccroche = (
     <>
       {accroche && <p className={styles.accroche}>{accroche}</p>}
       {resume && <p className={styles.resume}>{resume}</p>}
+      {plus && <p className={styles.resume}>{plus}</p>}
       {contact && <div className={styles.contact}>{contact}</div>}
     </>
   );

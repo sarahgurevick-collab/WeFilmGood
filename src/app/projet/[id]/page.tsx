@@ -32,6 +32,7 @@ type Project = {
   title: string;
   tagline: string | null;
   logline: string | null;
+  synopsis: string | null;
   format: string | null;
   language: string | null;
   country: string | null;
@@ -92,7 +93,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, tagline, logline, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, visible_pour, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
+      "id, title, tagline, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, visible_pour, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -393,6 +394,7 @@ export default async function ProjetPage({
         // cadre : plus sous le titre (03/10, Sarah).
         accroche={project.tagline}
         resume={project.logline}
+        plus={project.synopsis}
         contact={
           isOwner ? undefined : (
             <ContactEnveloppe

@@ -36,7 +36,7 @@ Profil (menu « Mon profil »)
 - « Fermer mon accès » ne supprime pas le compte : le profil quitte l'annuaire, les projets restent en ligne. Pour un effacement définitif, il faut écrire à l'équipe.
 
 Fiche projet (menu « Créer une fiche projet »)
-- Trois blocs, enregistrés séparément (on peut partir et revenir) : 1) la fiche : titre, tagline, logline, format, genre, budget, audience, prix reçus ; 2) documents : image de présentation, moodboard, scénario PDF ; 3) personnages : nom, portrait facultatif, deux ou trois lignes.
+- Trois blocs, enregistrés séparément (on peut partir et revenir) : 1) la fiche : titre, tagline, logline, « Plus… » (informations supplémentaires : lien vers un teaser, sélections…), format, genre, budget, audience, prix reçus ; 2) documents : image de présentation, moodboard, scénario PDF ; 3) personnages : nom, portrait facultatif, deux ou trois lignes.
 - Obligatoires : titre, tagline, format, genre principal. Tagline : 300 caractères maximum (une phrase d'accroche). Logline : 600 caractères maximum (un petit résumé).
 - Les cartes des Galaxies et les résultats de recherche affichent la tagline, pas la logline ; la logline reste lisible en entier sur la fiche du projet.
 - Pour les projets venus de l'ancienne plateforme, WeFilmGood a rédigé une tagline (une phrase d'accroche courte) à partir de la logline de l'auteur. Dans le formulaire, elle est signalée « Proposée par WeFilmGood — vous pouvez la modifier » ; dès que l'auteur la change, elle devient la sienne. La logline de l'auteur n'a pas été modifiée. Quelques projets n'ont pas de tagline proposée (logline absente ou trop vague) : l'auteur peut l'écrire depuis sa fiche.

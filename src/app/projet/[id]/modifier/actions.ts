@@ -29,6 +29,7 @@ export async function modifierProjet(formData: FormData) {
   const title = (formData.get("title") as string)?.trim();
   const tagline = (formData.get("tagline") as string)?.trim();
   const logline = (formData.get("logline") as string)?.trim();
+  const synopsis = (formData.get("synopsis") as string)?.trim();
   const format = formData.get("format") as string;
   const genreSlug = (formData.get("genre_slug") as string)?.trim();
   const budgetRange = formData.get("budget_range") as string;
@@ -52,6 +53,7 @@ export async function modifierProjet(formData: FormData) {
       // Dès que l'auteur change la tagline proposée par WeFilmGood, elle est la sienne.
       ...(tagline !== (projet.tagline ?? "").trim() ? { tagline_proposee: false } : {}),
       logline: logline || null,
+      synopsis: synopsis || null,
       format: format || null,
       genre_slug: genreSlug || null,
       // Pas de budget ni d'audience pour un court métrage (27/09).

@@ -37,6 +37,7 @@ export type ValeursFiche = {
   /** vrai tant que la tagline est celle proposée par WeFilmGood (l'auteur ne l'a pas changée) */
   tagline_proposee?: boolean | null;
   logline: string | null;
+  synopsis?: string | null;
   format: string | null;
   genre_slug: string | null;
   budget_range: string | null;
@@ -148,6 +149,14 @@ export default function ChampsFiche({
         limite={600}
         lignes={6}
         valeurInitiale={valeurs?.logline ?? ""}
+      />
+      <ChampAvecCompteur
+        nom="synopsis"
+        libelle="Plus…"
+        indication="Informations supplémentaires sur le projet : lien vers un teaser…"
+        limite={1000}
+        lignes={4}
+        valeurInitiale={valeurs?.synopsis ?? ""}
       />
 
       <label className={styles.question}>
