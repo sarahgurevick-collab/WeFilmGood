@@ -444,7 +444,7 @@ export default function OrbiteAdhesion() {
             <i aria-hidden="true" /> L’adhésion en rouge à 5 €/mois inclut de nombreux services
           </span>
           <span className={styles.legendeServices}>
-            <i aria-hidden="true" /> L’adhésion en bleu à 0 €/mois donne accès à des services optionnels
+            <i aria-hidden="true" /> L’adhésion en bleu à 0 €/mois n’a que des services optionnels payants
           </span>
         </p>
       </div>
