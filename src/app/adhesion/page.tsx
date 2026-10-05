@@ -1,3 +1,4 @@
+import Link from "next/link";
 import AvantageAdhesion from "@/components/AvantageAdhesion";
 import BoutonDevis from "@/components/BoutonDevis";
 import ChoixCredits from "@/components/ChoixCredits";
@@ -71,6 +72,14 @@ export default async function AdhesionPage({
         .order("issued_at", { ascending: false })
         .returns<{ id: string; numero: string; issued_at: string }[]>()
     : { data: null };
+  // Un adhérent actif qui arrive ici (par l'email de confirmation, par
+  // exemple) est invité à aller voir les Galaxies.
+  const { count: adhesionsActives } = user
+    ? await supabase
+        .from("memberships")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "active")
+    : { count: 0 };
   const motsCles =
     ((fonds ?? [])[0] as { mots_cles: number } | undefined)?.mots_cles ?? 0;
 
@@ -105,6 +114,13 @@ export default async function AdhesionPage({
               </a>
             </span>
           ))}
+        </p>
+      )}
+      {(adhesionsActives ?? 0) > 0 && (
+        <p style={{ margin: "0 0 20px" }}>
+          <Link href="/pitchotheque" className={formStyles.submit}>
+            Aller aux Galaxies
+          </Link>
         </p>
       )}
       {paiement === "erreur" && (
