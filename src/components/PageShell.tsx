@@ -20,7 +20,7 @@ export default async function PageShell({
   /** Posé tout en haut du contenu, avant le titre (ex. la barre d'administration). */
   avantTitre?: ReactNode;
   eyebrow?: string;
-  title?: string;
+  title?: ReactNode;
   /** Posé juste après le titre, dans la même ligne (ex. le label d'un projet). */
   apresTitre?: ReactNode;
   /** "clair" pour les pages qui se lisent longuement ou qui doivent respirer. */

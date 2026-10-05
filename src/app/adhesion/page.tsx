@@ -136,7 +136,16 @@ export default async function AdhesionPage({
   );
 
   return (
-    <PageShell eyebrow="WeFilmGood" title="Adhésion à la Galaxie WeFilmGood" enTeteAnime connecte={!!user}>
+    <PageShell
+      eyebrow="WeFilmGood"
+      title={
+        <>
+          Adhésion à la Galaxie We<span style={{ color: "#DA2C25" }}>Film</span>Good
+        </>
+      }
+      enTeteAnime
+      connecte={!!user}
+    >
       {(factures ?? []).length > 0 && (
         <p className={formStyles.hint} style={{ marginBottom: 12 }}>
           Mes factures :{" "}
