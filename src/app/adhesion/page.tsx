@@ -195,9 +195,6 @@ export default async function AdhesionPage({
               La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
             </AvantageAdhesion>
             {suite}
-            <AvantageAdhesion icone="popcorn">
-              CinéMatch : 3 matchs à 50 % de réponses similaires, sans le nom ni les réponses
-            </AvantageAdhesion>
           </ul>,
 
           <ul key="5" className={styles.avantages}>
