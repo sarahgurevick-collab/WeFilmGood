@@ -104,7 +104,7 @@ export default async function AdhesionPage({
   return (
     <PageShell eyebrow="WeFilmGood" title="Adhésion" enTeteAnime connecte={!!user}>
       {(factures ?? []).length > 0 && (
-        <p className={formStyles.hint}>
+        <p className={formStyles.hint} style={{ marginBottom: 12 }}>
           Mes factures :{" "}
           {(factures ?? []).map((f, i) => (
             <span key={f.id}>
@@ -117,8 +117,8 @@ export default async function AdhesionPage({
         </p>
       )}
       {(adhesionsActives ?? 0) > 0 && (
-        <p style={{ margin: "0 0 20px" }}>
-          <Link href="/pitchotheque" className={formStyles.submit}>
+        <p style={{ margin: "16px 0 24px" }}>
+          <Link href="/pitchotheque" className={formStyles.submit} style={{ display: "inline-block" }}>
             Aller aux Galaxies
           </Link>
         </p>
