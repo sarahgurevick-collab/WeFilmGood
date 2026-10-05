@@ -26,7 +26,7 @@ const EFFET_VIGNETTE: "eau" | "live" = "eau";
 type Projet = {
   id: string;
   title: string;
-  logline: string | null;
+  tagline: string | null;
   status: string;
   bandeau: string | null;
   genre: { label_fr: string } | null;
@@ -41,7 +41,7 @@ const PAR_PAGE = 50;
 const GALAXIE_PAR_PAGE = 60;
 
 const SELECTION =
-  "id, title, logline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)";
+  "id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)";
 
 export default async function ProjetsPage({
   searchParams,
@@ -267,7 +267,7 @@ export default async function ProjetsPage({
                       {p.genre?.label_fr && (
                         <span className={styles.genre}>{p.genre.label_fr}</span>
                       )}
-                      {p.logline && <p className={styles.logline}>{p.logline}</p>}
+                      {p.tagline && <p className={styles.logline}>{p.tagline}</p>}
                     </div>
                   </Link>
                 </li>

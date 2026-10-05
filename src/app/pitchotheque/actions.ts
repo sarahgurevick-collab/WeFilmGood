@@ -8,7 +8,7 @@ import { enTexte, vecteur } from "@/lib/vecteurs";
 export type ProjetTrouve = {
   id: string;
   title: string;
-  logline: string | null;
+  tagline: string | null;
   status: string;
   bandeau: string | null;
   genre: { label_fr: string } | null;
@@ -118,14 +118,14 @@ export async function rechercherProjets(
   const { data: projects } = await supabase
     .from("projects")
     .select(
-      "id, title, logline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)",
+      "id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)",
     )
     .in("id", ids)
     .returns<
       {
         id: string;
         title: string;
-        logline: string | null;
+        tagline: string | null;
         status: string;
         bandeau: string | null;
         genre: { label_fr: string } | null;
@@ -150,7 +150,7 @@ export async function rechercherProjets(
       return {
         id: p.id,
         title: p.title,
-        logline: p.logline,
+        tagline: p.tagline,
         status: p.status,
         bandeau: p.bandeau,
         genre: p.genre,

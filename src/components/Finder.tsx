@@ -492,7 +492,7 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
           )}
         </strong>
         {p.genre?.label_fr && <span className={projetsStyles.genre}>{p.genre.label_fr}</span>}
-        {p.logline && <p className={projetsStyles.logline}>{p.logline}</p>}
+        {p.tagline && <p className={projetsStyles.logline}>{p.tagline}</p>}
       </div>
     </Link>
   );
