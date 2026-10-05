@@ -111,7 +111,8 @@ export default async function AdhesionPage({
       </AvantageAdhesion>
       {suite}
       <AvantageAdhesion icone="popcorn">
-        CinéMatch : le nom et les réponses de vos matchs (les contacter coûte un crédit)
+        CinéMatch : découvrez les talents qui vibrent sur la même longueur d&apos;onde que vous en
+        20 questions.
       </AvantageAdhesion>
       <AvantageAdhesion icone="fiche">
         Fiches projets illimitées (avec le document PDF du projet, sans analyse)

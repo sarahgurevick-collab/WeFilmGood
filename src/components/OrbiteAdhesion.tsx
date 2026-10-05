@@ -85,7 +85,8 @@ const ADHESION: Noeud[] = [
     id: "cinematch",
     nom: "CinéMatch",
     icone: "popcorn",
-    texte: "CinéMatch : le nom et les réponses de vos matchs (les contacter coûte un crédit)",
+    texte:
+      "CinéMatch : découvrez les talents qui vibrent sur la même longueur d’onde que vous en 20 questions.",
     aZero: "payant",
   },
   {
