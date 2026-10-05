@@ -1,8 +1,6 @@
 import Link from "next/link";
 import AvantageAdhesion from "@/components/AvantageAdhesion";
 import BoutonDevis from "@/components/BoutonDevis";
-import ChoixCredits from "@/components/ChoixCredits";
-import ChoixUnSeul from "@/components/ChoixUnSeul";
 import PageShell from "@/components/PageShell";
 import SelecteurAdhesion from "@/components/SelecteurAdhesion";
 import formStyles from "@/components/form.module.css";
@@ -84,6 +82,7 @@ export default async function AdhesionPage({
     ((fonds ?? [])[0] as { mots_cles: number } | undefined)?.mots_cles ?? 0;
 
   // Les lignes communes à tous les paliers, après les trois galaxies.
+  // « Focus de la semaine » s'appelle maintenant CinéCrush (05/10).
   const suite = (
     <>
       <AvantageAdhesion icone="loupe">
@@ -94,9 +93,43 @@ export default async function AdhesionPage({
         portés par les projets, avec leurs chiffres, à ouvrir aussi large
         que vous voulez
       </AvantageAdhesion>
-      <AvantageAdhesion icone="oeil">Focus de la semaine : 1 projet à découvrir</AvantageAdhesion>
       <AvantageAdhesion icone="coeur">
-        Jeu CinéCrush : provoquer le hasard cinématographique.
+        CinéCrush : provoquer le hasard cinématographique.
+      </AvantageAdhesion>
+    </>
+  );
+
+  // L'adhésion, la même au mois (5 €) ou à l'année (50 €) : les mots de Sarah, 04-05/10.
+  const adhesion = (
+    <>
+      <AvantageAdhesion>
+        La Galaxie WeFilmGood : 1 crédit par jour pour l&apos;une des 3 galaxies — Projets, Talents, Personnages
+      </AvantageAdhesion>
+      <AvantageAdhesion icone="oeil">
+        Le projet du jour, à découvrir (au hasard, proposé par WeFilmGood)
+      </AvantageAdhesion>
+      {suite}
+      <AvantageAdhesion icone="coeur">
+        CinéMatch : le nom et les réponses de vos matchs (les contacter coûte un crédit)
+      </AvantageAdhesion>
+      <AvantageAdhesion icone="fiche">
+        Fiches projets illimitées (avec le document PDF du projet, sans analyse)
+      </AvantageAdhesion>
+      <AvantageAdhesion icone="fiche">
+        Fiches personnages illimitées, et les talents associés à vos projets, en illimité
+      </AvantageAdhesion>
+      <AvantageAdhesion icone="camera">
+        Un videopitch associé à chaque fiche projet, et l&apos;accompagnement au videopitch si besoin
+      </AvantageAdhesion>
+      <AvantageAdhesion icone="projets">
+        Votre liste de projets aimés : un projet débloqué avec un crédit y reste visible toute
+        l&apos;année de l&apos;adhésion
+      </AvantageAdhesion>
+      <AvantageAdhesion icone="fiole">
+        Le ScénarioLab offert, place prioritaire (limité à 50 places)
+      </AvantageAdhesion>
+      <AvantageAdhesion>
+        Adhésion pour 1 an, sans annulation possible avant 12 mois
       </AvantageAdhesion>
     </>
   );
@@ -132,7 +165,7 @@ export default async function AdhesionPage({
         <p className={formStyles.hint}>Le paiement en ligne ouvre très bientôt.</p>
       )}
       <SelecteurAdhesion
-        achats={[null, null, bouton("palier_50", "50 €"), bouton("palier_500", "500 €"), null]}
+        achats={[null, null, bouton("palier_50", "50 €"), null, null]}
         notePaiement={
           <p style={{ margin: 0 }}>
             <strong>Le paiement passe par HelloAsso</strong>, la plateforme de paiement des
@@ -149,93 +182,32 @@ export default async function AdhesionPage({
               La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
             </AvantageAdhesion>
             {suite}
+            <AvantageAdhesion icone="coeur">
+              CinéMatch : 3 matchs à 50 % de réponses similaires, sans le nom ni les réponses
+            </AvantageAdhesion>
           </ul>,
 
-          // Le 5 € par mois : la même adhésion que le 50 € par an (02/10).
           <ul key="5" className={styles.avantages}>
-            <AvantageAdhesion>
-              La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
-            </AvantageAdhesion>
-            {suite}
-            <ChoixCredits
-              verrouille
-              lignesDepot={null}
-              lignesAcces={
-                <AvantageAdhesion icone="oeil">5 Projets / semaine (non cumulables)</AvantageAdhesion>
-              }
-            />
-            <AvantageAdhesion icone="fiole">
-              Le ScénarioLab offert, place prioritaire (limité à 50 places)
-            </AvantageAdhesion>
-            <AvantageAdhesion>
-              Adhésion pour 1 an, sans annulation possible avant 12 mois
-            </AvantageAdhesion>
+            {adhesion}
           </ul>,
 
           <ul key="50" className={styles.avantages}>
-            <AvantageAdhesion>
-              La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
-            </AvantageAdhesion>
-            {suite}
-            <ChoixCredits
-              lignesDepot={
-                <>
-                  <AvantageAdhesion icone="nuage">
-                    L&apos;analyse d&apos;un projet de long métrage, court métrage, série ou VR/360,
-                    selon les modalités de dépôt.
-                  </AvantageAdhesion>
-                  <AvantageAdhesion icone="fiche">
-                    Création de fiches projets (sans analyse du document PDF / 10 maximum)
-                  </AvantageAdhesion>
-                  <AvantageAdhesion icone="camera">Accompagnement au vidéopitch si besoin</AvantageAdhesion>
-                </>
-              }
-              lignesAcces={
-                <AvantageAdhesion icone="oeil">5 Projets / semaine (non cumulables)</AvantageAdhesion>
-              }
-            />
-            <AvantageAdhesion icone="fiole">
-              Le ScénarioLab offert, place prioritaire (limité à 50 places)
-            </AvantageAdhesion>
-            <AvantageAdhesion>
-              Adhésion pour 1 an, sans annulation possible avant 12 mois
-            </AvantageAdhesion>
+            {adhesion}
             <AvantageAdhesion>2 mois offerts</AvantageAdhesion>
           </ul>,
 
-          <ul key="500" className={styles.avantages}>
-            <AvantageAdhesion>
-              La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)
-            </AvantageAdhesion>
-            {suite}
-            <ChoixCredits
-              lignesDepot={
-                <ChoixUnSeul
-                  lignes={[
-                    "11 projets analysés (1 gratuit)",
-                    "Accompagnement longue durée sur le projet de votre choix (modalités d'accompagnement à définir avec le Script Doctor)",
-                  ]}
-                />
-              }
-              lignesAcces={
-                <AvantageAdhesion icone="oeil">
-                  5 projets par semaine (260 projets à utiliser à votre convenance)
-                </AvantageAdhesion>
-              }
-            />
-            <AvantageAdhesion icone="telephone">
-              Un rendez-vous visio ou téléphonique pour répondre à vos
-              besoins particuliers
-            </AvantageAdhesion>
-            <AvantageAdhesion icone="fiche">Fiches projets illimitées</AvantageAdhesion>
-            <AvantageAdhesion icone="camera">Accompagnement au vidéopitch si besoin</AvantageAdhesion>
-            <AvantageAdhesion icone="fiole">
-              Le ScénarioLab offert, place prioritaire (limité à 50 places)
-            </AvantageAdhesion>
-            <AvantageAdhesion>
-              Adhésion pour 1 an, sans annulation possible avant 12 mois
-            </AvantageAdhesion>
-          </ul>,
+          <div key="500">
+            <ul className={styles.avantages}>
+              <AvantageAdhesion icone="fiole">
+                Accompagnement longue durée sur le projet de votre choix (modalités à définir avec
+                le Script Doctor)
+              </AvantageAdhesion>
+              <AvantageAdhesion icone="telephone">
+                Un rendez-vous visio ou téléphonique pour répondre à vos besoins particuliers
+              </AvantageAdhesion>
+            </ul>
+            <BoutonDevis />
+          </div>,
 
           <div key="devis">
             <p style={{ margin: "0 0 16px" }}>
@@ -248,18 +220,45 @@ export default async function AdhesionPage({
         ]}
       />
 
-      {/* L'achat à l'unité, sans adhésion : à part des paliers, pour ne pas
-          le confondre avec l'adhésion à 5 € par mois (02/10, mots de Sarah). */}
+      {/* Les crédits libres : à part de l'adhésion, pour ne pas les confondre
+          avec le crédit du jour (04/10, mots de Sarah). */}
       <section className={styles.unite}>
-        <h2 className={styles.uniteTitre}>Service supplémentaire à 5 €</h2>
+        <h2 className={styles.uniteTitre}>Crédits libres</h2>
         <ul className={styles.avantages}>
           <AvantageAdhesion icone="projets">
-            1 projet à l&apos;unité, pour un talent qui ne souhaite pas adhérer
+            1 crédit = 5 €. Plus on en prend, moins ils coûtent.
+          </AvantageAdhesion>
+          <AvantageAdhesion icone="oeil">
+            Utilisables n&apos;importe quand, contrairement au crédit du jour de l&apos;adhésion.
           </AvantageAdhesion>
           <AvantageAdhesion>
-            L&apos;enregistrement d&apos;1 videopitch pour 1 projet, pour un comédien
+            Un crédit permet de voir un videopitch ; un autre, de contacter un talent ; un autre,
+            de trouver un personnage et d&apos;enregistrer un videopitch.
           </AvantageAdhesion>
-          <AvantageAdhesion icone="fiole">1 place à un ScénarioLab</AvantageAdhesion>
+        </ul>
+      </section>
+
+      <section className={styles.unite}>
+        <h2 className={styles.uniteTitre}>Services associés</h2>
+        <ul className={styles.avantages}>
+          <AvantageAdhesion icone="nuage">
+            50 € : 1 analyse de document PDF, qui permet d&apos;accéder à la Labellisation du projet.
+          </AvantageAdhesion>
+          <AvantageAdhesion icone="fiche">
+            Labellisation : présence gratuite dans les premières pages de la plateforme, sans
+            limite annuelle ; participation à nos 3 appels à projets (Cannes et Paris pour les longs
+            métrages, Clermont pour les courts métrages) ; mise en relation selon les demandes
+            faites à l&apos;équipe de la Maison des Scénaristes/WFG.
+          </AvantageAdhesion>
+          <AvantageAdhesion icone="fiole">
+            ScénarioLab de 5 personnes : 500 € (100 € par projet participant). Enregistrement et
+            mise à disposition de la vidéo avec un lien privé.
+          </AvantageAdhesion>
+          <AvantageAdhesion icone="fiole">1 place à un ScénarioLab : 5 €</AvantageAdhesion>
+          <AvantageAdhesion icone="telephone">
+            500 € : accompagnement longue durée sur un projet.
+          </AvantageAdhesion>
+          <AvantageAdhesion>Sur devis, pour toute autre demande particulière.</AvantageAdhesion>
         </ul>
       </section>
     </PageShell>
