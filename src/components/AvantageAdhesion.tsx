@@ -104,7 +104,8 @@ export const ICONES = {
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </svg>
   ),
-  // Le cornet de popcorn : CinéMatch.
+  // Le cornet de popcorn : CinéMatch. Bandes pleines et cornet évasé, pour
+  // qu'on ne le prenne pas pour une poubelle (remarque de Sarah, 05/10).
   popcorn: (
     <svg
       width="20"
@@ -117,10 +118,13 @@ export const ICONES = {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M5.5 10h13l-1.6 11H7.1Z" />
-      <path d="m10 10 .6 11" />
-      <path d="m14 10-.6 11" />
-      <path d="M6 10a2.6 2.6 0 0 1 1.2-4.9 3.4 3.4 0 0 1 6.3-1.5 3 3 0 0 1 4.4 2.6 2.4 2.4 0 0 1 .1 3.8" />
+      <path d="M4.5 10h15l-3 11h-9Z" />
+      <g fill="currentColor" stroke="none">
+        <path d="M4.5 10h3l1.8 11H7.5Z" />
+        <path d="M10.5 10h3l-.6 11h-1.8Z" />
+        <path d="M16.5 10h3l-3 11h-1.8Z" />
+      </g>
+      <path d="M5 10a2.5 2.5 0 0 1 .8-4.6 3 3 0 0 1 5-2 3.2 3.2 0 0 1 5.6.6 2.6 2.6 0 0 1 2.6 4 2.2 2.2 0 0 1 0 2" />
     </svg>
   ),
   // La fiole de laboratoire : le ScénarioLab.
