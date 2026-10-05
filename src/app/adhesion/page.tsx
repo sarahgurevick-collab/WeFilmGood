@@ -63,6 +63,14 @@ export default async function AdhesionPage({
         )}
       </form>
     ) : null;
+  // Les factures de l'adhérent, émises automatiquement à chaque paiement.
+  const { data: factures } = user
+    ? await supabase
+        .from("membership_invoices")
+        .select("id, numero, issued_at")
+        .order("issued_at", { ascending: false })
+        .returns<{ id: string; numero: string; issued_at: string }[]>()
+    : { data: null };
   const motsCles =
     ((fonds ?? [])[0] as { mots_cles: number } | undefined)?.mots_cles ?? 0;
 
@@ -86,6 +94,19 @@ export default async function AdhesionPage({
 
   return (
     <PageShell eyebrow="WeFilmGood" title="Adhésion" enTeteAnime connecte={!!user}>
+      {(factures ?? []).length > 0 && (
+        <p className={formStyles.hint}>
+          Mes factures :{" "}
+          {(factures ?? []).map((f, i) => (
+            <span key={f.id}>
+              {i > 0 && " · "}
+              <a href={`/adhesion/facture/${f.id}`}>
+                {f.numero} ({new Date(f.issued_at).toLocaleDateString("fr-FR")})
+              </a>
+            </span>
+          ))}
+        </p>
+      )}
       {paiement === "erreur" && (
         <p className={formStyles.error}>
           Le paiement n&apos;a pas pu démarrer. Réessayez dans un instant, ou écrivez-nous.

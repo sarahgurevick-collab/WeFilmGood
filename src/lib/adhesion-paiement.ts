@@ -48,6 +48,15 @@ export async function verifierAdhesion(membershipId: string): Promise<"active" |
     .maybeSingle();
 
   if (activee) {
+    // La facture est émise tout de suite ; si elle échoue, l'adhésion reste
+    // active et le lien manque seulement dans l'email.
+    let lienFacture = "";
+    try {
+      const { data: factureId } = await admin.rpc("creer_facture_adhesion", { p_membership: m.id });
+      if (factureId) lienFacture = `https://app.wefilmgood.com/adhesion/facture/${factureId}`;
+    } catch (e) {
+      console.error("facture d'adhésion", m.id, e);
+    }
     const email = await emailDuMembre(m.profile_id);
     if (email) {
       await envoyerEmail({
@@ -56,6 +65,7 @@ export async function verifierAdhesion(membershipId: string): Promise<"active" |
         htmlContent: `
           <p>Bonjour,</p>
           <p>Votre paiement est bien reçu : votre adhésion WeFilmGood est active pour un an, jusqu'au ${fin.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.</p>
+          ${lienFacture ? `<p>Votre facture est disponible ici : <a href="${lienFacture}">${lienFacture}</a></p>` : ""}
           <p>Merci de votre soutien.</p>
         `,
       });

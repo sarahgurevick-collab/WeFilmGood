@@ -1,0 +1,72 @@
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 24px 0;
+  line-height: 1.6;
+}
+
+.destinataire {
+  text-align: right;
+}
+
+.table {
+  width: 100%;
+  margin-top: 16px;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e5e5;
+  text-align: left;
+}
+
+.table tfoot td {
+  border-bottom: none;
+  border-top: 2px solid #1a1a1a;
+  padding-top: 14px;
+}
+
+.nombre {
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media print {
+  .entete {
+    margin-top: 0;
+  }
+}
+
+.note {
+  margin: 20px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid #e5e5e5;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+/* Le formulaire et les explications n'ont pas à figurer sur le papier. */
+.horsImpression {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px dashed #d5d5d5;
+}
+
+@media print {
+  .horsImpression {
+    display: none;
+  }
+}
+
+.mentions {
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px solid #e5e5e5;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #444;
+}
