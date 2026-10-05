@@ -69,7 +69,7 @@ const ADHESION: Noeud[] = [
     nom: "La Galaxie Projets",
     icone: "projets",
     texte:
-      "Votre abonnement vous ouvre les portes d’un nouvel univers par jour. Visionnez le vidéopitch, lisez la fiche et découvrez les personnages ! Vous aurez peut-être la surprise de découvrir une vidéo d’interprétation faite par un comédien ou une comédienne. Enregistrez le projet dans vos favoris pour le retrouver en un clic et contacter l’auteur le moment venu.",
+      "Votre adhésion vous ouvre les portes d’un nouvel univers par jour. Visionnez le vidéopitch, lisez la fiche et découvrez les personnages ! Vous aurez peut-être la surprise de découvrir une vidéo d’interprétation faite par un comédien ou une comédienne. Enregistrez le projet dans vos favoris pour le retrouver en un clic et contacter l’auteur le moment venu.",
     aZero: "payant",
   },
   { id: "galaxie-talent", nom: "La Galaxie Talents", icone: "talents", texte: GALAXIES, aZero: "payant" },
@@ -120,7 +120,7 @@ const ADHESION: Noeud[] = [
     nom: "ScénarioLab (spectateur)",
     icone: "fiole",
     texte:
-      "Glisse-toi dans les coulisses de la création : viens voir 5 auteurs de talent réécrire leurs histoires en direct et participe à l’évolution de leurs scénarios !",
+      "Glisse-toi dans les coulisses de la création : viens voir 5 auteurs de talent réécrire leurs histoires en direct et participe à l’évolution de leurs scénarios ! Place offerte avec l’adhésion à 5 €/mois, prioritaire : il n’y a que 50 places.",
     aZero: "payant",
   },
 ];
