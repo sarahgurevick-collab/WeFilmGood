@@ -143,47 +143,95 @@ function cercleDe(n: Rond, mode: Mode): Cercle {
   return mode === "zero" && n.aZero === "payant" ? "service" : n.origine;
 }
 
+/** L'écart entre deux angles, ramené entre -π et π : le chemin le plus court. */
+function ecart(angle: number): number {
+  return Math.atan2(Math.sin(angle), Math.cos(angle));
+}
+
 /**
- * La place de chaque rond sur son cercle. `angle` vaut null pour les ronds
- * qui changent de cercle : ils prennent la place libre la plus proche, qui
- * dépend de l'endroit où ils se trouvent au moment de la bascule.
+ * Répartit des ronds sur des places libres en les faisant voyager le moins
+ * possible, pour qu'ils ne se croisent pas en chemin. Au plus cinq ronds :
+ * toutes les répartitions sont essayées.
  */
-function placesPour(mode: Mode): { places: (number | null)[]; libres: number[] } {
+function repartir(angles: number[], libres: number[]): number[] {
+  let meilleure: number[] = [];
+  let moindre = Infinity;
+  const prise = libres.map(() => false);
+  const essai: number[] = [];
+  const essayer = (i: number, cout: number) => {
+    if (cout >= moindre) return;
+    if (i === angles.length) {
+      moindre = cout;
+      meilleure = [...essai];
+      return;
+    }
+    libres.forEach((libre, k) => {
+      if (prise[k]) return;
+      prise[k] = true;
+      essai[i] = libre;
+      essayer(i + 1, cout + ecart(libre - angles[i]) ** 2);
+      prise[k] = false;
+    });
+  };
+  essayer(0, 0);
+  return meilleure;
+}
+
+const PLACES_ADHESION = ADHESION.map((_, i) => DEPART_ADHESION + (i * 2 * Math.PI) / ADHESION.length);
+const PLACES_SERVICES = SERVICES.map((_, j) => DEPART_SERVICES + (j * 2 * Math.PI) / SERVICES.length);
+
+const INDICES = RONDS.map((_, i) => i);
+const RESTES = INDICES.filter((i) => RONDS[i].origine === "adhesion" && RONDS[i].aZero !== "payant");
+const PAYANTS = INDICES.filter((i) => RONDS[i].aZero === "payant");
+const DES_SERVICES = INDICES.filter((i) => RONDS[i].origine === "service");
+
+/**
+ * Donne à chaque rond sa nouvelle place. L'ordre sur un cercle n'a pas de
+ * sens : un rond qui change de cercle prend la place libre la plus proche
+ * de l'endroit où il se trouve au moment de la bascule.
+ */
+function replacer(etats: Etat[], tours: Record<Cercle, number>, mode: Mode) {
+  RONDS.forEach((n, i) => {
+    const e = etats[i];
+    const cercle = cercleDe(n, mode);
+    if (cercle !== e.cercle) {
+      // Même endroit de la scène, exprimé sur le nouveau cercle.
+      e.angle = tours[e.cercle] + e.angle - tours[cercle];
+      e.cercle = cercle;
+    }
+    e.cibleRayon = RAYON[cercle];
+  });
+  const poser = (indices: number[], libres: number[]) => {
+    const places = repartir(indices.map((i) => etats[i].angle), libres);
+    indices.forEach((i, k) => {
+      etats[i].cibleAngle = places[k];
+    });
+    return libres.filter((libre) => !places.includes(libre));
+  };
+
   if (mode === "adhesion") {
-    return {
-      places: RONDS.map((n) =>
-        n.origine === "adhesion"
-          ? DEPART_ADHESION + (ADHESION.findIndex((a) => a.id === n.id) * 2 * Math.PI) / ADHESION.length
-          : DEPART_SERVICES + (SERVICES.findIndex((s) => s.id === n.id) * 2 * Math.PI) / SERVICES.length,
-      ),
-      libres: [],
-    };
+    DES_SERVICES.forEach((i, j) => {
+      etats[i].cibleAngle = PLACES_SERVICES[j];
+    });
+    poser(PAYANTS, poser(RESTES, PLACES_ADHESION));
+    return;
   }
-  const restes = ADHESION.filter((n) => n.aZero !== "payant");
-  const payants = ADHESION.filter((n) => n.aZero === "payant");
-  // Le cercle payant accueille les services et les ronds devenus payants.
-  const total = SERVICES.length + payants.length;
+  // À 0 € : le cercle payant accueille les services et les ronds devenus
+  // payants ; ceux qui restent se répartissent sur le premier cercle.
+  const total = DES_SERVICES.length + PAYANTS.length;
   const pas = (2 * Math.PI) / total;
-  const prises = SERVICES.map((_, j) => Math.round((j * total) / SERVICES.length));
+  const prises = DES_SERVICES.map((_, j) => Math.round((j * total) / DES_SERVICES.length));
+  DES_SERVICES.forEach((i, j) => {
+    etats[i].cibleAngle = DEPART_SERVICES + prises[j] * pas;
+  });
   const libres: number[] = [];
   for (let c = 0; c < total; c++) {
     if (!prises.includes(c)) libres.push(DEPART_SERVICES + c * pas);
   }
-  return {
-    places: RONDS.map((n) => {
-      if (n.origine === "service") {
-        return DEPART_SERVICES + prises[SERVICES.findIndex((s) => s.id === n.id)] * pas;
-      }
-      if (n.aZero === "payant") return null;
-      return -Math.PI / 4 + (restes.findIndex((r) => r.id === n.id) * 2 * Math.PI) / restes.length;
-    }),
-    libres,
-  };
-}
-
-/** L'écart entre deux angles, ramené entre -π et π : le chemin le plus court. */
-function ecart(angle: number): number {
-  return Math.atan2(Math.sin(angle), Math.cos(angle));
+  poser(PAYANTS, libres);
+  RESTES.forEach((i, k) => {
+    etats[i].cibleAngle = -Math.PI / 4 + (k * 2 * Math.PI) / RESTES.length;
+  });
 }
 
 function deplacement(rayon: number, angle: number): string {
@@ -192,7 +240,7 @@ function deplacement(rayon: number, angle: number): string {
   return `translate(${x.toFixed(3)}cqw, ${y.toFixed(3)}cqw)`;
 }
 
-const PLACES_DEPART = placesPour("adhesion").places as number[];
+const PLACES_DEPART = [...PLACES_ADHESION, ...PLACES_SERVICES];
 
 // La place de départ, écrite dans la page : elle sert avant que l'orbite
 // ne se mette en mouvement. Elle ne change jamais, pour que React ne
@@ -241,28 +289,7 @@ export default function OrbiteAdhesion() {
 
   // La bascule : chaque rond reçoit sa nouvelle place, et y glisse.
   useEffect(() => {
-    const { places, libres } = placesPour(mode);
-    const restants = [...libres];
-    RONDS.forEach((n, i) => {
-      const e = etats.current[i];
-      const cercle = cercleDe(n, mode);
-      if (cercle !== e.cercle) {
-        // Même endroit de la scène, exprimé sur le nouveau cercle.
-        e.angle = tours.current[e.cercle] + e.angle - tours.current[cercle];
-        e.cercle = cercle;
-      }
-      e.cibleRayon = RAYON[cercle];
-      const place = places[i];
-      if (place !== null) {
-        e.cibleAngle = place;
-        return;
-      }
-      let proche = 0;
-      restants.forEach((libre, k) => {
-        if (Math.abs(ecart(libre - e.angle)) < Math.abs(ecart(restants[proche] - e.angle))) proche = k;
-      });
-      e.cibleAngle = restants.splice(proche, 1)[0];
-    });
+    replacer(etats.current, tours.current, mode);
   }, [mode]);
 
   useEffect(() => {
