@@ -64,7 +64,14 @@ const GALAXIES =
 const GALAXIES_ZERO = "La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)";
 
 const ADHESION: Noeud[] = [
-  { id: "galaxie-projet", nom: "La Galaxie Projets", icone: "projets", texte: GALAXIES, aZero: "payant" },
+  {
+    id: "galaxie-projet",
+    nom: "La Galaxie Projets",
+    icone: "projets",
+    texte:
+      "Votre abonnement vous ouvre les portes d’un nouvel univers par jour. Visionnez le vidéopitch, lisez la fiche et découvrez les personnages ! Vous aurez peut-être la surprise de découvrir une vidéo d’interprétation faite par un comédien ou une comédienne. Enregistrez le projet dans vos favoris pour le retrouver en un clic et contacter l’auteur le moment venu.",
+    aZero: "payant",
+  },
   { id: "galaxie-talent", nom: "La Galaxie Talents", icone: "talents", texte: GALAXIES, aZero: "payant" },
   {
     id: "galaxie-personnage",
@@ -78,7 +85,8 @@ const ADHESION: Noeud[] = [
     id: "cinecrush",
     nom: "CinéCrush",
     icone: "coeur",
-    texte: "CinéCrush : provoquer le hasard cinématographique.",
+    texte:
+      "Le chrono est lancé ! Ce projet mérite toute votre attention : vous avez une semaine pour découvrir son vidéopitch. Laissez vos avis en commentaires : vos retours sont un véritable tremplin magique pour propulser son histoire !",
     aZero: "reste",
   },
   {
@@ -91,16 +99,18 @@ const ADHESION: Noeud[] = [
   },
   {
     id: "fiche-projet",
-    nom: "Fiche projet (illimité)",
+    nom: "Fiche projet",
     icone: "fiche",
-    texte: "Fiches projets illimitées (avec le document PDF du projet, sans analyse)",
+    texte:
+      "Ne laissez aucun scénario dans un tiroir : vos projets en développement, même anciens, sont la vitrine et la richesse de votre univers.",
     aZero: "payant",
   },
   {
     id: "fiche-personnage",
-    nom: "Fiche personnage (illimité)",
+    nom: "Fiche personnage",
     icone: "fiche",
-    texte: "Fiches personnages illimitées, et les talents associés à vos projets, en illimité",
+    texte:
+      "« Auteurs, donnez vie à vos personnages : donnez-leur un visage et une biographie si vibrante qu’un comédien n’aura qu’une envie… s’en emparer face caméra ! » Vous recevrez une notification et vous pourrez échanger avec le (la) comédien(ne) qui aura incarné votre personnage.",
     // Créer une fiche personnage suppose une fiche projet, qui n'est jamais
     // gratuite : à 0 €, on voit les personnages, on n'en crée pas (Sarah, 05/10).
     aZero: "payant",
@@ -109,7 +119,8 @@ const ADHESION: Noeud[] = [
     id: "scenariolab-spectateur",
     nom: "ScénarioLab (spectateur)",
     icone: "fiole",
-    texte: "Le ScénarioLab offert, place prioritaire (limité à 50 places)",
+    texte:
+      "Glisse-toi dans les coulisses de la création : viens voir 5 auteurs de talent réécrire leurs histoires en direct et participe à l’évolution de leurs scénarios !",
     aZero: "payant",
   },
 ];
@@ -120,7 +131,7 @@ const SERVICES: Noeud[] = [
     nom: "ScénarioLab (participant)",
     icone: "fiole",
     texte:
-      "ScénarioLab de 5 personnes : 500 € (100 € par projet participant). Enregistrement et mise à disposition de la vidéo avec un lien privé.",
+      "« Propulse ton projet au niveau supérieur : challenge ton script en direct avec 4 scénaristes et un Script Doctor qui auront analysé ton projet. Teste instantanément tes idées face au public ! » Un lien privé te permettra de revoir la séance de travail et de reprendre ton projet sur de meilleures bases.",
   },
   {
     id: "analyse",
