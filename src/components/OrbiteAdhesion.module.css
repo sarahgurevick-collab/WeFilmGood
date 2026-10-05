@@ -159,18 +159,19 @@
   transform: scale(1.25);
 }
 
+/* L'adhésion en rouge, les services en bleu (inversés le 05/10, choix de Sarah). */
 .noeud.adhesion:hover {
-  box-shadow:
-    0 0 0 3px var(--bleu),
-    0 0 30px rgba(59, 142, 245, 0.45),
-    0 0 60px rgba(59, 142, 245, 0.25);
-}
-
-.noeud.service:hover {
   box-shadow:
     0 0 0 3px var(--rouge),
     0 0 30px rgba(218, 44, 37, 0.45),
     0 0 60px rgba(218, 44, 37, 0.25);
+}
+
+.noeud.service:hover {
+  box-shadow:
+    0 0 0 3px var(--bleu),
+    0 0 30px rgba(59, 142, 245, 0.45),
+    0 0 60px rgba(59, 142, 245, 0.25);
 }
 
 .noeud:focus-visible {
@@ -180,13 +181,13 @@
 
 .noeud.adhesion {
   box-shadow:
-    0 0 0 3px var(--bleu),
+    0 0 0 3px var(--rouge),
     0 10px 24px rgba(0, 0, 0, 0.55);
 }
 
 .noeud.service {
   box-shadow:
-    0 0 0 3px var(--rouge),
+    0 0 0 3px var(--bleu),
     0 10px 24px rgba(0, 0, 0, 0.55);
 }
 
@@ -258,19 +259,19 @@
 }
 
 .legendeAdhesion {
-  color: var(--bleu-texte);
-}
-
-.legendeAdhesion i {
-  background: var(--bleu);
-}
-
-.legendeServices {
   color: var(--rouge-texte);
 }
 
-.legendeServices i {
+.legendeAdhesion i {
   background: var(--rouge);
+}
+
+.legendeServices {
+  color: var(--bleu-texte);
+}
+
+.legendeServices i {
+  background: var(--bleu);
 }
 
 /* ---------- l'explication d'un rond ---------- */
@@ -311,11 +312,11 @@
 }
 
 .ficheIcone.adhesion {
-  box-shadow: 0 0 0 3px var(--bleu);
+  box-shadow: 0 0 0 3px var(--rouge);
 }
 
 .ficheIcone.service {
-  box-shadow: 0 0 0 3px var(--rouge);
+  box-shadow: 0 0 0 3px var(--bleu);
 }
 
 .ficheNoms {
@@ -334,11 +335,11 @@
 }
 
 .ficheEtiquette.adhesion {
-  color: var(--bleu-texte);
+  color: var(--rouge-texte);
 }
 
 .ficheEtiquette.service {
-  color: var(--rouge-texte);
+  color: var(--bleu-texte);
 }
 
 .ficheNom {

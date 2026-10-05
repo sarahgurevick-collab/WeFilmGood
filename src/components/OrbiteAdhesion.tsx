@@ -15,8 +15,8 @@ import styles from "./OrbiteAdhesion.module.css";
  *
  * Le soleil a deux positions (05/10, mots de Sarah) : « 5 €/mois » et
  * « 0 € ». Il passe de l'une à l'autre tout seul, sans bouton (elle trouvait
- * le bouton dommage) ; un clic sur le soleil le fait aussi. À 0 €, les ronds réservés à l'adhésion payante passent en rouge
- * et rejoignent le cercle payant ; restent en bleu ceux qu'on garde quand
+ * le bouton dommage) ; un clic sur le soleil le fait aussi. À 0 €, les ronds réservés à l'adhésion payante passent en bleu
+ * et rejoignent le cercle extérieur ; restent en rouge ceux qu'on garde quand
  * même. « S'il y a trop de choses à 0 €, on n'ira pas vers les 5 €. »
  *
  * Les ronds sont déplacés image par image (et non par une animation CSS),
@@ -53,7 +53,7 @@ type Noeud = {
   nom: string;
   icone: keyof typeof ICONES;
   texte: string;
-  /** À 0 € : le rond reste en bleu, ou passe en rouge sur le cercle payant. */
+  /** À 0 € : le rond reste en rouge, ou passe en bleu sur le cercle extérieur. */
   aZero?: "reste" | "payant";
   /** La phrase du palier 0 €, quand elle diffère de celle de l'adhésion. */
   texteZero?: string;
@@ -441,10 +441,10 @@ export default function OrbiteAdhesion() {
 
         <p className={styles.legende}>
           <span className={styles.legendeAdhesion}>
-            <i aria-hidden="true" /> L’adhésion à 5 €/mois donne accès à des services
+            <i aria-hidden="true" /> L’adhésion en rouge à 5 €/mois inclut de nombreux services
           </span>
           <span className={styles.legendeServices}>
-            <i aria-hidden="true" /> Les services optionnels
+            <i aria-hidden="true" /> L’adhésion en bleu à 0 €/mois donne accès à des services optionnels
           </span>
         </p>
       </div>
