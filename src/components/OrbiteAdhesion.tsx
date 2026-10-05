@@ -166,8 +166,8 @@ export default function OrbiteAdhesion() {
       <div className={styles.cadreScene}>
         <div className={`${styles.scene} ${choix ? styles.enPause : ""}`}>
           <svg className={styles.cercles} viewBox="0 0 700 700" aria-hidden="true">
-            <circle cx="350" cy="350" r={RAYON_ADHESION} className={styles.cercleAdhesion} />
-            <circle cx="350" cy="350" r={RAYON_SERVICES} className={styles.cercleServices} />
+            <circle cx="350" cy="350" r={RAYON_ADHESION} />
+            <circle cx="350" cy="350" r={RAYON_SERVICES} />
           </svg>
 
           <div className={styles.centre}>

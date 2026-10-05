@@ -30,16 +30,10 @@
   width: 100%;
   height: 100%;
   fill: none;
+  /* Blancs : en bleu et rouge sombres, on ne les voyait pas bien. */
+  stroke: #ffffff;
   stroke-width: 1.5;
   stroke-dasharray: 3 8;
-}
-
-.cercleAdhesion {
-  stroke: #2c3f5e;
-}
-
-.cercleServices {
-  stroke: #5a2a27;
 }
 
 .centre {
