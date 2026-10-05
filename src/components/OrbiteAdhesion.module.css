@@ -24,22 +24,58 @@
   aspect-ratio: 1;
 }
 
-.cercles {
+/* Les deux cercles : un trait fin et un halo qui respire. */
+.halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--trait);
+  box-shadow: inset 0 0 2.9cqw var(--lueur-douce);
+  pointer-events: none;
+}
+
+.halo::before {
+  content: "";
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  fill: none;
-  stroke-width: 1.5;
-  stroke-dasharray: 3 8;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    transparent 30%,
+    var(--lueur-douce) 70%,
+    var(--lueur) 100%
+  );
+  box-shadow:
+    0 0 8.5cqw var(--lueur),
+    inset 0 0 8.5cqw var(--lueur-douce);
+  animation: respire 4s ease-in-out infinite;
 }
 
-.cercleAdhesion {
-  stroke: #2c3f5e;
+.haloAdhesion {
+  width: 50%;
+  --lueur: rgba(59, 142, 245, 0.4);
+  --lueur-douce: rgba(59, 142, 245, 0.2);
+  --trait: rgba(59, 142, 245, 0.3);
 }
 
-.cercleServices {
-  stroke: #5a2a27;
+.haloServices {
+  width: 85.71%;
+  --lueur: rgba(218, 44, 37, 0.4);
+  --lueur-douce: rgba(218, 44, 37, 0.2);
+  --trait: rgba(218, 44, 37, 0.3);
+}
+
+.haloServices::before {
+  animation-delay: 1.5s;
+}
+
+@keyframes respire {
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .centre {
@@ -64,6 +100,28 @@
   z-index: 1;
 }
 
+/* La lueur du centre : une bleue, une rouge, qui respirent en décalé. */
+.centre::before,
+.centre::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: -1;
+  animation: respire 2s ease-in-out infinite;
+}
+
+.centre::before {
+  background: rgba(59, 142, 245, 0.3);
+  filter: blur(3.4cqw);
+}
+
+.centre::after {
+  background: rgba(218, 44, 37, 0.2);
+  filter: blur(5.7cqw);
+  animation-delay: 1s;
+}
+
 /* Les anneaux tournent ; chaque rond tourne en sens inverse pour rester droit. */
 .anneau {
   position: absolute;
@@ -73,19 +131,19 @@
 }
 
 .anneauAdhesion {
-  animation: tourne 110s linear infinite;
+  animation: tourne 32s linear infinite;
 }
 
 .anneauAdhesion .droit {
-  animation: detourne 110s linear infinite;
+  animation: detourne 32s linear infinite;
 }
 
 .anneauServices {
-  animation: detourne 160s linear infinite;
+  animation: detourne 54s linear infinite;
 }
 
 .anneauServices .droit {
-  animation: tourne 160s linear infinite;
+  animation: tourne 54s linear infinite;
 }
 
 .scene:hover .anneau,
@@ -132,7 +190,9 @@
   color: #ededed;
   cursor: pointer;
   box-sizing: border-box;
-  transition: transform 0.3s ease;
+  transition:
+    transform 0.3s ease-out,
+    box-shadow 0.3s ease-out;
 }
 
 .noeud svg {
@@ -140,8 +200,26 @@
   height: 44%;
 }
 
+.place:hover {
+  z-index: 5;
+}
+
 .noeud:hover {
-  transform: scale(1.08);
+  transform: scale(1.25);
+}
+
+.noeud.adhesion:hover {
+  box-shadow:
+    0 0 0 3px var(--bleu),
+    0 0 30px rgba(59, 142, 245, 0.45),
+    0 0 60px rgba(59, 142, 245, 0.25);
+}
+
+.noeud.service:hover {
+  box-shadow:
+    0 0 0 3px var(--rouge),
+    0 0 30px rgba(218, 44, 37, 0.45),
+    0 0 60px rgba(218, 44, 37, 0.25);
 }
 
 .noeud:focus-visible {
@@ -340,7 +418,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .anneau,
-  .droit {
+  .droit,
+  .halo::before,
+  .centre::before,
+  .centre::after {
     animation: none !important;
   }
 }
