@@ -14,44 +14,6 @@
   color: #ededed;
 }
 
-/* Les deux positions du soleil. */
-.bascule {
-  display: flex;
-  width: fit-content;
-  margin: 0 auto 28px;
-  padding: 4px;
-  gap: 4px;
-  background: #161616;
-  border: 1px solid #333333;
-  border-radius: 999px;
-}
-
-.bascule button {
-  min-height: 44px;
-  padding: 0 22px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: #ededed;
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 800;
-  cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease;
-}
-
-.bascule button[aria-pressed="true"] {
-  background: var(--jaune);
-  color: #161616;
-}
-
-.bascule button:focus-visible {
-  outline: 3px solid var(--rouge);
-  outline-offset: 3px;
-}
-
 .cadreScene {
   container-type: inline-size;
 }
@@ -98,6 +60,19 @@
     0 0 0 3px var(--jaune),
     0 22px 50px rgba(0, 0, 0, 0.6);
   z-index: 1;
+}
+
+/* Le prix change tout seul : le nouveau arrive en grossissant. */
+.prix {
+  display: block;
+  animation: arrive 0.5s ease-out;
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
 }
 
 .parMois {
@@ -393,6 +368,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .prix,
   .centre::before,
   .centre::after {
     animation: none !important;

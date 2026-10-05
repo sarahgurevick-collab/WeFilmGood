@@ -14,7 +14,8 @@ import styles from "./OrbiteAdhesion.module.css";
  * page Adhésion, reprises telles quelles.
  *
  * Le soleil a deux positions (05/10, mots de Sarah) : « 5 €/mois » et
- * « 0 € ». À 0 €, les ronds réservés à l'adhésion payante passent en rouge
+ * « 0 € ». Il passe de l'une à l'autre tout seul, sans bouton (elle trouvait
+ * le bouton dommage) ; un clic sur le soleil le fait aussi. À 0 €, les ronds réservés à l'adhésion payante passent en rouge
  * et rejoignent le cercle payant ; restent en bleu ceux qu'on garde quand
  * même. « S'il y a trop de choses à 0 €, on n'ira pas vers les 5 €. »
  *
@@ -40,6 +41,9 @@ const DEPART_ADHESION = -Math.PI / 2;
 const DEPART_SERVICES = -Math.PI / 6;
 // Le temps que met un rond à rejoindre sa nouvelle place.
 const INERTIE_S = 0.45;
+// Le soleil change tout seul de position : le temps passé sur chacune.
+const DUREE_ADHESION_MS = 8000;
+const DUREE_ZERO_MS = 6000;
 
 type Cercle = "adhesion" | "service";
 type Mode = "adhesion" | "zero";
@@ -287,6 +291,21 @@ export default function OrbiteAdhesion() {
     return () => clearInterval(minuteur);
   }, [choix]);
 
+  // Le soleil passe tout seul d'une position à l'autre. Il attend tant que
+  // la souris est sur l'orbite ou qu'une explication est ouverte.
+  useEffect(() => {
+    if (choix) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const duree = mode === "zero" ? DUREE_ZERO_MS : DUREE_ADHESION_MS;
+    let ecoule = 0;
+    const minuteur = setInterval(() => {
+      if (survol.current) return;
+      ecoule += 500;
+      if (ecoule >= duree) setMode((m) => (m === "zero" ? "adhesion" : "zero"));
+    }, 500);
+    return () => clearInterval(minuteur);
+  }, [mode, choix]);
+
   // La bascule : chaque rond reçoit sa nouvelle place, et y glisse.
   useEffect(() => {
     replacer(etats.current, tours.current, mode);
@@ -330,15 +349,6 @@ export default function OrbiteAdhesion() {
 
   return (
     <section className={styles.orbite}>
-      <div className={styles.bascule} role="group" aria-label="Adhésion">
-        <button type="button" aria-pressed={mode === "zero"} onClick={() => basculer("zero")}>
-          0 €
-        </button>
-        <button type="button" aria-pressed={mode === "adhesion"} onClick={() => basculer("adhesion")}>
-          5 €/mois
-        </button>
-      </div>
-
       <div className={styles.cadreScene}>
         <div
           className={styles.scene}
@@ -360,9 +370,11 @@ export default function OrbiteAdhesion() {
             onClick={() => basculer(mode === "zero" ? "adhesion" : "zero")}
           >
             {mode === "zero" ? (
-              <span>0 €</span>
+              <span key="zero" className={styles.prix}>
+                0 €
+              </span>
             ) : (
-              <span>
+              <span key="adhesion" className={styles.prix}>
                 5 €<span className={styles.parMois}>/mois</span>
               </span>
             )}
