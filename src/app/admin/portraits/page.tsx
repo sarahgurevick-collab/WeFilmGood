@@ -273,7 +273,12 @@ export default async function PortraitsAdminPage({
                   <BoutonRetirer />
                 </form>
                 {admin && p.project && (
-                  <Link href={`/projet/${p.project.id}/personnages`} className={styles.ouvrir}>
+                  <Link
+                    href={`/projet/${p.project.id}/personnages`}
+                    className={styles.ouvrir}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Ouvrir les personnages du projet
                   </Link>
                 )}
