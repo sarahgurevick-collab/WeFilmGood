@@ -8,6 +8,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import NavAdmin from "../NavAdmin";
 import BoutonRetirer from "./BoutonRetirer";
+import CadrageCarte from "./CadrageCarte";
 import PoserPhoto from "./PoserPhoto";
 import { retirerPortrait, validerPortrait } from "./actions";
 import styles from "./portraits.module.css";
@@ -249,14 +250,7 @@ export default async function PortraitsAdminPage({
           {cartes.map(({ s, p, url }) => (
             <li key={p.id} className={styles.carte}>
               {url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={url}
-                  alt=""
-                  className={styles.photo}
-                  loading="lazy"
-                  style={{ objectPosition: `${p.photo_x}% ${p.photo_y}%` }}
-                />
+                <CadrageCarte characterId={p.id} src={url} x={p.photo_x} y={p.photo_y} />
               ) : (
                 <div className={styles.photo} />
               )}

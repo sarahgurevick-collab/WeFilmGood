@@ -218,3 +218,36 @@
   opacity: 0.6;
   cursor: wait;
 }
+
+/* Une photo qu'on fait glisser dans son cadre carré. */
+.formCadre {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cadre {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #eee;
+}
+
+.cadre img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cadreGlisse {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.cadreGlisse:active {
+  cursor: grabbing;
+}

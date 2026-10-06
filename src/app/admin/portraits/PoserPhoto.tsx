@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
+import CadreGlissant from "./CadreGlissant";
 import { poserPhoto } from "./actions";
 import styles from "./portraits.module.css";
 
@@ -15,8 +17,9 @@ function BoutonPoser() {
 }
 
 /**
- * Choisir la photo sur son ordinateur : elle s'affiche aussitôt en petit,
- * puis un seul bouton la pose sur le personnage.
+ * Choisir la photo sur son ordinateur : elle s'affiche aussitôt, on la fait
+ * glisser pour choisir ce qu'on voit du visage, puis un seul bouton la pose
+ * sur le personnage.
  */
 export default function PoserPhoto({ characterId }: { characterId: string }) {
   const [apercu, setApercu] = useState<string | null>(null);
@@ -46,8 +49,8 @@ export default function PoserPhoto({ characterId }: { characterId: string }) {
       </label>
       {apercu && (
         <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={apercu} alt="" className={styles.apercu} />
+          {/* Une nouvelle photo : un nouveau cadre, qui repart du défaut. */}
+          <CadreGlissant key={apercu} src={apercu} x={50} y={PORTRAIT_Y_DEFAUT} />
           <BoutonPoser />
         </>
       )}

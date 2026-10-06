@@ -24,6 +24,27 @@ async function clientAidant() {
   return a;
 }
 
+/** Le cadrage d'une photo (en %), ou null s'il n'a pas été choisi. */
+function cadrageDe(formData: FormData) {
+  const nombre = (v: FormDataEntryValue | null) => {
+    const n = typeof v === "string" && v.trim() !== "" ? Number(v) : NaN;
+    return Number.isFinite(n) ? Math.min(100, Math.max(0, Math.round(n))) : null;
+  };
+  const photo_x = nombre(formData.get("photo_x"));
+  const photo_y = nombre(formData.get("photo_y"));
+  return photo_x !== null && photo_y !== null ? { photo_x, photo_y } : null;
+}
+
+/** « Enregistrer le cadrage » : seule la partie visible change, la photo reste entière. */
+export async function cadrerPortrait(formData: FormData) {
+  const id = String(formData.get("character_id") ?? "");
+  const cadrage = cadrageDe(formData);
+  if (!id || !cadrage) return;
+  const a = await clientAidant();
+  await a.from("characters").update(cadrage).eq("id", id).eq("photo_proposee", true);
+  revalidatePath("/admin/portraits");
+}
+
 /** « Valider » : le portrait moyen est bon, il quitte la liste à relire. */
 export async function validerPortrait(formData: FormData) {
   const id = String(formData.get("character_id") ?? "");
@@ -93,7 +114,7 @@ export async function poserPhoto(formData: FormData) {
 
   const { error } = await a
     .from("characters")
-    .update({ photo_path: chemin, photo_proposee: true, photo_x: 50, photo_y: PORTRAIT_Y_DEFAUT })
+    .update({ photo_path: chemin, photo_proposee: true, photo_x: 50, photo_y: PORTRAIT_Y_DEFAUT, ...(cadrageDe(formData) ?? {}) })
     .eq("id", id)
     .is("photo_path", null);
   if (error) {
