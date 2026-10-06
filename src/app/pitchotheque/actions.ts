@@ -341,6 +341,8 @@ export type PersonnageTrouve = {
   id: string;
   nom: string;
   portrait: string | null;
+  /** Le cadrage du portrait : « x% y% » (object-position). */
+  cadrage: string;
   comedien: string | null;
   projetId: string;
   projet: string;
@@ -385,13 +387,15 @@ async function fichesPersonnages(
 
   const { data: fiches } = await supabase
     .from("characters")
-    .select("id, name, photo_path, actor_name, project:projects(id, title)")
+    .select("id, name, photo_path, photo_x, photo_y, actor_name, project:projects(id, title)")
     .in("id", lignes.map((l) => l.id))
     .returns<
       {
         id: string;
         name: string;
         photo_path: string | null;
+        photo_x: number;
+        photo_y: number;
         actor_name: string | null;
         project: { id: string; title: string } | null;
       }[]
@@ -411,6 +415,7 @@ async function fichesPersonnages(
       id: f.id,
       nom: f.name,
       portrait: f.photo_path ? (urlDe.get(f.photo_path) ?? null) : null,
+      cadrage: `${f.photo_x}% ${f.photo_y}%`,
       comedien: f.actor_name,
       projetId: f.project.id,
       projet: f.project.title,

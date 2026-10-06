@@ -138,7 +138,7 @@ export default async function ProjetPage({
 
   const { data: characters } = await supabase
     .from("characters")
-    .select("id, name, photo_path, character_type, gender, age_range, biography")
+    .select("id, name, photo_path, photo_x, photo_y, photo_proposee, character_type, gender, age_range, biography")
     .eq("project_id", id)
     .order("position", { ascending: true })
     .returns<
@@ -146,6 +146,9 @@ export default async function ProjetPage({
         id: string;
         name: string;
         photo_path: string | null;
+        photo_x: number;
+        photo_y: number;
+        photo_proposee: boolean;
         character_type: string | null;
         gender: string | null;
         age_range: string | null;
@@ -414,6 +417,8 @@ export default async function ProjetPage({
           id: c.id,
           nom: c.name,
           portrait: c.photo_path ? (urls.get(c.photo_path) ?? null) : null,
+          cadrage: `${c.photo_x}% ${c.photo_y}%`,
+          proposee: c.photo_proposee && Boolean(c.photo_path),
           infos: [
             PERSONNAGE_LISIBLE[c.character_type ?? ""],
             PERSONNAGE_LISIBLE[c.gender ?? ""],

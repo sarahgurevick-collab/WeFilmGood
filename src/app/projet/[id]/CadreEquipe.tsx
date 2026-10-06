@@ -11,6 +11,10 @@ export type PersonnageCadre = {
   id: string;
   nom: string;
   portrait: string | null;
+  /** Le cadrage du portrait : « x% y% » (object-position). */
+  cadrage?: string;
+  /** Le portrait a été posé par WeFilmGood. */
+  proposee?: boolean;
   infos: string;
   bio: string | null;
 };
@@ -192,7 +196,7 @@ export default function CadreEquipe({
               <span className={styles.portrait} aria-hidden="true">
                 {c.portrait ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={c.portrait} alt="" />
+                  <img src={c.portrait} alt="" style={{ objectPosition: c.cadrage }} />
                 ) : (
                   <span>{c.nom.trim().charAt(0).toUpperCase()}</span>
                 )}
@@ -214,6 +218,8 @@ export default function CadreEquipe({
     ? {
         nom: personnageChoisi.nom,
         image: personnageChoisi.portrait,
+        cadrage: personnageChoisi.cadrage,
+        proposee: personnageChoisi.proposee && Boolean(personnageChoisi.portrait),
         sous: personnageChoisi.infos,
         bio: personnageChoisi.bio,
         site: null as string | null | undefined,
@@ -339,7 +345,7 @@ export default function CadreEquipe({
                 <span className={styles.portrait} aria-hidden="true">
                   {detail.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={detail.image} alt="" />
+                    <img src={detail.image} alt="" style={{ objectPosition: detail.cadrage }} />
                   ) : (
                     <span>{detail.nom.trim().charAt(0).toUpperCase()}</span>
                   )}
@@ -347,6 +353,7 @@ export default function CadreEquipe({
                 <div>
                   <h2 className={styles.detailNom}>{detail.nom}</h2>
                   {detail.sous && <p className={styles.detailSous}>{detail.sous}</p>}
+                  {detail.proposee && <p className={styles.detailPropose}>Proposée par WeFilmGood</p>}
                 </div>
               </div>
               {detail.bio && <p className={styles.detailBio}>{detail.bio}</p>}

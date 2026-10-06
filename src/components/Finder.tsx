@@ -540,7 +540,7 @@ export function CartePersonnage({ c }: { c: PersonnageTrouve }) {
       <span className={styles.portrait}>
         {c.portrait ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={c.portrait} alt="" loading="lazy" />
+          <img src={c.portrait} alt="" loading="lazy" style={{ objectPosition: c.cadrage }} />
         ) : (
           <span>{c.nom.trim().charAt(0).toUpperCase()}</span>
         )}

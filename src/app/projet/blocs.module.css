@@ -117,6 +117,32 @@
   background: transparent;
 }
 
+/* La case portrait et ses petites notes en dessous. */
+.casePortrait {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 120px;
+  flex-shrink: 0;
+}
+
+.portraitGlisse {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.portraitGlisse:active {
+  cursor: grabbing;
+}
+
+.portraitPropose {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--dim);
+}
+
 .portrait {
   position: relative;
   display: flex;

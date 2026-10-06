@@ -1,0 +1,142 @@
+.onglets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 4px 0 8px;
+}
+
+.onglet,
+.ongletActif {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  color: inherit;
+}
+
+.ongletActif {
+  background: var(--rouge-wfg, #da2c25);
+  border-color: var(--rouge-wfg, #da2c25);
+  color: #fff;
+}
+
+.grille {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+  margin: 20px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.carte {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #eee;
+}
+
+.nom {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.projet {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.note {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(242, 194, 48, 0.2);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.bio {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--dim);
+}
+
+.lot {
+  margin: 0;
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.actions form {
+  display: contents;
+}
+
+.valider,
+.retirer,
+.ouvrir {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.valider {
+  border: 0;
+  background: var(--rouge-wfg, #da2c25);
+  color: #fff;
+}
+
+.retirer,
+.ouvrir {
+  border: 1px solid var(--bordure-douce);
+  background: transparent;
+  color: inherit;
+}
+
+.ouvrir {
+  flex-basis: 100%;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pages {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 8px 0 24px;
+}

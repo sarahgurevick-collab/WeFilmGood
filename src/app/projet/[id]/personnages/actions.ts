@@ -34,6 +34,15 @@ export async function enregistrerPersonnage(formData: FormData) {
     echec("Le portrait doit être une image JPG ou PNG.");
   }
 
+  // Le cadrage (06/10) : envoyé seulement si l'auteur a déplacé la photo.
+  const nombre = (v: FormDataEntryValue | null) => {
+    const n = typeof v === "string" && v.trim() !== "" ? Number(v) : NaN;
+    return Number.isFinite(n) ? Math.min(100, Math.max(0, Math.round(n))) : null;
+  };
+  const photoX = nombre(formData.get("photo_x"));
+  const photoY = nombre(formData.get("photo_y"));
+  const cadrage = photoX !== null && photoY !== null ? { photo_x: photoX, photo_y: photoY } : null;
+
   let photoPath: string | null = null;
   if (photo && photo.size > 0) {
     photoPath = await deposerImage(supabase, projet.owner_id, id, photo, "personnage");
@@ -68,7 +77,10 @@ export async function enregistrerPersonnage(formData: FormData) {
         biography,
         actor_name: actorName,
         // Un portrait choisi par l'auteur n'est plus « proposé par la plateforme » (0120).
-        ...(photoPath ? { photo_path: photoPath, photo_proposee: false } : {}),
+        // La nouvelle photo repart du centre, sauf si l'auteur l'a déjà cadrée.
+        ...(photoPath ? { photo_path: photoPath, photo_proposee: false, photo_x: 50, photo_y: 50 } : {}),
+        // Cadrer seulement une photo ne change pas son origine : elle reste « proposée par WeFilmGood ».
+        ...(cadrage ?? {}),
       })
       .eq("id", characterId)
       .eq("project_id", id);
@@ -90,6 +102,7 @@ export async function enregistrerPersonnage(formData: FormData) {
       biography,
       actor_name: actorName,
       photo_path: photoPath,
+      ...(cadrage ?? {}),
       position: count ?? 0,
     });
     if (error) echec(error.message);
