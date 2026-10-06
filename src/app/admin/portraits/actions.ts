@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { IMAGES, deposerImage, retirerImages } from "@/app/projet/[id]/fichiers";
@@ -50,7 +51,7 @@ export async function retirerPortrait(formData: FormData) {
 
   await a
     .from("characters")
-    .update({ photo_path: null, photo_proposee: false, photo_x: 50, photo_y: 50 })
+    .update({ photo_path: null, photo_proposee: false, photo_x: 50, photo_y: PORTRAIT_Y_DEFAUT })
     .eq("id", id)
     .eq("photo_proposee", true);
   await a
@@ -92,7 +93,7 @@ export async function poserPhoto(formData: FormData) {
 
   const { error } = await a
     .from("characters")
-    .update({ photo_path: chemin, photo_proposee: true, photo_x: 50, photo_y: 50 })
+    .update({ photo_path: chemin, photo_proposee: true, photo_x: 50, photo_y: PORTRAIT_Y_DEFAUT })
     .eq("id", id)
     .is("photo_path", null);
   if (error) {

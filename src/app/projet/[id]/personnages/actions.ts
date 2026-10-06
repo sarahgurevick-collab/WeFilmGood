@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import { chargerProjetAModifier } from "../../blocs";
 import { IMAGES, deposerImage, retirerImages } from "../fichiers";
 import { AGES, GENRES_PERSONNAGE, TYPES } from "./options";
@@ -78,7 +79,7 @@ export async function enregistrerPersonnage(formData: FormData) {
         actor_name: actorName,
         // Un portrait choisi par l'auteur n'est plus « proposé par la plateforme » (0120).
         // La nouvelle photo repart du centre, sauf si l'auteur l'a déjà cadrée.
-        ...(photoPath ? { photo_path: photoPath, photo_proposee: false, photo_x: 50, photo_y: 50 } : {}),
+        ...(photoPath ? { photo_path: photoPath, photo_proposee: false, photo_x: 50, photo_y: PORTRAIT_Y_DEFAUT } : {}),
         // Cadrer seulement une photo ne change pas son origine : elle reste « proposée par WeFilmGood ».
         ...(cadrage ?? {}),
       })

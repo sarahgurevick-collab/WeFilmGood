@@ -3,6 +3,7 @@ import profilStyles from "@/app/profil/profil.module.css";
 import BlocProjet from "../../BlocProjet";
 import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
+import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import CasePortrait from "./CasePortrait";
 import ChercheurPortrait from "./ChercheurPortrait";
 import { signerImages } from "../fichiers";
@@ -108,7 +109,7 @@ function FormulairePersonnage({
       <CasePortrait
         photo={photo ?? null}
         x={personnage?.photo_x ?? 50}
-        y={personnage?.photo_y ?? 50}
+        y={personnage?.photo_y ?? PORTRAIT_Y_DEFAUT}
         proposee={personnage?.photo_proposee ?? false}
       />
 

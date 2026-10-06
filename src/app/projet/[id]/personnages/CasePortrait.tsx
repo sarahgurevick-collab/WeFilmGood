@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import formStyles from "@/components/form.module.css";
+import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import styles from "../../blocs.module.css";
 
 /** Le nom du signal envoyé par ChercheurPortrait au formulaire du personnage. */
@@ -22,7 +23,7 @@ export const PORTRAIT_RETIRE = "portrait-retire";
 export default function CasePortrait({
   photo,
   x: xInitial = 50,
-  y: yInitial = 50,
+  y: yInitial = PORTRAIT_Y_DEFAUT,
   proposee = false,
 }: {
   photo: string | null;
@@ -50,7 +51,7 @@ export default function CasePortrait({
       fichier = null;
       setChoisi(url);
       setX(50);
-      setY(50);
+      setY(PORTRAIT_Y_DEFAUT);
       setBouge(false);
       setNatif(null);
     };
@@ -62,7 +63,7 @@ export default function CasePortrait({
         fichier = URL.createObjectURL(f);
         setChoisi(fichier);
         setX(50);
-        setY(50);
+        setY(PORTRAIT_Y_DEFAUT);
         setBouge(false);
         setNatif(null);
       }
