@@ -120,10 +120,19 @@ export default function CasePortrait({
         {image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
+            key={image}
             src={image}
             alt=""
             draggable={false}
             style={{ objectPosition: `${x}% ${y}%` }}
+            // Une photo déjà chargée avant que la page ne s'active (le cas d'un
+            // portrait enregistré) ne déclenche plus « onLoad » : on lit alors
+            // ses dimensions tout de suite, sinon on ne pourrait pas la faire glisser.
+            ref={(img) => {
+              if (img && img.complete && img.naturalWidth > 0) {
+                setNatif((n) => n ?? { l: img.naturalWidth, h: img.naturalHeight });
+              }
+            }}
             onLoad={(e) => setNatif({ l: e.currentTarget.naturalWidth, h: e.currentTarget.naturalHeight })}
           />
         ) : (
