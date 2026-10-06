@@ -15,8 +15,9 @@ type Portrait = { apercu: string; url: string; titre: string; source: string };
  * Depuis le 01/10 : les propositions s'affichent d'elles-mêmes dès qu'un
  * nom est tapé, sans passer par le bouton, et le portrait cliqué se pose
  * aussitôt dans la case « Portrait » du personnage (CasePortrait). Les
- * propositions s'effacent alors, et le bouton « Enregistrer ce portrait »
- * apparaît ; la croix de la case retire le choix et les fait revenir.
+ * propositions s'effacent alors (le choix s'enregistre avec le bouton
+ * « Enregistrer » du cadre, le seul) ; la croix de la case retire le choix
+ * et les fait revenir.
  *
  * Un personnage sans portrait reçoit aussi des propositions sans rien
  * taper : six photos tirées de ses menus « Le personnage est… » et « Âge »
@@ -150,13 +151,10 @@ export default function ChercheurPortrait({
               }
             }}
           />
-          {choisi ? (
-            <button type="submit" className={styles.chercheurBouton}>
-              Enregistrer ce portrait
-            </button>
-          ) : (
-            enCours && <span className={formStyles.hint}>Recherche…</span>
-          )}
+          {/* Plus de deuxième bouton « Enregistrer ce portrait » (06/10, Sarah : « je clique
+              sur les deux ») : il faisait exactement la même chose que « Enregistrer »,
+              en bas du cadre. La croix de la case rappelle que le choix n'est pas encore enregistré. */}
+          {!choisi && enCours && <span className={formStyles.hint}>Recherche…</span>}
         </span>
       </label>
 
