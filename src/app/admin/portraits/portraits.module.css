@@ -167,3 +167,54 @@
   background: var(--rouge-wfg, #da2c25);
   color: #fff;
 }
+
+/* « Sans portrait » : les deux recherches toutes prêtes, puis la photo. */
+.recherches {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.poser {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.choisir {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 2px dashed var(--rouge-wfg, #da2c25);
+  border-radius: 999px;
+  color: var(--rouge-wfg, #da2c25);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.fichier {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.apercu {
+  display: block;
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #eee;
+}
+
+.valider:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
