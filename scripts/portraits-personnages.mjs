@@ -65,8 +65,14 @@ async function pixabay(q, pris) {
   const adresse =
     `https://pixabay.com/api/?key=${env.PIXABAY_API_KEY}&q=${encodeURIComponent(q.slice(0, 100))}` +
     `&lang=en&image_type=photo&category=people&per_page=40&safesearch=true`;
-  const r = await fetch(adresse);
-  if (r.status === 429) throw new Error("Pixabay : limite atteinte, réessayer plus tard");
+  let r;
+  for (let essai = 0; ; essai++) {
+    r = await fetch(adresse);
+    if (r.status !== 429) break;
+    if (essai === 2) throw new Error("Pixabay : limite atteinte, réessayer plus tard");
+    console.log("  Pixabay : limite atteinte, on attend une minute…");
+    await pause(65000);
+  }
   if (!r.ok) return [];
   const d = await r.json();
   return (d.hits ?? [])
@@ -96,8 +102,24 @@ async function vignette(adresse) {
   for (let essai = 0; ; essai++) {
     const r = await fetch(adresse, { headers: AGENT });
     if (r.ok) return Buffer.from(await r.arrayBuffer());
-    if (essai === 2) throw new Error(`vignette ${r.status}`);
-    await pause(3000 * (essai + 1));
+    if (essai === 3) throw new Error(`vignette ${r.status}`);
+    await pause(r.status === 429 ? 30000 * (essai + 1) : 3000 * (essai + 1));
+  }
+}
+
+// Le portrait retenu, avec patience : sur un refus « trop de demandes » (429),
+// on attend ce que la banque demande (ou 30 s, 60 s, 90 s…) et on recommence,
+// au lieu de laisser le personnage de côté (06/10, demande de Sarah : « quand
+// il y a des refus, tu attends, et cela repart sans problème »).
+async function telecharger(adresse) {
+  for (let essai = 0; ; essai++) {
+    const r = await fetch(adresse, { headers: AGENT });
+    if (r.ok) return r;
+    if (![429, 502, 503].includes(r.status) || essai === 4) throw new Error(`image ${r.status}`);
+    const demande = Number(r.headers.get("retry-after"));
+    const attente = Number.isFinite(demande) && demande > 0 ? demande * 1000 : 30000 * (essai + 1);
+    console.log(`  La banque demande d'attendre (${r.status}) : ${Math.round(Math.min(attente, 180000) / 1000)} s…`);
+    await pause(Math.min(attente, 180000));
   }
 }
 
@@ -114,6 +136,19 @@ if (commande === "reste") {
   console.log(`${reste.length} personnages sans portrait à traiter.`);
 } else if (commande === "lot") {
   const [combien, parPart, dossier] = [Number(args[0]), Number(args[1]), args[2]];
+  // Pixabay interdit les téléchargements en masse : Sarah a fixé 200 à 300
+  // personnages par jour (01/10). Au-delà, on s'arrête et on lui demande
+  // (FORCE=1 pour passer outre, seulement si elle l'a dit).
+  const LIMITE = 300;
+  const { count: dejaTraites } = await supabase
+    .from("portraits_suivi")
+    .select("character_id", { count: "exact", head: true })
+    .gt("traite_le", new Date(Date.now() - 24 * 3600 * 1000).toISOString())
+    .not("lot", "like", "manuel%");
+  if ((dejaTraites ?? 0) + combien > LIMITE && process.env.FORCE !== "1") {
+    console.log(`STOP : ${dejaTraites} personnages ont déjà été traités ces dernières 24 h ; ${combien} de plus dépasseraient ${LIMITE}.`);
+    process.exit(2);
+  }
   mkdirSync(dossier, { recursive: true });
   // Les projets visibles des membres d'abord, et les personnages décrits avant les autres.
   const reste = (await aTraiter()).sort(
@@ -243,8 +278,7 @@ if (commande === "reste") {
     }
     if (avis !== "rien") {
       try {
-        const r = await fetch(image.url, { headers: AGENT });
-        if (!r.ok) throw new Error(`image ${r.status}`);
+        const r = await telecharger(image.url);
         const donnees = await sharp(Buffer.from(await r.arrayBuffer()))
           .resize(900, 900, { fit: "inside", withoutEnlargement: true })
           .jpeg({ quality: 85 })
@@ -261,7 +295,7 @@ if (commande === "reste") {
         bilan.saute++;
         continue;
       }
-      await pause(300);
+      await pause(1500);
     }
     if (avis === "rien" && sansRien) {
       bilan.saute++;
