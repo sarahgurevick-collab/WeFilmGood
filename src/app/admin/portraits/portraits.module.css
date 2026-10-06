@@ -140,3 +140,30 @@
   align-items: center;
   margin: 8px 0 24px;
 }
+
+/* Les recherches Adobe Stock et Unsplash, en boutons bien visibles. */
+.recherches {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chercher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 2px solid var(--rouge-wfg, #da2c25);
+  border-radius: 999px;
+  color: var(--rouge-wfg, #da2c25);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+}
+
+.chercher:hover {
+  background: var(--rouge-wfg, #da2c25);
+  color: #fff;
+}
