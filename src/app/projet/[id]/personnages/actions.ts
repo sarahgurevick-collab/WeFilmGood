@@ -110,7 +110,12 @@ export async function enregistrerPersonnage(formData: FormData) {
   }
 
   revalidatePath(`/projet/${id}`);
-  redirect(`/projet/${id}/personnages?enregistre=1`);
+  // On revient sur le cadre qu'on vient d'enregistrer, qui le confirme à côté de son bouton.
+  redirect(
+    characterId
+      ? `/projet/${id}/personnages?enregistre=${characterId}#perso-${characterId}`
+      : `/projet/${id}/personnages?enregistre=1`,
+  );
 }
 
 /** Retire un personnage, et son portrait avec lui. */

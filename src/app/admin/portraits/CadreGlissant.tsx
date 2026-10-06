@@ -16,11 +16,14 @@ export default function CadreGlissant({
   x: xInitial,
   y: yInitial,
   enfants,
+  sauve,
 }: {
   src: string;
   x: number;
   y: number;
   enfants?: ReactNode;
+  /** Le cadrage déjà enregistré (« x,y ») : s'il est celui qu'on voit, le bouton laisse place à « Cadrage enregistré ». */
+  sauve?: string | null;
 }) {
   const zone = useRef<HTMLDivElement>(null);
   const [x, setX] = useState(xInitial);
@@ -90,7 +93,11 @@ export default function CadreGlissant({
         <>
           <input type="hidden" name="photo_x" value={Math.round(x)} />
           <input type="hidden" name="photo_y" value={Math.round(y)} />
-          {enfants}
+          {sauve === `${Math.round(x)},${Math.round(y)}` ? (
+            <p className={styles.sauve}>Cadrage enregistré</p>
+          ) : (
+            enfants
+          )}
         </>
       )}
     </>

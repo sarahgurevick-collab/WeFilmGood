@@ -251,3 +251,10 @@
 .cadreGlisse:active {
   cursor: grabbing;
 }
+
+.sauve {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1a7f37;
+}

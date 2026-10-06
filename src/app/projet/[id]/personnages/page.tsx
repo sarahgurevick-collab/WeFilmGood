@@ -4,6 +4,7 @@ import BlocProjet from "../../BlocProjet";
 import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
+import BoutonEnregistrer from "./BoutonEnregistrer";
 import CasePortrait from "./CasePortrait";
 import ChercheurPortrait from "./ChercheurPortrait";
 import { signerImages } from "../fichiers";
@@ -74,6 +75,7 @@ export default async function PersonnagesPage({
               key={p.id}
               projectId={id}
               personnage={p}
+              enregistre={enregistre === p.id}
               photo={p.photo_path ? (urls.get(p.photo_path) ?? null) : null}
             />
           ))}
@@ -92,13 +94,17 @@ function FormulairePersonnage({
   projectId,
   personnage,
   photo,
+  enregistre = false,
 }: {
   projectId: string;
   personnage: Personnage | null;
   photo: string | null;
+  /** Ce cadre vient d'être enregistré : on le dit à côté du bouton. */
+  enregistre?: boolean;
 }) {
   return (
     <form
+      id={personnage ? `perso-${personnage.id}` : undefined}
       className={`${styles.personnage} ${personnage ? "" : styles.nouveau}`}
       action={enregistrerPersonnage}
       encType="multipart/form-data"
@@ -189,9 +195,10 @@ function FormulairePersonnage({
           ) : (
             <span />
           )}
-          <button type="submit" className={formStyles.submit}>
-            {personnage ? "Enregistrer" : "Ajouter"}
-          </button>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 12 }}>
+            {enregistre && <span className={profilStyles.ok}>Enregistré.</span>}
+            <BoutonEnregistrer libelle={personnage ? "Enregistrer" : "Ajouter"} />
+          </span>
         </div>
       </div>
     </form>
