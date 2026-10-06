@@ -5,10 +5,11 @@ import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import BoutonEnregistrer from "./BoutonEnregistrer";
+import BoutonRetirerPersonnage from "./BoutonRetirerPersonnage";
 import CasePortrait from "./CasePortrait";
 import ChercheurPortrait from "./ChercheurPortrait";
 import { signerImages } from "../fichiers";
-import { enregistrerPersonnage, retirerPersonnage } from "./actions";
+import { enregistrerPersonnage } from "./actions";
 import { AGES, GENRES_PERSONNAGE, TYPES } from "./options";
 
 type Personnage = {
@@ -184,14 +185,7 @@ function FormulairePersonnage({
 
         <div className={styles.piedPersonnage}>
           {personnage ? (
-            <button
-              type="submit"
-              formAction={retirerPersonnage}
-              formNoValidate
-              className={styles.lienDanger}
-            >
-              Retirer ce personnage
-            </button>
+            <BoutonRetirerPersonnage />
           ) : (
             <span />
           )}

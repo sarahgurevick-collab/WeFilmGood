@@ -198,10 +198,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  /* Loin du « D'autres portraits » juste au-dessus : on ne retire pas un personnage par erreur. */
+  margin-top: 32px;
 }
 
 .lienDanger {
-  padding: 0;
+  min-height: 44px;
+  padding: 0 4px;
   border: 0;
   background: none;
   font-size: 13px;
@@ -290,7 +293,8 @@
 /* « D'autres portraits » : relance le tirage des propositions. */
 .lienAutres {
   align-self: flex-start;
-  padding: 0;
+  min-height: 44px;
+  padding: 0 4px;
   border: 0;
   background: none;
   color: var(--dim);
