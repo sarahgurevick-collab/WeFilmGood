@@ -280,6 +280,8 @@
   right: 0;
   bottom: 0;
   width: min(330px, 92%);
+  max-height: 100%;
+  overflow-y: auto;
   box-sizing: border-box;
   padding: 18px;
   display: flex;
@@ -365,6 +367,53 @@
   font-size: 14px;
   line-height: 1.5;
   color: #bdb7b0;
+}
+
+.ficheTexte p {
+  margin: 0 0 8px;
+}
+
+.ficheTexte p:last-child {
+  margin-bottom: 0;
+}
+
+/* Le tutoriel et la question à Mira, sous chaque explication. */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #333333;
+  border-radius: 999px;
+  background: #1c1c1c;
+  color: #ededed;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.action:hover {
+  background: #262626;
+}
+
+.action:focus-visible {
+  outline: 3px solid var(--rouge);
+  outline-offset: 2px;
+}
+
+.action svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

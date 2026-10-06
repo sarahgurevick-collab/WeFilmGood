@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ICONES } from "./AvantageAdhesion";
+import { EVENEMENT_CONTACT } from "./BoutonDevis";
 import styles from "./OrbiteAdhesion.module.css";
 
 /**
@@ -59,25 +61,17 @@ type Noeud = {
   texteZero?: string;
 };
 
-const GALAXIES =
-  "La Galaxie WeFilmGood : 1 crédit par jour pour l’une des 3 galaxies — Projets, Talents, Personnages";
 const GALAXIES_ZERO = "La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)";
 
+// Les phrases sont celles de Sarah (06/10), au « tu » : « le tu rapproche, le
+// vous met de la distance ». Un retour à la ligne (\n) fait un paragraphe.
 const ADHESION: Noeud[] = [
   {
-    id: "galaxie-projet",
-    nom: "La Galaxie Projets",
-    icone: "projets",
+    id: "galaxies",
+    nom: "Les Galaxies Projets - Personnages - Talents",
+    icone: "galaxie",
     texte:
-      "Votre adhésion vous ouvre les portes d’un nouvel univers par jour. Visionnez le vidéopitch, lisez la fiche et découvrez les personnages ! Vous aurez peut-être la surprise de découvrir une vidéo d’interprétation faite par un comédien ou une comédienne. Enregistrez le projet dans vos favoris pour le retrouver en un clic et contacter l’auteur le moment venu.",
-    aZero: "payant",
-  },
-  { id: "galaxie-talent", nom: "La Galaxie Talents", icone: "talents", texte: GALAXIES, aZero: "payant" },
-  {
-    id: "galaxie-personnage",
-    nom: "La Galaxie Personnages",
-    icone: "personnages",
-    texte: GALAXIES,
+      "Ton adhésion t’ouvre les portes d’un nouvel univers par jour. Découvre le projet de ton choix : Tagline, logline, moodboard, personnages.\nL’auteur écrit l’histoire et enregistre un StoryPitch, le comédien lui donne vie et s’en amuse avec un PlayPitch, le compositeur compose le SoundPitch (thème ou chanson phare) qui déclenchera la production du film !\nEnregistre le projet dans tes favoris et contacte les Talents le moment venu.\nChaque jour, un nouveau Gooder (crédit) t’attend pour l’une des 3 galaxies au choix.",
     aZero: "reste",
     texteZero: GALAXIES_ZERO,
   },
@@ -86,7 +80,7 @@ const ADHESION: Noeud[] = [
     nom: "CinéCrush",
     icone: "coeur",
     texte:
-      "Le chrono est lancé ! Ce projet mérite toute votre attention : vous avez une semaine pour découvrir son vidéopitch. Laissez vos avis en commentaires : vos retours sont un véritable tremplin magique pour propulser son histoire !",
+      "Le chrono est lancé ! Ce videopitch mérite toute ton attention : tu as une semaine pour le découvrir. Laisse un avis en commentaires : ce sont de véritables tremplins magiques pour propulser les histoires !",
     aZero: "reste",
   },
   {
@@ -94,23 +88,23 @@ const ADHESION: Noeud[] = [
     nom: "CinéMatch",
     icone: "popcorn",
     texte:
-      "CinéMatch : découvrez les talents qui vibrent sur la même longueur d’onde que vous en 20 questions.",
+      "Découvre les talents qui vibrent sur la même longueur d’onde que toi grâce à un portrait chinois en 20 questions.",
     aZero: "payant",
   },
   {
     id: "fiche-projet",
-    nom: "Fiche projet",
+    nom: "Fiche Projet (Fiche Vitrine)",
     icone: "fiche",
     texte:
-      "Ne laissez aucun scénario dans un tiroir : vos projets en développement, même anciens, sont la vitrine et la richesse de votre univers.",
+      "Ne laisse aucun scénario dans ton tiroir : tes projets en développement, même anciens, sont la vitrine et la richesse de ton univers. Elle est conçue pour attirer l’œil des producteurs, inspirer les comédiens (PlayPitch) ou les compositeurs (SoundPitch). Tu peux ajouter un StoryPitch pour chacun de tes projets.",
     aZero: "payant",
   },
   {
     id: "fiche-personnage",
-    nom: "Fiche personnage",
+    nom: "Fiche Personnage",
     icone: "fiche",
     texte:
-      "« Auteurs, donnez vie à vos personnages : donnez-leur un visage et une biographie si vibrante qu’un comédien n’aura qu’une envie… s’en emparer face caméra ! » Vous recevrez une notification et vous pourrez échanger avec le (la) comédien(ne) qui aura incarné votre personnage.",
+      "Donne vie à tes personnages avec une biographie si vibrante qu’un comédien n’aura qu’une envie… s’en emparer face caméra ! Ajoute la photo d’un inconnu ou d’une personne célèbre. Reçois une notification dès qu’un PlayPitch est associé à ton personnage et échange avec le comédien.",
     // Créer une fiche personnage suppose une fiche projet, qui n'est jamais
     // gratuite : à 0 €, on voit les personnages, on n'en crée pas (Sarah, 05/10).
     aZero: "payant",
@@ -120,7 +114,7 @@ const ADHESION: Noeud[] = [
     nom: "ScénarioLab (spectateur)",
     icone: "fiole",
     texte:
-      "Glisse-toi dans les coulisses de la création : viens voir 5 auteurs de talent réécrire leurs histoires en direct et participe à l’évolution de leurs scénarios ! Place offerte avec l’adhésion à 5 €/mois, prioritaire : il n’y a que 50 places.",
+      "Glisse-toi dans les coulisses de la création : viens voir 5 auteurs de talent réécrire leurs histoires en direct et participe à l’évolution de leurs scénarios ! Accès prioritaire et gratuit pour les adhérents à 5 €/mois (50 places maximum)",
     aZero: "payant",
   },
 ];
@@ -144,6 +138,13 @@ const SERVICES: Noeud[] = [
     nom: "Accompagnement Longue Durée",
     icone: "telephone",
     texte: "500 € : accompagnement longue durée sur un projet.",
+  },
+  {
+    id: "credits-galaxie",
+    nom: "Crédits Galaxie",
+    icone: "piece",
+    texte:
+      "Profitez de 25 Gooders au lieu de 20 (soit 15 € de cadeaux) pour booster vos histoires et déclencher vos premiers coups de cœur.",
   },
 ];
 
@@ -269,6 +270,35 @@ const STYLE_DEPART: CSSProperties[] = RONDS.map((n, i) => ({
 }));
 
 type Etat = { cercle: Cercle; angle: number; rayon: number; cibleAngle: number; cibleRayon: number };
+
+const ICONE_TUTORIEL = (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+  </svg>
+);
+
+const ICONE_MIRA = (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+);
 
 const ETIQUETTE: Record<Cercle, string> = { adhesion: "Adhésion", service: "Services" };
 
@@ -444,9 +474,33 @@ export default function OrbiteAdhesion() {
                   ×
                 </button>
               </div>
-              <p className={styles.ficheTexte}>
-                {mode === "zero" && choix.texteZero ? choix.texteZero : choix.texte}
-              </p>
+              <div className={styles.ficheTexte}>
+                {(mode === "zero" && choix.texteZero ? choix.texteZero : choix.texte)
+                  .split("\n")
+                  .map((ligne, i) => (
+                    <p key={i}>{ligne}</p>
+                  ))}
+              </div>
+              <div className={styles.actions}>
+                <Link href={`/tutoriels#${choix.id}`} className={styles.action}>
+                  {ICONE_TUTORIEL}
+                  Tutoriel
+                </Link>
+                <button
+                  type="button"
+                  className={styles.action}
+                  onClick={() =>
+                    window.dispatchEvent(
+                      new CustomEvent(EVENEMENT_CONTACT, {
+                        detail: { message: `À propos de « ${choix.nom} » : ` },
+                      }),
+                    )
+                  }
+                >
+                  {ICONE_MIRA}
+                  Poser une question à Mira
+                </button>
+              </div>
             </div>
           )}
         </div>
