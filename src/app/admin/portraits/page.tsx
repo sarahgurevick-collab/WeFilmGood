@@ -55,10 +55,10 @@ const extrait = (texte: string | null, n: number) =>
  * plutôt que dans un fichier (06/10, demande de Sarah). Les « moyens »
  * d'abord : ce sont ceux qu'elle regarde un par un.
  *
- * L'onglet « Sans portrait » sert aussi à un aidant de confiance (migration
- * 0135) : il ne voit que cet onglet. Pour chaque personnage, les deux
- * recherches toutes prêtes (Unsplash, Adobe Stock gratuit) et un bouton pour
- * poser la photo. Le suivi n'est lisible qu'avec la clé de service, ouverte
+ * Un aidant de confiance (migration 0135) voit les mêmes trois onglets, mais
+ * rien d'autre de l'administration (ni menu, ni membres). Dans « Sans
+ * portrait », pour chaque personnage : les deux recherches toutes prêtes
+ * (Unsplash, Adobe Stock gratuit) et un bouton pour poser la photo. Le suivi n'est lisible qu'avec la clé de service, ouverte
  * ici après la vérification de l'accès.
  */
 export default async function PortraitsAdminPage({
@@ -77,10 +77,9 @@ export default async function PortraitsAdminPage({
   if (!a) redirect("/");
 
   const sp = await searchParams;
-  // Un aidant n'a que l'onglet « Sans portrait ».
-  const onglet: Onglet = !admin
-    ? "sans"
-    : sp.avis === "sans" || sp.avis === "bon" ? sp.avis : "moyen";
+  // L'administration s'ouvre sur les moyens, l'aidant sur les personnages sans portrait.
+  const onglet: Onglet =
+    sp.avis === "sans" || sp.avis === "moyen" || sp.avis === "bon" ? sp.avis : admin ? "moyen" : "sans";
   const page = Math.max(1, Math.floor(Number(sp.page)) || 1);
 
   const compterAvis = async (avis: "moyen" | "bon") =>
@@ -104,8 +103,8 @@ export default async function PortraitsAdminPage({
     ).count ?? 0;
   const [nSans, nMoyens, nBons] = await Promise.all([
     compterSans(),
-    admin ? compterAvis("moyen") : Promise.resolve(0),
-    admin ? compterAvis("bon") : Promise.resolve(0),
+    compterAvis("moyen"),
+    compterAvis("bon"),
   ]);
   const total = onglet === "sans" ? nSans : onglet === "moyen" ? nMoyens : nBons;
   const nbPages = Math.max(1, Math.ceil(total / PAR_PAGE));
@@ -180,22 +179,20 @@ export default async function PortraitsAdminPage({
     <PageShell
       nav={admin ? "admin" : undefined}
       avantTitre={admin ? <NavAdmin /> : undefined}
-      title={admin ? "Portraits proposés" : "Portraits sans photo"}
+      title="Portraits proposés"
       theme="clair"
     >
-      {admin && (
-        <div className={styles.onglets}>
-          <Link href={lien("sans")} className={onglet === "sans" ? styles.ongletActif : styles.onglet}>
-            Sans portrait ({nSans})
-          </Link>
-          <Link href={lien("moyen")} className={onglet === "moyen" ? styles.ongletActif : styles.onglet}>
-            Moyens ({nMoyens})
-          </Link>
-          <Link href={lien("bon")} className={onglet === "bon" ? styles.ongletActif : styles.onglet}>
-            Bons ({nBons})
-          </Link>
-        </div>
-      )}
+      <div className={styles.onglets}>
+        <Link href={lien("sans")} className={onglet === "sans" ? styles.ongletActif : styles.onglet}>
+          Sans portrait ({nSans})
+        </Link>
+        <Link href={lien("moyen")} className={onglet === "moyen" ? styles.ongletActif : styles.onglet}>
+          Moyens ({nMoyens})
+        </Link>
+        <Link href={lien("bon")} className={onglet === "bon" ? styles.ongletActif : styles.onglet}>
+          Bons ({nBons})
+        </Link>
+      </div>
 
       {sp.erreur && <p className={formStyles.error}>{sp.erreur}</p>}
 
@@ -281,7 +278,7 @@ export default async function PortraitsAdminPage({
                   <input type="hidden" name="character_id" value={p.id} />
                   <BoutonRetirer />
                 </form>
-                {p.project && (
+                {admin && p.project && (
                   <Link href={`/projet/${p.project.id}/personnages`} className={styles.ouvrir}>
                     Ouvrir les personnages du projet
                   </Link>

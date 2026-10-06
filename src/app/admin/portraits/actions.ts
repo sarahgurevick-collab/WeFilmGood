@@ -6,17 +6,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { IMAGES, deposerImage, retirerImages } from "@/app/projet/[id]/fichiers";
 
-/** Réservé à l'administration ; le suivi des portraits n'est lisible qu'avec la clé de service. */
-async function clientAdmin() {
-  const supabase = await createClient();
-  const { data: admin } = await supabase.rpc("is_admin");
-  if (admin !== true) redirect("/");
-  const a = createAdminClient();
-  if (!a) redirect("/admin");
-  return a;
-}
-
-/** L'administration, ou un aidant aux portraits (migration 0135) : seulement pour poser une photo. */
+/**
+ * L'administration, ou un aidant aux portraits (migration 0135) : il relit,
+ * valide, retire et pose des photos, rien d'autre. Le suivi des portraits
+ * n'est lisible qu'avec la clé de service.
+ */
 async function clientAidant() {
   const supabase = await createClient();
   const [{ data: admin }, { data: aidant }] = await Promise.all([
@@ -33,7 +27,7 @@ async function clientAidant() {
 export async function validerPortrait(formData: FormData) {
   const id = String(formData.get("character_id") ?? "");
   if (!id) return;
-  const a = await clientAdmin();
+  const a = await clientAidant();
   await a.from("portraits_suivi").update({ avis: "bon", note: null }).eq("character_id", id);
   revalidatePath("/admin/portraits");
 }
@@ -45,7 +39,7 @@ export async function validerPortrait(formData: FormData) {
 export async function retirerPortrait(formData: FormData) {
   const id = String(formData.get("character_id") ?? "");
   if (!id) return;
-  const a = await clientAdmin();
+  const a = await clientAidant();
   const { data: perso } = await a
     .from("characters")
     .select("photo_path")
