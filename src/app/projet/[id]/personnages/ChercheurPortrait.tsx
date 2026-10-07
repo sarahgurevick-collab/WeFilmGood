@@ -33,6 +33,9 @@ export default function ChercheurPortrait({
   const [portraits, setPortraits] = useState<Portrait[] | null>(null);
   const [enCours, setEnCours] = useState(false);
   const [choisi, setChoisi] = useState<Portrait | null>(null);
+  // Les photos qui ne se chargent pas (Openverse en renvoie) : leur case
+  // restait un grand trou noir (07/10, Sarah) ; on les retire de la liste.
+  const [cassees, setCassees] = useState<Set<string>>(new Set());
 
   const racine = useRef<HTMLDivElement>(null);
   // La dernière recherche lancée : une réponse plus ancienne, arrivée en
@@ -113,7 +116,7 @@ export default function ChercheurPortrait({
       )}
       {!choisi && portraits && portraits.length > 0 && (
         <ul className={styles.chercheurResultats}>
-          {portraits.map((p) => (
+          {portraits.filter((p) => !cassees.has(p.url)).map((p) => (
             <li key={p.url}>
               <button
                 type="button"
@@ -121,7 +124,12 @@ export default function ChercheurPortrait({
                 title={`${p.titre} — ${p.source}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.apercu} alt={p.titre} loading="lazy" />
+                <img
+                  src={p.apercu}
+                  alt=""
+                  loading="lazy"
+                  onError={() => setCassees((c) => new Set(c).add(p.url))}
+                />
               </button>
             </li>
           ))}
