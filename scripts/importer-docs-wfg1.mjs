@@ -37,7 +37,7 @@ const env = Object.fromEntries(
 
 const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
 const RACINE = "/home/wfg/imports/docs";
-const MAX_MOODBOARD = 10; // la même limite que le site (src/app/projet/[id]/fichiers.ts)
+const MAX_MOODBOARD = Infinity; // 07/10 : plus de limite pour les anciens projets (le site, lui, en tient 9 au dépôt)
 const LARGEUR_MAX = 1600;
 const IMAGE = /\.(jpe?g|png|gif|webp)$/i;
 

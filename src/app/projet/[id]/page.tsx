@@ -15,7 +15,7 @@ import { createClient } from "@/lib/supabase/server";
 import profilStyles from "@/app/profil/profil.module.css";
 import { BLOCS, etatDesBlocs, hrefBloc } from "../blocs";
 import { AUDIENCES, BUDGETS } from "../ChampsFiche";
-import { MAX_MOODBOARD, signerImages } from "./fichiers";
+import { signerImages } from "./fichiers";
 import { chargerFiches } from "./fiches-donnees";
 import presentation from "./presentation.module.css";
 import { nomDeLangue } from "@/lib/langues";
@@ -191,9 +191,10 @@ export default async function ProjetPage({
   // L'image de présentation (la dernière déposée), le mood board et les
   // portraits : le stockage est privé, on signe les adresses pour une heure.
   const vignette = (fichiers ?? []).filter((f) => f.kind === "vignette").at(-1) ?? null;
-  // Neuf photos au plus : les projets qui en avaient dix gardent la dixième
-  // en stockage, sans l'afficher.
-  const moodboard = (fichiers ?? []).filter((f) => f.kind === "moodboard").slice(0, MAX_MOODBOARD);
+  // Neuf photos au plus au dépôt (MAX_MOODBOARD) ; les anciens projets de
+  // WFG 1 peuvent en avoir davantage (décision du 07/10 : Sarah ne peut pas
+  // choisir à leur place), on les affiche toutes.
+  const moodboard = (fichiers ?? []).filter((f) => f.kind === "moodboard");
   const urls = await signerImages(supabase, [
     vignette?.storage_path,
     ...moodboard.map((m) => m.storage_path),
