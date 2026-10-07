@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import Bandeau from "@/components/Bandeau";
 import LogoComplet from "@/components/LogoComplet";
 import VignetteEau from "@/components/VignetteEau";
+import ContactEnveloppe from "@/app/projet/[id]/ContactEnveloppe";
 import projetsStyles from "@/app/pitchotheque/projets.module.css";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -54,6 +55,7 @@ export default async function ProfilMembrePage({
   if (!membre) notFound();
 
   let masque = false;
+  let estAdmin = false;
   if (membre.id !== user.id) {
     const [{ data: lecteur }, { data: isAdmin }] = await Promise.all([
       supabase
@@ -66,6 +68,7 @@ export default async function ProfilMembrePage({
     ]);
     if (lecteur && !isAdmin) notFound();
     masque = isAdmin !== true;
+    estAdmin = isAdmin === true;
   }
 
   // Tous les projets de l'auteur (07/10, Sarah : un producteur doit voir tout
@@ -98,6 +101,25 @@ export default async function ProfilMembrePage({
     : { data: [] };
   const urlDe = new Map((signes ?? []).map((s) => [s.path, s.signedUrl]));
 
+  // L'enveloppe (07/10, Sarah) : comme sur la fiche d'un projet, barrée sans
+  // adhésion, libre pour l'administration. On n'écrit à un talent qu'à propos
+  // d'un projet (règle du 03/10) : l'enveloppe mène donc à l'écran de message
+  // de son projet le plus récent ; sans projet visible, pas d'enveloppe.
+  let adherent = false;
+  if (membre.id !== user.id && projets[0]) {
+    const { data } = await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id });
+    adherent = data === true;
+  }
+  const enveloppe =
+    membre.id !== user.id && projets[0] ? (
+      <div style={{ marginTop: 16 }}>
+        <ContactEnveloppe
+          href={`/mes-messages/nouveau?projet=${projets[0].id}`}
+          adhesionRequise={!estAdmin && !adherent}
+        />
+      </div>
+    ) : null;
+
   const nom = masque ? "Membre" : (membre.display_name ?? membre.full_name ?? "Membre");
 
   return (
@@ -111,6 +133,8 @@ export default async function ProfilMembrePage({
           !masque && <span>{nom.trim().charAt(0).toUpperCase()}</span>
         )}
       </div>
+
+      {enveloppe}
 
       {masque ? null : membre.biofilmo ? (
         <p style={{ marginTop: 24, whiteSpace: "pre-wrap" }}>{membre.biofilmo}</p>
