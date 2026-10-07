@@ -71,7 +71,7 @@ const ADHESION: Noeud[] = [
     nom: "Les Galaxies Projets - Personnages - Talents",
     icone: "galaxie",
     texte:
-      "Ton adhésion t’ouvre les portes d’un nouvel univers par jour. Découvre le projet de ton choix : Tagline, logline, moodboard, personnages.\nL’auteur écrit l’histoire et enregistre un StoryPitch, le comédien lui donne vie et s’en amuse avec un PlayPitch, le compositeur compose le SoundPitch (thème ou chanson phare) qui déclenchera la production du film !\nEnregistre le projet dans tes favoris et contacte les Talents le moment venu.\nChaque jour, un nouveau Gooder (crédit) t’attend pour l’une des 3 galaxies au choix.",
+      "Ton adhésion t’ouvre les portes d’un nouvel univers par jour. Découvre le projet de ton choix : Tagline, logline, moodboard, personnages.\nL’auteur écrit l’histoire et enregistre un StoryPitch, le comédien lui donne vie et s’en amuse avec un ComedyPitch, le compositeur compose le MusicPitch (thème ou chanson phare) qui déclenchera la production du film !\nEnregistre le projet dans tes favoris et contacte les Talents le moment venu.\nChaque jour, un nouveau Gooder (crédit) t’attend pour l’une des 3 galaxies au choix.",
     aZero: "reste",
     texteZero: GALAXIES_ZERO,
   },
@@ -96,7 +96,7 @@ const ADHESION: Noeud[] = [
     nom: "Fiche Projet (Fiche Vitrine)",
     icone: "fiche",
     texte:
-      "Ne laisse aucun scénario dans ton tiroir : tes projets en développement, même anciens, sont la vitrine et la richesse de ton univers. Elle est conçue pour attirer l’œil des producteurs, inspirer les comédiens (PlayPitch) ou les compositeurs (SoundPitch). Tu peux ajouter un StoryPitch pour chacun de tes projets.",
+      "Ne laisse aucun scénario dans ton tiroir : tes projets en développement, même anciens, sont la vitrine et la richesse de ton univers. Elle est conçue pour attirer l’œil des producteurs, inspirer les comédiens (ComedyPitch) ou les compositeurs (MusicPitch). Tu peux ajouter un StoryPitch pour chacun de tes projets.",
     aZero: "payant",
   },
   {
@@ -104,7 +104,7 @@ const ADHESION: Noeud[] = [
     nom: "Fiche Personnage",
     icone: "fiche",
     texte:
-      "Donne vie à tes personnages avec une biographie si vibrante qu’un comédien n’aura qu’une envie… s’en emparer face caméra ! Ajoute la photo d’un inconnu ou d’une personne célèbre. Reçois une notification dès qu’un PlayPitch est associé à ton personnage et échange avec le comédien.",
+      "Donne vie à tes personnages avec une biographie si vibrante qu’un comédien n’aura qu’une envie… s’en emparer face caméra ! Ajoute la photo d’un inconnu ou d’une personne célèbre. Reçois une notification dès qu’un ComedyPitch est associé à ton personnage et échange avec le comédien.",
     // Créer une fiche personnage suppose une fiche projet, qui n'est jamais
     // gratuite : à 0 €, on voit les personnages, on n'en crée pas (Sarah, 05/10).
     aZero: "payant",
