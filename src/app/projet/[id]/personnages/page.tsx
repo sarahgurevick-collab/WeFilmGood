@@ -168,8 +168,6 @@ function FormulairePersonnage({
         </label>
         <ChercheurPortrait
           nomInitial={personnage?.actor_name ?? ""}
-          nomPersonnage={personnage?.name ?? ""}
-          sansPortrait={!photo}
         />
 
         <div className={styles.piedPersonnage}>

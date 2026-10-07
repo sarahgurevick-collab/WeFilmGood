@@ -19,29 +19,20 @@ type Portrait = { apercu: string; url: string; titre: string; source: string };
  * « Enregistrer » du cadre, le seul) ; la croix de la case retire le choix
  * et les fait revenir.
  *
- * Un personnage sans portrait reçoit aussi des propositions sans rien
- * taper (07/10) : les pages Wikipédia qui portent son nom, pour un personnage
- * réel (« Victor Hugo »). Les photos génériques tirées de ses menus ont été
- * retirées : elles revenaient toujours et n'avaient aucun rapport. Un nom
- * tapé dans la case du comédien prend le pas sur ces propositions.
+ * Plus de propositions automatiques (07/10) : ni photos tirées des menus
+ * (génériques, toujours les mêmes), ni pages Wikipédia d'après le nom du
+ * personnage (un prénom seul ramène « Charles Baudelaire »). On ne cherche
+ * que ce que l'auteur tape dans la case du comédien.
  */
 export default function ChercheurPortrait({
   nomInitial,
-  nomPersonnage,
-  sansPortrait,
 }: {
   nomInitial: string;
-  /** Le nom du personnage : cherché sur Wikipédia tant qu'il n'a pas de portrait. */
-  nomPersonnage: string;
-  /** true tant que le personnage n'a pas de portrait enregistré. */
-  sansPortrait: boolean;
 }) {
   const [q, setQ] = useState(nomInitial);
   const [portraits, setPortraits] = useState<Portrait[] | null>(null);
   const [enCours, setEnCours] = useState(false);
   const [choisi, setChoisi] = useState<Portrait | null>(null);
-  // Les propositions viennent du nom du personnage, pas de ce que l'on a tapé.
-  const [duNom, setDuNom] = useState(false);
 
   const racine = useRef<HTMLDivElement>(null);
   // La dernière recherche lancée : une réponse plus ancienne, arrivée en
@@ -58,7 +49,6 @@ export default function ChercheurPortrait({
       const d = (await r.json()) as { portraits: Portrait[] };
       if (derniere.current === demande) {
         setPortraits(d.portraits);
-        setDuNom(false);
       }
     } catch {
       if (derniere.current === demande) setPortraits([]);
@@ -75,30 +65,6 @@ export default function ChercheurPortrait({
     return () => clearTimeout(attente);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q, aTape]);
-
-  useEffect(() => {
-    const nom = nomPersonnage.trim();
-    if (!sansPortrait || q.trim() || nom.length < 4) return;
-    const demande = `perso:${nom}`;
-    derniere.current = demande;
-    let abandonne = false;
-    (async () => {
-      try {
-        const r = await fetch(`/api/portraits?perso=1&q=${encodeURIComponent(nom)}`);
-        const d = (await r.json()) as { portraits: Portrait[] };
-        if (!abandonne && derniere.current === demande) {
-          setPortraits(d.portraits);
-          setDuNom(true);
-        }
-      } catch {
-        // Pas de proposition cette fois : la case reste comme elle est.
-      }
-    })();
-    return () => {
-      abandonne = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sansPortrait, nomPersonnage, q.trim() === ""]);
 
   const choisir = (p: Portrait) => {
     setChoisi(p);
@@ -142,7 +108,7 @@ export default function ChercheurPortrait({
         </span>
       </label>
 
-      {!choisi && !duNom && portraits && portraits.length === 0 && (
+      {!choisi && portraits && portraits.length === 0 && (
         <p className={formStyles.hint}>Aucune photo trouvée pour « {q} ».</p>
       )}
       {!choisi && portraits && portraits.length > 0 && (
@@ -157,7 +123,6 @@ export default function ChercheurPortrait({
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={p.apercu} alt={p.titre} loading="lazy" />
               </button>
-              {duNom && <span className={formStyles.hint}>{p.titre}</span>}
             </li>
           ))}
         </ul>
