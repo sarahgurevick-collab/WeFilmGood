@@ -137,13 +137,22 @@ function FormulairePersonnage({
         x={personnage?.photo_x ?? 50}
         y={personnage?.photo_y ?? PORTRAIT_Y_DEFAUT}
         proposee={personnage?.photo_proposee ?? false}
-      />
+      >
+        <label className={styles.boutonPhoto}>
+          <span>{photo ? "Remplacer le portrait" : "Portrait (JPG ou PNG)"}</span>
+          <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" />
+        </label>
+      </CasePortrait>
 
       <div className={styles.personnageChamps}>
         <label className={formStyles.field}>
           <span>Nom du personnage</span>
           <input type="text" name="name" required defaultValue={personnage?.name ?? ""} />
         </label>
+
+        <ChercheurPortrait
+          nomInitial={personnage?.actor_name ?? ""}
+        />
 
         <div className={profilStyles.row}>
           <label className={formStyles.field}>
@@ -312,14 +321,6 @@ function FormulairePersonnage({
             defaultValue={personnage?.biography ?? ""}
           />
         </label>
-
-        <label className={formStyles.field}>
-          <span>{photo ? "Remplacer le portrait" : "Portrait (JPG ou PNG)"}</span>
-          <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" />
-        </label>
-        <ChercheurPortrait
-          nomInitial={personnage?.actor_name ?? ""}
-        />
 
         <div className={styles.piedPersonnage}>
           {personnage ? (

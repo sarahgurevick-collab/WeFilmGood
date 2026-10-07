@@ -25,7 +25,10 @@ export default function CasePortrait({
   x: xInitial = 50,
   y: yInitial = PORTRAIT_Y_DEFAUT,
   proposee = false,
+  children,
 }: {
+  /** Sous le cadre : le bouton pour charger une photo (07/10, Sarah : en bas du formulaire, on ne voit pas la photo remplir le cadre). */
+  children?: React.ReactNode;
   photo: string | null;
   x?: number;
   y?: number;
@@ -160,6 +163,7 @@ export default function CasePortrait({
           </button>
         )}
       </div>
+      {children}
       {image && axe && <p className={formStyles.hint}>Glissez l&apos;image pour choisir ce qui s&apos;affiche.</p>}
       {proposee && !choisi && photo && <p className={styles.portraitPropose}>Proposée par WeFilmGood</p>}
       {/* Envoyée seulement si l'auteur a déplacé la photo : sinon, rien ne change. */}

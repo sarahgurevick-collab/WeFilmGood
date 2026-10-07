@@ -126,6 +126,34 @@
   flex-shrink: 0;
 }
 
+/* Le bouton « charger une photo », sous le cadre : le champ fichier est
+   masqué mais reste atteignable au clavier ; la ligne entière est le bouton. */
+.boutonPhoto {
+  display: block;
+  position: relative;
+  padding: 7px 8px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  text-align: center;
+  cursor: pointer;
+}
+
+.boutonPhoto:hover,
+.boutonPhoto:focus-within {
+  border-color: currentColor;
+}
+
+.boutonPhoto input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .portraitGlisse {
   cursor: grab;
   touch-action: none;
