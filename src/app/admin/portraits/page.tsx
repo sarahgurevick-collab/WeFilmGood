@@ -9,13 +9,16 @@ import { createClient } from "@/lib/supabase/server";
 import NavAdmin from "../NavAdmin";
 import BoutonRetirer from "./BoutonRetirer";
 import CadrageCarte from "./CadrageCarte";
+import ListeASupprimer from "./ListeASupprimer";
 import PoserPhoto from "./PoserPhoto";
-import { retirerPortrait, validerPortrait } from "./actions";
+import { SEUIL_DESCRIPTION } from "./seuil";
+import { retirerPortrait, supprimerPersonnages, validerPortrait } from "./actions";
 import styles from "./portraits.module.css";
 
 const PAR_PAGE = 24;
+const PAR_PAGE_SECONDAIRES = 60;
 
-type Onglet = "sans" | "moyen" | "bon";
+type Onglet = "sans" | "moyen" | "bon" | "secondaires";
 
 type Perso = {
   id: string;
@@ -25,6 +28,15 @@ type Perso = {
   photo_x: number;
   photo_y: number;
   photo_proposee: boolean;
+  project: { id: string; title: string } | null;
+};
+
+type Secondaire = {
+  id: string;
+  name: string;
+  biography: string | null;
+  gender: string | null;
+  age_range: string | null;
   project: { id: string; title: string } | null;
 };
 
@@ -80,7 +92,7 @@ export default async function PortraitsAdminPage({
   const sp = await searchParams;
   // L'administration s'ouvre sur les moyens, l'aidant sur les personnages sans portrait.
   const onglet: Onglet =
-    sp.avis === "sans" || sp.avis === "moyen" || sp.avis === "bon" ? sp.avis : admin ? "moyen" : "sans";
+    sp.avis === "sans" || sp.avis === "moyen" || sp.avis === "bon" || (admin && sp.avis === "secondaires") ? sp.avis : admin ? "moyen" : "sans";
   const page = Math.max(1, Math.floor(Number(sp.page)) || 1);
 
   const compterAvis = async (avis: "moyen" | "bon") =>
@@ -102,15 +114,30 @@ export default async function PortraitsAdminPage({
         .neq("requete", "")
         .is("characters.photo_path", null)
     ).count ?? 0;
+  // Les personnages secondaires sans photo dont la description est vide ou presque
+  // (le filtre sur la longueur se fait ici : la base ne sait pas le demander).
+  const listerSecondaires = async () => {
+    const { data } = await a
+      .from("characters")
+      .select("id, name, biography, gender, age_range, project:projects(id, title)")
+      .eq("character_type", "secondaire")
+      .is("photo_path", null)
+      .order("name", { ascending: true })
+      .returns<Secondaire[]>();
+    return (data ?? []).filter((c) => (c.biography ?? "").trim().length < SEUIL_DESCRIPTION);
+  };
+  const secondaires = admin ? await listerSecondaires() : [];
+  const nSecondaires = secondaires.length;
   const [nSans, nMoyens, nBons] = await Promise.all([
     compterSans(),
     compterAvis("moyen"),
     compterAvis("bon"),
   ]);
-  const total = onglet === "sans" ? nSans : onglet === "moyen" ? nMoyens : nBons;
-  const nbPages = Math.max(1, Math.ceil(total / PAR_PAGE));
-  const de = (page - 1) * PAR_PAGE;
-  const a_ = de + PAR_PAGE - 1;
+  const total = onglet === "sans" ? nSans : onglet === "moyen" ? nMoyens : onglet === "bon" ? nBons : nSecondaires;
+  const parPage = onglet === "secondaires" ? PAR_PAGE_SECONDAIRES : PAR_PAGE;
+  const nbPages = Math.max(1, Math.ceil(total / parPage));
+  const de = (page - 1) * parPage;
+  const a_ = de + parPage - 1;
 
   // ---- Onglet « Sans portrait » ----
   let sans: SansPortrait[] = [];
@@ -132,8 +159,10 @@ export default async function PortraitsAdminPage({
   }
 
   // ---- Onglets « Moyens » et « Bons » ----
+  const secondairesPage = onglet === "secondaires" ? secondaires.slice(de, a_ + 1) : [];
+
   let cartes: { s: { lot: string; note: string | null }; p: Perso; url: string | null }[] = [];
-  if (onglet !== "sans") {
+  if (onglet === "moyen" || onglet === "bon") {
     const { data: suivis } = await a
       .from("portraits_suivi")
       .select("character_id, lot, note, traite_le")
@@ -171,6 +200,7 @@ export default async function PortraitsAdminPage({
       reel,
       mots,
       unsplash: `https://unsplash.com/fr/s/photos/${encodeURIComponent(mots.replace(/\s+/g, "-"))}`,
+      google: `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(mots)}`,
       adobe: `https://stock.adobe.com/fr/search/free?k=${encodeURIComponent(mots)}`,
       commons: `https://commons.wikimedia.org/w/index.php?search=${encodeURIComponent(mots)}&ns6=1`,
     };
@@ -193,6 +223,11 @@ export default async function PortraitsAdminPage({
         <Link href={lien("bon")} className={onglet === "bon" ? styles.ongletActif : styles.onglet}>
           Bons ({nBons})
         </Link>
+        {admin && (
+          <Link href={lien("secondaires")} className={onglet === "secondaires" ? styles.ongletActif : styles.onglet}>
+            Secondaires sans description ({nSecondaires})
+          </Link>
+        )}
       </div>
 
       {sp.erreur && <p className={formStyles.error}>{sp.erreur}</p>}
@@ -230,6 +265,9 @@ export default async function PortraitsAdminPage({
                           <a href={c.unsplash} target="_blank" rel="noopener noreferrer" className={styles.ouvrir}>
                             Chercher sur Unsplash
                           </a>
+                          <a href={c.google} target="_blank" rel="noopener noreferrer" className={styles.ouvrir}>
+                            Chercher sur Google Images
+                          </a>
                           <a href={c.adobe} target="_blank" rel="noopener noreferrer" className={styles.ouvrir}>
                             Chercher sur Adobe Stock (gratuit)
                           </a>
@@ -241,6 +279,35 @@ export default async function PortraitsAdminPage({
                 );
               })}
             </ul>
+          )}
+        </>
+      ) : onglet === "secondaires" ? (
+        <>
+          <p className={formStyles.hint}>
+            Personnages secondaires sans portrait, dont la description est vide ou d’une ligne. Coche ceux à supprimer :
+            chaque fiche est sauvegardée avant d’être effacée.
+          </p>
+          {secondairesPage.length === 0 ? (
+            <p className={formStyles.hint}>Aucun personnage dans cette liste.</p>
+          ) : (
+            <ListeASupprimer action={supprimerPersonnages}>
+              <ul className={styles.grille}>
+                {secondairesPage.map((p) => {
+                  const infos = [libelle(GENRES_PERSONNAGE, p.gender), libelle(AGES, p.age_range)].filter(Boolean).join(" · ");
+                  return (
+                    <li key={p.id} className={styles.carte}>
+                      <label className={styles.caseSuppression}>
+                        <input type="checkbox" name="ids" value={p.id} />
+                        <span className={styles.nom}>{p.name}</span>
+                      </label>
+                      {p.project && <p className={styles.projet}>« {p.project.title} »</p>}
+                      {infos && <p className={styles.projet}>{infos}</p>}
+                      <p className={styles.bio}>{extrait(p.biography, 120) ?? "Aucune description."}</p>
+                    </li>
+                  );
+                })}
+              </ul>
+            </ListeASupprimer>
           )}
         </>
       ) : cartes.length === 0 ? (

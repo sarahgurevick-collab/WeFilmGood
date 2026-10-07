@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { SEUIL_DESCRIPTION } from "./seuil";
 import { IMAGES, deposerImage, retirerImages } from "@/app/projet/[id]/fichiers";
 
 /**
@@ -128,4 +129,37 @@ export async function poserPhoto(formData: FormData) {
     .upsert({ character_id: id, lot: `manuel-${jour}`, avis: "bon", note: "Posée à la main", source: "manuel" });
   revalidatePath("/admin/portraits");
   retour();
+}
+
+/**
+ * « Supprimer » les personnages secondaires sans description cochés (07/10,
+ * demande de Sarah). Réservé à l'administration. Chaque ligne est gardée dans
+ * personnages_supprimes avant d'être effacée ; on revérifie ici qu'elle est
+ * toujours secondaire, sans photo et sans description (l'auteur a pu la
+ * compléter depuis l'affichage de la liste).
+ */
+export async function supprimerPersonnages(formData: FormData) {
+  const supabase = await createClient();
+  const { data: admin } = await supabase.rpc("is_admin");
+  if (admin !== true) redirect("/");
+  const a = createAdminClient();
+  if (!a) redirect("/");
+
+  const ids = formData.getAll("ids").map(String).filter(Boolean);
+  if (ids.length === 0) return;
+
+  const { data: lignes } = await a
+    .from("characters")
+    .select("*")
+    .in("id", ids)
+    .eq("character_type", "secondaire")
+    .is("photo_path", null)
+    .returns<{ id: string; biography: string | null }[]>();
+  const aSupprimer = (lignes ?? []).filter((l) => (l.biography ?? "").trim().length < SEUIL_DESCRIPTION);
+  if (aSupprimer.length === 0) return;
+
+  const { error } = await a.from("personnages_supprimes").insert(aSupprimer.map((l) => ({ personnage: l })));
+  if (error) redirect("/admin/portraits?avis=secondaires&erreur=" + encodeURIComponent("La sauvegarde a échoué, rien n’a été supprimé."));
+  await a.from("characters").delete().in("id", aSupprimer.map((l) => l.id));
+  revalidatePath("/admin/portraits");
 }

@@ -258,3 +258,29 @@
   font-weight: 800;
   color: #1a7f37;
 }
+
+.barreSuppression {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.barreSuppression .retirer:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.caseSuppression {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.caseSuppression input {
+  width: 22px;
+  height: 22px;
+}
