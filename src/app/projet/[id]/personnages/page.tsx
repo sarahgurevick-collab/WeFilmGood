@@ -59,11 +59,6 @@ export default async function PersonnagesPage({
       {enregistre && <p className={profilStyles.ok}>Personnages enregistrés.</p>}
       {erreur && <p className={formStyles.error}>{erreur}</p>}
 
-      <p className={profilStyles.chapeau}>
-        Un producteur lit d&apos;abord les personnages : c&apos;est par eux qu&apos;il imagine le
-        film — et son casting. Deux ou trois lignes suffisent pour chacun.
-      </p>
-
       {(personnages ?? []).length > 0 && (
         <div className={styles.liste}>
           {(personnages ?? []).map((p) => (

@@ -17,7 +17,7 @@ export default async function ModifierProjetPage({
 }) {
   const { id } = await params;
   const { erreur } = await searchParams;
-  const { supabase, projet, pourAutrui } = await chargerProjetAModifier(id, "fiche");
+  const { supabase, projet } = await chargerProjetAModifier(id, "fiche");
 
   const { data: genres } = await supabase.from("genres").select("slug, label_fr").order("position");
   const { data: selections } = await supabase
@@ -28,11 +28,6 @@ export default async function ModifierProjetPage({
 
   return (
     <BlocProjet actif="fiche" projet={projet}>
-      {pourAutrui && (
-        <p className={formStyles.avertissement}>
-          Vous modifiez la fiche d&apos;un autre membre.
-        </p>
-      )}
 
       <form
         className={`${formStyles.form} ${styles.formulaire}`}

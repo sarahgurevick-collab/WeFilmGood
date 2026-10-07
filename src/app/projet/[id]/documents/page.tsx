@@ -24,7 +24,7 @@ export default async function DocumentsPage({
 }) {
   const { id } = await params;
   const { erreur, cree, enregistre } = await searchParams;
-  const { supabase, projet, pourAutrui } = await chargerProjetAModifier(id, "documents");
+  const { supabase, projet } = await chargerProjetAModifier(id, "documents");
 
   const { data: fichiers } = await supabase
     .from("project_files")
@@ -54,11 +54,6 @@ export default async function DocumentsPage({
         </p>
       )}
       {enregistre && <p className={profilStyles.ok}>Documents enregistrés.</p>}
-      {pourAutrui && (
-        <p className={formStyles.avertissement}>
-          Vous modifiez la fiche d&apos;un autre membre.
-        </p>
-      )}
 
       <form
         className={formStyles.form}
