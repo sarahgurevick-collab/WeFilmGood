@@ -1,4 +1,9 @@
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import Bandeau from "@/components/Bandeau";
+import LogoComplet from "@/components/LogoComplet";
+import VignetteEau from "@/components/VignetteEau";
+import projetsStyles from "@/app/pitchotheque/projets.module.css";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
@@ -63,6 +68,36 @@ export default async function ProfilMembrePage({
     masque = isAdmin !== true;
   }
 
+  // Tous les projets de l'auteur (07/10, Sarah : un producteur doit voir tout
+  // ce que l'auteur a en développement). Mêmes règles que les Galaxies :
+  // projets visibles des membres, et pas d'image, pas de carte.
+  const { data: projetsBruts } = await supabase
+    .from("projects")
+    .select("id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)")
+    .eq("owner_id", membre.id)
+    .eq("is_public", true)
+    .order("created_at", { ascending: false })
+    .returns<
+      {
+        id: string;
+        title: string;
+        tagline: string | null;
+        status: string;
+        bandeau: string | null;
+        genre: { label_fr: string } | null;
+        files: { storage_path: string; kind: string }[];
+      }[]
+    >();
+  const vignetteChemin = (p: { files: { storage_path: string; kind: string }[] }) =>
+    p.files.find((f) => f.kind === "vignette")?.storage_path ?? null;
+  const projets = (projetsBruts ?? []).filter((p) => vignetteChemin(p));
+  const { data: signes } = projets.length
+    ? await supabase.storage
+        .from("project-media")
+        .createSignedUrls(projets.map((p) => vignetteChemin(p) as string), 60 * 60)
+    : { data: [] };
+  const urlDe = new Map((signes ?? []).map((s) => [s.path, s.signedUrl]));
+
   const nom = masque ? "Membre" : (membre.display_name ?? membre.full_name ?? "Membre");
 
   return (
@@ -91,6 +126,41 @@ export default async function ProfilMembrePage({
             Son site
           </a>
         </p>
+      )}
+
+      {projets.length > 0 && (
+        <>
+          <h2 style={{ marginTop: 40 }}>
+            {projets.length > 1 ? `Ses ${projets.length} projets` : "Son projet"}
+          </h2>
+          <ul className={projetsStyles.grille} style={{ marginTop: 16 }}>
+            {projets.map((p) => {
+              const vignette = urlDe.get(vignetteChemin(p) as string);
+              return (
+                <li key={p.id}>
+                  <Link href={`/projet/${p.id}`} className={`${projetsStyles.carte} ${projetsStyles.eau}`}>
+                    <div className={projetsStyles.vignette}>
+                      <Bandeau valeur={p.bandeau} />
+                      {vignette && <VignetteEau src={vignette} />}
+                    </div>
+                    <div className={projetsStyles.legende}>
+                      <strong>
+                        {p.title}
+                        {p.status === "labellise" && (
+                          <span className={projetsStyles.label} title="Projet labellisé WeFilmGood">
+                            <LogoComplet hauteur={22} />
+                          </span>
+                        )}
+                      </strong>
+                      {p.genre?.label_fr && <span className={projetsStyles.genre}>{p.genre.label_fr}</span>}
+                      {p.tagline && <p className={projetsStyles.logline}>{p.tagline}</p>}
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </>
       )}
     </PageShell>
   );
