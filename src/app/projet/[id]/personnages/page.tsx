@@ -39,7 +39,7 @@ export default async function PersonnagesPage({
 }) {
   const { id } = await params;
   const { erreur, enregistre } = await searchParams;
-  const { supabase, projet, pourAutrui } = await chargerProjetAModifier(id, "personnages");
+  const { supabase, projet } = await chargerProjetAModifier(id, "personnages");
 
   const { data: personnages } = await supabase
     .from("characters")
@@ -58,11 +58,6 @@ export default async function PersonnagesPage({
     <BlocProjet actif="personnages" projet={projet}>
       {enregistre && <p className={profilStyles.ok}>Personnages enregistrés.</p>}
       {erreur && <p className={formStyles.error}>{erreur}</p>}
-      {pourAutrui && (
-        <p className={formStyles.avertissement}>
-          Vous modifiez la fiche d&apos;un autre membre.
-        </p>
-      )}
 
       <p className={profilStyles.chapeau}>
         Un producteur lit d&apos;abord les personnages : c&apos;est par eux qu&apos;il imagine le
