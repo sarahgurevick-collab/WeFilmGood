@@ -106,12 +106,14 @@ export default async function ProfilMembrePage({
   // d'un projet (règle du 03/10) : l'enveloppe mène donc à l'écran de message
   // de son projet le plus récent ; sans projet visible, pas d'enveloppe.
   let adherent = false;
-  if (membre.id !== user.id && projets[0]) {
+  if (estAdmin && membre.id !== user.id && projets[0]) {
     const { data } = await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id });
     adherent = data === true;
   }
   const enveloppe =
-    membre.id !== user.id && projets[0] ? (
+    // Pour l'instant, l'administration seule (07/10) : la décision du 03/10
+    // retirait l'enveloppe du profil des talents (contact lié à un projet).
+    estAdmin && membre.id !== user.id && projets[0] ? (
       <div style={{ marginTop: 16 }}>
         <ContactEnveloppe
           href={`/mes-messages/nouveau?projet=${projets[0].id}`}
