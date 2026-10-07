@@ -168,9 +168,8 @@ function FormulairePersonnage({
         </label>
         <ChercheurPortrait
           nomInitial={personnage?.actor_name ?? ""}
+          nomPersonnage={personnage?.name ?? ""}
           sansPortrait={!photo}
-          genreInitial={personnage?.gender ?? ""}
-          ageInitial={personnage?.age_range ?? ""}
         />
 
         <div className={styles.piedPersonnage}>

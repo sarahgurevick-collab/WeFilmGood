@@ -20,31 +20,28 @@ type Portrait = { apercu: string; url: string; titre: string; source: string };
  * et les fait revenir.
  *
  * Un personnage sans portrait reçoit aussi des propositions sans rien
- * taper : six photos tirées de ses menus « Le personnage est… » et « Âge »
- * (un homme, senior → des portraits d'hommes âgés). Un nom tapé prend le
- * pas sur elles.
+ * taper (07/10) : les pages Wikipédia qui portent son nom, pour un personnage
+ * réel (« Victor Hugo »). Les photos génériques tirées de ses menus ont été
+ * retirées : elles revenaient toujours et n'avaient aucun rapport. Un nom
+ * tapé dans la case du comédien prend le pas sur ces propositions.
  */
 export default function ChercheurPortrait({
   nomInitial,
+  nomPersonnage,
   sansPortrait,
-  genreInitial,
-  ageInitial,
 }: {
   nomInitial: string;
+  /** Le nom du personnage : cherché sur Wikipédia tant qu'il n'a pas de portrait. */
+  nomPersonnage: string;
   /** true tant que le personnage n'a pas de portrait enregistré. */
   sansPortrait: boolean;
-  genreInitial: string;
-  ageInitial: string;
 }) {
   const [q, setQ] = useState(nomInitial);
   const [portraits, setPortraits] = useState<Portrait[] | null>(null);
   const [enCours, setEnCours] = useState(false);
   const [choisi, setChoisi] = useState<Portrait | null>(null);
-  // Les menus du personnage, suivis sur le formulaire voisin.
-  const [profil, setProfil] = useState({ genre: genreInitial, age: ageInitial });
-  // Chaque « D'autres portraits » relance le tirage.
-  const [tirage, setTirage] = useState(0);
-  const [duProfil, setDuProfil] = useState(false);
+  // Les propositions viennent du nom du personnage, pas de ce que l'on a tapé.
+  const [duNom, setDuNom] = useState(false);
 
   const racine = useRef<HTMLDivElement>(null);
   // La dernière recherche lancée : une réponse plus ancienne, arrivée en
@@ -61,7 +58,7 @@ export default function ChercheurPortrait({
       const d = (await r.json()) as { portraits: Portrait[] };
       if (derniere.current === demande) {
         setPortraits(d.portraits);
-        setDuProfil(false);
+        setDuNom(false);
       }
     } catch {
       if (derniere.current === demande) setPortraits([]);
@@ -80,31 +77,18 @@ export default function ChercheurPortrait({
   }, [q, aTape]);
 
   useEffect(() => {
-    const formulaire = racine.current?.closest("form");
-    if (!formulaire) return;
-    const suivre = (e: Event) => {
-      const champ = e.target as HTMLSelectElement;
-      if (champ.name === "gender") setProfil((p) => ({ ...p, genre: champ.value }));
-      if (champ.name === "age_range") setProfil((p) => ({ ...p, age: champ.value }));
-    };
-    formulaire.addEventListener("change", suivre);
-    return () => formulaire.removeEventListener("change", suivre);
-  }, []);
-
-  useEffect(() => {
-    if (!sansPortrait || q.trim() || (!profil.genre && !profil.age)) return;
-    const demande = `profil:${profil.genre}:${profil.age}:${tirage}`;
+    const nom = nomPersonnage.trim();
+    if (!sansPortrait || q.trim() || nom.length < 4) return;
+    const demande = `perso:${nom}`;
     derniere.current = demande;
     let abandonne = false;
     (async () => {
       try {
-        const r = await fetch(
-          `/api/portraits?genre=${encodeURIComponent(profil.genre)}&age=${encodeURIComponent(profil.age)}`,
-        );
+        const r = await fetch(`/api/portraits?perso=1&q=${encodeURIComponent(nom)}`);
         const d = (await r.json()) as { portraits: Portrait[] };
         if (!abandonne && derniere.current === demande) {
           setPortraits(d.portraits);
-          setDuProfil(true);
+          setDuNom(true);
         }
       } catch {
         // Pas de proposition cette fois : la case reste comme elle est.
@@ -114,7 +98,7 @@ export default function ChercheurPortrait({
       abandonne = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sansPortrait, profil.genre, profil.age, tirage, q.trim() === ""]);
+  }, [sansPortrait, nomPersonnage, q.trim() === ""]);
 
   const choisir = (p: Portrait) => {
     setChoisi(p);
@@ -158,7 +142,7 @@ export default function ChercheurPortrait({
         </span>
       </label>
 
-      {!choisi && !duProfil && portraits && portraits.length === 0 && (
+      {!choisi && !duNom && portraits && portraits.length === 0 && (
         <p className={formStyles.hint}>Aucune photo trouvée pour « {q} ».</p>
       )}
       {!choisi && portraits && portraits.length > 0 && (
@@ -173,14 +157,10 @@ export default function ChercheurPortrait({
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={p.apercu} alt={p.titre} loading="lazy" />
               </button>
+              {duNom && <span className={formStyles.hint}>{p.titre}</span>}
             </li>
           ))}
         </ul>
-      )}
-      {!choisi && duProfil && portraits && portraits.length > 0 && (
-        <button type="button" className={styles.lienAutres} onClick={() => setTirage((t) => t + 1)}>
-          D&apos;autres portraits
-        </button>
       )}
     </div>
   );

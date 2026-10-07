@@ -16,8 +16,12 @@ async function wikipedia(langue: "fr" | "en", q: string): Promise<Portrait[]> {
     `&gsrlimit=8&prop=pageimages&piprop=thumbnail&pithumbsize=600&format=json`;
   const r = await fetch(adresse, { headers: { "User-Agent": AGENT }, signal: AbortSignal.timeout(6000) });
   if (!r.ok) return [];
-  const d = (await r.json()) as { query?: { pages?: Record<string, { title: string; thumbnail?: { source: string } }> } };
+  const d = (await r.json()) as {
+    query?: { pages?: Record<string, { title: string; index: number; thumbnail?: { source: string } }> };
+  };
+  // Wikipédia range les pages par numéro, pas par pertinence : on remet la plus pertinente en premier.
   return Object.values(d.query?.pages ?? {})
+    .sort((x, y) => x.index - y.index)
     .filter((p) => p.thumbnail?.source)
     .map((p) => ({
       apercu: p.thumbnail!.source,
@@ -115,6 +119,21 @@ export async function GET(req: Request) {
 
   const q = (demande.get("q") ?? "").trim().slice(0, 80);
   if (q.length < 2) return Response.json({ portraits: [] });
+
+  // Le nom du personnage (07/10) : un personnage réel (« Victor Hugo », « Abbé
+  // Boudet ») se retrouve sur Wikipédia. Seules les pages dont le titre
+  // partage un mot du nom sont gardées, sinon un prénom seul ramènerait des
+  // pages sans rapport.
+  if (demande.has("perso")) {
+    const mots = q
+      .toLowerCase()
+      .split(/[\s'’-]+/)
+      .filter((m) => m.length >= 4 && !["abbé", "docteur", "docteure", "madame", "monsieur", "mademoiselle", "professeur", "capitaine", "commissaire"].includes(m));
+    if (mots.length === 0) return Response.json({ portraits: [] });
+    const trouves = await wikipedia("fr", q).catch(() => []);
+    const gardes = trouves.filter((p) => mots.some((m) => p.titre.toLowerCase().includes(m)));
+    return Response.json({ portraits: gardes.slice(0, 6) });
+  }
 
   const lots = await Promise.allSettled([wikipedia("fr", q), wikipedia("en", q), openverse(q)]);
   const vus = new Set<string>();
