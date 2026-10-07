@@ -54,6 +54,7 @@ export async function enregistrerPersonnage(formData: FormData) {
       .getAll("signes")
       .map(String)
       .filter((v, i, tous) => SIGNES.some((o) => o.value === v) && tous.indexOf(v) === i),
+    signes_autre: ((formData.get("signes_autre") as string) ?? "").trim().slice(0, 120) || null,
     origine: parmi(ORIGINES, formData.get("origine")),
     detail_caracteristique: ((formData.get("detail_caracteristique") as string) ?? "").trim().slice(0, 300) || null,
     allure: ((formData.get("allure") as string) ?? "").trim().slice(0, 120) || null,

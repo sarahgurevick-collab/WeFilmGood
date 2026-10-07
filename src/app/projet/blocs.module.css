@@ -341,3 +341,33 @@
   width: 20px;
   height: 20px;
 }
+
+.boutonPlus {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  margin-top: 32px;
+  padding: 0 24px 0 8px;
+  border: 1px dashed var(--bordure-douce);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--rouge-wfg, #da2c25);
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+}

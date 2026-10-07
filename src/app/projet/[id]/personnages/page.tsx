@@ -5,6 +5,7 @@ import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import BoutonEnregistrer from "./BoutonEnregistrer";
+import AjouterPersonnage from "./AjouterPersonnage";
 import BoutonRetirerPersonnage from "./BoutonRetirerPersonnage";
 import CasePortrait from "./CasePortrait";
 import ChercheurPortrait from "./ChercheurPortrait";
@@ -43,6 +44,7 @@ type Personnage = {
   cheveux_coupe: string | null;
   yeux: string | null;
   signes: string[] | null;
+  signes_autre: string | null;
   origine: string | null;
   detail_caracteristique: string | null;
   allure: string | null;
@@ -66,7 +68,7 @@ export default async function PersonnagesPage({
 
   const { data: personnages } = await supabase
     .from("characters")
-    .select("id, name, actor_name, photo_path, photo_x, photo_y, photo_proposee, character_type, gender, age_range, age_tranche, epoque, taille, corpulence, cheveux_couleur, cheveux_coupe, yeux, signes, origine, detail_caracteristique, allure, biography")
+    .select("id, name, actor_name, photo_path, photo_x, photo_y, photo_proposee, character_type, gender, age_range, age_tranche, epoque, taille, corpulence, cheveux_couleur, cheveux_coupe, yeux, signes, signes_autre, origine, detail_caracteristique, allure, biography")
     .eq("project_id", id)
     .order("position", { ascending: true })
     .order("created_at", { ascending: true })
@@ -96,10 +98,14 @@ export default async function PersonnagesPage({
         </div>
       )}
 
-      <h2 className={styles.sousTitre} style={{ marginTop: 40 }}>
-        {(personnages ?? []).length ? "Ajouter un personnage" : "Votre premier personnage"}
-      </h2>
-      <FormulairePersonnage projectId={id} personnage={null} photo={null} />
+      {(personnages ?? []).length === 0 && (
+        <h2 className={styles.sousTitre} style={{ marginTop: 40 }}>
+          Votre premier personnage
+        </h2>
+      )}
+      <AjouterPersonnage ouvertDemblee={(personnages ?? []).length === 0}>
+        <FormulairePersonnage projectId={id} personnage={null} photo={null} />
+      </AjouterPersonnage>
     </BlocProjet>
   );
 }
@@ -269,6 +275,10 @@ function FormulairePersonnage({
               </label>
             ))}
           </div>
+          <label className={formStyles.field}>
+            <span>Autre</span>
+            <input type="text" name="signes_autre" maxLength={120} defaultValue={personnage?.signes_autre ?? ""} />
+          </label>
         </fieldset>
 
         <label className={formStyles.field}>
