@@ -5,7 +5,8 @@ import BlocProjet from "../../BlocProjet";
 import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { MAX_MOODBOARD, signerImages } from "../fichiers";
-import { enregistrerDocuments, retirerImage } from "./actions";
+import { enregistrerDocuments } from "./actions";
+import BoutonRetirerPhoto from "./BoutonRetirerPhoto";
 import ImagePresentation from "./ImagePresentation";
 
 type Fichier = { id: string; kind: string; storage_path: string; original_name: string | null };
@@ -88,16 +89,7 @@ export default async function DocumentsPage({
             {moodboard.map((m) => (
               <li key={m.id}>
                 {urls.get(m.storage_path) && <img src={urls.get(m.storage_path)} alt="" />}
-                <button
-                  type="submit"
-                  formAction={retirerImage}
-                  formNoValidate
-                  name="file_id"
-                  value={m.id}
-                  className={styles.retirer}
-                >
-                  Retirer
-                </button>
+                <BoutonRetirerPhoto projectId={projet.id} fileId={m.id} />
               </li>
             ))}
           </ul>
