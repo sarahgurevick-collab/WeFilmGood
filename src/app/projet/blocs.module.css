@@ -308,3 +308,36 @@
 .lienAutres:hover {
   color: var(--fg);
 }
+
+.groupePhysique {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--bordure-douce);
+  border-radius: 16px;
+}
+
+.groupePhysique legend {
+  padding: 0 8px;
+  font-weight: 800;
+}
+
+.signes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.signe {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.signe input {
+  width: 20px;
+  height: 20px;
+}

@@ -5,7 +5,20 @@ import { revalidatePath } from "next/cache";
 import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import { chargerProjetAModifier } from "../../blocs";
 import { IMAGES, deposerImage, retirerImages } from "../fichiers";
-import { AGES, GENRES_PERSONNAGE, TYPES } from "./options";
+import {
+  AGES_TRANCHES,
+  AGE_ANCIEN,
+  CHEVEUX_COULEURS,
+  CHEVEUX_COUPES,
+  CORPULENCES,
+  EPOQUES,
+  GENRES_PERSONNAGE,
+  ORIGINES,
+  SIGNES,
+  TAILLES,
+  TYPES,
+  YEUX,
+} from "./options";
 
 const parmi = (liste: { value: string }[], valeur: FormDataEntryValue | null) => {
   const v = typeof valeur === "string" ? valeur : "";
@@ -26,7 +39,25 @@ export async function enregistrerPersonnage(formData: FormData) {
 
   const characterType = parmi(TYPES, formData.get("character_type"));
   const gender = parmi(GENRES_PERSONNAGE, formData.get("gender"));
-  const ageRange = parmi(AGES, formData.get("age_range"));
+  // L'âge par tranche ; l'ancienne colonne age_range n'est touchée que si une tranche est choisie.
+  const ageTranche = parmi(AGES_TRANCHES, formData.get("age_tranche"));
+  const ageAncien = ageTranche ? { age_range: AGE_ANCIEN[ageTranche] } : {};
+  const fiche = {
+    age_tranche: ageTranche,
+    epoque: parmi(EPOQUES, formData.get("epoque")),
+    taille: parmi(TAILLES, formData.get("taille")),
+    corpulence: parmi(CORPULENCES, formData.get("corpulence")),
+    cheveux_couleur: parmi(CHEVEUX_COULEURS, formData.get("cheveux_couleur")),
+    cheveux_coupe: parmi(CHEVEUX_COUPES, formData.get("cheveux_coupe")),
+    yeux: parmi(YEUX, formData.get("yeux")),
+    signes: formData
+      .getAll("signes")
+      .map(String)
+      .filter((v, i, tous) => SIGNES.some((o) => o.value === v) && tous.indexOf(v) === i),
+    origine: parmi(ORIGINES, formData.get("origine")),
+    detail_caracteristique: ((formData.get("detail_caracteristique") as string) ?? "").trim().slice(0, 300) || null,
+    allure: ((formData.get("allure") as string) ?? "").trim().slice(0, 120) || null,
+  };
   const biography = (formData.get("biography") as string)?.trim() || null;
   const actorName = (formData.get("actor_name") as string)?.trim() || null;
   const photo = formData.get("photo") as File | null;
@@ -74,7 +105,8 @@ export async function enregistrerPersonnage(formData: FormData) {
         name,
         character_type: characterType,
         gender,
-        age_range: ageRange,
+        ...ageAncien,
+        ...fiche,
         biography,
         actor_name: actorName,
         // Un portrait choisi par l'auteur n'est plus « proposé par la plateforme » (0120).
@@ -99,7 +131,8 @@ export async function enregistrerPersonnage(formData: FormData) {
       name,
       character_type: characterType,
       gender,
-      age_range: ageRange,
+      ...ageAncien,
+      ...fiche,
       biography,
       actor_name: actorName,
       photo_path: photoPath,

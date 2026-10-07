@@ -10,7 +10,19 @@ import CasePortrait from "./CasePortrait";
 import ChercheurPortrait from "./ChercheurPortrait";
 import { signerImages } from "../fichiers";
 import { enregistrerPersonnage } from "./actions";
-import { AGES, GENRES_PERSONNAGE, TYPES } from "./options";
+import {
+  AGES_TRANCHES,
+  CHEVEUX_COULEURS,
+  CHEVEUX_COUPES,
+  CORPULENCES,
+  EPOQUES,
+  GENRES_PERSONNAGE,
+  ORIGINES,
+  SIGNES,
+  TAILLES,
+  TYPES,
+  YEUX,
+} from "./options";
 
 type Personnage = {
   id: string;
@@ -23,6 +35,17 @@ type Personnage = {
   character_type: string | null;
   gender: string | null;
   age_range: string | null;
+  age_tranche: string | null;
+  epoque: string | null;
+  taille: string | null;
+  corpulence: string | null;
+  cheveux_couleur: string | null;
+  cheveux_coupe: string | null;
+  yeux: string | null;
+  signes: string[] | null;
+  origine: string | null;
+  detail_caracteristique: string | null;
+  allure: string | null;
   biography: string | null;
 };
 
@@ -43,7 +66,7 @@ export default async function PersonnagesPage({
 
   const { data: personnages } = await supabase
     .from("characters")
-    .select("id, name, actor_name, photo_path, photo_x, photo_y, photo_proposee, character_type, gender, age_range, biography")
+    .select("id, name, actor_name, photo_path, photo_x, photo_y, photo_proposee, character_type, gender, age_range, age_tranche, epoque, taille, corpulence, cheveux_couleur, cheveux_coupe, yeux, signes, origine, detail_caracteristique, allure, biography")
     .eq("project_id", id)
     .order("position", { ascending: true })
     .order("created_at", { ascending: true })
@@ -141,9 +164,9 @@ function FormulairePersonnage({
           </label>
           <label className={formStyles.field}>
             <span>Âge</span>
-            <select name="age_range" defaultValue={personnage?.age_range ?? ""}>
+            <select name="age_tranche" defaultValue={personnage?.age_tranche ?? ""}>
               <option value="">Non précisé</option>
-              {AGES.map((a) => (
+              {AGES_TRANCHES.map((a) => (
                 <option key={a.value} value={a.value}>
                   {a.label}
                 </option>
@@ -151,6 +174,124 @@ function FormulairePersonnage({
             </select>
           </label>
         </div>
+
+        <div className={profilStyles.row}>
+          <label className={formStyles.field}>
+            <span>Époque</span>
+            <select name="epoque" defaultValue={personnage?.epoque ?? ""}>
+              <option value="">Non précisé</option>
+              {EPOQUES.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={formStyles.field}>
+            <span>Origine apparente</span>
+            <select name="origine" defaultValue={personnage?.origine ?? ""}>
+              <option value="">Non précisé</option>
+              {ORIGINES.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        <fieldset className={styles.groupePhysique}>
+          <legend>Physique</legend>
+          <div className={profilStyles.row}>
+          <label className={formStyles.field}>
+            <span>Taille</span>
+            <select name="taille" defaultValue={personnage?.taille ?? ""}>
+              <option value="">Non précisé</option>
+              {TAILLES.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={formStyles.field}>
+            <span>Corpulence</span>
+            <select name="corpulence" defaultValue={personnage?.corpulence ?? ""}>
+              <option value="">Non précisé</option>
+              {CORPULENCES.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          </div>
+          <div className={profilStyles.row}>
+          <label className={formStyles.field}>
+            <span>Cheveux</span>
+            <select name="cheveux_couleur" defaultValue={personnage?.cheveux_couleur ?? ""}>
+              <option value="">Non précisé</option>
+              {CHEVEUX_COULEURS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={formStyles.field}>
+            <span>Coupe</span>
+            <select name="cheveux_coupe" defaultValue={personnage?.cheveux_coupe ?? ""}>
+              <option value="">Non précisé</option>
+              {CHEVEUX_COUPES.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={formStyles.field}>
+            <span>Yeux</span>
+            <select name="yeux" defaultValue={personnage?.yeux ?? ""}>
+              <option value="">Non précisé</option>
+              {YEUX.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          </div>
+          <div className={styles.signes}>
+            {SIGNES.map((o) => (
+              <label key={o.value} className={styles.signe}>
+                <input type="checkbox" name="signes" value={o.value} defaultChecked={personnage?.signes?.includes(o.value) ?? false} />
+                {o.label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <label className={formStyles.field}>
+          <span>Détail caractéristique</span>
+          <input
+            type="text"
+            name="detail_caracteristique"
+            maxLength={300}
+            placeholder="Par exemple : beauté juvénile aux traits marqués par l’alcool"
+            defaultValue={personnage?.detail_caracteristique ?? ""}
+          />
+        </label>
+
+        <label className={formStyles.field}>
+          <span>Métier ou allure</span>
+          <input
+            type="text"
+            name="allure"
+            maxLength={120}
+            placeholder="Infirmière, clochard, costume trois pièces…"
+            defaultValue={personnage?.allure ?? ""}
+          />
+        </label>
 
         <label className={formStyles.field}>
           <span>Quelques lignes</span>
