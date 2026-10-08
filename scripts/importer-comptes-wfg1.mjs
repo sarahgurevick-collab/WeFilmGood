@@ -47,7 +47,11 @@ const existants = await toutLire(() =>
 const dejaLa = new Set(existants.map((p) => p.legacy_id));
 // Comptes de WFG 1 à ne jamais reprendre (décision de Sarah, 03/10/2026) :
 // 3866 = « David David », compte de test banni en 2019, supprimé de WFG 2.
-for (const id of ["3866"]) dejaLa.add(id);
+// 08/10/2026 (Sarah) : doublons d'un même talent qui n'avait pas reçu son mail de
+// validation et s'est réinscrit plusieurs fois — 8144, 10560, 10563 (Fakhrya,
+// fakhrya@jomproductions.com ; le bon profil est fakhrya.jomproductions@gmail.com)
+// et 4627 (Clément Raynaud, ancien compte « Auteur de BD » supprimé ; le bon est 5477).
+for (const id of ["3866", "8144", "10560", "10563", "4627"]) dejaLa.add(id);
 
 let crees = 0, sautes = 0, echoues = 0;
 const debut = Date.now();
