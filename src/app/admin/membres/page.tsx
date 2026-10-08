@@ -213,11 +213,8 @@ export default async function MembresPage({
   // Les profils à valider (27/09, l'ancienne page « Profils à valider »
   // rejoint celle-ci) : producteurs et talents inscrits sur WFG 2, hors
   // lecteurs. Les comptes repris de WFG 1 ne sont pas des inscriptions.
-  // 08/10 : les talents repris de WFG 1 qui demandent leur validation depuis leur
-  // profil (« en attente ») y figurent aussi ; les 3 800 déjà validés de WFG 1 non.
   const aValider = (m: Membre) =>
-    !m.est_lecteur &&
-    (m.validation_status === "en_attente" || (m.validation_status !== "non_requise" && m.role_wfg1 === null));
+    m.validation_status !== "non_requise" && !m.est_lecteur && m.role_wfg1 === null;
   for (const m of tous) {
     const libelle = metierDeCle(m.category ?? m.role_wfg1);
     if (libelle && libelle !== "Lecteur") metiersPresents.set(libelle, (metiersPresents.get(libelle) ?? 0) + 1);
