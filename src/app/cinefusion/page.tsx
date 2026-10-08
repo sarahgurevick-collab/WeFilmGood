@@ -3,7 +3,7 @@ import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * CinéFusion : encore un concept, pas un jeu construit. Il vit pour
+ * CinéMatch (ex-CinéFusion, 08/10) : encore un concept, pas un jeu construit. Il vit pour
  * l'instant comme une entrée du menu, deux couleurs qui se répondent —
  * le rouge WeFilmGood et celui des trois engagements qui tournent.
  */
@@ -13,7 +13,7 @@ export default async function CinefusionPage() {
     data: { user },
   } = await supabase.auth.getUser();
   return (
-    <PageShell eyebrow="À venir" title="CinéCrush" enTeteAnime connecte={!!user}>
+    <PageShell eyebrow="À venir" title="CinéMatch" enTeteAnime connecte={!!user}>
       <p className={formStyles.hint}>
         Provoquer le hasard cinématographique. Le jeu n&apos;est pas encore
         construit — revenez bientôt.

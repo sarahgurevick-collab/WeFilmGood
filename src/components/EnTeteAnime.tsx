@@ -19,10 +19,10 @@ const ELEMENTS_MENU = [
   { label: "Témoignages", href: "/temoignages" },
   { label: "Adhésion", href: "/adhesion" },
   // Encore un concept, pas un jeu construit : « Ciné » reste fixe en
-  // rouge WeFilmGood, « Fusion » suit la même horloge que le logo — les
+  // rouge WeFilmGood, « Match » suit la même horloge que le logo — les
   // trois couleurs des engagements, Planet, Humanity, Education. Un
   // battement sur quatre, les deux mots sont au rouge : la fusion.
-  { label: "CinéCrush", href: "/cinefusion", special: true },
+  { label: "CinéMatch", href: "/cinefusion", special: true },
 ];
 
 /**
@@ -114,7 +114,7 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
                     {"special" in el && el.special ? (
                       <>
                         <span style={{ color: ROUGE_WFG }}>Ciné</span>
-                        <span style={{ color: "var(--engagement, #da2c25)" }}>Fusion</span>
+                        <span style={{ color: "var(--engagement, #da2c25)" }}>Match</span>
                       </>
                     ) : (
                       el.label
