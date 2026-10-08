@@ -36,9 +36,9 @@ const majuscule = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 export default async function ProfilPage({
   searchParams,
 }: {
-  searchParams: Promise<{ enregistre?: string; bienvenue?: string; validation?: string }>;
+  searchParams: Promise<{ enregistre?: string; bienvenue?: string; validation?: string; apercu?: string }>;
 }) {
-  const { enregistre, bienvenue, validation } = await searchParams;
+  const { enregistre, bienvenue, validation, apercu } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -72,8 +72,13 @@ export default async function ProfilPage({
 
   // « Demander ma validation » (08/10) : pour un professionnel non validé (surtout
   // les talents repris de WFG 1) ; la règle est dans la base.
-  const { data: peutDemander } = await supabase.rpc("peut_demander_validation", { uid: user.id });
-  const aReference = Boolean((fiche?.website ?? "").trim());
+  const { data: peutDemanderVraiment } = await supabase.rpc("peut_demander_validation", { uid: user.id });
+  // Aperçu pour l'administration (08/10, Sarah veut voir le bouton) :
+  // /profil?apercu=validation (avec référence) ou /profil?apercu=validation-sans-reference.
+  const { data: estAdmin } = apercu ? await supabase.rpc("is_admin") : { data: false };
+  const enApercu = estAdmin === true && (apercu === "validation" || apercu === "validation-sans-reference");
+  const peutDemander = enApercu || peutDemanderVraiment === true;
+  const aReference = enApercu ? apercu === "validation" : Boolean((fiche?.website ?? "").trim());
 
   const prenom = profil?.first_name ?? profil?.full_name?.split(" ")[0] ?? null;
   const nom = profil?.full_name ?? prenom ?? "Mon profil";
@@ -147,7 +152,7 @@ export default async function ProfilPage({
               <Link href="/profil/identite" className={styles.manque}>+ votre ville</Link>
             )}
           </p>
-          {peutDemander === true && (
+          {peutDemander && (
             <div className={styles.afficheAttente}>
               <p>
                 Votre profil de professionnel·le n&apos;est pas encore validé.
@@ -155,7 +160,7 @@ export default async function ProfilPage({
               </p>
               {aReference ? (
                 <form action={demanderMaValidation} style={{ marginTop: 8 }}>
-                  <button type="submit">Demander ma validation</button>
+                  <button type={enApercu ? "button" : "submit"}>Demander ma validation</button>
                 </form>
               ) : (
                 <Link href="/profil/identite" className={styles.manque}>+ ma référence professionnelle</Link>
