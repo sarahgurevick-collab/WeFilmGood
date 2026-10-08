@@ -40,7 +40,7 @@ async function toutLire(construire) {
   }
 }
 
-const comptes = JSON.parse(readFileSync("/home/wfg/imports/comptes-a-importer.json", "utf8"));
+const comptes = JSON.parse(readFileSync(process.argv[2] ?? "/home/wfg/imports/comptes-a-importer.json", "utf8"));
 const existants = await toutLire(() =>
   supabase.from("profiles").select("legacy_id").not("legacy_id", "is", null).order("id"),
 );
