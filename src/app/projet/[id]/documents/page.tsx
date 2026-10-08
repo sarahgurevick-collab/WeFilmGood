@@ -114,12 +114,6 @@ export default async function DocumentsPage({
           <span>{scenario ? "Remplacer le scénario (PDF)" : "Scénario (PDF)"}</span>
           <input type="file" name="scenario" accept="application/pdf" />
           <span className={formStyles.hint}>
-            {scenario && (
-              <>
-                Fichier actuel : <strong>{scenario.original_name ?? "scénario.pdf"}</strong>.
-                Laissez vide pour le conserver.{" "}
-              </>
-            )}
             Confidentiel : seuls vous, les lecteurs qui en seront chargés et
             l&apos;équipe de la Maison des Scénaristes/WeFilmGood y auront accès.
           </span>
