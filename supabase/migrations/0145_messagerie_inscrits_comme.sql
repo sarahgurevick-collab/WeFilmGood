@@ -21,6 +21,3 @@ returns boolean language sql stable security definer set search_path = public as
       )
   );
 $$;
-
--- La fonction interroge cette table à chaque envoi : un index sur le profil.
-create index if not exists wfg1_metiers_membres_profil on public.wfg1_metiers_membres (profile_id);
