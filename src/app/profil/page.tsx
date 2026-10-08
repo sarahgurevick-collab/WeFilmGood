@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import { createClient } from "@/lib/supabase/server";
 import { BLOCS, calculerCompletion } from "./completion";
+import { demanderMaValidation } from "./actions";
 import styles from "./profil.module.css";
 
 const CATEGORIES: Record<string, string> = {
@@ -35,9 +36,9 @@ const majuscule = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
 export default async function ProfilPage({
   searchParams,
 }: {
-  searchParams: Promise<{ enregistre?: string; bienvenue?: string }>;
+  searchParams: Promise<{ enregistre?: string; bienvenue?: string; validation?: string }>;
 }) {
-  const { enregistre, bienvenue } = await searchParams;
+  const { enregistre, bienvenue, validation } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -56,7 +57,7 @@ export default async function ProfilPage({
     calculerCompletion(supabase, user.id),
     supabase
       .from("profiles")
-      .select("avatar_url, city, country, personality_answers")
+      .select("avatar_url, city, country, personality_answers, website")
       .eq("id", user.id)
       .maybeSingle(),
     supabase
@@ -68,6 +69,11 @@ export default async function ProfilPage({
     supabase.from("personality_questions").select("key, label_fr").order("position"),
     supabase.from("personality_options").select("question_key, option_slug, label_fr"),
   ]);
+
+  // « Demander ma validation » (08/10) : pour un professionnel non validé (surtout
+  // les talents repris de WFG 1) ; la règle est dans la base.
+  const { data: peutDemander } = await supabase.rpc("peut_demander_validation", { uid: user.id });
+  const aReference = Boolean((fiche?.website ?? "").trim());
 
   const prenom = profil?.first_name ?? profil?.full_name?.split(" ")[0] ?? null;
   const nom = profil?.full_name ?? prenom ?? "Mon profil";
@@ -141,6 +147,23 @@ export default async function ProfilPage({
               <Link href="/profil/identite" className={styles.manque}>+ votre ville</Link>
             )}
           </p>
+          {peutDemander === true && (
+            <div className={styles.afficheAttente}>
+              <p>
+                Votre profil de professionnel·le n&apos;est pas encore validé.
+                {!aReference && " Indiquez d'abord votre référence professionnelle (page IMDb, Unifrance ou site)."}
+              </p>
+              {aReference ? (
+                <form action={demanderMaValidation} style={{ marginTop: 8 }}>
+                  <button type="submit">Demander ma validation</button>
+                </form>
+              ) : (
+                <Link href="/profil/identite" className={styles.manque}>+ ma référence professionnelle</Link>
+              )}
+            </div>
+          )}
+          {validation === "demandee" && <p className={styles.afficheAttente}>Votre demande est envoyée.</p>}
+          {validation === "impossible" && <p className={styles.afficheAttente}>La demande n&apos;a pas pu être envoyée.</p>}
           {profil?.validation_status === "en_attente" && (
             <p className={styles.afficheAttente}>En attente de validation par l&apos;équipe de la Maison des Scénaristes/WeFilmGood</p>
           )}

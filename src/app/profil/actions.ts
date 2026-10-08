@@ -357,3 +357,13 @@ export async function reglerMessagerie(formData: FormData) {
   }
   redirect("/profil/compte?messagerie=1");
 }
+
+/**
+ * « Demander ma validation » (08/10/2026) : le profil passe « en attente » ;
+ * la règle (professionnel non validé, référence indiquée) est dans la base.
+ */
+export async function demanderMaValidation() {
+  const { supabase } = await requireUser();
+  const { data } = await supabase.rpc("demander_validation");
+  redirect(`/profil?validation=${data === "ok" ? "demandee" : "impossible"}`);
+}
