@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
-import { quitterLaPlateforme } from "../actions";
+import { quitterLaPlateforme, reglerMessagerie } from "../actions";
 import styles from "../profil.module.css";
 
 /**
@@ -14,16 +14,49 @@ import styles from "../profil.module.css";
  * visible faisait cliquer par réflexe, et obligeait ensuite à redemander
  * un lien. Quitter la plateforme, plus grave encore, se trouve tout en bas.
  */
-export default async function ComptePage() {
+export default async function ComptePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ messagerie?: string }>;
+}) {
+  const { messagerie } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/connexion?next=/profil/compte");
 
+  // Le réglage de la messagerie ne concerne que les producteurs et les comédiens.
+  const { data: surveille } = await supabase.rpc("messagerie_surveillee", { uid: user.id });
+  const { data: moi } = surveille
+    ? await supabase.from("profiles").select("messages_ouverts").eq("id", user.id).maybeSingle<{ messages_ouverts: boolean }>()
+    : { data: null };
+  const ouverte = moi?.messages_ouverts !== false;
+
   return (
     <PageShell nav="profil" connecte>
       <h1 className={styles.titre}>Réglages du compte</h1>
+
+      {surveille === true && (
+        <>
+          <h2 className={styles.section}>Ma messagerie</h2>
+          <p className={formStyles.hint}>
+            Si vous recevez beaucoup de messages, vous pouvez fermer votre messagerie
+            momentanément. Vous pouvez toujours écrire, et les personnes à qui vous avez
+            écrit peuvent vous répondre.
+          </p>
+          <p style={{ marginTop: 12 }}>
+            Votre messagerie est {ouverte ? "ouverte" : "fermée"}.
+            {messagerie && <span className={styles.ok}> Enregistré.</span>}
+          </p>
+          <form action={reglerMessagerie} style={{ marginTop: 12, marginBottom: 40 }}>
+            <input type="hidden" name="ouvrir" value={ouverte ? "0" : "1"} />
+            <button type="submit" className={formStyles.submit}>
+              {ouverte ? "Fermer ma messagerie momentanément" : "Rouvrir ma messagerie"}
+            </button>
+          </form>
+        </>
+      )}
 
       <h2 className={styles.section}>Se déconnecter</h2>
       <p className={formStyles.hint}>

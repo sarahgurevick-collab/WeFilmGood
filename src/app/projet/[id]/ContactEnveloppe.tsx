@@ -23,11 +23,18 @@ const ENVELOPPE = (
 export default function ContactEnveloppe({
   href,
   adhesionRequise = false,
+  indisponible,
 }: {
   /** Où mène l'enveloppe : l'écran de message, le projet déjà indiqué. */
   href: string;
   /** Barrée, avec sa bulle, tant que le membre n'a pas d'adhésion. */
   adhesionRequise?: boolean;
+  /**
+   * Messagerie fermée par un producteur ou un comédien très sollicité (08/10) :
+   * l'enveloppe est barrée, la bulle donne ce texte (provisoire, Sarah cherche
+   * la formulation) et n'est pas un lien.
+   */
+  indisponible?: string;
 }) {
   const [ouverte, setOuverte] = useState(false);
   const zone = useRef<HTMLSpanElement>(null);
@@ -46,6 +53,26 @@ export default function ContactEnveloppe({
       document.removeEventListener("keydown", touche);
     };
   }, [ouverte]);
+
+  if (!adhesionRequise && indisponible) {
+    return (
+      <span ref={zone} className={styles.zone}>
+        <button
+          type="button"
+          className={`${styles.enveloppe} ${styles.barree}`}
+          aria-expanded={ouverte}
+          aria-label="Contacter, messagerie indisponible"
+          onClick={() => setOuverte((v) => !v)}
+        >
+          {ENVELOPPE}
+          <span className={styles.barre} aria-hidden="true" />
+        </button>
+        <span className={`${styles.bulle} ${ouverte ? styles.bulleOuverte : ""}`} role="status">
+          {indisponible}
+        </span>
+      </span>
+    );
+  }
 
   if (!adhesionRequise) {
     return (

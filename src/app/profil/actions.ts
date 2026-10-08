@@ -347,3 +347,13 @@ export async function retirerPhoto() {
   revalidatePath("/profil");
   redirect("/profil/identite");
 }
+
+/** Ouvre ou ferme la messagerie d'un producteur ou d'un comédien (08/10, étape 1 du test). */
+export async function reglerMessagerie(formData: FormData) {
+  const { supabase, user } = await requireUser();
+  const { data: surveille } = await supabase.rpc("messagerie_surveillee", { uid: user.id });
+  if (surveille === true) {
+    await supabase.from("profiles").update({ messages_ouverts: formData.get("ouvrir") === "1" }).eq("id", user.id);
+  }
+  redirect("/profil/compte?messagerie=1");
+}

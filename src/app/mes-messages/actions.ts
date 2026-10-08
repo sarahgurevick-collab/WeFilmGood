@@ -44,6 +44,8 @@ export async function ecrire(formData: FormData) {
   if (error) {
     // Écrire demande une adhésion (02/10) ; l'administration passe.
     if (error.message.includes("adhésion")) redirect("/adhesion");
+    // Messagerie fermée entre l'ouverture de l'écran et l'envoi : retour à la fiche.
+    if (error.message.includes("indisponible") && projectId) redirect(`/projet/${projectId}`);
     console.error("Envoi du message refusé :", error.message);
     redirect("/mes-messages");
   }

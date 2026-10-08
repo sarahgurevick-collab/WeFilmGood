@@ -110,6 +110,13 @@ export default async function ProfilMembrePage({
     const { data } = await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id });
     adherent = data === true;
   }
+  let indisponible: string | undefined;
+  if (estAdmin && membre.id !== user.id && projets[0]) {
+    const { data: fermee } = await supabase.rpc("messagerie_fermee", { uid: membre.id });
+    if (fermee === true) {
+      indisponible = `${(await supabase.from("profiles").select("first_name").eq("id", membre.id).maybeSingle<{ first_name: string | null }>()).data?.first_name ?? "Ce talent"} est indisponible momentanément, messagerie saturée.`;
+    }
+  }
   const enveloppe =
     // Pour l'instant, l'administration seule (07/10) : la décision du 03/10
     // retirait l'enveloppe du profil des talents (contact lié à un projet).
@@ -118,6 +125,7 @@ export default async function ProfilMembrePage({
         <ContactEnveloppe
           href={`/mes-messages/nouveau?projet=${projets[0].id}`}
           adhesionRequise={!estAdmin && !adherent}
+          indisponible={indisponible}
         />
       </div>
     ) : null;

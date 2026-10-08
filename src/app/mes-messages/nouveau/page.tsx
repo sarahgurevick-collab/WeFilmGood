@@ -47,6 +47,10 @@ export default async function NouveauMessagePage({
   if (projet.owner_id === user.id) redirect(`/projet/${projet.id}`);
   if (adherent !== true && estAdmin !== true) redirect("/adhesion");
 
+  // Messagerie fermée : pas d'écran d'écriture, on revient à la fiche (l'enveloppe y est barrée).
+  const { data: fermee } = await supabase.rpc("messagerie_fermee", { uid: projet.owner_id });
+  if (fermee === true) redirect(`/projet/${projet.id}`);
+
   const titre = `Écrire à ${projet.owner?.first_name ?? projet.owner?.full_name ?? "l'auteur"}`;
 
   return (

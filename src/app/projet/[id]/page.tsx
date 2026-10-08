@@ -286,6 +286,19 @@ export default async function ProjetPage({
     ? await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id })
     : { data: false };
   const restreint = !isOwner && estAdmin !== true && !dansEquipe && adherent !== true;
+  // Messagerie fermée par l'auteur du projet (08/10) : l'enveloppe est barrée.
+  let texteIndisponible: string | undefined;
+  if (!isOwner && !restreint && user) {
+    const { data: fermee } = await supabase.rpc("messagerie_fermee", { uid: project.owner_id });
+    if (fermee === true) {
+      const { data: porteur } = await supabase
+        .from("profiles")
+        .select("first_name")
+        .eq("id", project.owner_id)
+        .maybeSingle<{ first_name: string | null }>();
+      texteIndisponible = `${porteur?.first_name ?? "Ce talent"} est indisponible momentanément, messagerie saturée.`;
+    }
+  }
 
   // La phrase d'encouragement des lecteurs, pour un projet labellisé.
   const { data: avisWfg } = await supabase.rpc("avis_wfg_projet", { p_project_id: id });
@@ -404,6 +417,7 @@ export default async function ProjetPage({
             <ContactEnveloppe
               href={user ? `/mes-messages/nouveau?projet=${project.id}` : `/connexion?next=/projet/${project.id}`}
               adhesionRequise={restreint}
+              indisponible={texteIndisponible}
             />
           )
         }
