@@ -12,6 +12,7 @@ import CasesAffichage from "./CasesAffichage";
 import FiltresAuto from "./FiltresAuto";
 import FormatsLecteur from "./FormatsLecteur";
 import AdhesionMembre from "./AdhesionMembre";
+import ControleNom from "./ControleNom";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 type Membre = {
@@ -359,6 +360,7 @@ export default async function MembresPage({
             ["biofilmo", "Biofilmo"],
             ["inscription", "Date d'inscription"],
             ["activite", "Dernière activité"],
+            ["controle", "Nom sur la page du lien"],
           ]}
           cochees={[...affichage]}
         />
@@ -394,6 +396,7 @@ export default async function MembresPage({
               {metier === "Lecteur" && <th>Fiches</th>}
               {metier === "Lecteur" && <th>Dernière fiche</th>}
               {metier === "avalider" && <th>Validation</th>}
+              {(metier === "avalider" || affichage.has("controle")) && <th>Nom sur la page</th>}
               {affichage.has("biofilmo") && <th>Biofilmo</th>}
               {affichage.has("inscription") && <th>Inscrit</th>}
               {affichage.has("activite") && <th>Dernière activité</th>}
@@ -502,6 +505,11 @@ export default async function MembresPage({
                     ) : (
                       <span className={formStyles.hint}>en attente — pas de référence</span>
                     )}
+                  </td>
+                )}
+                {(metier === "avalider" || affichage.has("controle")) && (
+                  <td>
+                    <ControleNom profileId={m.profile_id} aLien={Boolean(m.website?.trim())} auto={metier === "avalider"} />
                   </td>
                 )}
                 {affichage.has("biofilmo") && (
