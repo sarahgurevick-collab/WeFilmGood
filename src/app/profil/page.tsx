@@ -9,7 +9,7 @@ const CATEGORIES: Record<string, string> = {
   auteur: "Auteur",
   producteur: "Producteur",
   talent: "Autre Talent",
-  cinephile: "Cinéphile",
+  cinephile: "Greenlighter",
 };
 
 /** Les pays repris de WFG 1 sont parfois des codes (« FR ») : on les écrit en toutes lettres. */
