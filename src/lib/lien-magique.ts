@@ -41,6 +41,59 @@ function tropTot(email: string) {
   return false;
 }
 
+/*
+ * Limite par visiteur. Du 1er au 8 juin 2026, un robot a créé 762 faux
+ * comptes sur WFG 1 avec à chaque fois l'adresse email d'un inconnu, pour
+ * lui faire recevoir notre mail de bienvenue. Il change d'adresse email à
+ * chaque essai, mais pas d'adresse de connexion (IP) : c'est elle qu'on
+ * compte. Au-delà du plafond, on ne crée rien et on n'envoie rien, mais
+ * l'écran reste le même pour ne pas renseigner le robot.
+ */
+const envoisParVisiteur = new Map<string, number[]>();
+const FENETRE = 60 * 60_000; // une heure
+const MAX_INSCRIPTIONS_PAR_HEURE = 5;
+const MAX_CONNEXIONS_PAR_HEURE = 20;
+
+async function adresseDuVisiteur() {
+  const h = await headers();
+  return h.get("x-real-ip") ?? h.get("x-forwarded-for")?.split(",")[0].trim() ?? "inconnu";
+}
+
+async function visiteurTropActif(plafond: number, quoi: string) {
+  const ip = await adresseDuVisiteur();
+  const maintenant = Date.now();
+  const recents = (envoisParVisiteur.get(ip) ?? []).filter((t) => maintenant - t < FENETRE);
+  if (recents.length >= plafond) {
+    envoisParVisiteur.set(ip, recents);
+    console.warn(`Lien magique : ${quoi} refusée, plus de ${plafond} par heure depuis ${ip}`);
+    return true;
+  }
+  recents.push(maintenant);
+  envoisParVisiteur.set(ip, recents);
+  if (envoisParVisiteur.size > 5000) {
+    for (const [cle, dates] of envoisParVisiteur) {
+      if (dates.every((t) => maintenant - t >= FENETRE)) envoisParVisiteur.delete(cle);
+    }
+  }
+  return false;
+}
+
+/**
+ * Vrai si le formulaire a été rempli par un robot : le champ piège (invisible
+ * pour une personne, rempli par les robots qui complètent tout) contient
+ * quelque chose, ou le prénom/nom contient des chiffres, comme les
+ * « Dg54asdkfoda+- » de juin 2026. L'appelant affiche alors l'écran habituel
+ * sans rien faire.
+ */
+export function rempliParUnRobot(formData: FormData) {
+  const piege = (formData.get("website") as string | null)?.trim();
+  if (piege) return true;
+  const noms = ["first_name", "last_name", "full_name"]
+    .map((champ) => (formData.get(champ) as string | null) ?? "")
+    .join(" ");
+  return /\d/.test(noms);
+}
+
 async function lienVers(tokenHash: string, type: "magiclink" | "invite", next: string) {
   const params = new URLSearchParams({ token_hash: tokenHash, type, next: cheminSur(next) });
   return `${await origineDuSite()}/auth/confirm?${params.toString()}`;
@@ -70,6 +123,7 @@ function gabarit(titre: string, texte: string, lien: string, bouton: string) {
  */
 export async function envoyerLienDeConnexion(email: string, next: string) {
   if (tropTot(email)) return;
+  if (await visiteurTropActif(MAX_CONNEXIONS_PAR_HEURE, "connexion")) return;
 
   const admin = createAdminClient();
   if (!admin) {
@@ -117,6 +171,9 @@ export async function envoyerLienDInscription(
     console.error("Lien magique : SUPABASE_SERVICE_ROLE_KEY manquante");
     return { ok: false, erreur: "L'inscription est momentanément indisponible." };
   }
+
+  // Avant de créer le compte : au-delà du plafond, rien n'est créé.
+  if (await visiteurTropActif(MAX_INSCRIPTIONS_PAR_HEURE, "inscription")) return { ok: true };
 
   const { data, error } = await admin.auth.admin.generateLink({
     type: "invite",

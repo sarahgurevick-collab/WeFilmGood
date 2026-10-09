@@ -24,6 +24,13 @@ export default async function LecteurInscriptionPage({
   return (
     <PageShell eyebrow="Lecteurs" title="Créer un profil lecteur" enTeteAnime>
       <form className={formStyles.form} action={signUpReader}>
+        {/* Champ piège : invisible pour une personne, rempli par les robots. */}
+        <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+          <label>
+            Site internet
+            <input type="text" name="website" tabIndex={-1} autoComplete="off" defaultValue="" />
+          </label>
+        </div>
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
         <label className={formStyles.field}>

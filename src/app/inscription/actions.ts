@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { cheminSur, envoyerLienDInscription } from "@/lib/lien-magique";
+import { cheminSur, envoyerLienDInscription, rempliParUnRobot } from "@/lib/lien-magique";
 
 /**
  * Étape 1 : prénom, nom, email — rien d'autre. Le reste du profil se
@@ -18,6 +18,12 @@ export async function signUp(formData: FormData) {
 
   if (!firstName || !lastName || !email) {
     redirect(`/inscription?${params({ erreur: "Tous les champs sont obligatoires." })}`);
+  }
+
+  // Robot : même écran que d'habitude, mais rien n'est créé ni envoyé.
+  if (rempliParUnRobot(formData)) {
+    console.warn("Inscription : formulaire rempli par un robot, ignoré");
+    redirect(`/inscription?envoye=${encodeURIComponent(email)}`);
   }
 
   const fullName = `${firstName} ${lastName}`;

@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { envoyerLienDInscription } from "@/lib/lien-magique";
+import { envoyerLienDInscription, rempliParUnRobot } from "@/lib/lien-magique";
 
 export async function signUpReader(formData: FormData) {
   const fullName = (formData.get("full_name") as string)?.trim();
@@ -17,6 +17,12 @@ export async function signUpReader(formData: FormData) {
   if (!fullName || !email || !code) {
     fail("Tous les champs sont obligatoires.");
     return;
+  }
+
+  // Robot : même écran que d'habitude, mais rien n'est créé ni envoyé.
+  if (rempliParUnRobot(formData)) {
+    console.warn("Inscription lecteur : formulaire rempli par un robot, ignoré");
+    redirect("/lecteur/inscription?envoye=1");
   }
 
   const supabase = await createClient();

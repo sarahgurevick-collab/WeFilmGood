@@ -61,6 +61,11 @@ for (const a of comptes) {
 
   const prenom = (a.first_name ?? "").trim() || null;
   const nom = (a.last_name ?? "").trim() || null;
+  // Attaque du 1er au 8 juin 2026 sur WFG 1 : 762 faux comptes « scénariste »
+  // (ids 13072 à 13869, prénom = nom = « Dg54asdkfoda+- »), supprimés de WFG 2
+  // le 09/10/2026. On les reconnaît au nom, pas aux ids : 6 vrais auteurs se
+  // sont inscrits dans la même plage.
+  if (prenom === "Dg54asdkfoda+-" || nom === "Dg54asdkfoda+-") { sautes++; continue; }
   const complet = [prenom, nom].filter(Boolean).join(" ") || null;
 
   try {

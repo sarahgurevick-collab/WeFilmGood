@@ -54,6 +54,13 @@ export default async function InscriptionPage({
 
       <form className={formStyles.form} action={signUp}>
         <input type="hidden" name="next" value={nextPath} />
+        {/* Champ piège : invisible pour une personne, rempli par les robots. */}
+        <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: 1, height: 1, overflow: "hidden" }}>
+          <label>
+            Site internet
+            <input type="text" name="website" tabIndex={-1} autoComplete="off" defaultValue="" />
+          </label>
+        </div>
 
         <div className={styles.rangee}>
           <label className={formStyles.field}>
