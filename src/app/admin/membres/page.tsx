@@ -12,6 +12,7 @@ import CasesAffichage from "./CasesAffichage";
 import FiltresAuto from "./FiltresAuto";
 import FormatsLecteur from "./FormatsLecteur";
 import AdhesionMembre from "./AdhesionMembre";
+import ChangerAdresseMembre from "./ChangerAdresseMembre";
 import ControleNom from "./ControleNom";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -420,7 +421,7 @@ export default async function MembresPage({
                       <div>
                         <Link href={`/membres/${m.profile_id}`}>{m.full_name ?? "Sans nom"}</Link>
                         <br />
-                        <span className={formStyles.hint}>{m.email}</span>
+                        <ChangerAdresseMembre profileId={m.profile_id} email={m.email} />
                         <br />
                         <span className={formStyles.hint}>
                           {[nomDuPays(m.country), m.postal_code, m.city].filter((x) => x && x !== "—").join(" · ") || "—"}
@@ -439,7 +440,7 @@ export default async function MembresPage({
                     <>
                       <Link href={`/membres/${m.profile_id}`}>{m.full_name ?? "Sans nom"}</Link>
                       <br />
-                      <span className={formStyles.hint}>{m.email}</span>
+                      <ChangerAdresseMembre profileId={m.profile_id} email={m.email} />
                     </>
                   )}
                 </td>

@@ -99,7 +99,7 @@ async function lienVers(tokenHash: string, type: "magiclink" | "invite", next: s
   return `${await origineDuSite()}/auth/confirm?${params.toString()}`;
 }
 
-function gabarit(titre: string, texte: string, lien: string, bouton: string) {
+export function gabarit(titre: string, texte: string, lien: string, bouton: string) {
   return `
     <div style="font-family: Helvetica, Arial, sans-serif; color: #1a1a1a; max-width: 520px;">
       <p style="font-size: 17px; font-weight: 600;">${titre}</p>

@@ -61,3 +61,21 @@ export async function changerAdhesion(formData: FormData) {
   }
   revalidatePath("/admin/membres");
 }
+
+/**
+ * L'adresse email d'un membre, changée directement par l'administration
+ * (09/10, Sarah) : pour le talent qui l'a demandé par téléphone, ou qui n'a
+ * plus accès à son ancienne boîte. Renvoie un message d'erreur, ou rien.
+ */
+export async function changerAdresseMembre(profileId: string, nouvelleAdresse: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  if (!isAdmin) return "Réservé à l'administration.";
+
+  const email = nouvelleAdresse.trim().toLowerCase();
+  const { appliquerNouvelleAdresse, verifierNouvelleAdresse } = await import("@/lib/changement-adresse");
+  const erreur = (await verifierNouvelleAdresse(email, null)) ?? (await appliquerNouvelleAdresse(profileId, email));
+  if (erreur) return erreur;
+  revalidatePath("/admin/membres");
+  return null;
+}

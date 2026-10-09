@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import formStyles from "@/components/form.module.css";
 import { PAYS } from "@/lib/pays";
@@ -20,9 +21,9 @@ const CATEGORIES = [
 export default async function IdentitePage({
   searchParams,
 }: {
-  searchParams: Promise<{ erreur?: string; photo?: string }>;
+  searchParams: Promise<{ erreur?: string; photo?: string; adresse?: string }>;
 }) {
-  const { erreur, photo } = await searchParams;
+  const { erreur, photo, adresse } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -141,6 +142,10 @@ export default async function IdentitePage({
             <div className={formStyles.field}>
               <span>Adresse email</span>
               <p className={styles.valeurFixe}>{user.email}</p>
+              {adresse && <span className={styles.ok}>Votre adresse a été changée.</span>}
+              <Link href="/profil/adresse" className={formStyles.hint} style={{ textDecoration: "underline" }}>
+                Changer d&apos;adresse
+              </Link>
             </div>
             <label className={formStyles.field}>
               <span>Téléphone (avec indicatif)</span>
