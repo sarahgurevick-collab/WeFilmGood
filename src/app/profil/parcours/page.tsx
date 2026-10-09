@@ -4,7 +4,7 @@ import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import BlocProfil from "../BlocProfil";
 import { saveParcours } from "../actions";
-import { metiersPourCategorie } from "../metiers";
+import { metiersPourCategorie, questionAgentConcernee } from "../metiers";
 import styles from "../profil.module.css";
 import CaseAutre from "./CaseAutre";
 import OuiNon from "./OuiNon";
@@ -140,18 +140,20 @@ export default async function ParcoursPage({
           </OuiNon>
         )}
 
-        <OuiNon
-          question="Avez-vous un agent ?"
-          nom="agent_reponse"
-          initial={profil?.agent_reponse === true}
-        >
-          <input
-            placeholder="Nom de votre agent"
-            type="text"
-            name="agent_name"
-            defaultValue={profil?.agent_name ?? ""}
-          />
-        </OuiNon>
+        {questionAgentConcernee(profil?.category, metiers) && (
+          <OuiNon
+            question="Avez-vous un agent ?"
+            nom="agent_reponse"
+            initial={profil?.agent_reponse === true}
+          >
+            <input
+              placeholder="Nom de votre agent"
+              type="text"
+              name="agent_name"
+              defaultValue={profil?.agent_name ?? ""}
+            />
+          </OuiNon>
+        )}
 
         <OuiNon
           question="Avez-vous des réseaux ou des sites professionnels ?"

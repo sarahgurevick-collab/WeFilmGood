@@ -1,3 +1,4 @@
+import { questionAgentConcernee } from "./metiers";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type Bloc = "identite" | "parcours" | "gouts";
@@ -66,6 +67,7 @@ export async function calculerCompletion(
     { count: genres },
     { count: reseaux },
     { count: questionsPortrait },
+    { count: comedien },
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -92,6 +94,11 @@ export async function calculerCompletion(
       .select("network", { count: "exact", head: true })
       .eq("profile_id", userId),
     supabase.from("personality_questions").select("key", { count: "exact", head: true }),
+    supabase
+      .from("profile_roles")
+      .select("role_slug", { count: "exact", head: true })
+      .eq("profile_id", userId)
+      .eq("role_slug", "comedien"),
   ]);
 
   const portrait = Object.keys((profil?.personality_answers as object | null) ?? {}).length;
@@ -101,7 +108,13 @@ export async function calculerCompletion(
   // à l'agent ou aux réseaux aussi : chacun doit pouvoir atteindre 100 %.
   const metierRenseigne = (metiers ?? 0) > 0 || !!profil?.autre_metier_actif;
   const genreRenseigne = (genres ?? 0) > 0 || !!profil?.autre_genre_actif;
-  const agentRenseigne = profil?.agent_reponse === false || !!profil?.agent_name;
+  // La question de l'agent n'est posée qu'aux auteurs et aux comédiens ;
+  // pour les autres elle compte comme renseignée.
+  const agentConcerne = questionAgentConcernee(
+    profil?.category,
+    (comedien ?? 0) > 0 ? [{ role_slug: "comedien" }] : [],
+  );
+  const agentRenseigne = !agentConcerne || profil?.agent_reponse === false || !!profil?.agent_name;
   const reseauxRenseignes = profil?.reseaux_reponse === false || (reseaux ?? 0) > 0;
 
   // Un auteur n'a pas de référence à fournir : son site est une question

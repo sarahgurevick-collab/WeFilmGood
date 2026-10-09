@@ -25,3 +25,14 @@ export function metiersPourCategorie(category: string | null | undefined): strin
   if (category === "producteur" || category === "talent") return METIERS_AUTRES;
   return [];
 }
+
+/**
+ * La question « Avez-vous un agent ? » ne concerne que les auteurs et les
+ * comédiens (décision de Sarah, 09/10/2026) : un producteur n'a pas d'agent.
+ */
+export function questionAgentConcernee(
+  category: string | null | undefined,
+  roles: { role_slug: string }[] | null | undefined,
+): boolean {
+  return category === "auteur" || (roles ?? []).some((r) => r.role_slug === "comedien");
+}
