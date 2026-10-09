@@ -1,4 +1,3 @@
-import { questionAgentConcernee } from "./metiers";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type Bloc = "identite" | "parcours" | "gouts";
@@ -67,12 +66,11 @@ export async function calculerCompletion(
     { count: genres },
     { count: reseaux },
     { count: questionsPortrait },
-    { count: comedien },
   ] = await Promise.all([
     supabase
       .from("profiles")
       .select(
-        "full_name, first_name, category, validation_status, city, country, biofilmo, website, agent_name, agent_reponse, reseaux_reponse, site_reponse, autre_metier_actif, autre_genre_actif, personality_answers",
+        "full_name, first_name, category, validation_status, city, country, biofilmo, website, reseaux_reponse, site_reponse, autre_metier_actif, autre_genre_actif, personality_answers",
       )
       .eq("id", userId)
       .maybeSingle(),
@@ -94,27 +92,17 @@ export async function calculerCompletion(
       .select("network", { count: "exact", head: true })
       .eq("profile_id", userId),
     supabase.from("personality_questions").select("key", { count: "exact", head: true }),
-    supabase
-      .from("profile_roles")
-      .select("role_slug", { count: "exact", head: true })
-      .eq("profile_id", userId)
-      .eq("role_slug", "comedien"),
   ]);
 
   const portrait = Object.keys((profil?.personality_answers as object | null) ?? {}).length;
   const totalQuestions = questionsPortrait ?? 20;
 
   // « Un autre métier… » / « Un autre genre… » coché vaut réponse ; « Non »
-  // à l'agent ou aux réseaux aussi : chacun doit pouvoir atteindre 100 %.
+  // aux réseaux aussi : chacun doit pouvoir atteindre 100 %. L'agent ne
+  // compte pas : avoir un agent n'est pas obligatoire, et le compter
+  // poussait les talents à mettre leur propre nom (Sarah, 09/10/2026).
   const metierRenseigne = (metiers ?? 0) > 0 || !!profil?.autre_metier_actif;
   const genreRenseigne = (genres ?? 0) > 0 || !!profil?.autre_genre_actif;
-  // La question de l'agent n'est posée qu'aux auteurs et aux comédiens ;
-  // pour les autres elle compte comme renseignée.
-  const agentConcerne = questionAgentConcernee(
-    profil?.category,
-    (comedien ?? 0) > 0 ? [{ role_slug: "comedien" }] : [],
-  );
-  const agentRenseigne = !agentConcerne || profil?.agent_reponse === false || !!profil?.agent_name;
   const reseauxRenseignes = profil?.reseaux_reponse === false || (reseaux ?? 0) > 0;
 
   // Un auteur n'a pas de référence à fournir : son site est une question
@@ -152,7 +140,6 @@ export async function calculerCompletion(
     ...(profil?.category === "auteur" ? [siteRenseigne] : []),
     metierRenseigne,
     genreRenseigne,
-    agentRenseigne,
     reseauxRenseignes,
   ];
 
