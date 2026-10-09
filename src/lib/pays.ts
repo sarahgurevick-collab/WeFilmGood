@@ -1,40 +1,40 @@
 /**
  * Liste des pays du monde, en français, pour les listes déroulantes.
  * Pas de valeur par défaut : c'est à la personne de choisir le sien.
+ *
+ * La base garde le code à deux lettres (FR, BE, CD…), comme les profils
+ * repris de WFG 1 et comme l'écran des membres le lit. La liste ne stockait
+ * que des noms jusqu'au 09/10/2026 : un profil repris affichait alors
+ * « Afghanistan », le premier de la liste, faute de trouver « FR ».
  */
-export const PAYS: string[] = [
-  "Afghanistan", "Afrique du Sud", "Albanie", "Algérie", "Allemagne", "Andorre",
-  "Angola", "Antigua-et-Barbuda", "Arabie saoudite", "Argentine", "Arménie",
-  "Australie", "Autriche", "Azerbaïdjan", "Bahamas", "Bahreïn", "Bangladesh",
-  "Barbade", "Belgique", "Belize", "Bénin", "Bhoutan", "Biélorussie", "Birmanie",
-  "Bolivie", "Bosnie-Herzégovine", "Botswana", "Brésil", "Brunei", "Bulgarie",
-  "Burkina Faso", "Burundi", "Cambodge", "Cameroun", "Canada", "Cap-Vert",
-  "Chili", "Chine", "Chypre", "Colombie", "Comores", "Congo",
-  "Congo (RDC)", "Corée du Nord", "Corée du Sud", "Costa Rica",
-  "Côte d'Ivoire", "Croatie", "Cuba", "Danemark", "Djibouti", "Dominique",
-  "Égypte", "Émirats arabes unis", "Équateur", "Érythrée", "Espagne", "Estonie",
-  "Eswatini", "États-Unis", "Éthiopie", "Fidji", "Finlande", "France", "Gabon",
-  "Gambie", "Géorgie", "Ghana", "Grèce", "Grenade", "Guatemala", "Guinée",
-  "Guinée-Bissau", "Guinée équatoriale", "Guyana", "Haïti", "Honduras",
-  "Hongrie", "Îles Marshall", "Îles Salomon", "Inde", "Indonésie", "Irak",
-  "Iran", "Irlande", "Islande", "Israël", "Italie", "Jamaïque", "Japon",
-  "Jordanie", "Kazakhstan", "Kenya", "Kirghizistan", "Kiribati", "Koweït",
-  "Laos", "Lesotho", "Lettonie", "Liban", "Liberia", "Libye", "Liechtenstein",
-  "Lituanie", "Luxembourg", "Macédoine du Nord", "Madagascar", "Malaisie",
-  "Malawi", "Maldives", "Mali", "Malte", "Maroc", "Maurice", "Mauritanie",
-  "Mexique", "Micronésie", "Moldavie", "Monaco", "Mongolie", "Monténégro",
-  "Mozambique", "Namibie", "Nauru", "Népal", "Nicaragua", "Niger", "Nigeria",
-  "Norvège", "Nouvelle-Zélande", "Oman", "Ouganda", "Ouzbékistan", "Pakistan",
-  "Palaos", "Palestine", "Panama", "Papouasie-Nouvelle-Guinée", "Paraguay",
-  "Pays-Bas", "Pérou", "Philippines", "Pologne", "Portugal", "Qatar",
-  "République centrafricaine", "République dominicaine", "République tchèque",
-  "Roumanie", "Royaume-Uni", "Russie", "Rwanda", "Saint-Christophe-et-Niévès",
-  "Saint-Marin", "Saint-Vincent-et-les-Grenadines", "Sainte-Lucie", "Salvador",
-  "Samoa", "São Tomé-et-Principe", "Sénégal", "Serbie", "Seychelles",
-  "Sierra Leone", "Singapour", "Slovaquie", "Slovénie", "Somalie", "Soudan",
-  "Soudan du Sud", "Sri Lanka", "Suède", "Suisse", "Suriname", "Syrie",
-  "Tadjikistan", "Tanzanie", "Tchad", "Thaïlande", "Timor oriental", "Togo",
-  "Tonga", "Trinité-et-Tobago", "Tunisie", "Turkménistan", "Turquie", "Tuvalu",
-  "Ukraine", "Uruguay", "Vanuatu", "Vatican", "Venezuela", "Vietnam", "Yémen",
-  "Zambie", "Zimbabwe",
-];
+
+const nomsDePays = new Intl.DisplayNames(["fr"], { type: "region", fallback: "none" });
+
+// Codes qui ne sont pas des pays.
+const EXCLUS = new Set(["EU", "UN", "EZ", "AQ", "QO", "ZZ", "XA", "XB", "BV", "HM", "UM"]);
+
+function tousLesPays(): { code: string; nom: string }[] {
+  const liste: { code: string; nom: string }[] = [];
+  for (let a = 65; a < 91; a++) {
+    for (let b = 65; b < 91; b++) {
+      const code = String.fromCharCode(a) + String.fromCharCode(b);
+      if (EXCLUS.has(code)) continue;
+      const nom = nomsDePays.of(code);
+      if (nom && nom !== code) liste.push({ code, nom });
+    }
+  }
+  return liste.sort((x, y) => x.nom.localeCompare(y.nom, "fr"));
+}
+
+export const PAYS: { code: string; nom: string }[] = tousLesPays();
+
+/** Le nom français d'un code pays ; le code lui-même s'il est inconnu. */
+export function nomDuPays(code: string | null | undefined): string | null {
+  if (!code) return null;
+  if (code.length !== 2) return code;
+  try {
+    return nomsDePays.of(code.toUpperCase()) ?? code;
+  } catch {
+    return code;
+  }
+}

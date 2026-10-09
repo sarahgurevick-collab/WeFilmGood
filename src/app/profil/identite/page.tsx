@@ -167,13 +167,13 @@ export default async function IdentitePage({
           </label>
           <label className={formStyles.field}>
             <span>Pays</span>
-            <select name="country" required defaultValue={profil?.country ?? ""} autoComplete="off">
+            <select name="country" required defaultValue={profil?.country?.toUpperCase() ?? ""} autoComplete="off">
               <option value="" disabled>
                 Choisir un pays
               </option>
               {PAYS.map((pays) => (
-                <option key={pays} value={pays}>
-                  {pays}
+                <option key={pays.code} value={pays.code}>
+                  {pays.nom}
                 </option>
               ))}
             </select>
