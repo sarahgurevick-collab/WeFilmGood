@@ -65,6 +65,7 @@ export default function CadreEquipe({
   resume,
   plus,
   contact,
+  porteur,
 }: {
   /** La tagline : l'accroche du projet, obligatoire. */
   accroche?: string | null;
@@ -74,6 +75,8 @@ export default function CadreEquipe({
   plus?: string | null;
   /** L'enveloppe pour écrire au porteur du projet (rien pour l'auteur lui-même). */
   contact?: ReactNode;
+  /** La clé du porteur du projet dans l'équipe : l'enveloppe se pose sous son portrait. */
+  porteur?: string | null;
   /** Le personnage sur lequel on arrive depuis la recherche : biographie dépliée. */
   personnageOuvert?: string | null;
   /** Les photos du moodboard (adresses signées). */
@@ -134,6 +137,10 @@ export default function CadreEquipe({
             </>
           );
           const ouvertIci = membreOuvert === m.cle;
+          // L'enveloppe pour écrire vit sous le portrait du porteur du projet
+          // (09/10, Sarah), plus sous la tagline : on écrit à une personne, à
+          // propos de ce projet. Barrée sans adhésion, comme avant.
+          const enveloppe = contact && m.cle === porteur ? <div className={styles.contact}>{contact}</div> : null;
           return (
             <li
               key={m.cle}
@@ -169,6 +176,7 @@ export default function CadreEquipe({
               ) : (
                 <div className={styles.membreLien}>{contenu}</div>
               )}
+              {enveloppe}
             </li>
           );
         })}
@@ -234,18 +242,19 @@ export default function CadreEquipe({
         }
       : null;
 
-  // Sous le moodboard (ou sa remplaçante, la biographie) : la tagline, le
-  // résumé et l'enveloppe pour écrire (03/10, Sarah). Toujours visibles : ils
-  // ne disparaissent pas quand on ouvre une biographie.
-  const avecAccroche = Boolean(accroche || resume || plus || contact);
+  // Sous le moodboard (ou sa remplaçante, la biographie) : la tagline et le
+  // résumé (03/10, Sarah). Toujours visibles : ils ne disparaissent pas
+  // quand on ouvre une biographie. L'enveloppe, elle, est sous le portrait
+  // du porteur (09/10) et reprise dans sa biographie dépliée.
+  const avecAccroche = Boolean(accroche || resume || plus);
   const blocAccroche = (
     <>
       {accroche && <p className={styles.accroche}>{accroche}</p>}
       {resume && <p className={styles.resume}>{resume}</p>}
       {plus && <p className={styles.resume}>{plus}</p>}
-      {contact && <div className={styles.contact}>{contact}</div>}
     </>
   );
+  const contactDuDetail = contact && membreChoisi && membreChoisi.cle === porteur ? contact : null;
 
   const deuxLangues = Boolean(videopitch?.fr && videopitch?.en);
 
@@ -364,6 +373,7 @@ export default function CadreEquipe({
                   </a>
                 </p>
               )}
+              {contactDuDetail && <div className={styles.contact}>{contactDuDetail}</div>}
             </>
           ) : (
             <>

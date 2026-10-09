@@ -407,8 +407,10 @@ export default async function ProjetPage({
 
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
-        // La tagline, le résumé et l'enveloppe sont sous le moodboard, dans le
-        // cadre : plus sous le titre (03/10, Sarah).
+        // La tagline et le résumé sont sous le moodboard, dans le cadre : plus
+        // sous le titre (03/10, Sarah). L'enveloppe est sous le portrait du
+        // porteur du projet (09/10, Sarah).
+        porteur={project.owner_id}
         accroche={project.tagline}
         resume={project.logline}
         plus={project.synopsis}
