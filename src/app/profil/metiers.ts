@@ -8,6 +8,8 @@
 export const METIERS_AUTEUR = ["scenariste", "romancier", "auteur_theatre", "auteur_bd"];
 
 export const METIERS_AUTRES = [
+  // Un producteur ou un autre talent peut aussi écrire (Sarah, 10/10/2026).
+  "scenariste",
   "producteur",
   "realisateur",
   "compositeur",
