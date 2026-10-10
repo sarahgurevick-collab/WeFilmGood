@@ -1,3 +1,4 @@
+import { ordonnerPersonnages } from "../ordre-personnages";
 import formStyles from "@/components/form.module.css";
 import profilStyles from "@/app/profil/profil.module.css";
 import BlocProjet from "../../BlocProjet";
@@ -29,6 +30,8 @@ type Personnage = {
   id: string;
   name: string;
   actor_name: string | null;
+  legacy_id: number | null;
+  created_at: string;
   photo_path: string | null;
   photo_x: number;
   photo_y: number;
@@ -68,18 +71,15 @@ export default async function PersonnagesPage({
 
   const { data: personnages } = await supabase
     .from("characters")
-    .select("id, name, actor_name, photo_path, photo_x, photo_y, photo_proposee, character_type, gender, age_range, age_tranche, epoque, taille, corpulence, cheveux_couleur, cheveux_coupe, yeux, signes, signes_autre, origine, detail_caracteristique, allure, biography")
+    .select("id, name, actor_name, photo_path, photo_x, photo_y, photo_proposee, character_type, gender, age_range, legacy_id, created_at, age_tranche, epoque, taille, corpulence, cheveux_couleur, cheveux_coupe, yeux, signes, signes_autre, origine, detail_caracteristique, allure, biography")
     .eq("project_id", id)
-    // Même ordre que sur la fiche : principaux d'abord, puis l'ordre de WFG 1.
-    .order("position", { ascending: true })
-    .order("character_type", { ascending: true })
-    .order("legacy_id", { ascending: true, nullsFirst: false })
-    .order("created_at", { ascending: true })
     .returns<Personnage[]>();
+  // Même ordre que sur la fiche (ordonnerPersonnages).
+  const personnagesOrdonnes = ordonnerPersonnages(personnages ?? []);
 
   const urls = await signerImages(
     supabase,
-    (personnages ?? []).map((p) => p.photo_path),
+    personnagesOrdonnes.map((p) => p.photo_path),
   );
 
   return (
@@ -87,9 +87,9 @@ export default async function PersonnagesPage({
       {enregistre && <p className={profilStyles.ok}>Personnages enregistrés.</p>}
       {erreur && <p className={formStyles.error}>{erreur}</p>}
 
-      {(personnages ?? []).length > 0 && (
+      {personnagesOrdonnes.length > 0 && (
         <div className={styles.liste}>
-          {(personnages ?? []).map((p) => (
+          {personnagesOrdonnes.map((p) => (
             <FormulairePersonnage
               key={p.id}
               projectId={id}
@@ -101,12 +101,12 @@ export default async function PersonnagesPage({
         </div>
       )}
 
-      {(personnages ?? []).length === 0 && (
+      {personnagesOrdonnes.length === 0 && (
         <h2 className={styles.sousTitre} style={{ marginTop: 40 }}>
           Votre premier personnage
         </h2>
       )}
-      <AjouterPersonnage ouvertDemblee={(personnages ?? []).length === 0}>
+      <AjouterPersonnage ouvertDemblee={personnagesOrdonnes.length === 0}>
         <FormulairePersonnage projectId={id} personnage={null} photo={null} />
       </AjouterPersonnage>
     </BlocProjet>
