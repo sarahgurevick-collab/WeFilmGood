@@ -77,7 +77,9 @@ export async function saveIdentite(formData: FormData) {
   // Un producteur ou un talent doit prouver au moins une expérience sur
   // un film : sans référence, pas de profil producteur. L'administration
   // juge ensuite sur cette référence. Un auteur n'a rien à prouver.
-  const website = texte(formData, "website");
+  // « imdb.com/name/… » vaut « https://imdb.com/name/… » : on complète.
+  const websiteBrut = texte(formData, "website");
+  const website = websiteBrut && !/^https?:\/\//i.test(websiteBrut) ? `https://${websiteBrut}` : websiteBrut;
   const doitProuver = category === "producteur" || category === "talent";
   if (doitProuver && !website) {
     redirect(

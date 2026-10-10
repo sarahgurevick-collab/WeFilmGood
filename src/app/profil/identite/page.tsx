@@ -105,8 +105,12 @@ export default async function IdentitePage({
         {/* Masqué par CSS quand « Auteur » est coché : un auteur n'a rien à prouver. */}
         <label className={`${formStyles.field} ${styles.reference}`}>
           <span>Votre référence professionnelle</span>
+          {/* Texte libre, pas « url » : le navigateur refusait « imdb.com/name/… »
+              sans https:// par une bulle discrète, et rien ne s'enregistrait
+              (10/10). Le serveur ajoute https:// s'il manque. */}
           <input
-            type="url"
+            type="text"
+            inputMode="url"
             name="website"
             defaultValue={profil?.website ?? ""}
             placeholder="https://www.imdb.com/name/…"
