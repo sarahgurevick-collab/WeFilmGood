@@ -12,6 +12,7 @@ import CasesAffichage from "./CasesAffichage";
 import FiltresAuto from "./FiltresAuto";
 import FormatsLecteur from "./FormatsLecteur";
 import AdhesionMembre from "./AdhesionMembre";
+import CategorieMembre from "./CategorieMembre";
 import ChangerAdresseMembre from "./ChangerAdresseMembre";
 import ControleNom from "./ControleNom";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -445,7 +446,16 @@ export default async function MembresPage({
                   )}
                 </td>
                 <td>
-                  {metierDe(m)}
+                  {m.est_lecteur ? (
+                    metierDe(m)
+                  ) : (
+                    <>
+                      <CategorieMembre profileId={m.profile_id} category={m.category} />
+                      {!m.category && m.role_wfg1 && (
+                        <span className={formStyles.hint}>WFG 1 : {METIERS[m.role_wfg1] ?? m.role_wfg1}</span>
+                      )}
+                    </>
+                  )}
                   {m.est_lecteur && <span className={adminStyles.badge}>lecteur</span>}
                   {m.est_lecteur && (
                     <FormatsLecteur profileId={m.profile_id} formats={formatsDe.get(m.profile_id) ?? null} />

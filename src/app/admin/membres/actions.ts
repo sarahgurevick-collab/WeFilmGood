@@ -79,3 +79,20 @@ export async function changerAdresseMembre(profileId: string, nouvelleAdresse: s
   revalidatePath("/admin/membres");
   return null;
 }
+
+const CATEGORIES_ADMIN = ["auteur", "producteur", "talent", "cinephile"];
+
+/** La catégorie d'un membre, changée depuis l'écran des membres (10/10, Sarah). */
+export async function changerCategorie(formData: FormData) {
+  const supabase = await createClient();
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  if (!isAdmin) return;
+
+  const profileId = formData.get("profile_id") as string;
+  const category = (formData.get("category") as string) || "";
+  if (!profileId || !CATEGORIES_ADMIN.includes(category)) return;
+
+  const { error } = await supabase.rpc("admin_changer_categorie", { p_profile: profileId, p_category: category });
+  if (error) console.error("Changement de catégorie refusé :", error.message);
+  revalidatePath("/admin/membres");
+}
