@@ -1,4 +1,5 @@
 import ChampAvecCompteur from "@/components/ChampAvecCompteur";
+import ChampTitre from "./ChampTitre";
 import formStyles from "@/components/form.module.css";
 import styles from "./deposer.module.css";
 
@@ -59,20 +60,28 @@ export type ValeursFiche = {
  */
 export default function ChampsFiche({
   valeurs,
+  existants,
   genres,
   selections = [],
 }: {
   valeurs: ValeursFiche | null;
+  /** Les fiches que l'auteur a déjà (création seulement) : garde-fou sur le titre. */
+  existants?: { id: string; title: string }[];
   genres: { slug: string; label_fr: string }[];
   /** Les sélections de la Maison des Scénaristes (« Cannes 2013 »…), posées par l'administration seule. */
   selections?: string[];
 }) {
   return (
     <>
-      <label className={formStyles.field}>
-        <span>Titre *</span>
-        <input type="text" name="title" required defaultValue={valeurs?.title ?? ""} />
-      </label>
+      {existants ? (
+        // Nouvelle fiche : le titre est surveillé (garde-fou contre les doublons).
+        <ChampTitre existants={existants} />
+      ) : (
+        <label className={formStyles.field}>
+          <span>Titre *</span>
+          <input type="text" name="title" required defaultValue={valeurs?.title ?? ""} />
+        </label>
+      )}
 
       {/* Format, genre, budget et audience : une seule décision d'ensemble,
           groupée juste sous le titre plutôt que quatre champs isolés plus

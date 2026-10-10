@@ -1,5 +1,6 @@
 "use server";
 
+import { ficheSemblable } from "./titres";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { echapper, envoyerEmail } from "@/lib/brevo";
@@ -41,6 +42,17 @@ export async function createProject(formData: FormData) {
   const awardsDetail = hasAwards ? (formData.get("awards_detail") as string)?.trim() || null : null;
 
   if (!title) echec("Le titre est obligatoire.");
+
+  // Garde-fou (10/10, Sarah) : une seconde fiche pour le même projet est
+  // l'erreur la plus fréquente de WFG 1. Même titre qu'une de ses fiches,
+  // sans la case « C'est bien un autre projet » : on refuse.
+  if (formData.get("autre_projet") !== "1") {
+    const { data: miennes } = await supabase.from("projects").select("id, title").eq("owner_id", user.id);
+    const semblable = ficheSemblable(title, miennes ?? []);
+    if (semblable) {
+      echec(`Vous avez déjà une fiche « ${semblable.title} ». Si c'est bien un autre projet, cochez la case sous le titre.`);
+    }
+  }
   if (!tagline) echec("La tagline est obligatoire.");
   if (!format) echec("Le format est obligatoire.");
   if (!genreSlug) echec("Le genre principal est obligatoire.");

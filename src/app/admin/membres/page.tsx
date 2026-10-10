@@ -107,6 +107,10 @@ function nomDuPays(code: string | null) {
   }
 }
 
+/** « · LM » à côté d'un titre ; rien si le format manque. */
+const formatCourt = (f: string | null) =>
+  f ? <span className={formStyles.hint}> · {FORMATS[f] ?? f}</span> : null;
+
 function metierDe(m: Membre) {
   const cle = m.category ?? m.role_wfg1;
   return cle ? (METIERS[cle] ?? cle) : "—";
@@ -261,12 +265,12 @@ export default async function MembresPage({
   const { data: projetsVisibles } = idsVisibles.length
     ? await supabase
         .from("projects")
-        .select("id, title, owner_id")
+        .select("id, title, owner_id, format")
         .in("owner_id", idsVisibles)
         .order("created_at", { ascending: false })
     : { data: [] };
-  const projetsDe = new Map<string, { id: string; title: string }[]>();
-  for (const pr of (projetsVisibles ?? []) as { id: string; title: string; owner_id: string }[]) {
+  const projetsDe = new Map<string, { id: string; title: string; format: string | null }[]>();
+  for (const pr of (projetsVisibles ?? []) as { id: string; title: string; owner_id: string; format: string | null }[]) {
     projetsDe.set(pr.owner_id, [...(projetsDe.get(pr.owner_id) ?? []), pr]);
   }
 
@@ -392,7 +396,6 @@ export default async function MembresPage({
               <th className={styles.colMembre}>Membre</th>
               <th>Métier</th>
               <th>Projets</th>
-              <th>Formats</th>
               <th>Adhésion</th>
               {metier === "Lecteur" && <th>Disponibilité</th>}
               {metier === "Lecteur" && <th>Fiches</th>}
@@ -465,9 +468,13 @@ export default async function MembresPage({
                   {m.nb_projets === 0 ? (
                     "0"
                   ) : m.nb_projets === 1 && projetsDe.get(m.profile_id)?.[0] ? (
-                    <Link href={`/projet/${projetsDe.get(m.profile_id)![0].id}`} className={styles.projetLien}>
-                      {projetsDe.get(m.profile_id)![0].title}
-                    </Link>
+                    <>
+                      <Link href={`/projet/${projetsDe.get(m.profile_id)![0].id}`} className={styles.projetLien}>
+                        {projetsDe.get(m.profile_id)![0].title}
+                      </Link>
+                      {/* Le format à côté du titre (10/10, Sarah) : LM, CM, Séries, VR/360. */}
+                      {formatCourt(projetsDe.get(m.profile_id)![0].format)}
+                    </>
                   ) : (
                     <details className={styles.projets}>
                       <summary>{m.nb_projets} projets</summary>
@@ -475,6 +482,7 @@ export default async function MembresPage({
                         {(projetsDe.get(m.profile_id) ?? []).map((pr) => (
                           <li key={pr.id}>
                             <Link href={`/projet/${pr.id}`}>{pr.title}</Link>
+                            {formatCourt(pr.format)}
                           </li>
                         ))}
                       </ul>
@@ -484,7 +492,6 @@ export default async function MembresPage({
                     <span className={formStyles.hint}> · {m.dernier_projet_annee}</span>
                   ) : null}
                 </td>
-                <td>{(m.formats ?? []).map((f) => FORMATS[f] ?? f).join(", ") || "—"}</td>
                 <td>
                   <AdhesionMembre profileId={m.profile_id} plan={m.adhesion} />
                 </td>

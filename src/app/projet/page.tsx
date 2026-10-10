@@ -23,10 +23,11 @@ export default async function NouvelleFichePage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/connexion?next=/projet");
 
-  const { data: genres } = await supabase
-    .from("genres")
-    .select("slug, label_fr")
-    .order("position", { ascending: true });
+  const [{ data: genres }, { data: existants }] = await Promise.all([
+    supabase.from("genres").select("slug, label_fr").order("position", { ascending: true }),
+    // Les fiches que l'auteur a déjà : garde-fou contre une seconde fiche du même projet (10/10).
+    supabase.from("projects").select("id, title").eq("owner_id", user.id),
+  ]);
 
   return (
     <BlocProjet actif="fiche" projet={null}>
@@ -41,7 +42,7 @@ export default async function NouvelleFichePage({
         style={{ marginTop: 24 }}
       >
         {erreur && <p className={formStyles.error}>{erreur}</p>}
-        <ChampsFiche valeurs={null} genres={genres ?? []} />
+        <ChampsFiche valeurs={null} genres={genres ?? []} existants={existants ?? []} />
 
         {/* Facultative ici : l'image apparaît aussitôt sur l'affiche à
             gauche, et se change ensuite dans le bloc « Documents ». */}
