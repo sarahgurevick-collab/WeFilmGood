@@ -25,6 +25,10 @@ import { createClient } from "@/lib/supabase/server";
  */
 const COOKIE_RETOUR = "wfg_session_admin";
 const COOKIE_CIBLE = "wfg_incarne";
+// 30 jours : le 09/10 au soir, les 8 heures d'avant ont expiré dans la nuit,
+// le bandeau a disparu mais la session du membre est restée (Sarah a
+// travaillé le matin à la place de Guillaume Billy sans le voir).
+const DUREE_COOKIES = 60 * 60 * 24 * 30;
 
 export async function prendreLaPlace(formData: FormData) {
   const supabase = await createClient();
@@ -60,14 +64,14 @@ export async function prendreLaPlace(formData: FormData) {
     secure: true,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 8,
+    maxAge: DUREE_COOKIES,
   });
   boite.set(COOKIE_CIBLE, cible, {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 8,
+    maxAge: DUREE_COOKIES,
   });
 
   const { error: bascule } = await supabase.auth.verifyOtp({
@@ -85,17 +89,38 @@ export async function revenirAMonCompte() {
   const retour = boite.get(COOKIE_RETOUR)?.value;
 
   const supabase = await createClient();
-  if (retour) {
-    await supabase.auth.refreshSession({ refresh_token: retour });
-  }
+  // Depuis la session du membre : la prise de place est close dans le journal.
+  await supabase.rpc("terminer_prise_de_place");
 
   boite.delete(COOKIE_RETOUR);
   boite.delete(COOKIE_CIBLE);
-  redirect("/admin/profils");
+
+  if (retour) {
+    const { error } = await supabase.auth.refreshSession({ refresh_token: retour });
+    if (!error) redirect("/admin/profils");
+  }
+
+  // Sans session d'administratrice à restaurer (cookie perdu, jeton
+  // périmé) : on ferme la session du membre, et on se reconnecte.
+  await supabase.auth.signOut({ scope: "local" });
+  redirect("/connexion?next=/admin/profils");
 }
 
-/** Le membre dont l'administration a pris la place, s'il y en a un. */
+/**
+ * Le membre dont l'administration a pris la place, s'il y en a un. Le
+ * cookie fait foi ; à défaut, le journal des prises de place : une prise
+ * de place non close de moins de 48 h sur la personne connectée.
+ */
 export async function incarnationEnCours(): Promise<string | null> {
   const boite = await cookies();
-  return boite.get(COOKIE_CIBLE)?.value ?? null;
+  const cible = boite.get(COOKIE_CIBLE)?.value;
+  if (cible) return cible;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data: active } = await supabase.rpc("incarnation_active");
+  return active === true ? user.id : null;
 }
