@@ -35,10 +35,13 @@ type Membre = {
  */
 export default async function ProfilMembrePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ message?: string }>;
 }) {
   const { id } = await params;
+  const { message } = await searchParams;
   const supabase = await createClient();
 
   const {
@@ -101,34 +104,33 @@ export default async function ProfilMembrePage({
     : { data: [] };
   const urlDe = new Map((signes ?? []).map((s) => [s.path, s.signedUrl]));
 
-  // L'enveloppe (07/10, Sarah) : comme sur la fiche d'un projet, barrée sans
-  // adhésion, libre pour l'administration. On n'écrit à un talent qu'à propos
-  // d'un projet (règle du 03/10) : l'enveloppe mène donc à l'écran de message
-  // de son projet le plus récent ; sans projet visible, pas d'enveloppe.
+  // L'enveloppe (10/10, Sarah) : on écrit à un talent depuis son profil, sans
+  // passer par un projet ; le message porte un objet. Comme sur la fiche d'un
+  // projet : barrée sans adhésion, barrée si sa messagerie est fermée, libre
+  // pour l'administration. Un cinéphile ou un lecteur n'a pas d'enveloppe.
+  const peutEcrire = membre.id !== user.id;
   let adherent = false;
-  if (estAdmin && membre.id !== user.id && projets[0]) {
-    const { data } = await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id });
-    adherent = data === true;
-  }
   let indisponible: string | undefined;
-  if (estAdmin && membre.id !== user.id && projets[0]) {
-    const { data: fermee } = await supabase.rpc("messagerie_fermee", { uid: membre.id });
-    if (fermee === true) {
+  if (peutEcrire) {
+    const [{ data: a }, { data: fermee }] = await Promise.all([
+      supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id }),
+      supabase.rpc("messagerie_fermee", { uid: membre.id }),
+    ]);
+    adherent = a === true;
+    if (fermee === true && (adherent || estAdmin)) {
       indisponible = `${(await supabase.from("profiles").select("first_name").eq("id", membre.id).maybeSingle<{ first_name: string | null }>()).data?.first_name ?? "Ce talent"} est indisponible momentanément, messagerie saturée.`;
     }
   }
-  const enveloppe =
-    // Pour l'instant, l'administration seule (07/10) : la décision du 03/10
-    // retirait l'enveloppe du profil des talents (contact lié à un projet).
-    estAdmin && membre.id !== user.id && projets[0] ? (
-      <div style={{ marginTop: 16 }}>
-        <ContactEnveloppe
-          href={`/mes-messages/nouveau?projet=${projets[0].id}`}
-          adhesionRequise={!estAdmin && !adherent}
-          indisponible={indisponible}
-        />
-      </div>
-    ) : null;
+  const enveloppe = peutEcrire ? (
+    <div style={{ marginTop: 16 }}>
+      {message === "envoye" && <p className={formStyles.hint}>Message envoyé.</p>}
+      <ContactEnveloppe
+        href={`/mes-messages/nouveau?membre=${membre.id}`}
+        adhesionRequise={!estAdmin && !adherent}
+        indisponible={indisponible}
+      />
+    </div>
+  ) : null;
 
   const nom = masque ? "Membre" : (membre.display_name ?? membre.full_name ?? "Membre");
 

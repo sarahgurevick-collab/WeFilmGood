@@ -26,6 +26,7 @@ Règles :
 export const INFORMATIONS_PAR_DEFAUT = `Connexion et inscription
 - Pas de mot de passe : on indique son adresse email et on reçoit un lien de connexion. Rien reçu ? Regarder dans les indésirables, ou recommencer.
 - L'inscription demande prénom, nom, email et l'acceptation des conditions d'utilisation. Le profil se complète ensuite, à son rythme.
+- Changer d'adresse email : dans « Mon profil », bloc « Qui êtes-vous ? », sous l'adresse, le lien « Changer d'adresse ». On tape la nouvelle adresse, on reçoit dessus un lien de confirmation (valable 24 heures), et le compte bascule au clic. Rien ne change tant qu'on n'a pas cliqué. Une adresse déjà utilisée par un autre compte est refusée.
 
 Profil (menu « Mon profil »)
 - Bloc 1 « Qui êtes-vous ? » (2 minutes) : auteur, producteur ou talent ; référence professionnelle ; langues ; ville et pays. Nécessaire pour déposer un projet. Les coordonnées sont réservées uniquement à l'équipe de la Maison des Scénaristes/WeFilmGood afin de joindre la personne ; aucun talent connecté à la plateforme ne peut les voir.
@@ -63,7 +64,7 @@ Galaxies (anciennement « Pitchothèque », nom de WFG 1 ; le menu dit « Galaxi
 - Le nuage de mots-clés et les mots-clés proches sont ouverts à tous les membres connectés (adhérents ou non).
 
 Messagerie (menu « Messages »)
-- Un membre peut écrire à l'auteur d'un projet (une petite enveloppe, sous le moodboard de la fiche projet); l'enveloppe est barrée tant qu'on n'a pas d'adhésion. Le destinataire reçoit un email le prévenant d'un message. « Mes messages » regroupe les échanges en conversations (messages reçus et envoyés, une ligne par correspondant et par projet) et on peut y répondre. Pour lire et répondre, il faut une adhésion active ; sans adhésion, on voit qu'un message attend mais on ne sait pas qui l'a écrit, et le message reste sans réponse.
+- Un membre peut écrire au porteur d'un projet (une petite enveloppe, sous son portrait dans le bloc « L'auteur » de la fiche projet), ou à un talent depuis son profil (l'enveloppe sous sa photo) : dans ce cas le message porte un objet, le titre de son projet le plus souvent. L'enveloppe est barrée tant qu'on n'a pas d'adhésion, et barrée aussi quand un producteur ou un comédien a fermé momentanément sa messagerie. Le destinataire reçoit un email le prévenant d'un message. « Mes messages » regroupe les échanges en conversations (messages reçus et envoyés, une ligne par correspondant et par projet) et on peut y répondre. Pour lire et répondre, il faut une adhésion active ; sans adhésion, on voit qu'un message attend mais on ne sait pas qui l'a écrit, et le message reste sans réponse.
 
 Adhésion (page « Adhésion »)
 - Gratuit (0 €) : la Galaxie de Projets, de Talents et de Personnages (videopitch, noms et photos des talents non visibles), la barre de Recherche, le nuage de mots-clés et CinéCrush (provoquer le hasard cinématographique). CinéMatch n'est pas compris dans le gratuit : il est réservé à l'adhésion.

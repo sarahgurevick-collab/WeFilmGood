@@ -22,6 +22,8 @@ export async function ecrire(formData: FormData) {
   const projectId = ((formData.get("project_id") as string) || "").trim() || null;
   const recipientId = formData.get("recipient_id") as string;
   const body = (formData.get("body") as string)?.trim();
+  // L'objet d'un premier message hors projet (10/10) : le titre de son projet, le plus souvent.
+  const objet = ((formData.get("objet") as string) || "").trim() || null;
   // Où revenir après l'envoi : la fiche du projet, le profil du talent, ou
   // la conversation (une réponse). Jamais une adresse venue du formulaire.
   const retour = formData.get("retour") as string;
@@ -29,23 +31,28 @@ export async function ecrire(formData: FormData) {
   const ici =
     retour === "conversation"
       ? `/mes-messages/avec/${recipientId}${projectId ? `?projet=${projectId}` : ""}`
-      : `/mes-messages/nouveau?projet=${projectId}`;
+      : retour === "membre"
+        ? `/mes-messages/nouveau?membre=${recipientId}`
+        : `/mes-messages/nouveau?projet=${projectId}`;
   const avecParametre = (adresse: string, cle: string, valeur: string) =>
     `${adresse}${adresse.includes("?") ? "&" : "?"}${cle}=${valeur}`;
 
   if (!user) redirect(`/connexion?next=${encodeURIComponent(ici)}`);
   if (!body) redirect(avecParametre(ici, "message", "vide"));
+  if (retour === "membre" && !projectId && !objet) redirect(avecParametre(ici, "message", "objet"));
 
   const { error } = await supabase.rpc("envoyer_message", {
     p_destinataire: recipientId,
     p_projet: projectId,
     p_corps: body,
+    p_objet: objet,
   });
   if (error) {
     // Écrire demande une adhésion (02/10) ; l'administration passe.
     if (error.message.includes("adhésion")) redirect("/adhesion");
-    // Messagerie fermée entre l'ouverture de l'écran et l'envoi : retour à la fiche.
-    if (error.message.includes("indisponible") && projectId) redirect(`/projet/${projectId}`);
+    // Messagerie fermée entre l'ouverture de l'écran et l'envoi : retour à la fiche, ou au profil.
+    if (error.message.includes("indisponible")) redirect(projectId ? `/projet/${projectId}` : `/membres/${recipientId}`);
+    if (error.message.includes("objet")) redirect(avecParametre(ici, "message", "objet"));
     console.error("Envoi du message refusé :", error.message);
     redirect("/mes-messages");
   }
@@ -77,5 +84,6 @@ export async function ecrire(formData: FormData) {
   // On revient là où on a décidé d'écrire (03/10, Sarah) : la fiche du projet ;
   // une réponse reste dans sa conversation.
   if (retour === "conversation") redirect(ici);
+  if (retour === "membre" || !projectId) redirect(`/membres/${recipientId}?message=envoye`);
   redirect(`/projet/${projectId}?message=envoye`);
 }

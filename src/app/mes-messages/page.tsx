@@ -10,6 +10,7 @@ type Conversation = {
   autre_nom: string | null;
   projet_id: string | null;
   projet_titre: string | null;
+  objet: string | null;
   dernier_corps: string;
   dernier_le: string;
   dernier_de_moi: boolean;
@@ -19,6 +20,7 @@ type Conversation = {
 type MessageEnAttente = {
   id: string;
   project_title: string | null;
+  objet: string | null;
   created_at: string;
 };
 
@@ -48,7 +50,7 @@ export default async function MesMessagesPage() {
   const enAttente =
     adherent === true
       ? []
-      : (((await supabase.from("mes_messages_recus").select("id, project_title, created_at")).data as
+      : (((await supabase.from("mes_messages_recus").select("id, project_title, objet, created_at")).data as
           | MessageEnAttente[]
           | null) ?? []);
 
@@ -74,9 +76,9 @@ export default async function MesMessagesPage() {
                       {new Date(c.dernier_le).toLocaleDateString("fr-FR")}
                     </span>
                   </div>
-                  {c.projet_titre && (
+                  {(c.projet_titre || c.objet) && (
                     <p className={formStyles.hint} style={{ margin: "0 0 6px" }}>
-                      À propos de « {c.projet_titre} »
+                      {c.projet_titre ? `À propos de « ${c.projet_titre} »` : `Objet : ${c.objet}`}
                     </p>
                   )}
                   <p className={`${styles.apercu} ${c.non_lus > 0 ? styles.apercuNonLu : ""}`}>
@@ -96,7 +98,7 @@ export default async function MesMessagesPage() {
             <li key={m.id} className={styles.carte}>
               <div className={styles.entete}>
                 <span className={styles.projet}>
-                  {m.project_title ? `À propos de « ${m.project_title} »` : "Un membre"}
+                  {m.project_title ? `À propos de « ${m.project_title} »` : m.objet ? `Objet : ${m.objet}` : "Un membre"}
                 </span>
                 <span className={styles.date}>{new Date(m.created_at).toLocaleDateString("fr-FR")}</span>
               </div>

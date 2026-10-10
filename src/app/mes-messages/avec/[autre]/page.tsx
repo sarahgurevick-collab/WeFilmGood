@@ -11,6 +11,7 @@ type Message = {
   de_moi: boolean;
   corps: string;
   envoye_le: string;
+  objet: string | null;
 };
 
 /**
@@ -63,6 +64,8 @@ export default async function ConversationPage({
   ]);
   // Le nom complet : écrire demande une adhésion, le contact est payé (03/10).
   const nom = interlocuteur?.display_name ?? interlocuteur?.full_name ?? interlocuteur?.first_name ?? "Un membre";
+  // Hors projet : l'objet du premier message qui en porte un (10/10).
+  const objet = projet ? null : (fil.find((m) => m.objet)?.objet ?? null);
 
   return (
     <PageShell eyebrow="Mes messages" title={nom} connecte nav="messages">
@@ -71,6 +74,7 @@ export default async function ConversationPage({
           À propos de « <Link href={`/projet/${projet.id}`}>{projet.title}</Link> ».
         </p>
       )}
+      {objet && <p className={formStyles.hint}>Objet : {objet}</p>}
 
       <ul className={styles.fil}>
         {fil.map((m) => (
