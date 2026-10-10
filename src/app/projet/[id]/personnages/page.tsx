@@ -70,7 +70,10 @@ export default async function PersonnagesPage({
     .from("characters")
     .select("id, name, actor_name, photo_path, photo_x, photo_y, photo_proposee, character_type, gender, age_range, age_tranche, epoque, taille, corpulence, cheveux_couleur, cheveux_coupe, yeux, signes, signes_autre, origine, detail_caracteristique, allure, biography")
     .eq("project_id", id)
+    // Même ordre que sur la fiche : principaux d'abord, puis l'ordre de WFG 1.
     .order("position", { ascending: true })
+    .order("character_type", { ascending: true })
+    .order("legacy_id", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: true })
     .returns<Personnage[]>();
 

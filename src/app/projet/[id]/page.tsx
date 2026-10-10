@@ -140,7 +140,14 @@ export default async function ProjetPage({
     .from("characters")
     .select("id, name, photo_path, photo_x, photo_y, photo_proposee, character_type, gender, age_range, biography")
     .eq("project_id", id)
+    // Les personnages repris de WFG 1 sont tous à la position 0 : sans ces
+    // critères, l'ordre était laissé au hasard et des principaux passaient
+    // après des secondaires (10/10, Sarah). Principaux d'abord, puis l'ordre
+    // de WFG 1, puis l'ordre de création.
     .order("position", { ascending: true })
+    .order("character_type", { ascending: true })
+    .order("legacy_id", { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: true })
     .returns<
       {
         id: string;
