@@ -10,6 +10,7 @@ import NavAdmin from "../NavAdmin";
 import BoutonRetirer from "./BoutonRetirer";
 import CadrageCarte from "./CadrageCarte";
 import ListeASupprimer from "./ListeASupprimer";
+import LogoBanque from "./LogoBanque";
 import PoserPhoto from "./PoserPhoto";
 import { SEUIL_DESCRIPTION } from "./seuil";
 import { retirerPortrait, supprimerPersonnages, validerPortrait } from "./actions";
@@ -255,26 +256,29 @@ export default async function PortraitsAdminPage({
                     {p.biography && <p className={styles.bio}>{extrait(p.biography, 420)}</p>}
                     {s.note && <p className={styles.note}>{s.note}</p>}
                     <p className={styles.lot}>Mots cherchés : {c.mots}</p>
-                    <div className={styles.recherches}>
+                    <div className={styles.logos}>
                       {c.reel ? (
-                        <a href={c.commons} target="_blank" rel="noopener noreferrer" className={styles.ouvrir}>
-                          Chercher sur Wikimedia Commons
-                        </a>
+                        <LogoBanque href={c.commons} titre="Chercher sur Wikimedia Commons" nom="commons" />
                       ) : (
                         <>
-                          <a href={c.unsplash} target="_blank" rel="noopener noreferrer" className={styles.ouvrir}>
-                            Chercher sur Unsplash
-                          </a>
-                          <a href={c.google} target="_blank" rel="noopener noreferrer" className={styles.ouvrir}>
-                            Chercher sur Google Images
-                          </a>
-                          <a href={c.adobe} target="_blank" rel="noopener noreferrer" className={styles.ouvrir}>
-                            Chercher sur Adobe Stock (gratuit)
-                          </a>
+                          <LogoBanque href={c.unsplash} titre="Chercher sur Unsplash" nom="unsplash" />
+                          <LogoBanque href={c.google} titre="Chercher sur Google Images" nom="google" />
+                          <LogoBanque href={c.adobe} titre="Chercher sur Adobe Stock (gratuit)" nom="adobe" />
                         </>
                       )}
                     </div>
                     <PoserPhoto characterId={s.character_id} />
+                    {/* Le même bouton que sur les onglets Moyens et Bons (10/10, Sarah). */}
+                    {admin && p.project && (
+                      <Link
+                        href={`/projet/${p.project.id}/personnages`}
+                        className={styles.ouvrir}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Ouvrir les personnages du projet
+                      </Link>
+                    )}
                   </li>
                 );
               })}
