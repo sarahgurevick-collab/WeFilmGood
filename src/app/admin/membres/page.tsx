@@ -15,6 +15,7 @@ import AdhesionMembre from "./AdhesionMembre";
 import CategorieMembre from "./CategorieMembre";
 import ChangerAdresseMembre from "./ChangerAdresseMembre";
 import ControleNom from "./ControleNom";
+import LienScenario from "../LienScenario";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 type Membre = {
@@ -274,6 +275,24 @@ export default async function MembresPage({
     projetsDe.set(pr.owner_id, [...(projetsDe.get(pr.owner_id) ?? []), pr]);
   }
 
+  // Le scénario de chaque projet affiché, ouvert d'un clic dans un nouvel
+  // onglet (10/10, Sarah : « accès aux textes en admin »). Un seul lot de
+  // liens signés pour toute la page.
+  const idsProjets = (projetsVisibles ?? []).map((pr) => pr.id);
+  const { data: scenarios } = idsProjets.length
+    ? await supabase.from("project_files").select("project_id, storage_path").eq("kind", "scenario").in("project_id", idsProjets)
+    : { data: [] };
+  const cheminScenario = new Map((scenarios ?? []).map((f) => [f.project_id as string, f.storage_path as string]));
+  const { data: signes } = cheminScenario.size
+    ? await supabase.storage.from("scenarios").createSignedUrls([...cheminScenario.values()], 60 * 60)
+    : { data: [] };
+  const urlSignee = new Map((signes ?? []).filter((x) => x.signedUrl).map((x) => [x.path, x.signedUrl]));
+  const scenarioDe = (projectId: string) => {
+    const chemin = cheminScenario.get(projectId);
+    const url = chemin ? urlSignee.get(chemin) : undefined;
+    return url ? <LienScenario href={url} petit /> : null;
+  };
+
   // L'adresse d'une autre page, les mêmes filtres.
   const lienPage = (n: number) => {
     const params = new URLSearchParams();
@@ -474,6 +493,7 @@ export default async function MembresPage({
                       </Link>
                       {/* Le format à côté du titre (10/10, Sarah) : LM, CM, Séries, VR/360. */}
                       {formatCourt(projetsDe.get(m.profile_id)![0].format)}
+                      {scenarioDe(projetsDe.get(m.profile_id)![0].id)}
                     </>
                   ) : (
                     <details className={styles.projets}>
@@ -483,6 +503,7 @@ export default async function MembresPage({
                           <li key={pr.id}>
                             <Link href={`/projet/${pr.id}`}>{pr.title}</Link>
                             {formatCourt(pr.format)}
+                            {scenarioDe(pr.id)}
                           </li>
                         ))}
                       </ul>

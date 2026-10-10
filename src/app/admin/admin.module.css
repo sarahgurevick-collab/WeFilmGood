@@ -284,6 +284,19 @@
   background: #4cae4c;
 }
 
+/* Dans un tableau, à côté d'un titre : plus petit, aligné sur le texte. */
+.boutonScenarioPetit {
+  width: 28px;
+  height: 24px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.boutonScenarioPetit svg {
+  width: 16px;
+  height: 16px;
+}
+
 
 .etatMission {
   color: #b08a3e;
