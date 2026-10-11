@@ -51,7 +51,8 @@ const dejaLa = new Set(existants.map((p) => p.legacy_id));
 // validation et s'est réinscrit plusieurs fois — 8144, 10560, 10563 (Fakhrya,
 // fakhrya@jomproductions.com ; le bon profil est fakhrya.jomproductions@gmail.com)
 // et 4627 (Clément Raynaud, ancien compte « Auteur de BD » supprimé ; le bon est 5477).
-for (const id of ["3866", "8144", "10560", "10563", "4627"]) dejaLa.add(id);
+// 11/10/2026 (Sarah) : 1009 = Talia Sourdin, compte gmail de 2017 vide ; le bon profil est 1882 (hotmail, projet LEF).
+for (const id of ["3866", "8144", "10560", "10563", "4627", "1009"]) dejaLa.add(id);
 
 let crees = 0, sautes = 0, echoues = 0;
 const debut = Date.now();

@@ -207,7 +207,10 @@ export default async function MembresPage({
   const pays = sp.pays ?? "";
   const adhesion = sp.adhesion ?? "";
   const projets = sp.projets ?? "";
-  const tri = sp.tri ?? "inscription";
+  // Deux tris seulement (11/10, Sarah) : les plus récents ou les plus
+  // anciens, par date d'inscription. Le nom se cherche par la case de
+  // recherche, le nombre de projets a son propre filtre.
+  const tri = sp.tri === "anciens" ? "anciens" : "recents";
   const page = Math.max(1, Number(sp.page ?? "1") || 1);
   // Par défaut, rien de coché : le nom et l'email. Le profil étendu ajoute
   // la photo, le pays, le code postal, la ville et la référence.
@@ -232,7 +235,10 @@ export default async function MembresPage({
     if (libelle && libelle !== "Lecteur") metiersPresents.set(libelle, (metiersPresents.get(libelle) ?? 0) + 1);
     if (estLecteur(m)) metiersPresents.set("Lecteur", (metiersPresents.get("Lecteur") ?? 0) + 1);
     if (m.country) paysPresents.set(m.country, (paysPresents.get(m.country) ?? 0) + 1);
-    if (m.dernier_projet_annee) anneesPresentes.add(m.dernier_projet_annee);
+    // L'année d'inscription (11/10, Sarah) : un filtre pour ne pas tout
+    // afficher, la page est lourde. L'année du dernier projet ne servait à
+    // rien : tous les projets repris portent la date de la reprise.
+    anneesPresentes.add(new Date(m.inscrit_le).getFullYear());
   }
 
   const filtres = tous.filter((m) => {
@@ -241,7 +247,7 @@ export default async function MembresPage({
       if (!aValider(m)) return false;
     } else if (metier === "Lecteur" ? !estLecteur(m) : metier && metierDeCle(m.category ?? m.role_wfg1) !== metier) return false;
     if (format && !(m.formats ?? []).includes(format)) return false;
-    if (annee && String(m.dernier_projet_annee ?? "") !== annee) return false;
+    if (annee && String(new Date(m.inscrit_le).getFullYear()) !== annee) return false;
     if (pays && m.country !== pays) return false;
     if (adhesion === "active" && !m.adhesion) return false;
     if (adhesion === "aucune" && m.adhesion) return false;
@@ -252,12 +258,9 @@ export default async function MembresPage({
     return true;
   });
 
-  filtres.sort((a, b) => {
-    if (tri === "nom") return (a.full_name ?? "").localeCompare(b.full_name ?? "", "fr");
-    if (tri === "inscription") return b.inscrit_le.localeCompare(a.inscrit_le);
-    if (tri === "projets") return b.nb_projets - a.nb_projets;
-    return (b.derniere_activite ?? "").localeCompare(a.derniere_activite ?? "");
-  });
+  filtres.sort((a, b) =>
+    tri === "anciens" ? a.inscrit_le.localeCompare(b.inscrit_le) : b.inscrit_le.localeCompare(a.inscrit_le),
+  );
 
   const nbPages = Math.max(1, Math.ceil(filtres.length / PAR_PAGE));
   const pageCourante = Math.min(page, nbPages);
@@ -338,7 +341,7 @@ export default async function MembresPage({
         </select>
 
         <select name="annee" defaultValue={annee} className={styles.menu}>
-          <option value="">Année du dernier projet</option>
+          <option value="">Inscrits en…</option>
           {[...anneesPresentes]
             .sort((a, b) => b - a)
             .map((a) => (
@@ -374,10 +377,8 @@ export default async function MembresPage({
         </select>
 
         <select name="tri" defaultValue={tri} className={styles.menu}>
-          <option value="inscription">Tri : les plus récents</option>
-          <option value="activite">Tri : dernière activité</option>
-          <option value="projets">Tri : nombre de projets</option>
-          <option value="nom">Tri : nom</option>
+          <option value="recents">Tri : les plus récents</option>
+          <option value="anciens">Tri : les plus anciens</option>
         </select>
 
         {/* « Affichage » : ce qu'on ajoute ou retire, comme sur WFG 1 —
@@ -515,9 +516,6 @@ export default async function MembresPage({
                       </ul>
                     </details>
                   )}
-                  {m.dernier_projet_annee ? (
-                    <span className={formStyles.hint}> · {m.dernier_projet_annee}</span>
-                  ) : null}
                 </td>
                 <td>
                   <AdhesionMembre profileId={m.profile_id} plan={m.adhesion} />
