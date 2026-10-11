@@ -111,6 +111,9 @@ function nomDuPays(code: string | null) {
 /** « · LM » à côté d'un titre ; rien si le format manque. */
 const formatCourt = (f: string | null) =>
   f ? <span className={formStyles.hint}> · {FORMATS[f] ?? f}</span> : null;
+/** « · masquée » : fiche retirée de la vue des membres par l'administration (11/10). */
+const masquee = (d: string | null) =>
+  d ? <span className={formStyles.hint} title="Masquée par l'administration"> · masquée</span> : null;
 
 function metierDe(m: Membre) {
   const cle = m.category ?? m.role_wfg1;
@@ -266,12 +269,13 @@ export default async function MembresPage({
   const { data: projetsVisibles } = idsVisibles.length
     ? await supabase
         .from("projects")
-        .select("id, title, owner_id, format")
+        .select("id, title, owner_id, format, masque_par_admin_le")
         .in("owner_id", idsVisibles)
         .order("created_at", { ascending: false })
     : { data: [] };
-  const projetsDe = new Map<string, { id: string; title: string; format: string | null }[]>();
-  for (const pr of (projetsVisibles ?? []) as { id: string; title: string; owner_id: string; format: string | null }[]) {
+  type ProjetLigne = { id: string; title: string; format: string | null; masque_par_admin_le: string | null };
+  const projetsDe = new Map<string, ProjetLigne[]>();
+  for (const pr of (projetsVisibles ?? []) as (ProjetLigne & { owner_id: string })[]) {
     projetsDe.set(pr.owner_id, [...(projetsDe.get(pr.owner_id) ?? []), pr]);
   }
 
@@ -493,6 +497,7 @@ export default async function MembresPage({
                       </Link>
                       {/* Le format à côté du titre (10/10, Sarah) : LM, CM, Séries, VR/360. */}
                       {formatCourt(projetsDe.get(m.profile_id)![0].format)}
+                      {masquee(projetsDe.get(m.profile_id)![0].masque_par_admin_le)}
                       {scenarioDe(projetsDe.get(m.profile_id)![0].id)}
                     </>
                   ) : (
@@ -503,6 +508,7 @@ export default async function MembresPage({
                           <li key={pr.id}>
                             <Link href={`/projet/${pr.id}`}>{pr.title}</Link>
                             {formatCourt(pr.format)}
+                            {masquee(pr.masque_par_admin_le)}
                             {scenarioDe(pr.id)}
                           </li>
                         ))}
