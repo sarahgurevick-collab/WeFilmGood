@@ -40,7 +40,10 @@ export default async function ParcoursPage({
         .eq("id", user.id)
         .maybeSingle(),
       supabase.from("profile_social_links").select("network, url").eq("profile_id", user.id),
-      supabase.from("profile_roles").select("role_slug").eq("profile_id", user.id),
+      // Les métiers du membre : ceux cochés ici, sinon ceux repris de WFG 1
+      // (professions complémentaires comprises), pour qu'ils apparaissent
+      // cochés et soient conservés à l'enregistrement (11/10, Sarah).
+      supabase.rpc("metiers_du_membre", { uid: user.id }),
       supabase.from("profile_genres").select("genre_slug").eq("profile_id", user.id),
       supabase.from("genres").select("slug, label_fr").order("position"),
     ]);
@@ -58,7 +61,9 @@ export default async function ParcoursPage({
   const metiersAffiches = slugsProposes
     .map((slug) => ({ slug, label: labelDe.get(slug) }))
     .filter((m): m is { slug: string; label: string } => !!m.label);
-  const aMetier = (slug: string) => (metiers ?? []).some((m) => m.role_slug === slug);
+  const slugsMetiers: string[] = (metiers as string[] | null) ?? [];
+  const aMetier = (slug: string) => slugsMetiers.includes(slug);
+  const rolesMembre = slugsMetiers.map((role_slug) => ({ role_slug }));
 
   return (
     <BlocProfil actif="parcours">
@@ -140,7 +145,7 @@ export default async function ParcoursPage({
           </OuiNon>
         )}
 
-        {questionAgentConcernee(profil?.category, metiers) && (
+        {questionAgentConcernee(profil?.category, rolesMembre) && (
           <OuiNon
             question="Avez-vous un agent ?"
             nom="agent_reponse"
