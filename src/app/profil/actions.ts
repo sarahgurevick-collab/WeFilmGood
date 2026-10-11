@@ -173,13 +173,15 @@ export async function saveParcours(formData: FormData) {
   const autorises = metiersPourCategorie(profil?.category);
   if (autorises.length) {
     const roles = formData.getAll("roles").map(String).filter((r) => autorises.includes(r));
-    // Le rôle lecteur ne se choisit pas ici : il vient d'une invitation de
-    // l'administrateur et ne doit pas pouvoir être retiré ni ajouté.
+    // On ne remplace que les métiers que le formulaire propose pour cette
+    // catégorie : le rôle lecteur (invitation de l'administration) et les
+    // métiers repris de WFG 1 qui ne figurent pas dans la liste (un auteur
+    // aussi réalisateur, par exemple) restent en place (11/10).
     await supabase
       .from("profile_roles")
       .delete()
       .eq("profile_id", user.id)
-      .neq("role_slug", "lecteur");
+      .in("role_slug", autorises);
     if (roles.length) {
       await supabase
         .from("profile_roles")
