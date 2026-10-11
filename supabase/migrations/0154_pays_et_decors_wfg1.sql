@@ -44,3 +44,16 @@ from (
   order by pr2.id, w.keyword
 ) x
 where pr.id = x.id;
+
+-- Second passage, nécessaire : dans la requête ci-dessus, les mots créés
+-- par le bloc « nouveaux » ne sont pas visibles du dernier insert (même
+-- instantané). On relie donc une seconde fois, maintenant que les mots
+-- existent (sans effet sur ce qui est déjà lié).
+insert into public.project_keywords (project_id, keyword_id, source)
+select distinct pr.id, k.id, 'wfg1'
+from wfg1.projects p
+cross join lateral unnest(string_to_array(coalesce(p.keywords, '') || '|' || coalesce(p.character_keywords, ''), '|')) as t(tok)
+join wfg1.keywords w on w.category in (5, 6) and (w.category || '-' || w.keyword) = t.tok
+join public.projects pr on pr.legacy_id::text = p.project_id::text
+join public.keywords k on k.slug = btrim(regexp_replace(lower(public.sans_accent(btrim(w.fr))), '[^a-z0-9]+', '_', 'g'), '_')
+on conflict do nothing;
