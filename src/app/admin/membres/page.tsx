@@ -214,7 +214,12 @@ export default async function MembresPage({
   const page = Math.max(1, Number(sp.page ?? "1") || 1);
   // Par défaut, rien de coché : le nom et l'email. Le profil étendu ajoute
   // la photo, le pays, le code postal, la ville et la référence.
-  const affichage = new Set((sp.aff ?? "").split(",").filter(Boolean));
+  // Plusieurs cases cochées = plusieurs « aff » dans l'adresse, donc une
+  // liste et non un texte (plantage du 11/10 au décochage d'une case).
+  const affBrut = sp.aff as string | string[] | undefined;
+  const affichage = new Set(
+    (Array.isArray(affBrut) ? affBrut : (affBrut ?? "").split(",")).map((x) => x.trim()).filter(Boolean),
+  );
 
   // Les métiers sont regroupés par libellé : « producer » (WFG 1) et
   // « producteur » (WFG 2) sont le même métier.
