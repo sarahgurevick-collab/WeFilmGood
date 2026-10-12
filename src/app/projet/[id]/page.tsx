@@ -320,6 +320,27 @@ export default async function ProjetPage({
       const photo = m.profileId ? (parId.get(m.profileId) ?? null) : null;
       m.photo = restreint && photo ? `/api/talents/photo?id=${m.profileId}` : photo;
     }
+    // Les langues parlées, sous le métier (12/10, Sarah) : pour ne pas
+    // écrire en anglais à un auteur qui ne le parle pas. Dans l'ordre de la
+    // liste du profil (français, anglais, espagnol…).
+    const { data: languesBrut } = await supabase
+      .from("profile_languages")
+      .select("profile_id, langue:languages(label_fr, position)")
+      .in("profile_id", idsEquipe);
+    const languesPar = new Map<string, { label_fr: string; position: number }[]>();
+    for (const l of (languesBrut ?? []) as unknown as {
+      profile_id: string;
+      langue: { label_fr: string; position: number } | null;
+    }[]) {
+      if (!l.langue) continue;
+      languesPar.set(l.profile_id, [...(languesPar.get(l.profile_id) ?? []), l.langue]);
+    }
+    for (const m of equipe) {
+      const noms = (m.profileId ? (languesPar.get(m.profileId) ?? []) : [])
+        .sort((x, y) => x.position - y.position)
+        .map((l, i) => (i === 0 ? l.label_fr : l.label_fr.toLowerCase()));
+      m.langues = noms.length ? noms.join(", ") : null;
+    }
     // Biographie et site, dépliés au clic sur le portrait (03/10, décision
     // de Sarah) : pour l'administration, le membre lui-même, l'équipe et les
     // adhérents — jamais pour qui n'a pas d'adhésion, dont la base n'est
