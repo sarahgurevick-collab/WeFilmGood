@@ -24,7 +24,6 @@
 
 .vignette:hover,
 .vignette:focus-visible {
-  transform: scale(1.04);
   outline: 2px solid var(--rouge-wfg);
   outline-offset: 2px;
 }
@@ -43,8 +42,8 @@
 }
 
 .mosaique.visible li {
-  animation: arrive 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  animation-delay: calc(var(--i, 0) * 0.09s);
+  animation: arrive 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 0.22s);
 }
 
 @keyframes arrive {
@@ -58,22 +57,18 @@
   }
 }
 
-/* La respiration : un très léger grossissement, à son propre rythme,
-   à l'intérieur du cadre arrondi. */
-.respire {
-  animation: respire 7s ease-in-out infinite;
-  animation-delay: calc(var(--i, 0) * -1.3s);
-  will-change: transform;
+/* Le travelling au survol : l'image, un peu plus grande que son cadre,
+   glisse lentement d'un bord à l'autre, comme un mouvement de caméra ;
+   elle revient à sa place quand la souris s'en va. */
+.travelling {
+  transform: scale(1.12);
+  transform-origin: 35% 50%;
+  transition: transform-origin 6s linear;
 }
 
-@keyframes respire {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.045);
-  }
+.vignette:hover .travelling,
+.vignette:focus-visible .travelling {
+  transform-origin: 65% 50%;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -82,8 +77,9 @@
     opacity: 1;
     animation: none;
   }
-  .respire {
-    animation: none;
+  .travelling {
+    transform: none;
+    transition: none;
   }
 }
 

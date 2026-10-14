@@ -11,9 +11,10 @@ import styles from "./moodboard.module.css";
  * pour passer à la suivante, et la croix × pour refermer.
  *
  * Deux animations (14/10, Sarah) : à l'arrivée à l'écran, les photos
- * apparaissent en cascade, l'une après l'autre, une seule fois ; puis
- * chacune respire, un très léger grossissement à son propre rythme. Le
- * tout en CSS, rien ne tourne dans le navigateur.
+ * apparaissent en cascade, l'une après l'autre, lentement, une seule
+ * fois ; puis, au survol, un travelling : l'image glisse doucement dans
+ * son cadre, comme un mouvement de caméra. (La respiration permanente a
+ * été essayée et retirée : « trop petit effet ».) Le tout en CSS.
  */
 export default function MoodboardPhotos({ photos }: { photos: string[] }) {
   const [ouverte, setOuverte] = useState<number | null>(null);
@@ -79,7 +80,7 @@ export default function MoodboardPhotos({ photos }: { photos: string[] }) {
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" loading="lazy" draggable={false} className={styles.respire} />
+              <img src={src} alt="" loading="lazy" draggable={false} className={styles.travelling} />
             </button>
           </li>
         ))}
