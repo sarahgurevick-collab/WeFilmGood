@@ -198,9 +198,8 @@ export default async function ProjetPage({
   // L'image de présentation (la dernière déposée), le mood board et les
   // portraits : le stockage est privé, on signe les adresses pour une heure.
   const vignette = (fichiers ?? []).filter((f) => f.kind === "vignette").at(-1) ?? null;
-  // Neuf photos au plus au dépôt (MAX_MOODBOARD) ; les anciens projets de
-  // WFG 1 peuvent en avoir davantage (décision du 07/10 : Sarah ne peut pas
-  // choisir à leur place), on les affiche toutes.
+  // Autant de photos qu'on veut (14/10, Sarah ; neuf au plus avant), on
+  // les affiche toutes, le cadre défile.
   const moodboard = (fichiers ?? []).filter((f) => f.kind === "moodboard");
   const urls = await signerImages(supabase, [
     vignette?.storage_path,

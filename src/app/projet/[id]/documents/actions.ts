@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { chargerProjetAModifier } from "../../blocs";
-import { IMAGES, MAX_MOODBOARD, deposerImage, deposerScenario, recadrerEn16x9, retirerImages } from "../fichiers";
+import { IMAGES, deposerImage, deposerScenario, recadrerEn16x9, retirerImages } from "../fichiers";
 
 /**
  * Bloc 2 — enregistre l'image de présentation (une seule : la nouvelle
@@ -33,14 +33,8 @@ export async function enregistrerDocuments(formData: FormData) {
     echec("Le scénario doit être un fichier PDF.");
   }
 
-  const { count: existantes } = await supabase
-    .from("project_files")
-    .select("id", { count: "exact", head: true })
-    .eq("project_id", id)
-    .eq("kind", "moodboard");
-  if ((existantes ?? 0) + moodboard.length > MAX_MOODBOARD) {
-    echec(`Le Moodboard tient en ${MAX_MOODBOARD} photos au plus.`);
-  }
+  // Plus de limite au nombre de photos du Moodboard (14/10, Sarah) : autant
+  // qu'on veut, le cadre défile.
 
   // L'image de présentation (03/10) : l'image complète est gardée (kind
   // « vignette_origine »), la vignette affichée partout est une copie 16/9

@@ -10,7 +10,6 @@ import { alleger } from "@/lib/image";
  */
 export const IMAGES = ["image/jpeg", "image/png", "image/webp"];
 // Neuf photos (03/10, Sarah) : trois rangées de trois dans le cadre du moodboard.
-export const MAX_MOODBOARD = 9;
 
 const BUCKET_IMAGES = "project-media";
 

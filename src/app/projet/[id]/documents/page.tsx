@@ -4,7 +4,7 @@ import profilStyles from "@/app/profil/profil.module.css";
 import BlocProjet from "../../BlocProjet";
 import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
-import { MAX_MOODBOARD, signerImages } from "../fichiers";
+import { signerImages } from "../fichiers";
 import { enregistrerDocuments } from "./actions";
 import BoutonRetirerPhoto from "./BoutonRetirerPhoto";
 import ImagePresentation from "./ImagePresentation";
@@ -80,9 +80,8 @@ export default async function DocumentsPage({
         <h2 className={styles.sousTitre}>Moodboard</h2>
         <p className={formStyles.hint}>
           Des images d&apos;ambiance — références de films qui vous ont inspirés, lumières,
-          lieux, visages — qui donnent le ton de votre film. Vous pouvez uploader{" "}
-          {MAX_MOODBOARD} photos maximum. Le Moodboard peut être consulté par les lecteurs en
-          validant la case au moment du dépôt du projet à la lecture.
+          lieux, visages — qui donnent le ton de votre film. Le Moodboard peut être consulté par
+          les lecteurs en validant la case au moment du dépôt du projet à la lecture.
         </p>
         {moodboard.length > 0 && (
           <ul className={styles.grilleImages}>
@@ -94,20 +93,12 @@ export default async function DocumentsPage({
             ))}
           </ul>
         )}
-        {moodboard.length < MAX_MOODBOARD ? (
-          <label className={formStyles.field}>
-            <span>{moodboard.length ? "Ajouter des photos" : "Choisir des photos"}</span>
-            <input type="file" name="moodboard" accept={accept} multiple />
-            <span className={formStyles.hint}>
-              Vous pouvez en choisir plusieurs à la fois — encore{" "}
-              {MAX_MOODBOARD - moodboard.length} au plus.
-            </span>
-          </label>
-        ) : (
-          <p className={formStyles.hint}>
-            Votre Moodboard est complet. Retirez une photo pour en ajouter une autre.
-          </p>
-        )}
+        {/* Plus de limite au nombre de photos (14/10, Sarah). */}
+        <label className={formStyles.field}>
+          <span>{moodboard.length ? "Ajouter des photos" : "Choisir des photos"}</span>
+          <input type="file" name="moodboard" accept={accept} multiple />
+          <span className={formStyles.hint}>Vous pouvez en choisir plusieurs à la fois.</span>
+        </label>
 
         <h2 className={styles.sousTitre}>Le scénario</h2>
         <label className={formStyles.field}>
