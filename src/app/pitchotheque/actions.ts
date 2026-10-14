@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { AUCUN, parametresRpc, type Filtres } from "./filtres";
 import { enTexte, vecteur } from "@/lib/vecteurs";
+import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut, type PersonnagesCarte } from "./personnages-carte";
 
 export type ProjetTrouve = {
   id: string;
@@ -15,6 +16,8 @@ export type ProjetTrouve = {
   vignette: string | null;
   /** Déjà ouvert par ce membre (03/10). */
   vu?: boolean;
+  /** Les premiers personnages et leur nombre (14/10). */
+  personnages?: PersonnagesCarte | null;
 };
 
 export type ResultatRecherche = {
@@ -118,7 +121,7 @@ export async function rechercherProjets(
   const { data: projects } = await supabase
     .from("projects")
     .select(
-      "id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)",
+      `id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind), ${SELECTION_PERSONNAGES}`,
     )
     .in("id", ids)
     .returns<
@@ -130,11 +133,15 @@ export async function rechercherProjets(
         bandeau: string | null;
         genre: { label_fr: string } | null;
         files: { storage_path: string; kind: string }[];
+        characters: PersonnageBrut[] | null;
       }[]
     >();
 
   const chemins = (projects ?? [])
-    .map((p) => (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path)
+    .flatMap((p) => [
+      (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path,
+      ...cheminsPortraits(p.characters),
+    ])
     .filter((c): c is string => Boolean(c));
 
   const { data: signes } = chemins.length
@@ -155,6 +162,7 @@ export async function rechercherProjets(
         bandeau: p.bandeau,
         genre: p.genre,
         vignette: chemin ? (urlDe.get(chemin) ?? null) : null,
+        personnages: personnagesDeLaCarte(p.characters, urlDe),
       };
     })
     .sort((a, b) => (ordreDe.get(a.id) ?? 0) - (ordreDe.get(b.id) ?? 0));

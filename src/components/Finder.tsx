@@ -15,6 +15,7 @@ import { AUCUN, adresse, type Filtres } from "@/app/pitchotheque/filtres";
 import Bandeau from "./Bandeau";
 import LogoComplet from "./LogoComplet";
 import MarqueDejaOuvert from "./MarqueDejaOuvert";
+import PersonnagesCarte from "./PersonnagesCarte";
 import formStyles from "./form.module.css";
 import NuageCouleurs from "./NuageCouleurs";
 import NuageDisque from "./NuageDisque";
@@ -469,6 +470,7 @@ export default function Finder({
 
 function CarteProjet({ p }: { p: ProjetTrouve }) {
   return (
+    <>
     <Link href={`/projet/${p.id}`} className={projetsStyles.carte}>
       <div className={projetsStyles.vignette}>
         <Bandeau valeur={p.bandeau} />
@@ -495,6 +497,8 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
         {p.tagline && <p className={projetsStyles.logline}>{p.tagline}</p>}
       </div>
     </Link>
+    <PersonnagesCarte projetId={p.id} personnages={p.personnages} />
+    </>
   );
 }
 

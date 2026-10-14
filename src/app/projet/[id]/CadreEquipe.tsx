@@ -336,7 +336,9 @@ export default function CadreEquipe({
       )}
 
       {avecPersonnages && (
-        <section className={`${styles.cadre} ${styles.cadreEquipe}`}>
+        // L'ancre « personnages » : les cartes des Galaxies ouvrent la fiche
+        // directement ici (14/10, Sarah).
+        <section id="personnages" className={`${styles.cadre} ${styles.cadreEquipe}`}>
           <p className={styles.dessousTitre}>Les personnages</p>
           {cotePersonnages}
         </section>

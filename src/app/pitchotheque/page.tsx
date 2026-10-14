@@ -7,6 +7,8 @@ import Finder, { CartePersonnage, CarteTalent } from "@/components/Finder";
 import finderStyles from "@/components/Finder.module.css";
 import VignetteEau from "@/components/VignetteEau";
 import { categorieDeDepart, peutVoirLeNuage, personnagesDeLaGalaxie, talentsDeLaGalaxie } from "./actions";
+import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut } from "./personnages-carte";
+import PersonnagesCarte from "@/components/PersonnagesCarte";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
@@ -31,6 +33,7 @@ type Projet = {
   bandeau: string | null;
   genre: { label_fr: string } | null;
   files: { storage_path: string; kind: string }[];
+  characters: PersonnageBrut[] | null;
 };
 
 export const metadata: Metadata = { title: "Galaxies — WeFilmGood" };
@@ -40,8 +43,7 @@ const PAR_PAGE = 50;
 // Talents et personnages : six par ligne, dix lignes.
 const GALAXIE_PAR_PAGE = 60;
 
-const SELECTION =
-  "id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)";
+const SELECTION = `id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind), ${SELECTION_PERSONNAGES}`;
 
 export default async function ProjetsPage({
   searchParams,
@@ -170,9 +172,13 @@ export default async function ProjetsPage({
   }
   const pages = Math.max(1, Math.ceil(total / PAR_PAGE));
 
-  // Le stockage est privé : on signe les vignettes en un seul appel.
+  // Le stockage est privé : on signe les vignettes, et les portraits des
+  // personnages de la carte (14/10), en un seul appel.
   const chemins = (projects ?? [])
-    .map((p) => (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path)
+    .flatMap((p) => [
+      (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path,
+      ...cheminsPortraits(p.characters),
+    ])
     .filter((c): c is string => Boolean(c));
 
   const { data: signes } = chemins.length
@@ -270,6 +276,7 @@ export default async function ProjetsPage({
                       {p.tagline && <p className={styles.logline}>{p.tagline}</p>}
                     </div>
                   </Link>
+                  <PersonnagesCarte projetId={p.id} personnages={personnagesDeLaCarte(p.characters, urlDe)} />
                 </li>
               );
             })}
