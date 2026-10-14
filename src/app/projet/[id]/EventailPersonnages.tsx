@@ -15,9 +15,11 @@ import styles from "./eventail.module.css";
  * cliquant sur une carte de côté, avec les flèches du clavier ou par les
  * points en dessous. Un clic sur la carte du centre ouvre sa description
  * (à droite sur grand écran, sous l'éventail sinon), un second la referme.
- * L'éventail se déplace tout seul, lentement et sans à-coup (essai du
- * 14/10 au soir, Sarah) : une carte toutes les six secondes, en glissant,
- * dans un sens puis dans l'autre arrivé au bout. Il s'arrête quand la
+ * L'éventail est un cercle (14/10, Sarah) : les cartes se répartissent à
+ * gauche et à droite de celle du centre — à trois, une au milieu, une de
+ * chaque côté — et on bascule dans le sens qu'on veut, sans bout.
+ * Il se déplace tout seul, lentement et sans à-coup : une carte toutes les
+ * six secondes, en glissant, toujours dans le même sens. Il s'arrête quand la
  * souris est dessus, qu'une description est ouverte ou qu'il n'est pas à
  * l'écran. Un seul clic sur une carte : elle vient au centre ET sa
  * description s'ouvre ; un clic sur la carte du centre la referme.
@@ -49,9 +51,25 @@ export default function EventailPersonnages({
   const [survole, setSurvole] = useState(false);
   const [aLEcran, setALEcran] = useState(true);
   // Le dernier déplacement vient-il de l'éventail lui-même (lent, linéaire)
-  // ou de la personne (vif) ? Le sens de la dérive s'inverse au bout.
+  // ou de la personne (vif) ?
   const [glisseLent, setGlisseLent] = useState(false);
-  const sens = useRef(1);
+  const n = personnages.length;
+  // La place d'une carte par rapport au centre, sur le cercle : de -n/2 à +n/2.
+  const placeDepuis = (i: number, centre: number) => {
+    let d = (((i - centre) % n) + n) % n;
+    if (d > n / 2) d -= n;
+    return d;
+  };
+  const place = (i: number) => placeDepuis(i, actif);
+  // Le centre du rendu précédent (état dérivé) : une carte qui passe d'un
+  // bord à l'autre quand le cercle se referme saute sans transition, au
+  // lieu de traverser l'éventail.
+  const [actifPrecedent, setActifPrecedent] = useState(actif);
+  const [actifAvant, setActifAvant] = useState(actif);
+  if (actif !== actifPrecedent) {
+    setActifAvant(actifPrecedent);
+    setActifPrecedent(actif);
+  }
 
   // Une description ouverte ailleurs (arrivée depuis la Galaxie) amène sa
   // carte au centre : état dérivé, calculé pendant le rendu.
@@ -82,16 +100,14 @@ export default function EventailPersonnages({
     const id = setInterval(() => {
       if (depart.current !== null) return;
       setGlisseLent(true);
-      setActif((a) => {
-        if (a + sens.current < 0 || a + sens.current > personnages.length - 1) sens.current = -sens.current;
-        return a + sens.current;
-      });
+      setActif((a) => (a + 1) % personnages.length);
     }, CADENCE_MS);
     return () => clearInterval(id);
   }, [enEventail, survole, ouvert, aLEcran, personnages.length]);
 
   const aller = (i: number) => {
-    const borne = Math.max(0, Math.min(personnages.length - 1, i));
+    // Sur le cercle : après le dernier vient le premier, et inversement.
+    const borne = ((i % n) + n) % n;
     setGlisseLent(false);
     setActif(borne);
     // La description suit la carte du centre si elle était ouverte.
@@ -189,8 +205,9 @@ export default function EventailPersonnages({
         }}
       >
         {personnages.map((c, i) => {
-          const decalage = i - actif;
+          const decalage = place(i);
           if (Math.abs(decalage) > VISIBLES) return null;
+          const saute = Math.abs(decalage - placeDepuis(i, actifAvant)) > VISIBLES;
           const estActif = decalage === 0;
           const estOuvert = ouvert === c.id;
           return (
@@ -198,7 +215,7 @@ export default function EventailPersonnages({
               key={c.id}
               id={`personnage-${c.id}`}
               type="button"
-              className={`${styles.carte} ${estActif ? styles.active : ""} ${estOuvert ? styles.ouverte : ""}`}
+              className={`${styles.carte} ${estActif ? styles.active : ""} ${estOuvert ? styles.ouverte : ""} ${saute ? styles.saut : ""}`}
               style={{
                 transform: `translateX(-50%) rotate(${decalage * PAS_DEG}deg) translateY(${estActif ? -16 : 0}px) scale(${estActif ? 1.04 : 0.94})`,
                 opacity: 1 - Math.abs(decalage) * 0.18,

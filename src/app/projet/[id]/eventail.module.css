@@ -61,6 +61,12 @@
     opacity 6s linear;
 }
 
+/* La carte qui passe d'un bord à l'autre quand le cercle se referme. */
+.carte.saut,
+.derive .carte.saut {
+  transition: none;
+}
+
 /* La même carte que dans la Galaxie de personnages : portrait vertical,
    coins arrondis, nom en dessous. */
 .portrait {
