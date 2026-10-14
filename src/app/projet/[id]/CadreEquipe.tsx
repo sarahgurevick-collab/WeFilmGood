@@ -27,7 +27,7 @@ export type MembreEquipe = {
   /** Les langues parlées, en toutes lettres (« Français, anglais ») : sous le
    *  métier, pour ne pas écrire en anglais à qui ne le parle pas (12/10, Sarah). */
   langues?: string | null;
-  /** Où la personne vit (12/10, Sarah) : le drapeau, puis « Le Cap, Afrique du Sud ». */
+  /** Où la personne vit (12/10, Sarah) : le drapeau, puis « Afrique du Sud ». */
   lieu?: { code: string; texte: string } | null;
   /** Invitation pas encore acceptée — visible de l'auteur et de l'admin seulement. */
   enAttente: string | null;

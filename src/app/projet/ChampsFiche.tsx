@@ -1,5 +1,6 @@
 import ChampAvecCompteur from "@/components/ChampAvecCompteur";
 import ChampTitre from "./ChampTitre";
+import LibelleSelection from "./LibelleSelection";
 import formStyles from "@/components/form.module.css";
 import styles from "./deposer.module.css";
 
@@ -189,7 +190,9 @@ export default function ChampsFiche({
       {selections.length > 0 && (
         <div className={`${styles.prix} ${styles.selectionsMaison}`}>
           {selections.map((s) => (
-            <span key={s}>Sélection Maison des Scénaristes, {s}</span>
+            <span key={s}>
+              <LibelleSelection libelle={s} />
+            </span>
           ))}
         </div>
       )}

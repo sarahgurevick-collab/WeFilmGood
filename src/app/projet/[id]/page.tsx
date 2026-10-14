@@ -9,6 +9,7 @@ import PartageProjet from "./PartageProjet";
 import { choisirVisibilite, setShareLink } from "./actions";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
+import LibelleSelection from "../LibelleSelection";
 import ContactEnveloppe from "./ContactEnveloppe";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
@@ -314,25 +315,25 @@ export default async function ProjetPage({
   if (idsEquipe.length) {
     const { data: photos } = await supabase
       .from("profiles")
-      .select("id, avatar_url, country, city")
+      .select("id, avatar_url, country")
       .in("id", idsEquipe);
     const parId = new Map(
       (photos ?? []).map((ph) => [
         ph.id as string,
-        ph as { avatar_url: string | null; country: string | null; city: string | null },
+        ph as { avatar_url: string | null; country: string | null },
       ]),
     );
     for (const m of equipe) {
       const fiche = m.profileId ? parId.get(m.profileId) : undefined;
       const photo = fiche?.avatar_url ?? null;
       m.photo = restreint && photo ? `/api/talents/photo?id=${m.profileId}` : photo;
-      // Où la personne vit (12/10, Sarah) : drapeau + « Le Cap, Afrique du
-      // Sud », pour qu'un crédit dépensé pour écrire le soit en connaissance
-      // de cause. Le pays du profil est celui où l'on vit, pas l'origine.
+      // Où la personne vit (12/10, Sarah) : drapeau + « Afrique du Sud »,
+      // pour qu'un crédit dépensé pour écrire le soit en connaissance de
+      // cause. Le pays du profil est celui où l'on vit, pas l'origine. Sans
+      // la ville (14/10, Sarah : « pas nécessaire »).
       const code = fiche?.country?.trim().toLowerCase() ?? "";
       const pays = /^[a-z]{2}$/.test(code) ? nomDuPays(code) : null;
-      const ville = fiche?.city?.trim() || null;
-      m.lieu = pays ? { code, texte: ville ? `${ville}, ${pays}` : pays } : null;
+      m.lieu = pays ? { code, texte: pays } : null;
     }
     // Les langues parlées, sous le métier (12/10, Sarah) : pour ne pas
     // écrire en anglais à un auteur qui ne le parle pas. Dans l'ordre de la
@@ -503,7 +504,7 @@ export default async function ProjetPage({
           <strong>Projet primé</strong>
           {(selections ?? []).map((x) => (
             <span key={x.libelle} style={{ display: "block" }}>
-              Sélection Maison des Scénaristes, {x.libelle}
+              <LibelleSelection libelle={x.libelle} />
             </span>
           ))}
           {project.awards_detail}
