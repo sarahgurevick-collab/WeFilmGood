@@ -1,0 +1,28 @@
+/* Le nom d'un partenaire est un lien actif : on le fait ressortir (14/10,
+   Sarah : un « highlight » quand un lien existe) — une pastille bordée de
+   rouge, soulignée, avec la petite flèche qui dit « s'ouvre ailleurs ». */
+.lien {
+  display: inline-block;
+  padding: 1px 9px;
+  border: 1px solid var(--rouge-wfg, #da2c25);
+  border-radius: 999px;
+  background: rgba(218, 44, 37, 0.12);
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--rouge-wfg, #da2c25);
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.lien::after {
+  content: " ↗";
+  font-size: 0.85em;
+}
+
+.lien:hover,
+.lien:focus-visible {
+  background: var(--rouge-wfg, #da2c25);
+  color: #fff;
+  text-decoration-color: #fff;
+}
