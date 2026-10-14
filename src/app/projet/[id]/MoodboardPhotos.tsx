@@ -9,12 +9,32 @@ import styles from "./moodboard.module.css";
  * dans leur cadre. Un clic ouvre la photo en grand, avec le compteur
  * « 3 / 10 », les flèches (ou les touches ← →, ou un glissement du doigt)
  * pour passer à la suivante, et la croix × pour refermer.
+ *
+ * Deux animations (14/10, Sarah) : à l'arrivée à l'écran, les photos
+ * apparaissent en cascade, l'une après l'autre, une seule fois ; puis
+ * chacune respire, un très léger grossissement à son propre rythme. Le
+ * tout en CSS, rien ne tourne dans le navigateur.
  */
 export default function MoodboardPhotos({ photos }: { photos: string[] }) {
   const [ouverte, setOuverte] = useState<number | null>(null);
   // La vignette cliquée, pour lui rendre le focus à la fermeture.
   const retour = useRef<HTMLElement | null>(null);
   const departToucher = useRef<number | null>(null);
+  // La cascade part quand la mosaïque arrive à l'écran.
+  const mosaique = useRef<HTMLUListElement | null>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = mosaique.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entree]) => {
+      if (entree.isIntersecting) {
+        setVisible(true);
+        io.disconnect();
+      }
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const total = photos.length;
   const estOuverte = ouverte !== null;
 
@@ -46,9 +66,9 @@ export default function MoodboardPhotos({ photos }: { photos: string[] }) {
 
   return (
     <>
-      <ul className={styles.mosaique}>
+      <ul ref={mosaique} className={`${styles.mosaique} ${visible ? styles.visible : ""}`}>
         {photos.map((src, i) => (
-          <li key={src}>
+          <li key={src} style={{ ["--i" as string]: i }}>
             <button
               type="button"
               className={styles.vignette}
@@ -59,7 +79,7 @@ export default function MoodboardPhotos({ photos }: { photos: string[] }) {
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" loading="lazy" draggable={false} />
+              <img src={src} alt="" loading="lazy" draggable={false} className={styles.respire} />
             </button>
           </li>
         ))}

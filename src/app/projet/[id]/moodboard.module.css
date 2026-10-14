@@ -36,6 +36,57 @@
   object-fit: cover;
 }
 
+/* La cascade : chaque photo attend son tour (--i), remonte et se révèle ;
+   avant l'arrivée à l'écran, elles sont invisibles. */
+.mosaique li {
+  opacity: 0;
+}
+
+.mosaique.visible li {
+  animation: arrive 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 0.09s);
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* La respiration : un très léger grossissement, à son propre rythme,
+   à l'intérieur du cadre arrondi. */
+.respire {
+  animation: respire 7s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * -1.3s);
+  will-change: transform;
+}
+
+@keyframes respire {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.045);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mosaique li,
+  .mosaique.visible li {
+    opacity: 1;
+    animation: none;
+  }
+  .respire {
+    animation: none;
+  }
+}
+
 /* La photo en grand : plein écran sur fond noir. */
 .fond {
   position: fixed;
