@@ -1,73 +1,174 @@
+/* La sphère de photos des témoignages (modèle : « Img Sphere », 21st.dev). */
+
 .zone {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
+  width: 100%;
 }
 
 .scene {
-  perspective: 900px;
-  touch-action: none;
+  position: relative;
+  max-width: 100%;
   cursor: grab;
+  user-select: none;
+  touch-action: none;
 }
 
 .scene:active {
   cursor: grabbing;
 }
 
-.monde {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-}
-
+/* Chaque photo, posée à sa place calculée ; un bouton, pour le clavier. */
 .point {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 84px;
-  height: 84px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.2s ease-out;
 }
 
+.point:focus-visible {
+  outline: 2px solid var(--rouge-wfg, #da2c25);
+  outline-offset: 3px;
+  border-radius: 50%;
+}
+
+/* Le rond : bord blanc fin, ombre légère, comme le modèle. */
 .vignette {
+  display: grid;
+  place-items: center;
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background-size: cover;
-  background-position: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-  transition: transform 0.15s ease;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -4px rgba(0, 0, 0, 0.12);
+  background: #e9e9e9;
 }
 
-.point:hover .vignette {
-  transform: scale(1.35);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+.vignette img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.legende {
-  min-height: 64px;
-  max-width: 46ch;
-  text-align: center;
-}
-
-.legendeTitre {
+.initiale {
+  color: #fff;
   font-weight: 700;
-  margin: 0 0 4px;
-}
-
-.legendeTexte {
-  margin: 0;
-  color: var(--dim);
-  line-height: 1.6;
+  font-size: 1.4em;
 }
 
 .legendeIndice {
   margin: 0;
   color: var(--dim);
   font-size: 13px;
+  text-align: center;
 }
 
+/* La fenêtre du témoignage. */
+.voile {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.35);
+  animation: apparait 0.25s ease-out;
+}
+
+.fenetre {
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  border-radius: 14px;
+  background: #fff;
+  color: #1a1a1a;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  animation: grandit 0.25s ease-out;
+}
+
+.fenetrePhoto {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 28px 28px 0;
+}
+
+.fenetrePhoto .vignette {
+  width: 160px;
+  height: 160px;
+  border-color: #fff;
+}
+
+.fenetrePhoto .initiale {
+  font-size: 56px;
+}
+
+.fermer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fermer:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.fenetreTexte {
+  padding: 18px 28px 28px;
+  text-align: center;
+}
+
+.legendeTitre {
+  font-weight: 700;
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.legendeTexte {
+  margin: 0;
+  color: #555;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+@keyframes apparait {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes grandit {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Sans animation (réglage du système) : les photos à plat. */
 .grillePlate {
   display: flex;
   flex-wrap: wrap;
@@ -76,7 +177,11 @@
   max-width: 560px;
 }
 
-.grillePlate .vignette {
+.bouton {
   width: 84px;
   height: 84px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
 }
