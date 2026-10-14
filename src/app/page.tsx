@@ -42,6 +42,19 @@ export default async function Home() {
         </div>
       )}
 
+      {/* Les success stories juste sous la galaxie (14/10, Sarah) : la bande
+          noire remonte au-dessus de la bande blanche et des engagements. */}
+      <section className={styles.stories}>
+        {/* Le titre mène à la liste de tous les films réalisés. */}
+        <h2 className={styles.storiesTitre}>
+          {/* Le même bouton que partout sur la plateforme (form.module.css). */}
+          <Link href="/succes" className={`${formStyles.submit} ${styles.storiesBouton}`}>
+            Success stories
+          </Link>
+        </h2>
+        <CarrouselSucces diapos={SUCCESS_STORIES} />
+      </section>
+
       <section className={`${styles.bande} clair`}>
         <h2 className={styles.bandeTitre}>
           Rejoignez <span className={styles.rouge}>We</span>Film<span className={styles.rouge}>Good</span> la
@@ -59,16 +72,6 @@ export default async function Home() {
       {/* ESSAI : les quatre engagements en défilement horizontal. */}
       <DefilementEngagements />
 
-      <section className={styles.stories}>
-        {/* Le titre mène à la liste de tous les films réalisés. */}
-        <h2 className={styles.storiesTitre}>
-          {/* Le même bouton que partout sur la plateforme (form.module.css). */}
-          <Link href="/succes" className={`${formStyles.submit} ${styles.storiesBouton}`}>
-            Success stories
-          </Link>
-        </h2>
-        <CarrouselSucces diapos={SUCCESS_STORIES} />
-      </section>
     </>
   );
 }
