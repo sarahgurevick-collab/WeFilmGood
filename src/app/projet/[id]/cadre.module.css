@@ -94,6 +94,22 @@
   opacity: 0.75;
 }
 
+/* Où la personne vit : le drapeau devant le texte. */
+.lieu {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+.lieu img {
+  width: 18px;
+  height: auto;
+  border-radius: 2px;
+  flex: none;
+}
+
 .voir {
   padding: 6px 14px;
   border-radius: 999px;

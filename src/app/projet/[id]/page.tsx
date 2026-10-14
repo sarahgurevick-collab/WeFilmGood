@@ -20,6 +20,7 @@ import { signerImages } from "./fichiers";
 import { chargerFiches } from "./fiches-donnees";
 import presentation from "./presentation.module.css";
 import { nomDeLangue } from "@/lib/langues";
+import { nomDuPays } from "@/lib/pays";
 
 const FORMATS_LISIBLES: Record<string, string> = {
   long_metrage: "Long métrage",
@@ -313,12 +314,25 @@ export default async function ProjetPage({
   if (idsEquipe.length) {
     const { data: photos } = await supabase
       .from("profiles")
-      .select("id, avatar_url")
+      .select("id, avatar_url, country, city")
       .in("id", idsEquipe);
-    const parId = new Map((photos ?? []).map((ph) => [ph.id as string, ph.avatar_url as string | null]));
+    const parId = new Map(
+      (photos ?? []).map((ph) => [
+        ph.id as string,
+        ph as { avatar_url: string | null; country: string | null; city: string | null },
+      ]),
+    );
     for (const m of equipe) {
-      const photo = m.profileId ? (parId.get(m.profileId) ?? null) : null;
+      const fiche = m.profileId ? parId.get(m.profileId) : undefined;
+      const photo = fiche?.avatar_url ?? null;
       m.photo = restreint && photo ? `/api/talents/photo?id=${m.profileId}` : photo;
+      // Où la personne vit (12/10, Sarah) : drapeau + « Le Cap, Afrique du
+      // Sud », pour qu'un crédit dépensé pour écrire le soit en connaissance
+      // de cause. Le pays du profil est celui où l'on vit, pas l'origine.
+      const code = fiche?.country?.trim().toLowerCase() ?? "";
+      const pays = /^[a-z]{2}$/.test(code) ? nomDuPays(code) : null;
+      const ville = fiche?.city?.trim() || null;
+      m.lieu = pays ? { code, texte: ville ? `${ville}, ${pays}` : pays } : null;
     }
     // Les langues parlées, sous le métier (12/10, Sarah) : pour ne pas
     // écrire en anglais à un auteur qui ne le parle pas. Dans l'ordre de la

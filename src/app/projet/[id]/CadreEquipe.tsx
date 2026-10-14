@@ -27,6 +27,8 @@ export type MembreEquipe = {
   /** Les langues parlées, en toutes lettres (« Français, anglais ») : sous le
    *  métier, pour ne pas écrire en anglais à qui ne le parle pas (12/10, Sarah). */
   langues?: string | null;
+  /** Où la personne vit (12/10, Sarah) : le drapeau, puis « Le Cap, Afrique du Sud ». */
+  lieu?: { code: string; texte: string } | null;
   /** Invitation pas encore acceptée — visible de l'auteur et de l'admin seulement. */
   enAttente: string | null;
   photo?: string | null;
@@ -137,6 +139,13 @@ export default function CadreEquipe({
               <span className={styles.nom}>{m.nom}</span>
               {m.role && <strong className={styles.role}>{m.role}</strong>}
               {m.langues && <span className={styles.langues}>{m.langues}</span>}
+              {m.lieu && (
+                <span className={styles.lieu}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/drapeaux/${m.lieu.code}.svg`} alt="" />
+                  {m.lieu.texte}
+                </span>
+              )}
               {m.enAttente && <span className={styles.enAttente}>{m.enAttente}</span>}
             </>
           );
@@ -234,6 +243,7 @@ export default function CadreEquipe({
         proposee: personnageChoisi.proposee && Boolean(personnageChoisi.portrait),
         sous: personnageChoisi.infos,
         langues: null as string | null | undefined,
+        lieu: null as MembreEquipe["lieu"],
         bio: personnageChoisi.bio,
         site: null as string | null | undefined,
       }
@@ -243,6 +253,7 @@ export default function CadreEquipe({
           image: membreChoisi.photo ?? null,
           sous: membreChoisi.role,
           langues: membreChoisi.langues,
+          lieu: membreChoisi.lieu,
           bio: membreChoisi.bio || "Ce membre n'a pas encore rédigé sa biographie.",
           site: membreChoisi.site,
         }
@@ -369,6 +380,13 @@ export default function CadreEquipe({
                   <h2 className={styles.detailNom}>{detail.nom}</h2>
                   {detail.sous && <p className={styles.detailSous}>{detail.sous}</p>}
                   {detail.langues && <p className={styles.detailSous}>{detail.langues}</p>}
+                  {detail.lieu && (
+                    <p className={`${styles.detailSous} ${styles.lieu}`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={`/drapeaux/${detail.lieu.code}.svg`} alt="" />
+                      {detail.lieu.texte}
+                    </p>
+                  )}
                   {detail.proposee && <p className={styles.detailPropose}>Proposée par WeFilmGood</p>}
                 </div>
               </div>
