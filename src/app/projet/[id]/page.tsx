@@ -10,6 +10,7 @@ import { choisirVisibilite, setShareLink } from "./actions";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
 import LibelleSelection, { LignePartenariats, estPartenaire } from "../LibelleSelection";
+import AccrocheProjet from "./AccrocheProjet";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";
@@ -451,6 +452,8 @@ export default async function ProjetPage({
           return [...reperes, ...mots].join(" · ");
         })()}
       </p>
+      {/* La tagline sous le titre, le résumé sur demande (14/10, Sarah). */}
+      <AccrocheProjet tagline={project.tagline} logline={project.logline} plus={project.synopsis} />
       {/* Les partenariats (Muse Awards…) sous le titre, en rouge, pour qu'on
           les voie avant tout le reste (14/10, Sarah). */}
       <LignePartenariats libelles={(selections ?? []).map((x) => x.libelle)} />
@@ -462,13 +465,8 @@ export default async function ProjetPage({
 
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
-        // La tagline et le résumé sont sous le moodboard, dans le cadre : plus
-        // sous le titre (03/10, Sarah). L'enveloppe est sous le portrait du
-        // porteur du projet (09/10, Sarah).
+        // La tagline et le résumé sont revenus sous le titre (14/10, Sarah).
         porteur={project.owner_id}
-        accroche={project.tagline}
-        resume={project.logline}
-        plus={project.synopsis}
         retourSaisie={
           isOwner || estAdmin
             ? hrefBloc(id, BLOCS.find((b) => b.cle === depuis)?.cle ?? "fiche")

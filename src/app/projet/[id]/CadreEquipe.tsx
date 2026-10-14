@@ -104,17 +104,8 @@ export default function CadreEquipe({
   avis,
   retourSaisie,
   personnageOuvert,
-  accroche,
-  resume,
-  plus,
   porteur,
 }: {
-  /** La tagline : l'accroche du projet, obligatoire. */
-  accroche?: string | null;
-  /** La logline : le résumé, en plus petit sous la tagline. */
-  resume?: string | null;
-  /** « Plus… » : informations supplémentaires (lien vers un teaser, sélections…). */
-  plus?: string | null;
   /** La clé du porteur du projet dans l'équipe : l'enveloppe se pose sous son portrait. */
   porteur?: string | null;
   /** Le personnage sur lequel on arrive depuis la recherche : biographie dépliée. */
@@ -251,18 +242,7 @@ export default function CadreEquipe({
         }
       : null;
 
-  // Sous le moodboard (ou sa remplaçante, la biographie) : la tagline et le
-  // résumé (03/10, Sarah). Toujours visibles : ils ne disparaissent pas
-  // quand on ouvre une biographie. L'enveloppe, elle, est sous le portrait
-  // du porteur (09/10) et reprise dans sa biographie dépliée.
-  const avecAccroche = Boolean(accroche || resume || plus);
-  const blocAccroche = (
-    <>
-      {accroche && <p className={styles.accroche}>{accroche}</p>}
-      {resume && <p className={styles.resume}>{resume}</p>}
-      {plus && <p className={styles.resume}>{plus}</p>}
-    </>
-  );
+  // La tagline et le résumé sont sous le titre depuis le 14/10 (AccrocheProjet).
 
   const deuxLangues = Boolean(videopitch?.fr && videopitch?.en);
 
@@ -320,12 +300,6 @@ export default function CadreEquipe({
         </section>
       )}
 
-      {avecAccroche && (
-        <section className={`${styles.cadre} ${styles.cadreEquipe} ${styles.accrocheGauche}`}>
-          {blocAccroche}
-        </section>
-      )}
-
       {avecPersonnages && (
         // L'ancre « personnages » : les cartes des Galaxies ouvrent la fiche
         // directement ici (14/10, Sarah).
@@ -355,7 +329,7 @@ export default function CadreEquipe({
       )}
     </div>
 
-      {(detail || avecMoodboard || avecAccroche) && (
+      {(detail || avecMoodboard) && (
         <div className={styles.droite}>
       {(detail || avecMoodboard) && (
         <aside
@@ -404,11 +378,6 @@ export default function CadreEquipe({
             </>
           )}
         </aside>
-      )}
-      {avecAccroche && (
-        <section className={`${styles.cadre} ${styles.cadreEquipe} ${styles.accrocheDroite}`}>
-          {blocAccroche}
-        </section>
       )}
         </div>
       )}
