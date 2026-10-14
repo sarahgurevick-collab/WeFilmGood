@@ -544,7 +544,9 @@ a.membreLien:hover .portrait {
     position: relative;
     display: block;
     padding: 30px 28px 26px;
-    border: 3px solid var(--rouge-wfg);
+    /* Plus de bord rouge (14/10, Sarah) : ni autour du moodboard ni
+       autour de la biographie ; le cadre garde sa place. */
+    border: 3px solid transparent;
     border-radius: 14px;
   }
 

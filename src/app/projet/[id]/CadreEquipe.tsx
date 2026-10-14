@@ -294,7 +294,8 @@ export default function CadreEquipe({
       {/* Un cadre rouge par contenu (03/10), sous le grand cadre : le moodboard,
           les personnages, puis l'équipe, qu'on distingue d'un coup d'œil. */}
       {avecMoodboard && (
-        <section className={`${styles.cadre} ${styles.cadreEquipe} ${styles.moodboardGauche}`}>
+        // Sans le cadre rouge, comme le reste de la fiche (14/10, Sarah).
+        <section className={`${styles.cadre} ${styles.cadreEquipe} ${styles.moodboardGauche} ${styles.sansBord}`}>
           <p className={styles.dessousTitre}>Moodboard</p>
           <MoodboardPhotos photos={moodboard} />
         </section>
