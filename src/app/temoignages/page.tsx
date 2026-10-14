@@ -38,7 +38,7 @@ export default async function TemoignagesPage() {
     <PageShell
       eyebrow="WeFilmGood"
       title="Témoignages"
-      theme="clair"
+      // Essai sur fond noir (14/10, Sarah) ; avant : theme="clair".
       enTeteAnime
       connecte={!!user}
     >
