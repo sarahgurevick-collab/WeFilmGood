@@ -431,6 +431,11 @@
   padding: 22px 20px 12px;
 }
 
+/* Le cadre des personnages sans son bord rouge (essai du 14/10, Sarah). */
+.sansBord {
+  border-color: transparent;
+}
+
 .cadreEquipe .dessousTitre {
   margin-bottom: 4px;
   text-align: center;

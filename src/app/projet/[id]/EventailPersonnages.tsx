@@ -15,9 +15,12 @@ import styles from "./eventail.module.css";
  * cliquant sur une carte de côté, avec les flèches du clavier ou par les
  * points en dessous. Un clic sur la carte du centre ouvre sa description
  * (à droite sur grand écran, sous l'éventail sinon), un second la referme.
- * L'éventail avance tout seul toutes les trois secondes (essai, Sarah),
- * sauf quand la souris est dessus, qu'une description est ouverte ou que
- * l'éventail n'est pas à l'écran.
+ * L'éventail se déplace tout seul, lentement et sans à-coup (essai du
+ * 14/10 au soir, Sarah) : une carte toutes les six secondes, en glissant,
+ * dans un sens puis dans l'autre arrivé au bout. Il s'arrête quand la
+ * souris est dessus, qu'une description est ouverte ou qu'il n'est pas à
+ * l'écran. Un seul clic sur une carte : elle vient au centre ET sa
+ * description s'ouvre ; un clic sur la carte du centre la referme.
  *
  * À moins de trois personnages, pas d'éventail : les mêmes cartes côte à
  * côte, l'une sous l'autre sur téléphone.
@@ -25,7 +28,7 @@ import styles from "./eventail.module.css";
 const PAS_DEG = 11;
 const VISIBLES = 3;
 const SEUIL_GLISSEMENT = 40;
-const CADENCE_MS = 3000;
+const CADENCE_MS = 6000;
 
 export default function EventailPersonnages({
   personnages,
@@ -45,6 +48,10 @@ export default function EventailPersonnages({
   const scene = useRef<HTMLDivElement | null>(null);
   const [survole, setSurvole] = useState(false);
   const [aLEcran, setALEcran] = useState(true);
+  // Le dernier déplacement vient-il de l'éventail lui-même (lent, linéaire)
+  // ou de la personne (vif) ? Le sens de la dérive s'inverse au bout.
+  const [glisseLent, setGlisseLent] = useState(false);
+  const sens = useRef(1);
 
   // Une description ouverte ailleurs (arrivée depuis la Galaxie) amène sa
   // carte au centre : état dérivé, calculé pendant le rendu.
@@ -64,7 +71,9 @@ export default function EventailPersonnages({
     return () => io.disconnect();
   }, []);
 
-  // L'avance automatique, toutes les trois secondes, en boucle.
+  // La dérive lente : une carte toutes les six secondes, en glissant (la
+  // transition dure autant que l'intervalle, le mouvement est continu),
+  // dans un sens puis dans l'autre arrivé au bout.
   const enEventail = personnages.length >= 3;
   useEffect(() => {
     if (!enEventail || survole || ouvert || !aLEcran) return;
@@ -72,13 +81,18 @@ export default function EventailPersonnages({
     if (reduit) return;
     const id = setInterval(() => {
       if (depart.current !== null) return;
-      setActif((a) => (a + 1) % personnages.length);
+      setGlisseLent(true);
+      setActif((a) => {
+        if (a + sens.current < 0 || a + sens.current > personnages.length - 1) sens.current = -sens.current;
+        return a + sens.current;
+      });
     }, CADENCE_MS);
     return () => clearInterval(id);
   }, [enEventail, survole, ouvert, aLEcran, personnages.length]);
 
   const aller = (i: number) => {
     const borne = Math.max(0, Math.min(personnages.length - 1, i));
+    setGlisseLent(false);
     setActif(borne);
     // La description suit la carte du centre si elle était ouverte.
     if (ouvert && personnages[borne] && ouvert !== personnages[borne].id) setOuvert(null);
@@ -156,7 +170,7 @@ export default function EventailPersonnages({
     <div className={styles.zone}>
       <div
         ref={scene}
-        className={styles.scene}
+        className={`${styles.scene} ${glisseLent ? styles.derive : ""}`}
         onPointerEnter={() => setSurvole(true)}
         onPointerLeave={() => {
           setSurvole(false);
@@ -191,11 +205,17 @@ export default function EventailPersonnages({
                 zIndex: 20 - Math.abs(decalage),
               }}
               aria-pressed={estActif ? estOuvert : undefined}
-              aria-label={estActif ? (estOuvert ? `Refermer ${c.nom}` : `Lire la description de ${c.nom}`) : `Voir ${c.nom}`}
+              aria-label={estActif && estOuvert ? `Refermer ${c.nom}` : `Lire la description de ${c.nom}`}
               onClick={() => {
                 if (aGlisse.current) return;
+                // Un seul clic : la carte vient au centre et sa description
+                // s'ouvre (14/10, Sarah). Sur la carte du centre : ouvre ou referme.
                 if (estActif) setOuvert(estOuvert ? null : c.id);
-                else aller(i);
+                else {
+                  setGlisseLent(false);
+                  setActif(i);
+                  setOuvert(c.id);
+                }
               }}
             >
               {contenuCarte(c)}

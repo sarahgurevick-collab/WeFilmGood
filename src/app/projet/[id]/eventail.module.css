@@ -53,6 +53,14 @@
   will-change: transform;
 }
 
+/* Pendant la dérive : le déplacement dure autant que l'intervalle, à
+   vitesse constante, pour un mouvement continu et lent. */
+.derive .carte {
+  transition:
+    transform 6s linear,
+    opacity 6s linear;
+}
+
 /* La même carte que dans la Galaxie de personnages : portrait vertical,
    coins arrondis, nom en dessous. */
 .portrait {

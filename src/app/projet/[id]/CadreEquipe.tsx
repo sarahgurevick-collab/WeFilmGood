@@ -309,7 +309,8 @@ export default function CadreEquipe({
       {avecPersonnages && (
         // L'ancre « personnages » : les cartes des Galaxies ouvrent la fiche
         // directement ici (14/10, Sarah).
-        <section id="personnages" className={`${styles.cadre} ${styles.cadreEquipe}`}>
+        // Sans le cadre rouge (essai du 14/10, Sarah).
+        <section id="personnages" className={`${styles.cadre} ${styles.cadreEquipe} ${styles.sansBord}`}>
           <p className={styles.dessousTitre}>Les personnages</p>
           {/* En éventail à partir de trois personnages, les mêmes cartes côte
               à côte en dessous (14/10, Sarah). La rangée de ronds d'avant est
