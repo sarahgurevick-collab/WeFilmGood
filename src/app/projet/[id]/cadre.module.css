@@ -134,6 +134,9 @@
 
 .cadreComparateur {
   padding: 10px;
+  /* Sans le bord rouge (14/10, Sarah) : effet salle de cinéma, l'écran
+     doit ouvrir, pas enfermer. */
+  border-color: transparent;
 }
 
 /* Côté « La fiche » : l'image en plein cadre, sans texte dessus. */
