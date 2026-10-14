@@ -132,6 +132,16 @@ const dateCourte = (d: string | null) =>
  * d'inscription, dernière activité). Les compteurs d'alerte viendront
  * dans un second temps.
  */
+/** Minuscules, sans accents, un seul espace entre les mots. */
+function simplifier(texte: string): string {
+  return texte
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export default async function MembresPage({
   searchParams,
 }: {
@@ -200,7 +210,10 @@ export default async function MembresPage({
   const DISPO: Record<string, string> = { vert: "Disponible", orange: "Peu disponible", rouge: "Indisponible" };
 
   // Les filtres, lus dans l'adresse : la page se partage et se recharge.
-  const q = (sp.q ?? "").trim().toLowerCase();
+  // La recherche ignore les accents, la casse et les espaces en trop
+  // (14/10 : « Isabelle Kévorkian » tapé ne trouvait pas le profil — un
+  // « é » composé autrement, ou un double espace, suffisait à rater).
+  const q = simplifier(sp.q ?? "");
   const metier = sp.metier ?? "";
   const format = sp.format ?? "";
   const annee = sp.annee ?? "";
@@ -247,7 +260,7 @@ export default async function MembresPage({
   }
 
   const filtres = tous.filter((m) => {
-    if (q && !(`${m.full_name ?? ""} ${m.email ?? ""}`.toLowerCase().includes(q))) return false;
+    if (q && !simplifier(`${m.full_name ?? ""} ${m.email ?? ""}`).includes(q)) return false;
     if (metier === "avalider") {
       if (!aValider(m)) return false;
     } else if (metier === "Lecteur" ? !estLecteur(m) : metier && metierDeCle(m.category ?? m.role_wfg1) !== metier) return false;
