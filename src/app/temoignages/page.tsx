@@ -18,9 +18,12 @@ export default async function TemoignagesPage() {
 
   // Vue publique (migration 0023) : uniquement les profils qui ont coché
   // testimonial_is_public, visible sans être connecté (comme sur la v1).
+  // Essai du 14/10 (Sarah) : les producteurs seulement — 14 au lieu de 171,
+  // la sphère respire et pèse moins (migration 0157 pour la catégorie).
   const { data } = await supabase
     .from("temoignages_publics")
-    .select("id, nom, avatar_url, testimonial");
+    .select("id, nom, avatar_url, testimonial")
+    .eq("categorie", "producteur");
 
   const temoignages: Temoignage[] = data ?? [];
 
