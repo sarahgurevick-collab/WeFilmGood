@@ -334,7 +334,7 @@ export default function SpherePhotos({
       )}
 
       <p className={styles.legendeIndice}>
-        Faites glisser la sphère, ou cliquez sur une photo pour lire le témoignage.
+        Faites tourner la sphère avec la souris, ou cliquez sur une photo pour lire le témoignage.
       </p>
 
       <Fenetre photo={ouvert} index={photos.findIndex((p) => p.id === ouvert?.id)} fermer={() => setOuvert(null)} />
