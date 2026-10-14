@@ -31,15 +31,6 @@ const ETOILES = Array.from({ length: NB_ETOILES }, (_, i) => ({
   delai: tirer() * 6,
 }));
 
-// Trois ou quatre étoiles qui brillent vraiment (14/10, Sarah) : plus
-// grosses, un halo, et quatre rayons qui respirent lentement.
-const BRILLANTES = [
-  { x: 180, y: 160, taille: 9, delai: 0 },
-  { x: 760, y: 120, taille: 7, delai: 1.3 },
-  { x: 880, y: 640, taille: 8, delai: 2.1 },
-  { x: 120, y: 760, taille: 6, delai: 3.4 },
-];
-
 export default function CielEtoile() {
   return (
     <svg className={styles.ciel} viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
@@ -54,19 +45,6 @@ export default function CielEtoile() {
           className={e.clignote ? styles.scintille : undefined}
           style={e.clignote ? { animationDelay: `${e.delai}s` } : undefined}
         />
-      ))}
-      {BRILLANTES.map((b, i) => (
-        <g
-          key={`b${i}`}
-          className={styles.brillante}
-          style={{ animationDelay: `${b.delai}s` }}
-          transform={`translate(${b.x} ${b.y})`}
-        >
-          <circle r={b.taille * 2.2} fill="url(#halo)" />
-          <line x1={-b.taille * 2.6} y1="0" x2={b.taille * 2.6} y2="0" stroke="#fff" strokeWidth="0.9" strokeLinecap="round" opacity="0.8" />
-          <line x1="0" y1={-b.taille * 2.6} x2="0" y2={b.taille * 2.6} stroke="#fff" strokeWidth="0.9" strokeLinecap="round" opacity="0.8" />
-          <circle r={b.taille * 0.32} fill="#fff" />
-        </g>
       ))}
       {/* La comète descend doucement de gauche à droite ; la traînée part
           derrière elle, dans l'axe exact de sa course. */}

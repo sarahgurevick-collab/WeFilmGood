@@ -24,23 +24,6 @@
   }
 }
 
-/* Les étoiles qui brillent : les rayons et le halo respirent lentement. */
-.brillante {
-  animation: respire 5s ease-in-out infinite;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-@keyframes respire {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
 /* La comète : invisible la plupart du temps, elle descend lentement de
    gauche à droite en quatre secondes, toutes les seize secondes, à vitesse
    constante, et s'éteint en arrivant. */
@@ -73,7 +56,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .scintille,
-  .brillante,
   .comete {
     animation: none;
   }
