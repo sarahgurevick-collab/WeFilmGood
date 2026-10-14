@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import VideopitchLecteur from "@/components/VideopitchLecteur";
 import CoteFiche from "./CoteFiche";
 import EventailPersonnages from "./EventailPersonnages";
+import OrbiteEquipe from "./OrbiteEquipe";
 import MoodboardPhotos from "./MoodboardPhotos";
 import styles from "./cadre.module.css";
 
@@ -321,9 +322,22 @@ export default function CadreEquipe({
       )}
 
       {equipe.length > 0 && (
-        <section className={`${styles.cadre} ${styles.cadreEquipe}`}>
+        // Sans le cadre rouge, comme les personnages (14/10, Sarah).
+        <section className={`${styles.cadre} ${styles.cadreEquipe} ${styles.sansBord}`}>
           <p className={styles.dessousTitre}>{titreEquipe}</p>
-          {portraits}
+          {/* À partir de trois personnes, l'équipe en orbite autour du
+              porteur (14/10, Sarah) ; la rangée de portraits en dessous. */}
+          {equipe.length >= 3 ? (
+            <OrbiteEquipe
+              equipe={equipe}
+              porteur={porteur}
+              ouvert={membreOuvert}
+              setOuvert={setMembreOuvert}
+              contact={contact}
+            />
+          ) : (
+            portraits
+          )}
         </section>
       )}
     </div>

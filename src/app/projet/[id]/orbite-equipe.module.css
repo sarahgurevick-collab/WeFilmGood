@@ -1,0 +1,268 @@
+/* L'équipe en orbite : même scène que l'orbite de la page Adhésion. */
+
+.orbite {
+  --rouge: var(--rouge-wfg, #da2c25);
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 4px 6% 0;
+  color: #ededed;
+}
+
+.cadreScene {
+  container-type: inline-size;
+}
+
+.scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.cercle {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+  stroke-dasharray: 3 8;
+}
+
+/* Le porteur, au centre. */
+.centre {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--taille);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 1;
+}
+
+.rondCentre,
+.rond {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 4px solid var(--bg, #000);
+  border-radius: 50%;
+  background: #1c1c1c;
+  color: #ededed;
+  cursor: pointer;
+  box-sizing: border-box;
+  box-shadow:
+    0 0 0 3px var(--rouge),
+    0 10px 24px rgba(0, 0, 0, 0.55);
+  transition:
+    transform 0.3s ease-out,
+    box-shadow 0.3s ease-out;
+}
+
+a.rondCentre,
+a.rond {
+  text-decoration: none;
+}
+
+div.rondCentre,
+div.rond {
+  cursor: default;
+}
+
+.rond:hover,
+.rondCentre:hover {
+  transform: scale(1.12);
+  box-shadow:
+    0 0 0 3px var(--rouge),
+    0 0 30px rgba(218, 44, 37, 0.45),
+    0 0 60px rgba(218, 44, 37, 0.25);
+}
+
+.rond:focus-visible,
+.rondCentre:focus-visible {
+  outline: 3px solid var(--rouge);
+  outline-offset: 4px;
+}
+
+.choisi {
+  box-shadow:
+    0 0 0 5px #ededed,
+    0 10px 24px rgba(0, 0, 0, 0.55);
+}
+
+.attente {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+.portrait {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  font-size: max(14px, 4cqw);
+  font-weight: 700;
+}
+
+.portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* La lueur du centre, qui respire. */
+.rondCentre {
+  position: relative;
+}
+
+.rondCentre::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: -1;
+  background: rgba(218, 44, 37, 0.25);
+  filter: blur(4cqw);
+  animation: respire 2.4s ease-in-out infinite;
+}
+
+@keyframes respire {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Chaque membre part du centre ; l'orbite le déplace image par image. */
+.place {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--taille);
+  margin: calc(var(--taille) / -2) 0 0 calc(var(--taille) / -2);
+  pointer-events: none;
+  will-change: transform;
+  z-index: 2;
+}
+
+.place .rond {
+  pointer-events: auto;
+}
+
+.place:hover {
+  z-index: 3;
+}
+
+/* Le nom et le métier, écrits dessous. */
+.legende,
+.legendeCentre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  text-align: center;
+  line-height: 1.2;
+  pointer-events: none;
+}
+
+.legende {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 0.9cqw);
+  transform: translateX(-50%);
+  width: 22cqw;
+  z-index: 3;
+}
+
+.legendeCentre {
+  width: 30cqw;
+  pointer-events: auto;
+}
+
+.nom {
+  font-size: max(11px, 1.9cqw);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.role {
+  font-size: max(11px, 1.8cqw);
+  font-weight: 800;
+}
+
+.petit {
+  font-size: max(10px, 1.5cqw);
+  opacity: 0.75;
+}
+
+.lieu {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lieu img {
+  width: 2cqw;
+  min-width: 12px;
+  border-radius: 2px;
+}
+
+.contact {
+  margin-top: 4px;
+  pointer-events: auto;
+}
+
+/* Sur petit écran, les noms se chevaucheraient : un seul à la fois, dans une bulle. */
+@container (max-width: 560px) {
+  .legende {
+    display: none;
+  }
+
+  .legende.enVedette {
+    display: flex;
+    top: calc(100% + 8px);
+    width: auto;
+    padding: 6px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+    background: #161616;
+    border: 1px solid #333333;
+    border-radius: 16px;
+  }
+
+  .legende.enVedette .petit {
+    display: none;
+  }
+}
+
+/* La biographie sous l'orbite, seulement sans panneau de droite (même
+   seuil que .droite dans cadre.module.css). */
+.bioDessous {
+  margin: 12px auto 0;
+  max-width: 620px;
+  font-size: 14px;
+  line-height: 1.55;
+  text-align: left;
+}
+
+.bioDessous p {
+  margin: 8px 0 0;
+  white-space: pre-line;
+}
+
+.bioDessous a {
+  color: var(--rouge);
+}
+
+@media (min-width: 1240px) {
+  .bioDessous {
+    display: none;
+  }
+}
