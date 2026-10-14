@@ -1,0 +1,61 @@
+/* Le ciel derrière la sphère des témoignages. */
+
+.ciel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Un quart des étoiles scintille, lentement. */
+.scintille {
+  animation: scintille 4s ease-in-out infinite;
+}
+
+@keyframes scintille {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+/* La comète : invisible la plupart du temps, elle traverse le haut du ciel
+   en une seconde et demie, toutes les quatorze secondes. */
+.comete {
+  opacity: 0;
+  animation: comete 14s linear infinite;
+  animation-delay: 3s;
+}
+
+@keyframes comete {
+  0% {
+    transform: translate(120px, 140px);
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  10% {
+    transform: translate(900px, 400px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(900px, 400px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scintille,
+  .comete {
+    animation: none;
+  }
+  .comete {
+    display: none;
+  }
+}

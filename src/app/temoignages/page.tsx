@@ -1,4 +1,5 @@
 import formStyles from "@/components/form.module.css";
+import CielEtoile from "@/components/CielEtoile";
 import PageShell from "@/components/PageShell";
 import SpherePhotos, { type PhotoSphereItem } from "@/components/SpherePhotos";
 import { createClient } from "@/lib/supabase/server";
@@ -45,7 +46,13 @@ export default async function TemoignagesPage() {
       {photos.length === 0 ? (
         <p className={formStyles.hint}>Contenu à venir.</p>
       ) : (
-        <SpherePhotos photos={photos} />
+        // Le ciel (étoiles, comète) derrière la sphère (14/10, Sarah).
+        <div style={{ position: "relative" }}>
+          <CielEtoile />
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <SpherePhotos photos={photos} />
+          </div>
+        </div>
       )}
     </PageShell>
   );
