@@ -1,16 +1,10 @@
-/* Le nom d'un partenaire est un lien actif : on le fait ressortir (14/10,
-   Sarah : un « highlight » quand un lien existe) — une pastille bordée de
-   rouge, soulignée, avec la petite flèche qui dit « s'ouvre ailleurs ». */
+/* Le nom d'un partenaire est un lien actif : la couleur seule le dit
+   (14/10, Sarah : pas un bouton) — rouge WeFilmGood, souligné, avec la
+   petite flèche qui dit « s'ouvre ailleurs ». */
 .lien {
-  display: inline-block;
-  padding: 1px 9px;
-  border: 1px solid var(--rouge-wfg, #da2c25);
-  border-radius: 999px;
-  background: rgba(218, 44, 37, 0.12);
-  color: inherit;
+  color: var(--rouge-wfg, #da2c25);
   font-weight: 600;
   text-decoration: underline;
-  text-decoration-color: var(--rouge-wfg, #da2c25);
   text-underline-offset: 3px;
   white-space: nowrap;
 }
@@ -22,7 +16,15 @@
 
 .lien:hover,
 .lien:focus-visible {
-  background: var(--rouge-wfg, #da2c25);
-  color: #fff;
-  text-decoration-color: #fff;
+  text-decoration-thickness: 2px;
+}
+
+/* Sous le titre de la fiche : la ligne des partenariats, en rouge, avant
+   tout le reste (14/10, Sarah : les partenariats étaient enterrés sous le
+   cadre, dans « Projet primé »). */
+.partenariats {
+  margin: 6px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--rouge-wfg, #da2c25);
 }

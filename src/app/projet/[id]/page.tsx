@@ -9,7 +9,7 @@ import PartageProjet from "./PartageProjet";
 import { choisirVisibilite, setShareLink } from "./actions";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
-import LibelleSelection from "../LibelleSelection";
+import LibelleSelection, { LignePartenariats, estPartenaire } from "../LibelleSelection";
 import ContactEnveloppe from "./ContactEnveloppe";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
@@ -440,6 +440,9 @@ export default async function ProjetPage({
           return [...reperes, ...mots].join(" · ");
         })()}
       </p>
+      {/* Les partenariats (Muse Awards…) sous le titre, en rouge, pour qu'on
+          les voie avant tout le reste (14/10, Sarah). */}
+      <LignePartenariats libelles={(selections ?? []).map((x) => x.libelle)} />
       {typeof nbVues === "number" && (
         <p className={formStyles.hint}>
           {nbVues} vue{nbVues > 1 ? "s" : ""}
@@ -498,18 +501,23 @@ export default async function ProjetPage({
       />
 
       {/* Sous le cadre : les prix — puis les sélections et comédiens repris
-          de WFG 1, en petit (28/09 : page allégée à la demande de Sarah). */}
-      {(project.has_awards || (selections ?? []).length > 0) && (
-        <p className={presentation.prix}>
-          <strong>Projet primé</strong>
-          {(selections ?? []).map((x) => (
-            <span key={x.libelle} style={{ display: "block" }}>
-              <LibelleSelection libelle={x.libelle} />
-            </span>
-          ))}
-          {project.awards_detail}
-        </p>
-      )}
+          de WFG 1, en petit (28/09 : page allégée à la demande de Sarah).
+          Les partenariats, eux, sont sous le titre (14/10). */}
+      {(() => {
+        const selectionsMaison = (selections ?? []).filter((x) => !estPartenaire(x.libelle));
+        if (!project.has_awards && selectionsMaison.length === 0) return null;
+        return (
+          <p className={presentation.prix}>
+            <strong>Projet primé</strong>
+            {selectionsMaison.map((x) => (
+              <span key={x.libelle} style={{ display: "block" }}>
+                <LibelleSelection libelle={x.libelle} />
+              </span>
+            ))}
+            {project.awards_detail}
+          </p>
+        );
+      })()}
       {(comediens ?? []).length > 0 && (
         <p className={formStyles.hint} style={{ marginTop: 12 }}>
           {(comediens ?? []).length > 0 && (
