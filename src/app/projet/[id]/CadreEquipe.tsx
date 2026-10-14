@@ -1,13 +1,47 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
 import VideopitchLecteur from "@/components/VideopitchLecteur";
+import ContactEnveloppe from "./ContactEnveloppe";
 import CoteFiche from "./CoteFiche";
 import EventailPersonnages from "./EventailPersonnages";
 import OrbiteEquipe from "./OrbiteEquipe";
 import MoodboardPhotos from "./MoodboardPhotos";
 import styles from "./cadre.module.css";
+
+/**
+ * Les langues, puis le drapeau, le pays et l'enveloppe sur la même ligne
+ * (14/10, Sarah) : dans le panneau de la biographie, pour tous les membres,
+ * jamais sous le portrait.
+ */
+export function LignesMembre({ m }: { m: MembreEquipe }) {
+  return (
+    <>
+      {m.langues && <p className={styles.detailSous}>{m.langues}</p>}
+      {(m.lieu || m.contact) && (
+        <p className={`${styles.detailSous} ${styles.lieu}`}>
+          {m.lieu && (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`/drapeaux/${m.lieu.code}.svg`} alt="" />
+              {m.lieu.texte}
+            </>
+          )}
+          {m.contact && (
+            <span className={styles.enveloppeLigne}>
+              <ContactEnveloppe
+                href={m.contact.href}
+                adhesionRequise={m.contact.adhesionRequise}
+                indisponible={m.contact.indisponible}
+              />
+            </span>
+          )}
+        </p>
+      )}
+    </>
+  );
+}
 
 export type PersonnageCadre = {
   id: string;
@@ -31,6 +65,8 @@ export type MembreEquipe = {
   langues?: string | null;
   /** Où la personne vit (12/10, Sarah) : le drapeau, puis « Afrique du Sud ». */
   lieu?: { code: string; texte: string } | null;
+  /** L'enveloppe pour lui écrire (14/10 : chaque membre a la sienne, à côté du drapeau). */
+  contact?: { href: string; adhesionRequise: boolean; indisponible?: string };
   /** Invitation pas encore acceptée — visible de l'auteur et de l'admin seulement. */
   enAttente: string | null;
   photo?: string | null;
@@ -71,7 +107,6 @@ export default function CadreEquipe({
   accroche,
   resume,
   plus,
-  contact,
   porteur,
 }: {
   /** La tagline : l'accroche du projet, obligatoire. */
@@ -80,8 +115,6 @@ export default function CadreEquipe({
   resume?: string | null;
   /** « Plus… » : informations supplémentaires (lien vers un teaser, sélections…). */
   plus?: string | null;
-  /** L'enveloppe pour écrire au porteur du projet (rien pour l'auteur lui-même). */
-  contact?: ReactNode;
   /** La clé du porteur du projet dans l'équipe : l'enveloppe se pose sous son portrait. */
   porteur?: string | null;
   /** Le personnage sur lequel on arrive depuis la recherche : biographie dépliée. */
@@ -140,14 +173,6 @@ export default function CadreEquipe({
               </span>
               <span className={styles.nom}>{m.nom}</span>
               {m.role && <strong className={styles.role}>{m.role}</strong>}
-              {m.langues && <span className={styles.langues}>{m.langues}</span>}
-              {m.lieu && (
-                <span className={styles.lieu}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/drapeaux/${m.lieu.code}.svg`} alt="" />
-                  {m.lieu.texte}
-                </span>
-              )}
               {m.enAttente && <span className={styles.enAttente}>{m.enAttente}</span>}
             </>
           );
@@ -155,7 +180,6 @@ export default function CadreEquipe({
           // L'enveloppe pour écrire vit sous le portrait du porteur du projet
           // (09/10, Sarah), plus sous la tagline : on écrit à une personne, à
           // propos de ce projet. Barrée sans adhésion, comme avant.
-          const enveloppe = contact && m.cle === porteur ? <div className={styles.contact}>{contact}</div> : null;
           return (
             <li
               key={m.cle}
@@ -173,6 +197,7 @@ export default function CadreEquipe({
                   </button>
                   {ouvertIci && (
                     <div className={styles.membreDetail}>
+                      <LignesMembre m={m} />
                       <p>{m.bio || "Ce membre n'a pas encore rédigé sa biographie."}</p>
                       {m.site && (
                         <p>
@@ -191,7 +216,6 @@ export default function CadreEquipe({
               ) : (
                 <div className={styles.membreLien}>{contenu}</div>
               )}
-              {enveloppe}
             </li>
           );
         })}
@@ -214,8 +238,6 @@ export default function CadreEquipe({
         cadrage: personnageChoisi.cadrage,
         proposee: personnageChoisi.proposee && Boolean(personnageChoisi.portrait),
         sous: personnageChoisi.infos,
-        langues: null as string | null | undefined,
-        lieu: null as MembreEquipe["lieu"],
         bio: personnageChoisi.bio,
         site: null as string | null | undefined,
       }
@@ -224,8 +246,6 @@ export default function CadreEquipe({
           nom: membreChoisi.nom,
           image: membreChoisi.photo ?? null,
           sous: membreChoisi.role,
-          langues: membreChoisi.langues,
-          lieu: membreChoisi.lieu,
           bio: membreChoisi.bio || "Ce membre n'a pas encore rédigé sa biographie.",
           site: membreChoisi.site,
         }
@@ -243,7 +263,6 @@ export default function CadreEquipe({
       {plus && <p className={styles.resume}>{plus}</p>}
     </>
   );
-  const contactDuDetail = contact && membreChoisi && membreChoisi.cle === porteur ? contact : null;
 
   const deuxLangues = Boolean(videopitch?.fr && videopitch?.en);
 
@@ -328,13 +347,7 @@ export default function CadreEquipe({
           {/* À partir de trois personnes, l'équipe en orbite autour du
               porteur (14/10, Sarah) ; la rangée de portraits en dessous. */}
           {equipe.length >= 3 ? (
-            <OrbiteEquipe
-              equipe={equipe}
-              porteur={porteur}
-              ouvert={membreOuvert}
-              setOuvert={setMembreOuvert}
-              contact={contact}
-            />
+            <OrbiteEquipe equipe={equipe} porteur={porteur} ouvert={membreOuvert} setOuvert={setMembreOuvert} />
           ) : (
             portraits
           )}
@@ -371,14 +384,7 @@ export default function CadreEquipe({
                 <div>
                   <h2 className={styles.detailNom}>{detail.nom}</h2>
                   {detail.sous && <p className={styles.detailSous}>{detail.sous}</p>}
-                  {detail.langues && <p className={styles.detailSous}>{detail.langues}</p>}
-                  {detail.lieu && (
-                    <p className={`${styles.detailSous} ${styles.lieu}`}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={`/drapeaux/${detail.lieu.code}.svg`} alt="" />
-                      {detail.lieu.texte}
-                    </p>
-                  )}
+                  {membreChoisi && <LignesMembre m={membreChoisi} />}
                   {detail.proposee && <p className={styles.detailPropose}>Proposée par WeFilmGood</p>}
                 </div>
               </div>
@@ -390,7 +396,6 @@ export default function CadreEquipe({
                   </a>
                 </p>
               )}
-              {contactDuDetail && <div className={styles.contact}>{contactDuDetail}</div>}
             </>
           ) : (
             <>

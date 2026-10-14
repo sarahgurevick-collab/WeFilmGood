@@ -10,7 +10,6 @@ import { choisirVisibilite, setShareLink } from "./actions";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
 import LibelleSelection, { LignePartenariats, estPartenaire } from "../LibelleSelection";
-import ContactEnveloppe from "./ContactEnveloppe";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";
@@ -293,18 +292,30 @@ export default async function ProjetPage({
     ? await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id })
     : { data: false };
   const restreint = !isOwner && estAdmin !== true && !dansEquipe && adherent !== true;
-  // Messagerie fermée par l'auteur du projet (08/10) : l'enveloppe est barrée.
-  let texteIndisponible: string | undefined;
-  if (!isOwner && !restreint && user) {
-    const { data: fermee } = await supabase.rpc("messagerie_fermee", { uid: project.owner_id });
-    if (fermee === true) {
-      const { data: porteur } = await supabase
-        .from("profiles")
-        .select("first_name")
-        .eq("id", project.owner_id)
-        .maybeSingle<{ first_name: string | null }>();
-      texteIndisponible = `${porteur?.first_name ?? "Ce talent"} est indisponible momentanément, messagerie saturée.`;
+  // Chaque membre de l'équipe a son enveloppe (14/10, Sarah : tous les
+  // talents sont contactables), dans le panneau de sa biographie, à côté du
+  // drapeau. Le porteur par le projet, les autres par leur profil. Pas pour
+  // soi-même. Messagerie fermée (08/10) : l'enveloppe est barrée.
+  const fermees = new Map<string, string>();
+  if (!restreint && user) {
+    const ids = equipe.map((m) => m.profileId).filter((x): x is string => !!x && x !== user.id);
+    const reponses = await Promise.all(ids.map((uid) => supabase.rpc("messagerie_fermee", { uid })));
+    const idsFermes = ids.filter((_, i) => reponses[i].data === true);
+    if (idsFermes.length) {
+      const { data: prenoms } = await supabase.from("profiles").select("id, first_name").in("id", idsFermes);
+      for (const pr of prenoms ?? []) {
+        fermees.set(pr.id as string, `${(pr.first_name as string | null) ?? "Ce talent"} est indisponible momentanément, messagerie saturée.`);
+      }
     }
+  }
+  for (const m of equipe) {
+    if (m.enAttente || !m.profileId || m.profileId === user?.id) continue;
+    const cible = m.cle === project.owner_id ? `projet=${project.id}` : `membre=${m.profileId}`;
+    m.contact = {
+      href: user ? `/mes-messages/nouveau?${cible}` : `/connexion?next=/projet/${project.id}`,
+      adhesionRequise: restreint,
+      indisponible: fermees.get(m.profileId),
+    };
   }
 
   // La phrase d'encouragement des lecteurs, pour un projet labellisé.
@@ -458,15 +469,6 @@ export default async function ProjetPage({
         accroche={project.tagline}
         resume={project.logline}
         plus={project.synopsis}
-        contact={
-          isOwner ? undefined : (
-            <ContactEnveloppe
-              href={user ? `/mes-messages/nouveau?projet=${project.id}` : `/connexion?next=/projet/${project.id}`}
-              adhesionRequise={restreint}
-              indisponible={texteIndisponible}
-            />
-          )
-        }
         retourSaisie={
           isOwner || estAdmin
             ? hrefBloc(id, BLOCS.find((b) => b.cle === depuis)?.cle ?? "fiche")

@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
-import type { MembreEquipe } from "./CadreEquipe";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { LignesMembre, type MembreEquipe } from "./CadreEquipe";
 import styles from "./orbite-equipe.module.css";
 
 /**
@@ -38,14 +38,11 @@ export default function OrbiteEquipe({
   porteur,
   ouvert,
   setOuvert,
-  contact,
 }: {
   equipe: MembreEquipe[];
   porteur?: string | null;
   ouvert: string | null;
   setOuvert: (cle: string | null) => void;
-  /** L'enveloppe pour écrire au porteur. */
-  contact?: ReactNode;
 }) {
   const centre = equipe.find((m) => m.cle === porteur) ?? equipe[0];
   const satellites = equipe.filter((m) => m.cle !== centre.cle);
@@ -130,18 +127,12 @@ export default function OrbiteEquipe({
     return <div className={classes}>{portrait(m)}</div>;
   };
 
+  // Sous chaque portrait, le nom et le métier seulement (14/10, Sarah) :
+  // langues, pays et enveloppe sont dans le panneau de la biographie.
   const legende = (m: MembreEquipe) => (
     <>
       {m.nom && <span className={styles.nom}>{m.nom}</span>}
       {m.role && <strong className={styles.role}>{m.role}</strong>}
-      {m.langues && <span className={styles.petit}>{m.langues}</span>}
-      {m.lieu && (
-        <span className={`${styles.petit} ${styles.lieu}`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/drapeaux/${m.lieu.code}.svg`} alt="" />
-          {m.lieu.texte}
-        </span>
-      )}
       {m.enAttente && <span className={styles.petit}>{m.enAttente}</span>}
     </>
   );
@@ -168,7 +159,6 @@ export default function OrbiteEquipe({
           <div className={styles.centre} style={{ ["--taille" as string]: `${(TAILLE_CENTRE / SCENE) * 100}%` }}>
             {rond(centre, styles.rondCentre)}
             <div className={styles.legendeCentre}>{legende(centre)}</div>
-            {contact && <div className={styles.contact}>{contact}</div>}
           </div>
 
           {satellites.map((m, i) => (
@@ -192,6 +182,7 @@ export default function OrbiteEquipe({
       {/* La biographie sous l'orbite, là où le panneau de droite n'existe pas. */}
       {membreOuvert && (
         <div className={styles.bioDessous}>
+          <LignesMembre m={membreOuvert} />
           <p>{membreOuvert.bio || "Ce membre n'a pas encore rédigé sa biographie."}</p>
           {membreOuvert.site && (
             <p>

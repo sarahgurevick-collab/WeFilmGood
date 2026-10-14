@@ -94,6 +94,12 @@
   opacity: 0.75;
 }
 
+/* L'enveloppe au bout de la ligne du drapeau (14/10). */
+.enveloppeLigne {
+  display: inline-flex;
+  margin-left: 10px;
+}
+
 /* Où la personne vit : le drapeau devant le texte. */
 .lieu {
   display: inline-flex;
