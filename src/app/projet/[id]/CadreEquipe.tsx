@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
 import VideopitchLecteur from "@/components/VideopitchLecteur";
 import CoteFiche from "./CoteFiche";
+import EventailPersonnages from "./EventailPersonnages";
 import MoodboardPhotos from "./MoodboardPhotos";
 import styles from "./cadre.module.css";
 
@@ -199,38 +200,8 @@ export default function CadreEquipe({
 
   const titreEquipe = equipe.length > 1 ? "Mon équipe" : "L'auteur";
 
-  const cotePersonnages = (
-    <div className={styles.coteEquipe}>
-      <ul className={styles.personnagesCadre}>
-        {personnages.map((c) => (
-          <li
-            key={c.id}
-            id={`personnage-${c.id}`}
-            className={ouvert === c.id ? styles.personnageOuvert : undefined}
-          >
-            <button
-              type="button"
-              className={styles.personnageBouton}
-              aria-expanded={ouvert === c.id}
-              onClick={() => setOuvert(ouvert === c.id ? null : c.id)}
-            >
-              <span className={styles.portrait} aria-hidden="true">
-                {c.portrait ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={c.portrait} alt="" style={{ objectPosition: c.cadrage }} />
-                ) : (
-                  <span>{c.nom.trim().charAt(0).toUpperCase()}</span>
-                )}
-              </span>
-              <span className={styles.nom}>{c.nom}</span>
-              {c.infos && <span className={styles.infos}>{c.infos}</span>}
-              {c.bio && <span className={styles.bio}>{c.bio}</span>}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+  // La rangée de ronds d'avant (étiquette git personnages-avant-eventail)
+  // est remplacée par EventailPersonnages (14/10, Sarah).
 
   // Le cadre de droite (grand écran) : le moodboard, remplacé par la biographie de celui ou celle sur qui on a cliqué.
   const personnageChoisi = ouvert ? personnages.find((c) => c.id === ouvert) : undefined;
@@ -340,7 +311,11 @@ export default function CadreEquipe({
         // directement ici (14/10, Sarah).
         <section id="personnages" className={`${styles.cadre} ${styles.cadreEquipe}`}>
           <p className={styles.dessousTitre}>Les personnages</p>
-          {cotePersonnages}
+          {/* En éventail à partir de trois personnages, les mêmes cartes côte
+              à côte en dessous (14/10, Sarah). La rangée de ronds d'avant est
+              gardée dans cotePersonnages (étiquette git
+              personnages-avant-eventail). */}
+          <EventailPersonnages personnages={personnages} ouvert={ouvert} setOuvert={setOuvert} />
         </section>
       )}
 
