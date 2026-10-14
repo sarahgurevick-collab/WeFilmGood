@@ -24,34 +24,56 @@
   }
 }
 
-/* La comète : invisible la plupart du temps, elle traverse le haut du ciel
-   en une seconde et demie, toutes les quatorze secondes. */
+/* Les étoiles qui brillent : les rayons et le halo respirent lentement. */
+.brillante {
+  animation: respire 5s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes respire {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* La comète : invisible la plupart du temps, elle descend lentement de
+   gauche à droite en quatre secondes, toutes les seize secondes, à vitesse
+   constante, et s'éteint en arrivant. */
 .comete {
   opacity: 0;
-  animation: comete 14s linear infinite;
+  animation: comete 16s linear infinite;
   animation-delay: 3s;
 }
 
 @keyframes comete {
   0% {
-    transform: translate(120px, 140px);
+    transform: translate(60px, 120px);
     opacity: 0;
   }
-  2% {
+  3% {
     opacity: 1;
   }
-  10% {
-    transform: translate(900px, 400px);
+  20% {
+    opacity: 0.9;
+  }
+  25% {
+    transform: translate(960px, 390px);
     opacity: 0;
   }
   100% {
-    transform: translate(900px, 400px);
+    transform: translate(960px, 390px);
     opacity: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .scintille,
+  .brillante,
   .comete {
     animation: none;
   }
