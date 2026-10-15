@@ -18,8 +18,17 @@ function decouper(titre: string): { nom: string; sous: string } {
  * droite la roue des titres — les noms et les années — comme le « Wheel
  * Carousel » de 21st.dev. Le titre du centre est celui qui joue.
  */
-export default function MasterclassLecteur({ masterclasses }: { masterclasses: Masterclass[] }) {
-  const [id, setId] = useState(masterclasses[0]?.vimeoId ?? "");
+export default function MasterclassLecteur({
+  masterclasses,
+  parDefaut,
+}: {
+  masterclasses: Masterclass[];
+  /** La masterclass montrée à l'arrivée (identifiant Vimeo) ; sinon la première. */
+  parDefaut?: string;
+}) {
+  const [id, setId] = useState(
+    masterclasses.some((m) => m.vimeoId === parDefaut) ? (parDefaut as string) : (masterclasses[0]?.vimeoId ?? ""),
+  );
   const actuelle = masterclasses.find((m) => m.vimeoId === id) ?? masterclasses[0];
   const titres = masterclasses.map((m) => {
     const { nom, sous } = decouper(m.titre);

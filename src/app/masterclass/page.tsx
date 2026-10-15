@@ -44,7 +44,9 @@ export default async function MasterclassPage() {
         festival afin de partager les expériences des auteurs et des
         réalisateurs. Profitez de ces rares moments en vidéo.
       </p>
-      <MasterclassLecteur masterclasses={MASTERCLASSES} />
+      {/* À l'arrivée, Paul Laverty 2 (Cannes 2019) : la première de 2012
+          n'est pas la meilleure (15/10, Sarah). */}
+      <MasterclassLecteur masterclasses={MASTERCLASSES} parDefaut="338559739" />
     </PageShell>
   );
 }
