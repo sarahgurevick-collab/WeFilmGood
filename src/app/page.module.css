@@ -166,6 +166,57 @@
   letter-spacing: normal;
 }
 
+/* ---------- les 10 ans : titre, feu d'artifice, sphère des témoignages ---------- */
+
+.dixAns {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 64px 24px 48px;
+  text-align: center;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* Le cadre du titre : le feu d'artifice part de son centre. */
+.dixAnsCadre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 16px;
+}
+
+.dixAnsTitre {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  line-height: 1.2;
+}
+
+.dixAnsSousTitre {
+  font-size: 18px;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.dixAnsSphere {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+}
+
+@media (max-width: 720px) {
+  .dixAnsTitre {
+    font-size: 26px;
+  }
+}
+
 /* ---------- bande noire success stories ---------- */
 
 .stories {
