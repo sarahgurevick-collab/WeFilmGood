@@ -67,6 +67,8 @@
 }
 
 .legendeIndice {
+  text-transform: none;
+  letter-spacing: normal;
   margin: 0;
   color: var(--dim);
   font-size: 13px;
@@ -87,6 +89,10 @@
 }
 
 .fenetre {
+  /* Sur l'accueil, tout le texte est en capitales : pas les témoignages
+     (15/10, Sarah : « trop gros »). */
+  text-transform: none;
+  letter-spacing: normal;
   width: 100%;
   max-width: 420px;
   max-height: calc(100vh - 32px);

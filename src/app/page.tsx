@@ -58,7 +58,6 @@ export default async function Home() {
           <h2 className={styles.dixAnsTitre}>
             We<span className={styles.rouge}>Film</span>Good a 10 ans !
           </h2>
-          <p className={styles.dixAnsSousTitre}>Merci pour votre soutien</p>
         </FeuArtificeAuPassage>
         {photosTemoignages.length > 0 && (
           <div className={styles.dixAnsSphere}>
