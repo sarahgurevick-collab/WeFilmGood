@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PageShell from "@/components/PageShell";
-import { anneesDuFestival, festivalParId, photosDuFestival } from "@/data/festivals";
+import { anneesDuFestival, festivalParId } from "@/data/festivals";
 import { createClient } from "@/lib/supabase/server";
 import VueFestival from "./VueFestival";
 
@@ -28,7 +28,6 @@ export default async function FestivalPage({ params }: { params: Promise<{ festi
         logo={f.logo ?? null}
         annees={anneesDuFestival(f)}
         selections={f.selections}
-        photos={photosDuFestival(f)}
       />
     </PageShell>
   );

@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import AnneauRelief from "@/components/AnneauRelief";
+import { useState } from "react";
 import RoueAnnees from "@/components/RoueAnnees";
 import type { AnneeSelection } from "@/data/selectionsCannes";
 import styles from "../notre-histoire.module.css";
@@ -18,36 +17,23 @@ const PROGRAMMES_EN_ROUGE = [
 /**
  * Un festival de « Notre histoire » (15/10/2026, Sarah) : en haut, la roue
  * des années à gauche et les projets sélectionnés à droite — les noms
- * changent quand la roue tourne ; en dessous, les photos des rencontres
- * sur l'anneau en relief, une photo qui s'ouvre en grand au clic.
+ * changent quand la roue tourne. Les photos sont sur la page d'entrée.
  */
 export default function VueFestival({
   nom,
   logo,
   annees,
   selections,
-  photos,
 }: {
   nom: string;
   logo: string | null;
   annees: number[];
   selections: AnneeSelection[];
-  photos: { image: string; legende: string }[];
 }) {
   const [annee, setAnnee] = useState<number>(annees[0] ?? 0);
-  const [photoOuverte, setPhotoOuverte] = useState<{ image: string; legende: string } | null>(null);
   const choisie = selections.find((s) => s.annee === annee);
   // Les sélections sans année (SATIS…) s'affichent sous la liste.
   const sansAnnee = selections.filter((s) => s.annee === undefined);
-
-  useEffect(() => {
-    if (!photoOuverte) return;
-    const touche = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setPhotoOuverte(null);
-    };
-    document.addEventListener("keydown", touche);
-    return () => document.removeEventListener("keydown", touche);
-  }, [photoOuverte]);
 
   return (
     <>
@@ -85,37 +71,6 @@ export default function VueFestival({
         </div>
       )}
 
-      {photos.length > 0 && (
-        <>
-          <h2 className={styles.sousTitre}>Les rencontres</h2>
-          <AnneauRelief
-            largeurElement={220}
-            hauteurElement={150}
-            elements={photos.map((p, i) => ({
-              id: `photo-${i}`,
-              legende: p.legende,
-              onClick: () => setPhotoOuverte(p),
-              contenu: (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={p.image} alt={p.legende} className="photo" draggable={false} loading="lazy" />
-              ),
-            }))}
-          />
-        </>
-      )}
-
-      {photoOuverte && (
-        <div className={styles.voile} onClick={() => setPhotoOuverte(null)} role="presentation">
-          <div onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={photoOuverte.legende}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photoOuverte.image} alt={photoOuverte.legende} className={styles.grande} />
-            <p className={styles.grandeLegende}>{photoOuverte.legende}</p>
-          </div>
-          <button type="button" className={styles.fermer} onClick={() => setPhotoOuverte(null)} aria-label="Fermer">
-            ×
-          </button>
-        </div>
-      )}
       <span hidden>{nom}</span>
     </>
   );

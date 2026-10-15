@@ -21,10 +21,13 @@ export default function RoueTitres({
   titres,
   valeur,
   onChange,
+  etiquette = "Choisir",
 }: {
   titres: TitreRoue[];
   valeur: string;
   onChange: (id: string) => void;
+  /** Ce que la roue sert à choisir, pour les lecteurs d'écran. */
+  etiquette?: string;
 }) {
   const index = Math.max(0, titres.findIndex((t) => t.id === valeur));
   // La position continue (en « crans ») : elle glisse vers l'index choisi,
@@ -143,7 +146,7 @@ export default function RoueTitres({
       ref={zone}
       className={styles.roue}
       role="listbox"
-      aria-label="Choisir une masterclass"
+      aria-label={etiquette}
       aria-activedescendant={`titre-${valeur}`}
       tabIndex={0}
       onKeyDown={(e) => {

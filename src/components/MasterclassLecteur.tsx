@@ -37,7 +37,7 @@ export default function MasterclassLecteur({ masterclasses }: { masterclasses: M
           title={actuelle.titre}
         />
       </div>
-      <RoueTitres titres={titres} valeur={id} onChange={setId} />
+      <RoueTitres titres={titres} valeur={id} onChange={setId} etiquette="Choisir une masterclass" />
     </div>
   );
 }
