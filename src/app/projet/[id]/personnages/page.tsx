@@ -145,6 +145,13 @@ function FormulairePersonnage({
           <span>{photo ? "Remplacer le portrait" : "Portrait (JPG ou PNG)"}</span>
           <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" />
         </label>
+        {/* « Enregistrer » sous le portrait (15/10, Sarah) : en bas du cadre,
+            après la biographie, on le confondait avec celui du cadre suivant.
+            « Retirer ce personnage » reste en bas, loin de lui. */}
+        <div className={styles.enregistrerSousPortrait}>
+          <BoutonEnregistrer libelle={personnage ? "Enregistrer" : "Ajouter"} />
+          {enregistre && <span className={profilStyles.ok}>Enregistré.</span>}
+        </div>
       </CasePortrait>
 
       <div className={styles.personnageChamps}>
@@ -325,17 +332,11 @@ function FormulairePersonnage({
           />
         </label>
 
-        <div className={styles.piedPersonnage}>
-          {personnage ? (
+        {personnage && (
+          <div className={styles.piedPersonnage}>
             <BoutonRetirerPersonnage />
-          ) : (
-            <span />
-          )}
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 12 }}>
-            {enregistre && <span className={profilStyles.ok}>Enregistré.</span>}
-            <BoutonEnregistrer libelle={personnage ? "Enregistrer" : "Ajouter"} />
-          </span>
-        </div>
+          </div>
+        )}
       </div>
     </form>
   );
