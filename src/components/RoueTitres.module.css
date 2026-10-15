@@ -1,0 +1,89 @@
+/* La roue des titres, sur un arc de cercle. */
+
+.roue {
+  position: relative;
+  height: 520px;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  outline: none;
+  /* L'arc : les titres se posent à partir de ce bord gauche. */
+  padding-left: 28px;
+}
+
+.roue:active {
+  cursor: grabbing;
+}
+
+.roue:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--rouge-wfg, #da2c25);
+  border-radius: 12px;
+}
+
+.titre,
+.actif {
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.1;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  transform-origin: left center;
+  transition: color 0.2s;
+}
+
+.actif {
+  font-weight: 700;
+  font-size: 28px;
+}
+
+.point {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--rouge-wfg, #da2c25);
+  flex: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.actif .point {
+  opacity: 1;
+}
+
+.label {
+  display: block;
+}
+
+.sous {
+  display: block;
+  margin-left: 10px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--dim);
+}
+
+@media (max-width: 860px) {
+  .roue {
+    height: 320px;
+  }
+  .titre,
+  .actif {
+    font-size: 18px;
+  }
+  .actif {
+    font-size: 21px;
+  }
+}

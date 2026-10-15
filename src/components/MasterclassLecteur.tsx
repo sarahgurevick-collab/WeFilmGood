@@ -1,18 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import formStyles from "./form.module.css";
+import RoueTitres from "./RoueTitres";
 import styles from "./MasterclassLecteur.module.css";
 
 export type Masterclass = { titre: string; vimeoId: string };
 
-export default function MasterclassLecteur({
-  masterclasses,
-}: {
-  masterclasses: Masterclass[];
-}) {
-  const [index, setIndex] = useState(0);
-  const actuelle = masterclasses[index];
+/** « Jacques FIESCHI - Cannes 2012 » → le nom, puis le festival et l'année. */
+function decouper(titre: string): { nom: string; sous: string } {
+  const m = titre.match(/^(.*?)\s*-?\s*((?:Cannes|Clermont-Ferrand)\s+\d{4})\s*$/);
+  if (!m) return { nom: titre, sous: "" };
+  return { nom: m[1].replace(/\s*-\s*$/, "").trim(), sous: m[2] };
+}
+
+/**
+ * Les masterclass (15/10/2026, Sarah) : l'écran vidéo à gauche, et à
+ * droite la roue des titres — les noms et les années — comme le « Wheel
+ * Carousel » de 21st.dev. Le titre du centre est celui qui joue.
+ */
+export default function MasterclassLecteur({ masterclasses }: { masterclasses: Masterclass[] }) {
+  const [id, setId] = useState(masterclasses[0]?.vimeoId ?? "");
+  const actuelle = masterclasses.find((m) => m.vimeoId === id) ?? masterclasses[0];
+  const titres = masterclasses.map((m) => {
+    const { nom, sous } = decouper(m.titre);
+    return { id: m.vimeoId, label: nom, sous };
+  });
 
   return (
     <div className={styles.lecteur}>
@@ -25,20 +37,7 @@ export default function MasterclassLecteur({
           title={actuelle.titre}
         />
       </div>
-
-      <label className={formStyles.field}>
-        <span>Choisir une masterclass</span>
-        <select
-          value={index}
-          onChange={(e) => setIndex(Number(e.target.value))}
-        >
-          {masterclasses.map((m, i) => (
-            <option key={m.vimeoId} value={i}>
-              {m.titre}
-            </option>
-          ))}
-        </select>
-      </label>
+      <RoueTitres titres={titres} valeur={id} onChange={setId} />
     </div>
   );
 }
