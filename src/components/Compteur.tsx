@@ -14,9 +14,12 @@ export default function Compteur({
   label,
   taille = "petit",
   feuArtifice = false,
+  prefixe,
 }: {
   valeur: number;
   label: string;
+  /** Posé devant le chiffre, ex. « + » pour « +100 ». */
+  prefixe?: string;
   taille?: "petit" | "grand";
   feuArtifice?: boolean;
 }) {
@@ -50,7 +53,7 @@ export default function Compteur({
       {feuArtifice && arrive && <FeuArtifice />}
       <span
         className={`${styles.chiffre} ${feuArtifice && arrive ? styles.pop : ""}`}
-      >{affiche.toLocaleString("fr-FR")}</span>
+      >{prefixe}{affiche.toLocaleString("fr-FR")}</span>
       <span className={styles.label}>{label}</span>
     </div>
   );

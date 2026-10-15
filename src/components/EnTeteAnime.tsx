@@ -11,6 +11,7 @@ const ETATS = ENGAGEMENTS;
 const DELAI_APRES_SCROLL_MS = 500;
 
 const ELEMENTS_MENU = [
+  { label: "Maison des Scénaristes", href: "/association" },
   { label: "Nos appels à projets", href: "/appels-a-projets" },
   { label: "Tutoriels", href: "/tutoriels" },
   { label: "Masterclass", href: "/masterclass" },

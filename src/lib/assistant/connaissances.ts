@@ -86,6 +86,7 @@ Traduction
 - Le rond « globe » en bas à droite traduit tout le site automatiquement (Google) : français, anglais, espagnol, italien, allemand, portugais, arabe.
 
 Appels à projets (page « Nos appels à projets »)
+- La page « Maison des Scénaristes » du menu (/association) présente l'association : philosophie, chiffres depuis 2012, histoire, films sélectionnés, rencontres auteurs-producteurs en festival, presse, producteurs partenaires et contact (maisondesscenaristes@gmail.com).
 - La Maison des Scénaristes et WeFilmGood organisent des appels à projets avec des festivals : les auteurs sélectionnés rencontrent des producteurs ou pitchent leur projet devant des professionnels. Les projets non retenus restent visibles des producteurs sur la plateforme.
 - Principe commun pour répondre : créer son compte WeFilmGood, déposer son dossier en PDF anonyme (sans son nom), envoyer un pitch vidéo, avant la date limite. Chaque projet est lu par au moins deux lecteurs. WeFilmGood fait une présélection de projets « labellisés » (les auteurs sont prévenus par email), puis une sélection finale.
 - Pitch vidéo : un seul plan, face caméra, sans montage ni effets spéciaux, moins de 100 Mo, à envoyer à contact@wefilmgood.com.
