@@ -16,7 +16,7 @@ const ELEMENTS_MENU = [
   { label: "Tutoriels", href: "/tutoriels" },
   { label: "Masterclass", href: "/masterclass" },
   { label: "Ateliers en visio", href: "/ateliers" },
-  { label: "Festivals & Résidences", href: "/festivals-residences" },
+  { label: "Notre histoire", href: "/notre-histoire" },
   { label: "Témoignages", href: "/temoignages" },
   { label: "Adhésion", href: "/adhesion" },
   // Encore un concept, pas un jeu construit : « Ciné » reste fixe en

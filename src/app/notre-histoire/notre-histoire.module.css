@@ -1,0 +1,179 @@
+/* « Notre histoire » : l'anneau des festivals, puis chaque festival. */
+
+.ouverture {
+  max-width: 62ch;
+  margin: 0 0 36px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--fg);
+}
+
+.ouverture strong {
+  color: var(--rouge-wfg, #da2c25);
+}
+
+.indice {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+/* La carte d'un festival sans logo : son nom seul. */
+.nomSeul {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  background: #1c1c1c;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Un logo sur sa carte claire : un peu de marge autour. */
+.logo {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  object-fit: contain;
+}
+
+/* Le festival ouvert. */
+.retour {
+  display: inline-block;
+  margin: 0 0 18px;
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.retour:hover {
+  color: var(--fg);
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin: 0 0 28px;
+}
+
+.enteteLogo {
+  width: 110px;
+  height: 74px;
+  border-radius: 8px;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  flex: none;
+}
+
+.enteteLogo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6px;
+}
+
+.deuxColonnes {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .deuxColonnes {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.liste {
+  min-height: 400px;
+}
+
+.anneeTitre {
+  margin: 0 0 18px;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--rouge-wfg, #da2c25);
+}
+
+.bloc {
+  margin: 0 0 22px;
+}
+
+.blocTitre {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.blocTitreRouge {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rouge-wfg, #da2c25);
+}
+
+.entrees {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  line-height: 1.7;
+  color: var(--fg);
+}
+
+.aVenir {
+  color: var(--dim);
+}
+
+.sousTitre {
+  margin: 48px 0 18px;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+/* La photo ouverte en grand. */
+.voile {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.grande {
+  max-width: min(1100px, 100%);
+  max-height: calc(100vh - 80px);
+  border-radius: 10px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+.grandeLegende {
+  margin: 12px 0 0;
+  color: #fff;
+  text-align: center;
+}
+
+.fermer {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
