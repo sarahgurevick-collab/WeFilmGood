@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ENGAGEMENTS, ROUGE_WFG } from "@/lib/engagements";
 import { useEngagement } from "@/lib/useEngagement";
 import styles from "./EnTeteAnime.module.css";
+import { EMPLACEMENT_ENTETE } from "./useEmplacementEntete";
 
 const ETATS = ENGAGEMENTS;
 
@@ -91,6 +92,10 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
       </Link>
 
       <nav className={styles.nav}>
+        {/* Mira et la traduction, pour les membres connectés : ils viennent
+            s'y ranger (Assistant.tsx, Traduction.tsx). */}
+        {connecte && <div {...{ [EMPLACEMENT_ENTETE]: "" }} className={styles.outils} />}
+
         <div className={styles.menuConteneur} ref={menuRef}>
           <button
             type="button"

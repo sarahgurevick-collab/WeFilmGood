@@ -140,3 +140,37 @@ button.rond {
   opacity: 0.5;
   text-decoration: none;
 }
+
+/* Dans la barre du haut, à côté du Menu : un petit rond gris clair d'où
+   dépasse la tête de la chouette. */
+.ronEntete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(120, 120, 120, 0.18);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.ronEntete:hover {
+  transform: scale(1.08);
+}
+
+.ronEntete .tete {
+  width: 34px;
+  margin-top: -9px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* La conversation s'ouvre sous la barre, à droite, et non plus au-dessus
+   du rond du bas. */
+.panneau.panneauEntete {
+  top: calc(var(--haut-bandeau, 0px) + 72px);
+  bottom: auto;
+  z-index: 250;
+}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import LogoAnime from "./LogoAnime";
 import styles from "./BarreNav.module.css";
+import { EMPLACEMENT_ENTETE } from "./useEmplacementEntete";
 
 /**
  * Barre d'onglets fixée en bas sur téléphone, au pouce. Les producteurs
@@ -85,6 +86,12 @@ export default async function BarreNav({
           </Link>
         ))}
       </div>
+
+      {/* Mira et la traduction, au bout de la barre (sur ordinateur) pour les
+          membres connectés : ils viennent s'y ranger (Assistant.tsx,
+          Traduction.tsx). Sur téléphone la barre est en bas : ils restent
+          en bas à droite. */}
+      {connecte && <div {...{ [EMPLACEMENT_ENTETE]: "" }} className={styles.outils} />}
     </nav>
   );
 }

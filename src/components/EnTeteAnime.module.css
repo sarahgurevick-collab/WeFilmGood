@@ -208,3 +208,23 @@
     margin-left: 10px;
   }
 }
+
+/* La place de Mira et du globe de traduction, à gauche du Menu. */
+.outils {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #1a1a1a;
+}
+
+@media (max-width: 620px) {
+  .bande {
+    gap: 12px;
+  }
+  .nav {
+    gap: 10px;
+  }
+  .outils {
+    gap: 10px;
+  }
+}

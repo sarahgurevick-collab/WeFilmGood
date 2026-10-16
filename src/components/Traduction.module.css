@@ -84,3 +84,37 @@
 .cache {
   display: none;
 }
+
+/* Dans la barre du haut : un simple globe à côté du Menu, de la couleur du
+   texte de la barre, sans le rond blanc flottant. Le menu des langues
+   s'ouvre vers le bas. */
+.enEntete {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  z-index: auto;
+}
+
+.enEntete .bouton {
+  width: 30px;
+  height: 30px;
+  background: none;
+  color: inherit;
+  border: 0;
+  box-shadow: none;
+}
+
+.enEntete .code {
+  top: -6px;
+  right: -8px;
+  min-width: 18px;
+  height: 18px;
+  font-size: 9px;
+  line-height: 18px;
+}
+
+.enEntete .menu {
+  top: calc(100% + 14px);
+  bottom: auto;
+  right: -10px;
+}

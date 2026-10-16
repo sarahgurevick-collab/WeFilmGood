@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { createPortal } from "react-dom";
 import { envoyerMessageContact } from "@/app/actions";
 import { EVENEMENT_CONTACT } from "./BoutonDevis";
 import contact from "./BoutonContact.module.css";
 import styles from "./Assistant.module.css";
+import { useEmplacementEntete } from "./useEmplacementEntete";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -47,6 +49,7 @@ export default function Assistant({
   const [enCours, setEnCours] = useState(false);
   const [transmission, setTransmission] = useState<"non" | "envoi" | "fait" | "erreur">("non");
   const fil = useRef<HTMLDivElement>(null);
+  const emplacement = useEmplacementEntete();
 
   // « Demander un devis » ouvre l'assistant avec la demande déjà commencée.
   useEffect(() => {
@@ -148,21 +151,29 @@ export default function Assistant({
     setTransmission(ok ? "fait" : "erreur");
   };
 
+  if (emplacement === undefined) return null;
+
+  // La tête de la chouette, celle qui converse (26/09). Dans la barre du
+  // haut, à côté du Menu, pour les membres connectés ; sinon en bas à droite.
+  const bouton = (
+    <button
+      type="button"
+      className={emplacement ? styles.ronEntete : `${contact.bouton} ${styles.rond}`}
+      onClick={() => setOuvert((o) => !o)}
+      aria-label="Poser une question"
+      title="Poser une question"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/chouette-fille.webp" alt="" className={styles.tete} />
+    </button>
+  );
+
   return (
     <>
-      <button
-        type="button"
-        className={`${contact.bouton} ${styles.rond}`}
-        onClick={() => setOuvert((o) => !o)}
-        aria-label="Poser une question"
-      >
-        {/* La tête de la chouette, celle qui converse (26/09). */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/chouette-fille.webp" alt="" className={styles.tete} />
-      </button>
+      {emplacement ? createPortal(bouton, emplacement) : bouton}
 
       {ouvert && (
-        <div className={`${contact.panneau} ${styles.panneau}`}>
+        <div className={`${contact.panneau} ${styles.panneau} ${emplacement ? styles.panneauEntete : ""}`}>
           <button type="button" className={contact.fermer} onClick={() => setOuvert(false)} aria-label="Fermer">
             ×
           </button>

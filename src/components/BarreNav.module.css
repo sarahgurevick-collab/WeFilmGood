@@ -164,3 +164,17 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* La place de Mira et du globe de traduction, au bout de la barre. */
+.outils {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--fg);
+}
+
+@media (max-width: 720px) {
+  .outils {
+    display: none;
+  }
+}
