@@ -24,6 +24,8 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Julien SERI - Clermont-Ferrand 2017", vimeoId: "206539679" },
   { titre: "David OELHOFFEN - Clermont-Ferrand 2019", vimeoId: "340089009" },
   { titre: "Pierre SCHOELLER Clermont-Ferrand 2020", vimeoId: "904082025" },
+  { titre: "Andrea BESCOND & Eric METAYER", vimeoId: "1236601048" },
+  { titre: "Hong-Jin NA", vimeoId: "305807052" },
 ];
 
 export default async function MasterclassPage() {
