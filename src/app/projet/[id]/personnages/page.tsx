@@ -5,7 +5,7 @@ import BlocProjet from "../../BlocProjet";
 import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
-import BoutonEnregistrer from "./BoutonEnregistrer";
+import ZoneEnregistrer from "./ZoneEnregistrer";
 import AjouterPersonnage from "./AjouterPersonnage";
 import BoutonRetirerPersonnage from "./BoutonRetirerPersonnage";
 import CasePortrait from "./CasePortrait";
@@ -122,7 +122,7 @@ function FormulairePersonnage({
   projectId: string;
   personnage: Personnage | null;
   photo: string | null;
-  /** Ce cadre vient d'être enregistré : on le dit à côté du bouton. */
+  /** Ce cadre vient d'être enregistré : « Enregistré. » remplace le bouton jusqu'au prochain changement. */
   enregistre?: boolean;
 }) {
   return (
@@ -148,10 +148,7 @@ function FormulairePersonnage({
         {/* « Enregistrer » sous le portrait (15/10, Sarah) : en bas du cadre,
             après la biographie, on le confondait avec celui du cadre suivant.
             « Retirer ce personnage » reste en bas, loin de lui. */}
-        <div className={styles.enregistrerSousPortrait}>
-          <BoutonEnregistrer libelle={personnage ? "Enregistrer" : "Ajouter"} />
-          {enregistre && <span className={profilStyles.ok}>Enregistré.</span>}
-        </div>
+        <ZoneEnregistrer libelle={personnage ? "Enregistrer" : "Ajouter"} enregistre={enregistre} />
       </CasePortrait>
 
       <div className={styles.personnageChamps}>
