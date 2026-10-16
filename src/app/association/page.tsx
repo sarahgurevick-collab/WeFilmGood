@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Compteur from "@/components/Compteur";
+import FeuArtificeAuPassage from "@/components/FeuArtificeAuPassage";
 import AscenseurMaison from "./AscenseurMaison";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -18,7 +19,7 @@ import { createClient } from "@/lib/supabase/server";
 import styles from "./page.module.css";
 
 export const metadata = {
-  title: "Maison des Scénaristes — La maison de tous les auteurs",
+  title: "La Maison des Scénaristes a 15 ans : 2012 - 2027",
   description:
     "Depuis 2012, la Maison des Scénaristes place le scénario au cœur du processus artistique et financier de tous les films.",
 };
@@ -41,8 +42,11 @@ export default async function AssociationPage() {
 
   return (
     <PageShell
-      eyebrow="Maison des Scénaristes"
-      title="La maison de tous les auteurs"
+      title={
+        <FeuArtificeAuPassage>
+          La Maison des Scénaristes a 15 ans : 2012 - 2027
+        </FeuArtificeAuPassage>
+      }
       enTeteAnime
       connecte={!!user}
     >
