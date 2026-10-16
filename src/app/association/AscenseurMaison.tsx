@@ -37,9 +37,11 @@ const charger = (src: string) =>
  * l'étage (le titre de la section et une phrase de la page).
  *
  * Comme dans l'original : l'ascenseur tient dans un petit boîtier (cadran,
- * portes, plaque d'appel) ; un clic sur la photo la fait grandir jusqu'à
- * remplir tout le boîtier, et un clic n'importe où (ou la croix ×, ou
- * Échap) ramène à l'ascenseur. « Entrer » descend à la section.
+ * portes, plaque d'appel) ; « Entrer », écrit sur la photo comme le
+ * « Step inside » de l'original (ou à côté, ou un clic sur la photo), la
+ * fait grandir jusqu'à remplir tout le boîtier, l'ascenseur s'assombrit
+ * derrière ; un clic n'importe où, la croix × ou Échap ramène à
+ * l'ascenseur. Le titre de la zone de texte descend à la section.
  */
 export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
   const [affiche, setAffiche] = useState(0); // le numéro sur le cadran
@@ -132,7 +134,7 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
     aller(k);
   };
 
-  const entrer = () => {
+  const descendre = () => {
     setVisite(false);
     document
       .getElementById(`etage-${etages[choisi].id}`)
@@ -205,7 +207,7 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
   return (
     <section className={styles.lagon} aria-label="L'ascenseur de la Maison">
       <div className={styles.scene}>
-        <div className={styles.ascenseur} ref={boitier}>
+        <div className={`${styles.ascenseur} ${zoom === "depart" || zoom === "grand" ? styles.assombri : ""}`} ref={boitier}>
           <div className={styles.cabine}>
             <div className={styles.cadran} aria-live="polite" aria-atomic="true">
               <span className={`${styles.fleche} ${sens === "haut" ? styles.allumee : ""}`} aria-hidden="true">
@@ -227,10 +229,15 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
                 className={styles.ouverture}
                 onClick={agrandir}
                 disabled={!ouvert}
-                aria-label={`Voir la photo en grand : ${actuel.nom}`}
+                aria-label={`Entrer : ${actuel.nom}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img key={actuel.id} src={actuel.image} alt={actuel.alt} className={styles.photo} />
+                <span className={styles.legende} aria-hidden="true">
+                  <span className={styles.legendeNumero}>{numero(choisi)}</span>
+                  <span className={styles.legendeNom}>{actuel.nom}</span>
+                  <span className={styles.legendeEntrer}>Entrer ↗</span>
+                </span>
               </button>
               <div className={`${styles.porte} ${styles.gauche}`} aria-hidden="true" />
               <div className={`${styles.porte} ${styles.droite}`} aria-hidden="true" />
@@ -262,8 +269,12 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
               onClick={revenir}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={actuel.image} alt={actuel.alt} />
-              <p className={`${styles.grandNom} ${zoom === "grand" ? styles.visible : ""}`}>{actuel.nom}</p>
+              <img src={actuel.image} alt={actuel.alt} className={zoom === "grand" ? styles.lent : ""} />
+              <div className={`${styles.grandLegende} ${zoom === "grand" ? styles.visible : ""}`}>
+                <p className={styles.legendeNumero}>{numero(choisi)}</p>
+                <p className={styles.grandNom}>{actuel.titre}</p>
+                {actuel.texte && <p className={styles.grandPhrase}>{actuel.texte}</p>}
+              </div>
               <button
                 type="button"
                 className={`${styles.fermer} ${zoom === "grand" ? styles.visible : ""}`}
@@ -281,9 +292,19 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
 
         <div className={styles.texte} key={actuel.id}>
           <p className={styles.numeroEtage}>{numero(choisi)}</p>
-          <p className={styles.titreEtage}>{actuel.titre}</p>
+          <p className={styles.titreEtage}>
+            <a
+              href={`#etage-${actuel.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                descendre();
+              }}
+            >
+              {actuel.titre} <span aria-hidden="true">↓</span>
+            </a>
+          </p>
           {actuel.texte && <p className={styles.phrase}>{actuel.texte}</p>}
-          <button type="button" className={styles.entrer} onClick={entrer} disabled={!ouvert}>
+          <button type="button" className={styles.entrer} onClick={agrandir} disabled={!ouvert || zoom !== "non"}>
             Entrer
           </button>
         </div>
