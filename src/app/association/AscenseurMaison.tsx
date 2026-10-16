@@ -9,8 +9,10 @@ import type { EtageAssociation as EtageMaison } from "@/data/association";
 const PORTES = 750; // l'ouverture ou la fermeture des portes
 const PAS_ETAGE = 340; // le temps de passer d'un étage au suivant
 const DELAI_DEPART = 1200; // avant que les portes s'ouvrent, à l'arrivée sur la page
-const ARRET = 4500;
-const ZOOM = 650; // la photo qui grandit jusqu'au bord du boîtier, ou qui revient // le temps que la cabine reste ouverte à chaque étage pendant la visite
+const ZOOM = 650; // la photo qui grandit jusqu'au bord du boîtier, ou qui revient
+const ATTENTE_ZOOM = 3000; // portes ouvertes, la photo grandit toute seule au bout de 3 s (Sarah, 16/10)
+const DUREE_ZOOM = 3000; // et revient toute seule 3 s plus tard
+const ARRET = 1500; // pendant la visite, la pause avant l'étage suivant
 
 const attendre = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
 
@@ -42,6 +44,11 @@ const charger = (src: string) =>
  * fait grandir jusqu'à remplir tout le boîtier, l'ascenseur s'assombrit
  * derrière ; un clic n'importe où, la croix × ou Échap ramène à
  * l'ascenseur. Le titre de la zone de texte descend à la section.
+ *
+ * Zoom automatique (Sarah, 16/10) : à chaque étage, 3 s après l'ouverture
+ * des portes, la photo grandit toute seule ; 3 s plus tard elle revient,
+ * et la visite passe à l'étage suivant. Une fois par arrivée. Le zoom
+ * lancé par un clic, lui, reste jusqu'au clic suivant.
  */
 export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
   const [affiche, setAffiche] = useState(0); // le numéro sur le cadran
@@ -55,6 +62,9 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
   const boitier = useRef<HTMLDivElement | null>(null);
   const baie = useRef<HTMLButtonElement | null>(null);
   const [visite, setVisite] = useState(true); // la visite automatique
+  const [arrivee, setArrivee] = useState(0); // compte les ouvertures de portes
+  const zoomAuto = useRef(false); // le zoom en cours a été lancé tout seul
+  const zoomFait = useRef(-1); // l'arrivée dont le zoom automatique a déjà eu lieu
   const [reduit, setReduit] = useState(false);
   const course = useRef(0); // le jeton de la course en cours : une nouvelle annule l'ancienne
   const position = useRef(0);
@@ -111,6 +121,7 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
       if (!vivant()) return;
       portesOuvertes.current = true;
       setOuvert(true);
+      setArrivee((a) => a + 1);
     },
     [etages],
   );
@@ -121,13 +132,15 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
     return () => window.clearTimeout(t);
   }, [aller]);
 
-  // La visite : un étage après l'autre, jusqu'en haut, tant que personne ne touche au tableau.
+  // La visite : un étage après l'autre, jusqu'en haut, tant que personne
+  // ne touche au tableau ; on repart une fois le zoom de l'étage revenu.
   useEffect(() => {
     // Arrivée en haut : la visite s'arrête là, portes ouvertes.
-    if (!visite || !ouvert || reduit || choisi >= etages.length - 1) return;
+    if (!visite || !ouvert || reduit || zoom !== "non" || choisi >= etages.length - 1) return;
+    if (zoomFait.current !== arrivee) return;
     const t = window.setTimeout(() => aller(choisi + 1), ARRET);
     return () => window.clearTimeout(t);
-  }, [visite, ouvert, reduit, choisi, etages.length, aller]);
+  }, [visite, ouvert, reduit, zoom, arrivee, choisi, etages.length, aller]);
 
   const choisir = (k: number) => {
     setVisite(false);
@@ -149,9 +162,11 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
     setPlace({ top: o.top - b.top, left: o.left - b.left, right: b.right - o.right, bottom: b.bottom - o.bottom });
   };
 
-  const agrandir = () => {
+  /** `seul` : lancé par le minuteur, pas par un clic (la visite continue alors). */
+  const agrandir = (seul = false) => {
     if (!ouvert) return;
-    setVisite(false);
+    if (!seul) setVisite(false);
+    zoomAuto.current = seul;
     mesurer();
     if (reduit) {
       setZoom("grand");
@@ -161,7 +176,9 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
     window.requestAnimationFrame(() => window.requestAnimationFrame(() => setZoom("grand")));
   };
 
-  const revenir = () => {
+  const revenir = (seul = false) => {
+    if (!seul) setVisite(false);
+    zoomAuto.current = false;
     if (reduit) {
       setZoom("non");
       return;
@@ -170,6 +187,29 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
     setZoom("retour");
     window.setTimeout(() => setZoom((z) => (z === "retour" ? "non" : z)), ZOOM);
   };
+
+  // Les minuteurs appellent toujours la dernière version de ces deux gestes.
+  const gestes = useRef({ agrandir, revenir });
+  useEffect(() => {
+    gestes.current = { agrandir, revenir };
+  });
+
+  // 3 s après l'ouverture des portes, la photo grandit toute seule (une fois par arrivée).
+  useEffect(() => {
+    if (!ouvert || zoom !== "non" || reduit || zoomFait.current === arrivee) return;
+    const t = window.setTimeout(() => {
+      zoomFait.current = arrivee;
+      gestes.current.agrandir(true);
+    }, ATTENTE_ZOOM);
+    return () => window.clearTimeout(t);
+  }, [ouvert, zoom, reduit, arrivee]);
+
+  // Le zoom automatique revient tout seul 3 s plus tard.
+  useEffect(() => {
+    if (zoom !== "grand" || !zoomAuto.current) return;
+    const t = window.setTimeout(() => gestes.current.revenir(true), DUREE_ZOOM);
+    return () => window.clearTimeout(t);
+  }, [zoom]);
 
   // Échap ramène à l'ascenseur.
   useEffect(() => {
@@ -227,7 +267,7 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
                 ref={baie}
                 type="button"
                 className={styles.ouverture}
-                onClick={agrandir}
+                onClick={() => agrandir()}
                 disabled={!ouvert}
                 aria-label={`Entrer : ${actuel.nom}`}
               >
@@ -266,7 +306,7 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
             <div
               className={`${styles.grand} ${zoom === "grand" ? styles.plein : ""}`}
               style={zoom === "grand" ? { top: 0, left: 0, right: 0, bottom: 0 } : place}
-              onClick={revenir}
+              onClick={() => revenir()}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={actuel.image} alt={actuel.alt} className={zoom === "grand" ? styles.lent : ""} />
@@ -304,7 +344,7 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
             </a>
           </p>
           {actuel.texte && <p className={styles.phrase}>{actuel.texte}</p>}
-          <button type="button" className={styles.entrer} onClick={agrandir} disabled={!ouvert || zoom !== "non"}>
+          <button type="button" className={styles.entrer} onClick={() => agrandir()} disabled={!ouvert || zoom !== "non"}>
             Entrer
           </button>
         </div>
