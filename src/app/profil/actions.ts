@@ -284,6 +284,14 @@ export async function quitterLaPlateforme(formData: FormData) {
 const PHOTOS = ["image/jpeg", "image/png", "image/webp"];
 const BUCKET_PHOTOS = "avatars";
 
+/**
+ * La page d'où part la photo : l'identité du membre, ou le profil du lecteur
+ * (qui n'a pas accès à /profil). Une liste fermée, jamais une adresse libre.
+ */
+function pageDeRetourPhoto(formData: FormData) {
+  return formData.get("retour") === "/lecteur/profil" ? "/lecteur/profil" : "/profil/identite";
+}
+
 /** Retire les anciennes photos du dossier du membre, sauf celle qu'on garde. */
 async function nettoyerPhotos(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -303,9 +311,10 @@ async function nettoyerPhotos(
  * finit vers 60 Ko, et s'affiche ronde partout sur le site.
  */
 export async function savePhoto(formData: FormData) {
-  const { supabase, user } = await requireUser("/profil/identite");
+  const page = pageDeRetourPhoto(formData);
+  const { supabase, user } = await requireUser(page);
   const retour = (message: string) =>
-    redirect("/profil/identite?erreur=" + encodeURIComponent(message));
+    redirect(`${page}?erreur=` + encodeURIComponent(message));
 
   const fichier = formData.get("photo");
   if (!(fichier instanceof File) || fichier.size === 0) retour("Choisissez une photo.");
@@ -341,15 +350,16 @@ export async function savePhoto(formData: FormData) {
   await nettoyerPhotos(supabase, user.id, chemin);
 
   revalidatePath("/profil");
-  redirect("/profil/identite?photo=1");
+  redirect(`${page}?photo=1`);
 }
 
-export async function retirerPhoto() {
-  const { supabase, user } = await requireUser("/profil/identite");
+export async function retirerPhoto(formData: FormData) {
+  const page = pageDeRetourPhoto(formData);
+  const { supabase, user } = await requireUser(page);
   await supabase.from("profiles").update({ avatar_url: null }).eq("id", user.id);
   await nettoyerPhotos(supabase, user.id);
   revalidatePath("/profil");
-  redirect("/profil/identite");
+  redirect(page);
 }
 
 /** Ouvre ou ferme la messagerie d'un producteur ou d'un comédien (08/10, étape 1 du test). */

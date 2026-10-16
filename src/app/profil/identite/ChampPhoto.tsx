@@ -14,9 +14,12 @@ import styles from "../profil.module.css";
 export default function ChampPhoto({
   photo,
   initiale,
+  retour,
 }: {
   photo: string | null;
   initiale: string;
+  /** La page où revenir après l'envoi (le profil du lecteur) ; par défaut l'identité. */
+  retour?: "/lecteur/profil";
 }) {
   const [apercu, setApercu] = useState<string | null>(null);
   const formulaire = useRef<HTMLFormElement>(null);
@@ -36,6 +39,7 @@ export default function ChampPhoto({
       <div className={styles.champPhotoActions}>
         {!photo && (
           <form ref={formulaire} action={savePhoto}>
+            {retour && <input type="hidden" name="retour" value={retour} />}
             <label className={`${formStyles.submit} ${styles.boutonPhoto}`}>
               <input
                 type="file"
@@ -57,6 +61,7 @@ export default function ChampPhoto({
         )}
         {photo && (
           <form action={retirerPhoto} onSubmit={() => setApercu(null)}>
+            {retour && <input type="hidden" name="retour" value={retour} />}
             <button type="submit" className={styles.lienPhoto}>
               Retirer la photo
             </button>

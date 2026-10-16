@@ -3,6 +3,8 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { LANGUES_LECTURE, nomDeLangue } from "@/lib/langues";
 import { createClient } from "@/lib/supabase/server";
+import ChampPhoto from "@/app/profil/identite/ChampPhoto";
+import profilStyles from "@/app/profil/profil.module.css";
 import { choisirLanguesLues } from "../actions";
 import styles from "../lecteur.module.css";
 
@@ -13,15 +15,21 @@ import styles from "../lecteur.module.css";
 export default async function ProfilLecteurPage({
   searchParams,
 }: {
-  searchParams: Promise<{ enregistre?: string }>;
+  searchParams: Promise<{ enregistre?: string; photo?: string; erreur?: string }>;
 }) {
-  const { enregistre } = await searchParams;
+  const { enregistre, photo, erreur } = await searchParams;
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/connexion?next=/lecteur/profil");
+
+  const { data: profil } = await supabase
+    .from("profiles")
+    .select("avatar_url, first_name, full_name")
+    .eq("id", user.id)
+    .maybeSingle();
 
   const { data: fiche } = await supabase
     .from("reader_profiles")
@@ -33,7 +41,16 @@ export default async function ProfilLecteurPage({
 
   return (
     <PageShell title="Mon profil" nav="profil" theme="clair">
-      <form className={formStyles.form} action={choisirLanguesLues}>
+      {/* La photo a son propre envoi : elle part dès qu'on la choisit. */}
+      {erreur && <p className={formStyles.error}>{erreur}</p>}
+      {photo && <p className={profilStyles.ok}>Photo enregistrée.</p>}
+      <ChampPhoto
+        photo={profil?.avatar_url ?? null}
+        initiale={(profil?.first_name ?? profil?.full_name ?? "?").trim().charAt(0).toUpperCase()}
+        retour="/lecteur/profil"
+      />
+
+      <form className={formStyles.form} action={choisirLanguesLues} style={{ marginTop: 32 }}>
         <fieldset className={styles.langues}>
           <legend>Langues que j&apos;accepte de lire</legend>
           {LANGUES_LECTURE.map((code) => (
