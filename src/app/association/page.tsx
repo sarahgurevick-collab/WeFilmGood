@@ -1,10 +1,12 @@
 import Link from "next/link";
 import Compteur from "@/components/Compteur";
+import AscenseurMaison from "./AscenseurMaison";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import {
   CHIFFRES,
   CONTACT,
+  ETAGES,
   FILMS,
   HISTOIRE,
   PHILOSOPHIE,
@@ -27,6 +29,10 @@ export const metadata = {
  * le site maisondesscenaristes.org repris tel quel, textes et photos, en
  * bandes courtes ; chaque sujet déjà développé sur WeFilmGood (témoignages,
  * masterclass, appels à projets, adhésion) renvoie vers sa page.
+ *
+ * 16/10/2026 : la page passe dans l'univers du site — fond noir — et
+ * s'ouvre sur l'ascenseur de la Maison : chaque section est un étage
+ * (ETAGES), les portes s'ouvrent sur sa photo, « Entrer » y descend.
  */
 export default async function AssociationPage() {
   const supabase = await createClient();
@@ -38,12 +44,12 @@ export default async function AssociationPage() {
     <PageShell
       eyebrow="Maison des Scénaristes"
       title="La maison de tous les auteurs"
-      theme="clair"
       enTeteAnime
       connecte={!!user}
     >
+      <AscenseurMaison etages={ETAGES} />
       <div className={styles.page}>
-        <section className={styles.bloc}>
+        <section id="etage-philosophie" className={styles.bloc}>
           <h2 className={styles.titre}>Philosophie</h2>
           {PHILOSOPHIE.map((p) => (
             <p key={p} className={styles.texte}>
@@ -61,7 +67,7 @@ export default async function AssociationPage() {
           <p className={`${styles.texte} ${styles.devise}`}>Travaillons ensemble pour voir nos scripts sur les écrans !</p>
         </section>
 
-        <section className={styles.bloc}>
+        <section id="etage-chiffres" className={styles.bloc}>
           <h2 className={styles.titre}>Nos stats depuis notre naissance en 2012</h2>
           <div className={styles.chiffres}>
             {CHIFFRES.map((c) => (
@@ -76,7 +82,7 @@ export default async function AssociationPage() {
           </p>
         </section>
 
-        <section className={styles.bloc}>
+        <section id="etage-histoire" className={styles.bloc}>
           <h2 className={styles.titre}>Notre Histoire</h2>
           <ol className={styles.frise}>
             {HISTOIRE.map((h) => (
@@ -88,7 +94,7 @@ export default async function AssociationPage() {
           </ol>
         </section>
 
-        <section className={styles.bloc}>
+        <section id="etage-films" className={styles.bloc}>
           <h2 className={styles.titre}>Projets sélectionnés 2012-2026</h2>
           <ul className={styles.films}>
             {FILMS.map((f) => (
@@ -111,7 +117,7 @@ export default async function AssociationPage() {
           </ul>
         </section>
 
-        <section className={styles.bloc}>
+        <section id="etage-wall-of-fame" className={styles.bloc}>
           <h2 className={styles.titre}>Wall of Fame</h2>
           <ul className={styles.wall}>
             {WALL_OF_FAME.map((w) => (
@@ -123,7 +129,7 @@ export default async function AssociationPage() {
           </ul>
         </section>
 
-        <section className={styles.bloc}>
+        <section id="etage-rencontres" className={styles.bloc}>
           <h2 className={styles.titre}>Rencontres Auteurs-Producteurs à la Maison des Scénaristes</h2>
           <p className={styles.texte}>
             Festival de Cannes, Festival de Clermont-Ferrand, Festival Séries Mania et 360 Film Festival
@@ -144,7 +150,7 @@ export default async function AssociationPage() {
           </ul>
         </section>
 
-        <section className={styles.bloc}>
+        <section id="etage-masterclass" className={styles.bloc}>
           <h2 className={styles.titre}>Les Masterclass de la Maison des Scénaristes</h2>
           <p className={styles.texte}>À consommer sans modération !</p>
           <Link href="/masterclass" className={`${formStyles.submit} ${styles.bouton}`}>
@@ -152,7 +158,7 @@ export default async function AssociationPage() {
           </Link>
         </section>
 
-        <section className={styles.bloc}>
+        <section id="etage-presse" className={styles.bloc}>
           <h2 className={styles.titre}>Ils parlent de nous...</h2>
           <ul className={styles.presse}>
             {PRESSE.map((p) => (
@@ -164,7 +170,7 @@ export default async function AssociationPage() {
           </ul>
         </section>
 
-        <section className={styles.bloc}>
+        <section id="etage-producteurs" className={styles.bloc}>
           <h2 className={styles.titre}>Les Producteurs qui nous font confiance</h2>
           <ul className={styles.producteurs}>
             {PRODUCTEURS.map((p) => (
@@ -181,7 +187,7 @@ export default async function AssociationPage() {
           </ul>
         </section>
 
-        <section className={styles.bloc}>
+        <section id="etage-contact" className={styles.bloc}>
           <h2 className={styles.titre}>Contact</h2>
           <ul className={styles.contact}>
             <li>

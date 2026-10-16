@@ -390,3 +390,21 @@ export const PRODUCTEURS: { nom: string; lien?: string }[] = [
   { nom: "accédez" },
   { nom: "WeFilmGood", lien: "https://www.wefilmgood.com" },
 ];
+
+/**
+ * Les étages de la Maison (16/10/2026) : chaque section de la page est une
+ * pièce de la Maison, du rez-de-chaussée au dernier étage, avec sa photo
+ * derrière les portes de l'ascenseur. L'ordre est celui de la page.
+ */
+export const ETAGES: { id: string; nom: string; image: string; alt: string }[] = [
+  { id: "philosophie", nom: "Philosophie", image: "/association/rencontres/01.jpg", alt: "La terrasse du pavillon des Scénaristes au Festival de Cannes" },
+  { id: "chiffres", nom: "Nos stats", image: "/association/rencontres/13.jpg", alt: "Les rencontres au Festival de Clermont-Ferrand" },
+  { id: "histoire", nom: "Notre Histoire", image: "/association/rencontres/02.jpg", alt: "Un rendez-vous au pavillon de la Maison des Scénaristes, Festival de Cannes" },
+  { id: "films", nom: "Projets sélectionnés", image: "/association/films/les-bienheureux.jpg", alt: "« Les Bienheureux » de Sofia Djama à la Mostra de Venise" },
+  { id: "wall-of-fame", nom: "Wall of Fame", image: "/association/films/you-will-die-at-twenty.jpg", alt: "« You Will Die at Twenty », prix à la Mostra de Venise" },
+  { id: "rencontres", nom: "Rencontres Auteurs-Producteurs", image: "/association/rencontres/03.jpg", alt: "Une rencontre auteur-producteur au Festival de Cannes" },
+  { id: "masterclass", nom: "Masterclass", image: "/association/rencontres/10.jpg", alt: "Une rencontre au Festival de Cannes, « Nuit Blanche du Scénario »" },
+  { id: "presse", nom: "Ils parlent de nous", image: "/association/rencontres/06.jpg", alt: "Une rencontre auteur-producteur au Festival de Cannes" },
+  { id: "producteurs", nom: "Les Producteurs", image: "/association/rencontres/16.jpg", alt: "Les rencontres à Paris Courts Devant" },
+  { id: "contact", nom: "Contact", image: "/association/rencontres/09.jpg", alt: "Une rencontre auteur-producteur au Festival de Cannes" },
+];
