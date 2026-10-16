@@ -9,7 +9,6 @@ import {
   ETAGES,
   FILMS,
   HISTOIRE,
-  PHILOSOPHIE,
   PRESSE,
   PRODUCTEURS,
   RENCONTRES,
@@ -49,24 +48,6 @@ export default async function AssociationPage() {
     >
       <AscenseurMaison etages={ETAGES} />
       <div className={styles.page}>
-        <section id="etage-philosophie" className={styles.bloc}>
-          <h2 className={styles.titre}>Philosophie</h2>
-          {PHILOSOPHIE.map((p) => (
-            <p key={p} className={styles.texte}>
-              {p}
-            </p>
-          ))}
-          <p className={styles.texte}>
-            Retrouvez-nous « online » sur la plateforme{" "}
-            <Link href="/" className={styles.marque}>
-              <span className={styles.rouge}>We</span>Film<span className={styles.rouge}>Good</span>
-            </Link>
-            , pour que les scénaristes les moins connectés et les plus isolés puissent bénéficier de notre
-            accompagnement.
-          </p>
-          <p className={`${styles.texte} ${styles.devise}`}>Travaillons ensemble pour voir nos scripts sur les écrans !</p>
-        </section>
-
         <section id="etage-chiffres" className={styles.bloc}>
           <h2 className={styles.titre}>Nos stats depuis notre naissance en 2012</h2>
           <div className={styles.chiffres}>

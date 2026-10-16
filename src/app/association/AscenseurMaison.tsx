@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { PHILOSOPHIE } from "@/data/association";
 import styles from "./AscenseurMaison.module.css";
 
 import type { EtageAssociation as EtageMaison } from "@/data/association";
@@ -31,12 +33,13 @@ const charger = (src: string) =>
  * l'« Elevator Doors Gallery » de 21st.dev) : chaque étage est une pièce
  * de la Maison — une section de la page. On choisit l'étage sur le tableau
  * d'appel, le cadran compte les étages, les portes d'acier s'ouvrent sur
- * la photo de l'étage, et « Entrer » descend à la section. À l'arrivée sur
+ * la photo de l'étage. À l'arrivée sur
  * la page, la cabine fait la visite toute seule, jusqu'au premier geste.
  *
  * 16/10, retour de Sarah : l'ascenseur est posé sur un lagon aux palmiers,
  * sans cadre gris autour, plus petit, avec à côté la zone de texte de
- * l'étage (le titre de la section et une phrase de la page).
+ * l'étage (le titre de la section et une phrase de la page ; pour la
+ * Philosophie, tout le texte de la section, 16/10).
  *
  * Comme dans l'original : l'ascenseur tient dans un petit boîtier (cadran,
  * portes, plaque d'appel) ; « Entrer », écrit sur la photo comme le
@@ -145,13 +148,6 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
   const choisir = (k: number) => {
     setVisite(false);
     aller(k);
-  };
-
-  const descendre = () => {
-    setVisite(false);
-    document
-      .getElementById(`etage-${etages[choisi].id}`)
-      ?.scrollIntoView({ behavior: reduit ? "auto" : "smooth", block: "start" });
   };
 
   // La place des portes dans le boîtier : c'est de là que la photo part et là qu'elle revient.
@@ -332,21 +328,27 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
 
         <div className={styles.texte} key={actuel.id}>
           <p className={styles.numeroEtage}>{numero(choisi)}</p>
-          <p className={styles.titreEtage}>
-            <a
-              href={`#etage-${actuel.id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                descendre();
-              }}
-            >
-              {actuel.titre} <span aria-hidden="true">↓</span>
-            </a>
-          </p>
-          {actuel.texte && <p className={styles.phrase}>{actuel.texte}</p>}
-          <button type="button" className={styles.entrer} onClick={() => agrandir()} disabled={!ouvert || zoom !== "non"}>
-            Entrer
-          </button>
+          <p className={styles.titreEtage}>{actuel.titre}</p>
+          {actuel.id === "philosophie" ? (
+            <div className={styles.philosophie}>
+              {PHILOSOPHIE.map((p) => (
+                <p key={p} className={styles.phrase}>
+                  {p}
+                </p>
+              ))}
+              <p className={styles.phrase}>
+                Retrouvez-nous « online » sur la plateforme{" "}
+                <Link href="/" className={styles.marque}>
+                  <span className={styles.rouge}>We</span>Film<span className={styles.rouge}>Good</span>
+                </Link>
+                , pour que les scénaristes les moins connectés et les plus isolés puissent bénéficier de notre
+                accompagnement.
+              </p>
+              <p className={`${styles.phrase} ${styles.devise}`}>Travaillons ensemble pour voir nos scripts sur les écrans !</p>
+            </div>
+          ) : (
+            actuel.texte && <p className={styles.phrase}>{actuel.texte}</p>
+          )}
         </div>
       </div>
     </section>
