@@ -151,6 +151,14 @@
   width: 100%;
 }
 
+/* « Enregistré. » : le mot seul, en vert, sans cadre (16/10, Sarah) — un
+   cadre le faisait ressembler au bouton. */
+.dejaEnregistre {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--succes);
+}
+
 .nouveau {
   border-style: dashed;
   background: transparent;

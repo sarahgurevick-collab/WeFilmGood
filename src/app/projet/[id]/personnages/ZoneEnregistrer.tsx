@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import profilStyles from "@/app/profil/profil.module.css";
 import styles from "../../blocs.module.css";
 import BoutonEnregistrer from "./BoutonEnregistrer";
 
@@ -57,7 +56,7 @@ export default function ZoneEnregistrer({
   return (
     <div ref={zone} className={styles.enregistrerSousPortrait}>
       {(!enregistre || modifie) && <BoutonEnregistrer libelle={libelle} />}
-      {enregistre && !modifie && <span className={profilStyles.ok}>Enregistré.</span>}
+      {enregistre && !modifie && <span className={styles.dejaEnregistre}>Enregistré.</span>}
     </div>
   );
 }
