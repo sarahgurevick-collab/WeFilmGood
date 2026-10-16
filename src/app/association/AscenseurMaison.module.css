@@ -1,52 +1,70 @@
 /*
- * L'ascenseur de la Maison des Scénaristes : la cabine à gauche (le cadran,
- * les portes d'acier), le tableau d'appel à droite. Tout en noir et acier,
- * le rouge WeFilmGood pour ce qui est allumé.
+ * L'ascenseur de la Maison des Scénaristes, posé sur un lagon aux palmiers
+ * (16/10/2026, Sarah) : pas de cadre autour, la photo du lagon d'un bord à
+ * l'autre de l'écran, qui se fond dans le noir de la page en bas. À gauche
+ * la cabine (cadran, portes d'acier) et sa plaque d'appel ; à droite la
+ * zone de texte de l'étage.
  */
 
-.ascenseur {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 300px;
-  gap: 40px;
-  align-items: center;
-  padding: 32px;
-  margin: 0 0 72px;
-  border-radius: 28px;
-  background: radial-gradient(120% 90% at 50% 0%, #161616 0%, #0a0a0a 60%, #050505 100%);
-  border: 1px solid var(--bordure, #262626);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+/* Le lagon tient toute la largeur de l'écran, sans barre de défilement de côté. */
+:global(body):has(.lagon) {
+  overflow-x: clip;
 }
 
-/* ---- la cabine ---- */
+.lagon {
+  position: relative;
+  width: 100vw;
+  margin: 0 0 64px calc(50% - 50vw);
+  padding: 56px 32px 120px;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 62%, var(--bg, #000) 100%),
+    url("/association/lagon.webp") center 62% / cover no-repeat;
+}
+
+.scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ---- la cabine et sa plaque ---- */
+
+.ascenseur {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  flex: none;
+  filter: drop-shadow(0 24px 40px rgba(0, 20, 40, 0.45));
+}
 
 .cabine {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .cadran {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-width: 164px;
-  padding: 10px 18px;
-  border-radius: 12px;
+  justify-content: center;
+  gap: 10px;
+  min-width: 132px;
+  padding: 7px 14px;
+  border-radius: 10px;
   background: #050505;
   border: 1px solid #2a2a2a;
-  box-shadow:
-    inset 0 2px 8px rgba(0, 0, 0, 0.9),
-    0 0 0 1px rgba(255, 255, 255, 0.03),
-    0 0 22px rgba(226, 35, 26, 0.12);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 18px rgba(226, 35, 26, 0.18);
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   color: #ff5a52;
   text-shadow: 0 0 12px rgba(226, 35, 26, 0.7);
-  justify-content: center;
 }
 
 .numero {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.14em;
   font-variant-numeric: tabular-nums;
@@ -55,7 +73,7 @@
 }
 
 .fleche {
-  font-size: 10px;
+  font-size: 9px;
   color: #3a2422;
   text-shadow: none;
   transition: color 200ms ease, text-shadow 200ms ease;
@@ -75,29 +93,36 @@
   white-space: nowrap;
 }
 
-/* L'encadrement des portes : un cadre d'acier sombre autour d'une baie en hauteur. */
+/* L'encadrement d'acier des portes. */
 .cadre {
   position: relative;
-  width: min(100%, 400px);
+  width: 240px;
   aspect-ratio: 4 / 5;
-  padding: 14px;
-  border-radius: 22px;
-  background: linear-gradient(180deg, #2a2a2a, #161616 50%, #1f1f1f);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.8),
-    0 20px 50px rgba(0, 0, 0, 0.7);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #3a3a3a, #1c1c1c 50%, #2a2a2a);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 -1px 0 rgba(0, 0, 0, 0.8);
   overflow: hidden;
-  transition: padding 900ms var(--ease, ease), border-radius 900ms var(--ease, ease);
 }
 
 .ouverture {
   position: absolute;
-  inset: 14px;
-  border-radius: 10px;
+  inset: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
   overflow: hidden;
   background: #000;
+  cursor: zoom-in;
   transition: inset 900ms var(--ease, ease), border-radius 900ms var(--ease, ease);
+}
+
+.ouverture:disabled {
+  cursor: default;
+}
+
+.ouverture:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
 }
 
 .photo {
@@ -109,230 +134,178 @@
   transition: transform 1200ms var(--ease, ease);
 }
 
-.voile {
-  position: absolute;
-  inset: auto 0 0;
-  padding: 56px 18px 18px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.82) 100%);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 500ms ease 450ms, transform 500ms ease 450ms;
-}
-
-.nomEtage {
-  margin: 0;
-  color: #fff;
-  font-size: 18px;
-  font-weight: 800;
-  line-height: 1.25;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+.ouverture:hover:not(:disabled) .photo {
+  transform: scale(1.08);
 }
 
 /* Les portes : acier brossé, une fine rainure verticale tous les quelques pixels. */
 .porte {
   position: absolute;
-  top: 14px;
-  bottom: 14px;
-  width: calc(50% - 14px);
+  top: 10px;
+  bottom: 10px;
+  width: calc(50% - 10px);
   background:
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 4px),
-    linear-gradient(90deg, #171717 0%, #2d2d2d 40%, #242424 60%, #151515 100%);
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 4px),
+    linear-gradient(90deg, #1b1b1b 0%, #333 40%, #292929 60%, #181818 100%);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
   transition: transform 750ms cubic-bezier(0.65, 0, 0.35, 1);
   will-change: transform;
+  pointer-events: none;
 }
 
 .gauche {
-  left: 14px;
-  border-radius: 10px 0 0 10px;
+  left: 10px;
+  border-radius: 9px 0 0 9px;
   border-right: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .droite {
-  right: 14px;
-  border-radius: 0 10px 10px 0;
+  right: 10px;
+  border-radius: 0 9px 9px 0;
   border-left: 1px solid rgba(0, 0, 0, 0.7);
 }
 
 .ouvert .gauche {
-  transform: translateX(calc(-100% - 14px));
+  transform: translateX(calc(-100% - 10px));
 }
 
 .ouvert .droite {
-  transform: translateX(calc(100% + 14px));
+  transform: translateX(calc(100% + 10px));
 }
 
-.ouvert .voile {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Le seuil, sous les portes. */
-.seuil {
-  position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 6px;
-  height: 3px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, #2a2a2a, #4a4a4a, #2a2a2a);
-}
-
-/* « Entrer » : la photo remplit tout le cadre et s'approche. */
-.dedans {
-  padding: 0;
-  border-radius: 16px;
-}
-
+/* « Entrer » : la photo remplit tout le cadre et s'approche, puis la page descend. */
 .dedans .ouverture {
   inset: 0;
-  border-radius: 16px;
+  border-radius: 18px;
 }
 
-.dedans .photo {
-  transform: scale(1.16);
+.dedans .photo,
+.dedans .ouverture:hover .photo {
+  transform: scale(1.18);
 }
 
-.dedans .voile {
-  padding-bottom: 26px;
-}
-
-.dedans .nomEtage {
-  font-size: 22px;
-}
-
-.dedans .seuil {
-  opacity: 0;
-}
-
-/* ---- le tableau d'appel ---- */
-
-.tableau {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 22px 20px;
-  border-radius: 20px;
-  background: linear-gradient(180deg, #141414, #0d0d0d);
-  border: 1px solid #262626;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 20px 50px rgba(0, 0, 0, 0.5);
-}
-
-.etiquette {
-  margin: 0 0 4px;
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--dim, #767676);
-  text-align: center;
-}
-
-.boutons {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+/* La plaque d'appel, au mur à droite des portes. */
+.plaque {
+  display: grid;
+  grid-template-columns: repeat(2, 36px);
+  gap: 8px;
+  padding: 14px 12px;
+  margin-bottom: 40px;
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #2c2c2c, #161616);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
 .appel {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 3px 8px 3px 3px;
-  border: 0;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--dim, #767676);
-  font: inherit;
-  font-size: 14px;
-  text-align: left;
-  cursor: pointer;
-  transition: color 200ms ease, background 200ms ease;
-}
-
-.appel:hover {
-  color: var(--fg, #ededed);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.appel:focus-visible {
-  outline: 2px solid var(--rouge-wfg, #e2231a);
-  outline-offset: 2px;
-}
-
-.rond {
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
-  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #2e2e2e, #141414 70%);
+  background: radial-gradient(circle at 35% 30%, #303030, #121212 70%);
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.14),
     inset 0 -2px 3px rgba(0, 0, 0, 0.7),
     0 2px 4px rgba(0, 0, 0, 0.6);
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  color: #9a9a9a;
+  color: #a0a0a0;
+  cursor: pointer;
   transition: color 200ms ease, box-shadow 200ms ease;
 }
 
-.allume {
-  color: var(--fg, #ededed);
+.appel:hover {
+  color: #fff;
 }
 
-.allume .rond {
+.appel:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.allume {
   color: #ff5a52;
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.14),
     inset 0 -2px 3px rgba(0, 0, 0, 0.7),
-    0 0 0 2px rgba(226, 35, 26, 0.55),
-    0 0 18px rgba(226, 35, 26, 0.45);
+    0 0 0 2px rgba(226, 35, 26, 0.6),
+    0 0 14px rgba(226, 35, 26, 0.5);
 }
 
-.nom {
+/* ---- la zone de texte de l'étage ---- */
+
+.texte {
   flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  max-width: 460px;
+  padding: 26px 28px;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  animation: apparait 600ms var(--ease, ease);
+}
+
+@keyframes apparait {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.numeroEtage {
+  margin: 0 0 8px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: #ff7a73;
+}
+
+.titreEtage {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.phrase {
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .entrer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  margin-top: 6px;
-  padding: 12px 18px;
+  margin-top: 20px;
+  padding: 11px 26px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 999px;
   background: var(--rouge-wfg, #e2231a);
   color: #fff;
   font: inherit;
   font-size: 15px;
   font-weight: 800;
-  letter-spacing: 0.02em;
   cursor: pointer;
   box-shadow: 0 10px 26px rgba(226, 35, 26, 0.35);
-  transition: transform 200ms ease, box-shadow 200ms ease, opacity 300ms ease;
+  transition: transform 200ms ease, opacity 300ms ease;
 }
 
 .entrer:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 14px 32px rgba(226, 35, 26, 0.45);
 }
 
 .entrer:disabled {
-  opacity: 0.35;
+  opacity: 0.45;
   cursor: default;
   box-shadow: none;
 }
@@ -342,43 +315,39 @@
   outline-offset: 2px;
 }
 
-.entrerOu {
-  font-size: 12px;
-  font-weight: 500;
-  opacity: 0.9;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+/* ---- sur téléphone : l'ascenseur, puis le texte dessous ---- */
 
-/* ---- sur téléphone : la cabine, puis le tableau en deux colonnes ---- */
+@media (max-width: 760px) {
+  .lagon {
+    padding: 32px 16px 96px;
+    margin-bottom: 40px;
+  }
 
-@media (max-width: 860px) {
-  .ascenseur {
-    grid-template-columns: 1fr;
+  .scene {
+    flex-direction: column;
     gap: 24px;
-    padding: 20px 16px;
-    margin-bottom: 48px;
   }
 
   .cadre {
-    width: min(100%, 340px);
+    width: 200px;
   }
 
-  .boutons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px 8px;
+  .texte {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .titreEtage {
+    font-size: 22px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .porte,
   .photo,
-  .voile,
-  .cadre,
-  .ouverture {
+  .ouverture,
+  .texte {
     transition: none;
+    animation: none;
   }
 }

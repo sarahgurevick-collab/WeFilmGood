@@ -3,14 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./AscenseurMaison.module.css";
 
-export type EtageMaison = {
-  /** L'identifiant de la section de la page (« etage-<id> ») vers laquelle on entre. */
-  id: string;
-  /** Le nom de l'étage, tel qu'il est écrit sur le tableau d'appel. */
-  nom: string;
-  image: string;
-  alt: string;
-};
+import type { EtageAssociation as EtageMaison } from "@/data/association";
 
 // Les durées, en millisecondes.
 const PORTES = 750; // l'ouverture ou la fermeture des portes
@@ -37,6 +30,11 @@ const charger = (src: string) =>
  * d'appel, le cadran compte les étages, les portes d'acier s'ouvrent sur
  * la photo de l'étage, et « Entrer » descend à la section. À l'arrivée sur
  * la page, la cabine fait la visite toute seule, jusqu'au premier geste.
+ *
+ * 16/10, retour de Sarah : l'ascenseur est posé sur un lagon aux palmiers,
+ * sans cadre gris autour, plus petit, avec à côté la zone de texte de
+ * l'étage (le titre de la section et une phrase de la page). Un clic sur
+ * la photo fait comme « Entrer ».
  */
 export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
   const [affiche, setAffiche] = useState(0); // le numéro sur le cadran
@@ -152,62 +150,73 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
 
   const numero = (k: number) => (k === 0 ? "RDC" : String(k).padStart(2, "0"));
   const actuel = etages[choisi];
+  // Le tableau d'appel comme dans un vrai ascenseur : deux colonnes, le
+  // rez-de-chaussée en bas à gauche, le dernier étage en haut.
+  const rangees: number[][] = [];
+  for (let k = 0; k < etages.length; k += 2) rangees.unshift(k + 1 < etages.length ? [k, k + 1] : [k]);
 
   return (
-    <div className={styles.ascenseur}>
-      <div className={styles.cabine}>
-        <div className={styles.cadran} aria-live="polite" aria-atomic="true">
-          <span className={`${styles.fleche} ${sens === "haut" ? styles.allumee : ""}`} aria-hidden="true">
-            ▲
-          </span>
-          <span className={styles.numero}>{numero(affiche)}</span>
-          <span className={`${styles.fleche} ${sens === "bas" ? styles.allumee : ""}`} aria-hidden="true">
-            ▼
-          </span>
-          <span className={styles.lecteurEcran}>
-            {ouvert ? `${numero(choisi)} — ${actuel.nom}` : `${numero(affiche)}`}
-          </span>
-        </div>
+    <section className={styles.lagon} aria-label="L'ascenseur de la Maison">
+      <div className={styles.scene}>
+        <div className={styles.ascenseur}>
+          <div className={styles.cabine}>
+            <div className={styles.cadran} aria-live="polite" aria-atomic="true">
+              <span className={`${styles.fleche} ${sens === "haut" ? styles.allumee : ""}`} aria-hidden="true">
+                ▲
+              </span>
+              <span className={styles.numero}>{numero(affiche)}</span>
+              <span className={`${styles.fleche} ${sens === "bas" ? styles.allumee : ""}`} aria-hidden="true">
+                ▼
+              </span>
+              <span className={styles.lecteurEcran}>
+                {ouvert ? `${numero(choisi)} — ${actuel.nom}` : `${numero(affiche)}`}
+              </span>
+            </div>
 
-        <div className={`${styles.cadre} ${ouvert ? styles.ouvert : ""} ${dedans ? styles.dedans : ""}`}>
-          <div className={styles.ouverture}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img key={actuel.id} src={actuel.image} alt={actuel.alt} className={styles.photo} />
-            <div className={styles.voile}>
-              <p className={styles.nomEtage}>{actuel.nom}</p>
+            <div className={`${styles.cadre} ${ouvert ? styles.ouvert : ""} ${dedans ? styles.dedans : ""}`}>
+              <button
+                type="button"
+                className={styles.ouverture}
+                onClick={entrer}
+                disabled={!ouvert}
+                aria-label={`Entrer : ${actuel.nom}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img key={actuel.id} src={actuel.image} alt={actuel.alt} className={styles.photo} />
+              </button>
+              <div className={`${styles.porte} ${styles.gauche}`} aria-hidden="true" />
+              <div className={`${styles.porte} ${styles.droite}`} aria-hidden="true" />
             </div>
           </div>
-          <div className={`${styles.porte} ${styles.gauche}`} aria-hidden="true" />
-          <div className={`${styles.porte} ${styles.droite}`} aria-hidden="true" />
-          <div className={styles.seuil} aria-hidden="true" />
-        </div>
-      </div>
 
-      <div className={styles.tableau} role="group" aria-label="Choisir un étage" onKeyDown={clavier}>
-        <p className={styles.etiquette}>Choisir un étage</p>
-        <ol className={styles.boutons}>
-          {[...etages].reverse().map((e, i) => {
-            const k = etages.length - 1 - i;
-            return (
-              <li key={e.id}>
+          <div className={styles.plaque} role="group" aria-label="Choisir un étage" onKeyDown={clavier}>
+            {rangees.map((rangee) =>
+              rangee.map((k) => (
                 <button
+                  key={etages[k].id}
                   type="button"
                   className={`${styles.appel} ${k === choisi ? styles.allume : ""}`}
                   aria-pressed={k === choisi}
+                  aria-label={`${numero(k)} — ${etages[k].nom}`}
+                  title={etages[k].nom}
                   onClick={() => choisir(k)}
                 >
-                  <span className={styles.rond}>{numero(k)}</span>
-                  <span className={styles.nom}>{e.nom}</span>
+                  {numero(k)}
                 </button>
-              </li>
-            );
-          })}
-        </ol>
-        <button type="button" className={styles.entrer} onClick={entrer} disabled={!ouvert}>
-          Entrer
-          <span className={styles.entrerOu}>{actuel.nom}</span>
-        </button>
+              )),
+            )}
+          </div>
+        </div>
+
+        <div className={styles.texte} key={actuel.id}>
+          <p className={styles.numeroEtage}>{numero(choisi)}</p>
+          <p className={styles.titreEtage}>{actuel.titre}</p>
+          {actuel.texte && <p className={styles.phrase}>{actuel.texte}</p>}
+          <button type="button" className={styles.entrer} onClick={entrer} disabled={!ouvert}>
+            Entrer
+          </button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
