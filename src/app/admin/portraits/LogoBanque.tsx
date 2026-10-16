@@ -5,6 +5,15 @@ import styles from "./portraits.module.css";
  * le nom complet est dans l'infobulle et pour les lecteurs d'écran.
  */
 const LOGOS: Record<string, React.ReactNode> = {
+  // Pexels : le « P » blanc sur fond vert.
+  pexels: (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect width="24" height="24" rx="4" fill="#05A081" />
+      <text x="12" y="17.5" textAnchor="middle" fontSize="15" fontWeight="800" fontFamily="Arial, sans-serif" fill="#fff">
+        P
+      </text>
+    </svg>
+  ),
   // Unsplash : deux rectangles, le bas évidé.
   unsplash: (
     <svg viewBox="0 0 24 24" aria-hidden="true">

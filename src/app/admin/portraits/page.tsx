@@ -200,6 +200,7 @@ export default async function PortraitsAdminPage({
     return {
       reel,
       mots,
+      pexels: `https://www.pexels.com/fr-fr/chercher/${encodeURIComponent(mots)}/`,
       unsplash: `https://unsplash.com/fr/s/photos/${encodeURIComponent(mots.replace(/\s+/g, "-"))}`,
       google: `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(mots)}`,
       adobe: `https://stock.adobe.com/fr/search/free?k=${encodeURIComponent(mots)}`,
@@ -261,6 +262,7 @@ export default async function PortraitsAdminPage({
                         <LogoBanque href={c.commons} titre="Chercher sur Wikimedia Commons" nom="commons" />
                       ) : (
                         <>
+                          <LogoBanque href={c.pexels} titre="Chercher sur Pexels" nom="pexels" />
                           <LogoBanque href={c.unsplash} titre="Chercher sur Unsplash" nom="unsplash" />
                           <LogoBanque href={c.google} titre="Chercher sur Google Images" nom="google" />
                           <LogoBanque href={c.adobe} titre="Chercher sur Adobe Stock (gratuit)" nom="adobe" />
