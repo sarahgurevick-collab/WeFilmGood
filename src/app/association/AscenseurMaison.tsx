@@ -9,7 +9,8 @@ import type { EtageAssociation as EtageMaison } from "@/data/association";
 const PORTES = 750; // l'ouverture ou la fermeture des portes
 const PAS_ETAGE = 340; // le temps de passer d'un étage au suivant
 const DELAI_DEPART = 1200; // avant que les portes s'ouvrent, à l'arrivée sur la page
-const ARRET = 4500; // le temps que la cabine reste ouverte à chaque étage pendant la visite
+const ARRET = 4500;
+const ZOOM = 650; // la photo qui grandit jusqu'au bord du boîtier, ou qui revient // le temps que la cabine reste ouverte à chaque étage pendant la visite
 
 const attendre = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
 
@@ -33,15 +34,24 @@ const charger = (src: string) =>
  *
  * 16/10, retour de Sarah : l'ascenseur est posé sur un lagon aux palmiers,
  * sans cadre gris autour, plus petit, avec à côté la zone de texte de
- * l'étage (le titre de la section et une phrase de la page). Un clic sur
- * la photo fait comme « Entrer ».
+ * l'étage (le titre de la section et une phrase de la page).
+ *
+ * Comme dans l'original : l'ascenseur tient dans un petit boîtier (cadran,
+ * portes, plaque d'appel) ; un clic sur la photo la fait grandir jusqu'à
+ * remplir tout le boîtier, et un clic n'importe où (ou la croix ×, ou
+ * Échap) ramène à l'ascenseur. « Entrer » descend à la section.
  */
 export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
   const [affiche, setAffiche] = useState(0); // le numéro sur le cadran
   const [choisi, setChoisi] = useState(0); // l'étage derrière les portes
   const [ouvert, setOuvert] = useState(false);
   const [sens, setSens] = useState<"haut" | "bas" | null>(null);
-  const [dedans, setDedans] = useState(false);
+  // La photo en grand dans le boîtier : « depart » = posée sur les portes,
+  // « grand » = tout le boîtier, « retour » = elle revient sur les portes.
+  const [zoom, setZoom] = useState<"non" | "depart" | "grand" | "retour">("non");
+  const [place, setPlace] = useState({ top: 0, left: 0, right: 0, bottom: 0 });
+  const boitier = useRef<HTMLDivElement | null>(null);
+  const baie = useRef<HTMLButtonElement | null>(null);
   const [visite, setVisite] = useState(true); // la visite automatique
   const [reduit, setReduit] = useState(false);
   const course = useRef(0); // le jeton de la course en cours : une nouvelle annule l'ancienne
@@ -65,7 +75,6 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
       if (k < 0 || k >= etages.length) return;
       const jeton = ++course.current;
       const vivant = () => course.current === jeton;
-      setDedans(false);
       if (k === position.current && portesOuvertes.current) return;
       const sansMouvement = reduitRef.current;
 
@@ -125,12 +134,50 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
 
   const entrer = () => {
     setVisite(false);
-    setDedans(true);
-    const section = document.getElementById(`etage-${etages[choisi].id}`);
-    window.setTimeout(() => {
-      section?.scrollIntoView({ behavior: reduit ? "auto" : "smooth", block: "start" });
-    }, reduit ? 0 : 700);
+    document
+      .getElementById(`etage-${etages[choisi].id}`)
+      ?.scrollIntoView({ behavior: reduit ? "auto" : "smooth", block: "start" });
   };
+
+  // La place des portes dans le boîtier : c'est de là que la photo part et là qu'elle revient.
+  const mesurer = () => {
+    const b = boitier.current?.getBoundingClientRect();
+    const o = baie.current?.getBoundingClientRect();
+    if (!b || !o) return;
+    setPlace({ top: o.top - b.top, left: o.left - b.left, right: b.right - o.right, bottom: b.bottom - o.bottom });
+  };
+
+  const agrandir = () => {
+    if (!ouvert) return;
+    setVisite(false);
+    mesurer();
+    if (reduit) {
+      setZoom("grand");
+      return;
+    }
+    setZoom("depart");
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => setZoom("grand")));
+  };
+
+  const revenir = () => {
+    if (reduit) {
+      setZoom("non");
+      return;
+    }
+    mesurer();
+    setZoom("retour");
+    window.setTimeout(() => setZoom((z) => (z === "retour" ? "non" : z)), ZOOM);
+  };
+
+  // Échap ramène à l'ascenseur.
+  useEffect(() => {
+    if (zoom !== "grand") return;
+    const touche = (e: KeyboardEvent) => {
+      if (e.key === "Escape") revenir();
+    };
+    window.addEventListener("keydown", touche);
+    return () => window.removeEventListener("keydown", touche);
+  });
 
   const clavier = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowUp") {
@@ -158,7 +205,7 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
   return (
     <section className={styles.lagon} aria-label="L'ascenseur de la Maison">
       <div className={styles.scene}>
-        <div className={styles.ascenseur}>
+        <div className={styles.ascenseur} ref={boitier}>
           <div className={styles.cabine}>
             <div className={styles.cadran} aria-live="polite" aria-atomic="true">
               <span className={`${styles.fleche} ${sens === "haut" ? styles.allumee : ""}`} aria-hidden="true">
@@ -173,13 +220,14 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
               </span>
             </div>
 
-            <div className={`${styles.cadre} ${ouvert ? styles.ouvert : ""} ${dedans ? styles.dedans : ""}`}>
+            <div className={`${styles.cadre} ${ouvert ? styles.ouvert : ""}`}>
               <button
+                ref={baie}
                 type="button"
                 className={styles.ouverture}
-                onClick={entrer}
+                onClick={agrandir}
                 disabled={!ouvert}
-                aria-label={`Entrer : ${actuel.nom}`}
+                aria-label={`Voir la photo en grand : ${actuel.nom}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img key={actuel.id} src={actuel.image} alt={actuel.alt} className={styles.photo} />
@@ -206,6 +254,29 @@ export default function AscenseurMaison({ etages }: { etages: EtageMaison[] }) {
               )),
             )}
           </div>
+
+          {zoom !== "non" && (
+            <div
+              className={`${styles.grand} ${zoom === "grand" ? styles.plein : ""}`}
+              style={zoom === "grand" ? { top: 0, left: 0, right: 0, bottom: 0 } : place}
+              onClick={revenir}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={actuel.image} alt={actuel.alt} />
+              <p className={`${styles.grandNom} ${zoom === "grand" ? styles.visible : ""}`}>{actuel.nom}</p>
+              <button
+                type="button"
+                className={`${styles.fermer} ${zoom === "grand" ? styles.visible : ""}`}
+                aria-label="Fermer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  revenir();
+                }}
+              >
+                ×
+              </button>
+            </div>
+          )}
         </div>
 
         <div className={styles.texte} key={actuel.id}>
