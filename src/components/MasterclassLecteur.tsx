@@ -4,7 +4,12 @@ import { useState } from "react";
 import RoueTitres from "./RoueTitres";
 import styles from "./MasterclassLecteur.module.css";
 
-export type Masterclass = { titre: string; vimeoId: string };
+export type Masterclass = {
+  titre: string;
+  vimeoId: string;
+  /** Le film dont parle la masterclass, en italique sous le titre (16/10). */
+  film?: string;
+};
 
 /** « Jacques FIESCHI - Cannes 2012 » → le nom, puis le festival et l'année. */
 function decouper(titre: string): { nom: string; sous: string } {
@@ -32,7 +37,7 @@ export default function MasterclassLecteur({
   const actuelle = masterclasses.find((m) => m.vimeoId === id) ?? masterclasses[0];
   const titres = masterclasses.map((m) => {
     const { nom, sous } = decouper(m.titre);
-    return { id: m.vimeoId, label: nom, sous };
+    return { id: m.vimeoId, label: nom, sous, dessous: m.film };
   });
 
   return (

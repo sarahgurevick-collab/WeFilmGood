@@ -67,6 +67,14 @@
   display: block;
 }
 
+.dessous {
+  display: block;
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--dim);
+}
+
 .sous {
   display: block;
   margin-left: 10px;

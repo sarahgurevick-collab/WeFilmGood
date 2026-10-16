@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./RoueTitres.module.css";
 
-export type TitreRoue = { id: string; label: string; sous?: string };
+export type TitreRoue = {
+  id: string;
+  label: string;
+  sous?: string;
+  /** Une ligne en italique sous le titre (ex. le film d'une masterclass). */
+  dessous?: string;
+};
 
 /**
  * La roue des titres (15/10/2026, Sarah, d'après le « Wheel Carousel » de
@@ -193,7 +199,10 @@ export default function RoueTitres({
             tabIndex={-1}
           >
             <span className={styles.point} aria-hidden="true" />
-            <span className={styles.label}>{t.label}</span>
+            <span className={styles.label}>
+              {t.label}
+              {t.dessous && <em className={styles.dessous}>{t.dessous}</em>}
+            </span>
             {t.sous && <span className={styles.sous}>{t.sous}</span>}
           </button>
         );
