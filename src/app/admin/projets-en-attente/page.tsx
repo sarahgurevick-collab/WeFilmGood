@@ -111,16 +111,21 @@ export default async function ProjetsEnAttentePage() {
   // plutôt que de les faire retenir.
   const { data: voyants } = await supabase
     .from("reader_profiles")
-    .select("profile_id, availability_status, formats")
-    .returns<{ profile_id: string; availability_status: string; formats: string[] | null }[]>();
+    .select("profile_id, availability_status, formats, langues")
+    .returns<{ profile_id: string; availability_status: string; formats: string[] | null; langues: string[] | null }[]>();
 
   // Les formats que chaque lecteur peut lire (27/09) : un lecteur n'est
   // proposé que pour les projets de ses formats ; sans aucun format, il
   // n'est plus proposé du tout.
   const formatsDe = new Map((voyants ?? []).map((v) => [v.profile_id, v.formats]));
-  const peutLire = (lecteur: string, format: string | null) => {
+  // Et les langues qu'il a lui-même cochées dans son profil (16/10).
+  const languesDe = new Map((voyants ?? []).map((v) => [v.profile_id, v.langues]));
+  const peutLire = (lecteur: string, format: string | null, langue: string | null) => {
     const formats = formatsDe.get(lecteur);
-    return !formats || (format ? formats.includes(format) : formats.length > 0);
+    const langues = languesDe.get(lecteur);
+    const formatOk = !formats || (format ? formats.includes(format) : formats.length > 0);
+    const langueOk = !langues || (langue ? langues.includes(langue) : langues.length > 0);
+    return formatOk && langueOk;
   };
 
   // Pour la colonne « Lecteurs assignés » : l'état de la mission et le jour
@@ -234,7 +239,7 @@ export default async function ProjetsEnAttentePage() {
                           Email du lecteur
                         </option>
                         {GROUPES.map(({ couleur, libelle }) => {
-                          const lecteurs = parVoyant(couleur).filter((r) => peutLire(r.profile_id, p.format));
+                          const lecteurs = parVoyant(couleur).filter((r) => peutLire(r.profile_id, p.format, p.language));
                           if (lecteurs.length === 0) return null;
                           return (
                             <optgroup key={couleur} label={libelle}>

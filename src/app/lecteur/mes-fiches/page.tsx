@@ -19,6 +19,7 @@ export default async function MesFichesPage() {
     <PageShell
       eyebrow="Espace lecteur"
       title="Mes fiches de lecture"
+      nav="lectures"
       theme="clair"
     >
       <FichesDuLecteur supabase={supabase} userId={user.id} lienProjets />

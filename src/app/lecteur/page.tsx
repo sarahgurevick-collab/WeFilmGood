@@ -55,7 +55,7 @@ export default async function LecteurPage() {
   const enAttente = (assignments ?? []).filter((a) => a.status === "proposee").length;
 
   return (
-    <PageShell title="Mes lectures" theme="clair">
+    <PageShell title="Mes lectures" nav="lectures" theme="clair">
       {/* La phrase de WFG 1, avec son interrupteur OUI / NON (16/10). L'orange
           ne se choisit pas : la plateforme l'allume quand une lecture est
           acceptée, et l'éteint quand la fiche est rendue. */}

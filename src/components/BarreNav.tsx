@@ -15,23 +15,40 @@ export default async function BarreNav({
   actif,
   connecte,
 }: {
-  actif?: "pitchotheque" | "deposer" | "messages" | "profil" | "admin";
+  actif?: "pitchotheque" | "deposer" | "messages" | "profil" | "lectures" | "admin";
   connecte: boolean;
 }) {
   // Le nombre de messages en attente, même pour un membre sans adhésion :
   // il ne peut pas les ouvrir, mais il doit voir qu'ils l'attendent.
   let messagesNonLus = 0;
   let estAdmin = false;
+  let estLecteur = false;
   if (connecte) {
     const supabase = await createClient();
-    const [{ data }, { data: admin }] = await Promise.all([
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const [{ data }, { data: admin }, { data: roleLecteur }] = await Promise.all([
       supabase.rpc("compter_messages_non_lus"),
       supabase.rpc("is_admin"),
+      supabase
+        .from("profile_roles")
+        .select("role_slug")
+        .eq("profile_id", user?.id ?? "")
+        .eq("role_slug", "lecteur")
+        .maybeSingle(),
     ]);
     messagesNonLus = typeof data === "number" ? data : 0;
     estAdmin = admin === true;
+    // Un lecteur n'a pas accès à la plateforme : sa barre n'a que ses deux pages.
+    estLecteur = !!roleLecteur && !estAdmin;
   }
-  const onglets = [
+  const onglets = estLecteur
+    ? ([
+        { cle: "lectures", href: "/lecteur", label: "Mes lectures" },
+        { cle: "profil", href: "/lecteur/profil", label: "Mon profil" },
+      ] as const)
+    : [
     { cle: "pitchotheque", href: "/pitchotheque", label: "Galaxies" },
     // La liste de ses fiches (ou la création s'il n'en a aucune). Un
     // visiteur non connecté n'a rien à y faire : pas d'onglet (26/09).

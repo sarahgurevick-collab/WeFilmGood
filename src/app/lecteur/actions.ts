@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { LANGUES_LECTURE } from "@/lib/langues";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -98,4 +99,22 @@ export async function respondToAssignment(formData: FormData) {
   }
 
   revalidatePath("/lecteur");
+}
+
+/** Les langues que le lecteur accepte de lire, cochées depuis son profil (16/10). */
+export async function choisirLanguesLues(formData: FormData) {
+  const { supabase, user } = await requireReader();
+
+  const coches = formData
+    .getAll("langue")
+    .map(String)
+    .filter((l) => LANGUES_LECTURE.includes(l));
+  const langues = coches.length === LANGUES_LECTURE.length ? null : coches;
+
+  await supabase
+    .from("reader_profiles")
+    .upsert({ profile_id: user.id, langues, updated_at: new Date().toISOString() });
+
+  revalidatePath("/admin/projets-en-attente");
+  redirect("/lecteur/profil?enregistre=1");
 }
