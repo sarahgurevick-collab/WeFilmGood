@@ -317,3 +317,14 @@
   width: 22px;
   height: 22px;
 }
+
+/* Le nom d'un personnage qui ouvre sa fiche : souligné pour se voir cliquable. */
+.nomLien {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.nomLien:hover {
+  color: var(--rouge-wfg);
+}

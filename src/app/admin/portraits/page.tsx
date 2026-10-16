@@ -304,7 +304,19 @@ export default async function PortraitsAdminPage({
                     <li key={p.id} className={styles.carte}>
                       <label className={styles.caseSuppression}>
                         <input type="checkbox" name="ids" value={p.id} />
-                        <span className={styles.nom}>{p.name}</span>
+                        {/* Le nom ouvre la fiche, avec les autres personnages du projet (16/10, Sarah). */}
+                        {p.project ? (
+                          <Link
+                            href={`/projet/${p.project.id}/personnages`}
+                            className={`${styles.nom} ${styles.nomLien}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {p.name}
+                          </Link>
+                        ) : (
+                          <span className={styles.nom}>{p.name}</span>
+                        )}
                       </label>
                       {p.project && <p className={styles.projet}>« {p.project.title} »</p>}
                       {infos && <p className={styles.projet}>{infos}</p>}
