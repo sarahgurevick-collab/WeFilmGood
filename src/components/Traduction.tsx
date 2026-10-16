@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import styles from "./Traduction.module.css";
-import { useEmplacementEntete } from "./useEmplacementEntete";
+import { useCacheAuDefilement, useEmplacementEntete } from "./useEmplacementEntete";
 
 /**
  * La traduction automatique de tout le site, par Google Traduction.
  *
  * Un « globe » dans la barre du haut, à côté du Menu, pour les membres
- * connectés ; pour les autres (et sur les pages sans barre), un rond en
+ * connectés ; sur les pages sans barre visible (téléphone), un petit rond en
+ * haut à droite qui se retire quand on lit ; pour les visiteurs, un rond en
  * bas à droite, à côté du bouton de contact. On choisit sa langue, la page se recharge traduite,
  * et le choix suit la personne de page en page (cookie « googtrans »,
  * celui que lit le module de Google).
@@ -60,11 +61,12 @@ function poserCookie(valeur: string | null) {
 // serveur, qui ne le voit pas, affiche le français.
 const sAbonner = () => () => {};
 
-export default function Traduction() {
+export default function Traduction({ enHaut = false }: { enHaut?: boolean }) {
   const langue = useSyncExternalStore(sAbonner, langueChoisie, () => "fr");
   const [ouvert, setOuvert] = useState(false);
   const zone = useRef<HTMLDivElement | null>(null);
   const emplacement = useEmplacementEntete();
+  const defile = useCacheAuDefilement();
 
   useEffect(() => {
     if (langueChoisie() === "fr" || document.getElementById("script-traduction")) return;
@@ -104,7 +106,9 @@ export default function Traduction() {
   const globe = (
     <div
       ref={zone}
-      className={`${styles.zone} ${emplacement ? styles.enEntete : ""} notranslate`}
+      className={`${styles.zone} ${emplacement ? styles.enEntete : enHaut ? styles.enHaut : ""} ${
+        !emplacement && enHaut && defile && !ouvert ? styles.retire : ""
+      } notranslate`}
       translate="no"
     >
       <div id="traduction-google" className={styles.cache} />

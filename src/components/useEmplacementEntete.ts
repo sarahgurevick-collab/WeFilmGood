@@ -33,3 +33,28 @@ export function useEmplacementEntete(): HTMLElement | null | undefined {
 
   return emplacement;
 }
+
+/**
+ * Vrai pendant le défilement et une demi-seconde après : les ronds rangés
+ * en haut de l'écran se retirent pour ne pas gêner la lecture, comme la
+ * bande blanche.
+ */
+export function useCacheAuDefilement(): boolean {
+  const [cache, setCache] = useState(false);
+
+  useEffect(() => {
+    let minuteur: ReturnType<typeof setTimeout> | undefined;
+    const surDefilement = () => {
+      setCache(true);
+      clearTimeout(minuteur);
+      minuteur = setTimeout(() => setCache(false), 500);
+    };
+    window.addEventListener("scroll", surDefilement, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", surDefilement);
+      clearTimeout(minuteur);
+    };
+  }, []);
+
+  return cache;
+}

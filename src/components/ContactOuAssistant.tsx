@@ -39,6 +39,7 @@ export default function ContactOuAssistant() {
 
   // Connecté sans tchat : c'est un lecteur.
   const lecteur = !etat.actif && etat.connecte === true;
+  const membre = etat.actif ? !etat.visiteur : false;
 
   return (
     <>
@@ -53,7 +54,7 @@ export default function ContactOuAssistant() {
       ) : (
         <BoutonContact connecte={etat.connecte ?? false} nom={etat.nom ?? ""} email={etat.email ?? ""} />
       )}
-      {!lecteur && <Traduction />}
+      {!lecteur && <Traduction enHaut={membre} />}
     </>
   );
 }

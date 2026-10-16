@@ -6,7 +6,7 @@ import { envoyerMessageContact } from "@/app/actions";
 import { EVENEMENT_CONTACT } from "./BoutonDevis";
 import contact from "./BoutonContact.module.css";
 import styles from "./Assistant.module.css";
-import { useEmplacementEntete } from "./useEmplacementEntete";
+import { useCacheAuDefilement, useEmplacementEntete } from "./useEmplacementEntete";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -50,6 +50,7 @@ export default function Assistant({
   const [transmission, setTransmission] = useState<"non" | "envoi" | "fait" | "erreur">("non");
   const fil = useRef<HTMLDivElement>(null);
   const emplacement = useEmplacementEntete();
+  const defile = useCacheAuDefilement();
 
   // « Demander un devis » ouvre l'assistant avec la demande déjà commencée.
   useEffect(() => {
@@ -153,12 +154,22 @@ export default function Assistant({
 
   if (emplacement === undefined) return null;
 
+  // Un membre sans barre visible (téléphone) : le rond se range en haut à
+  // droite, petit, au lieu de masquer le texte en bas.
+  const enHaut = !emplacement && !visiteur;
+
   // La tête de la chouette, celle qui converse (26/09). Dans la barre du
   // haut, à côté du Menu, pour les membres connectés ; sinon en bas à droite.
   const bouton = (
     <button
       type="button"
-      className={emplacement ? styles.ronEntete : `${contact.bouton} ${styles.rond}`}
+      className={
+        emplacement
+          ? styles.ronEntete
+          : enHaut
+            ? `${styles.ronHaut} ${defile ? styles.retire : ""}`
+            : `${contact.bouton} ${styles.rond}`
+      }
       onClick={() => setOuvert((o) => !o)}
       aria-label="Poser une question"
       title="Poser une question"
@@ -173,7 +184,7 @@ export default function Assistant({
       {emplacement ? createPortal(bouton, emplacement) : bouton}
 
       {ouvert && (
-        <div className={`${contact.panneau} ${styles.panneau} ${emplacement ? styles.panneauEntete : ""}`}>
+        <div className={`${contact.panneau} ${styles.panneau} ${emplacement || enHaut ? styles.panneauEntete : ""}`}>
           <button type="button" className={contact.fermer} onClick={() => setOuvert(false)} aria-label="Fermer">
             ×
           </button>
