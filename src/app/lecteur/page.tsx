@@ -6,15 +6,7 @@ import styles from "./lecteur.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { respondToAssignment, updateAvailability } from "./actions";
 import { nomDeLangue } from "@/lib/langues";
-
-/**
- * L'orange ne se choisit pas : la plateforme l'allume quand une lecture
- * est acceptée, et l'éteint quand la fiche est rendue.
- */
-const VOYANTS = [
-  { value: "vert", label: "Disponible" },
-  { value: "rouge", label: "Indisponible" },
-];
+import FichesDuLecteur from "./FichesDuLecteur";
 
 type Assignment = {
   id: string;
@@ -58,56 +50,57 @@ export default async function LecteurPage() {
     .order("assigned_at", { ascending: true })
     .returns<Assignment[]>();
 
-  const current = readerProfile?.availability_status ?? "vert";
+  const accepte = (readerProfile?.availability_status ?? "vert") === "vert";
   const enLecture = (assignments ?? []).some((a) => a.status === "en_cours");
   const enAttente = (assignments ?? []).filter((a) => a.status === "proposee").length;
 
   return (
-    <PageShell eyebrow="Espace lecteur" title="Mes lectures" theme="clair">
+    <PageShell title="Mes lectures" theme="clair">
+      {/* La phrase de WFG 1, avec son interrupteur OUI / NON (16/10). L'orange
+          ne se choisit pas : la plateforme l'allume quand une lecture est
+          acceptée, et l'éteint quand la fiche est rendue. */}
       {enLecture ? (
         <div className={formStyles.field}>
-          <span>Ma disponibilité</span>
           <p className={styles.etat}>
             <span className={`${styles.dot} ${styles.orange}`} aria-hidden="true" />
             En cours de lecture
           </p>
           <span className={formStyles.hint}>
-            Votre disponibilité se rouvrira dès que vous aurez rendu votre fiche.
+            Vous pourrez de nouveau recevoir des lectures dès que vous aurez rendu votre fiche.
           </span>
         </div>
       ) : (
         <form className={formStyles.field} action={updateAvailability}>
-          <span>Ma disponibilité</span>
-          <div className={styles.choix}>
-            {VOYANTS.map((v) => (
-              <button
-                key={v.value}
-                type="submit"
-                name="availability_status"
-                value={v.value}
-                className={current === v.value ? styles.choixActif : styles.choixBouton}
-              >
-                <span className={`${styles.dot} ${styles[v.value]}`} aria-hidden="true" />
-                {v.label}
-              </button>
-            ))}
+          <div className={styles.accepte}>
+            <span className={styles.accepteTexte}>Accepter de recevoir des nouvelles lectures</span>
+            <button
+              type="submit"
+              name="availability_status"
+              value={accepte ? "rouge" : "vert"}
+              role="switch"
+              aria-checked={accepte}
+              aria-label="Accepter de recevoir des nouvelles lectures"
+              className={`${styles.interrupteur} ${accepte ? styles.interrupteurOui : ""}`}
+            >
+              <span className={styles.interrupteurMot}>{accepte ? "OUI" : "NON"}</span>
+              <span className={styles.interrupteurRond} aria-hidden="true" />
+            </button>
           </div>
           {enAttente > 0 && (
             <span className={formStyles.hint}>
-              Vous mettre en indisponible refusera {enAttente > 1 ? "les projets" : "le projet"}{" "}
-              qui {enAttente > 1 ? "vous sont proposés" : "vous est proposé"}.
+              Refuser de recevoir des lectures refusera le projet qui vous est proposé.
             </span>
           )}
         </form>
       )}
 
-      <h2 className={styles.subhead}>Projets qui me sont attribués</h2>
+      <h2 className={styles.subhead}>Projet qui m&apos;est attribué</h2>
 
       {(assignments ?? []).length === 0 ? (
         <p className={formStyles.hint}>
           Aucun projet en attente. Un membre de l&apos;équipe de la Maison des
-          Scénaristes/WeFilmGood vous en attribuera un lorsque votre voyant sera
-          au vert.
+          Scénaristes/WeFilmGood vous en attribuera un lorsque vous aurez
+          accepté de recevoir des nouvelles lectures.
         </p>
       ) : (
         <ul className={styles.list}>
@@ -149,9 +142,8 @@ export default async function LecteurPage() {
         </ul>
       )}
 
-      <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
-        <Link href="/lecteur/mes-fiches">Voir mes fiches de lecture</Link>
-      </p>
+      <h2 className={styles.subhead}>Mes fiches de lecture</h2>
+      <FichesDuLecteur supabase={supabase} userId={user.id} />
 
       <form action="/deconnexion" method="post" style={{ marginTop: 24 }}>
         <button type="submit" className={styles.linkButton}>

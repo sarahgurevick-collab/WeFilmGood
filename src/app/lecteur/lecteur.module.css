@@ -211,3 +211,87 @@
 .zone_rouge { color: #d14b43; }
 .zone_orange { color: #c07a12; }
 .zone_vert { color: #2f7d4f; }
+
+/* La phrase de WFG 1 et son interrupteur OUI / NON. */
+.accepte {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+
+.accepteTexte {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.interrupteur {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 96px;
+  height: 44px;
+  padding: 0 14px;
+  border: 3px solid #111;
+  border-radius: 999px;
+  background: #8d8d8d;
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.interrupteurOui {
+  background: #c94034;
+}
+
+.interrupteurRond {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  width: 26px;
+  height: 26px;
+  margin-top: -13px;
+  border: 3px solid #8d8d8d;
+  border-radius: 999px;
+  background: #fff;
+  transition: left 0.2s ease;
+}
+
+.interrupteurOui .interrupteurRond {
+  left: calc(100% - 32px);
+}
+
+.interrupteurMot {
+  position: relative;
+  z-index: 1;
+}
+
+.interrupteurOui .interrupteurMot {
+  margin-right: auto;
+}
+
+.interrupteur:not(.interrupteurOui) .interrupteurMot {
+  margin-left: auto;
+}
+
+/* Les fiches de lecture : un ascenseur dès que la liste est longue, l'en-tête
+   des colonnes reste en haut. */
+.defile {
+  max-height: 420px;
+  overflow-y: auto;
+  border: 1px solid var(--bordure-douce);
+  padding: 0 16px;
+}
+
+.defile .table {
+  margin-top: 0;
+}
+
+.defile .table th {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+}

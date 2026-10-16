@@ -56,9 +56,12 @@ export default async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const dejaAutorise = CHEMINS_LECTEUR.some(
-    (p) => path === p || path.startsWith(`${p}/`),
-  );
+  // La question « qui est là ? » du tchat (GET seulement) : sans elle, la
+  // page ne sait pas que c'est un lecteur et lui montre le formulaire des
+  // visiteurs et le globe de traduction.
+  const dejaAutorise =
+    (request.method === "GET" && path === "/api/assistant") ||
+    CHEMINS_LECTEUR.some((p) => path === p || path.startsWith(`${p}/`));
 
   if (user && !dejaAutorise) {
     const [{ data: role }, { data: isAdmin }] = await Promise.all([
