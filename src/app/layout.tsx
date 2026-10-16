@@ -4,7 +4,6 @@ import ContactOuAssistant from "@/components/ContactOuAssistant";
 import EnregistrerServiceWorker from "@/components/EnregistrerServiceWorker";
 import HorsAdmin from "@/components/HorsAdmin";
 import InviterInstallation from "@/components/InviterInstallation";
-import Traduction from "@/components/Traduction";
 import "./globals.css";
 
 const sans = Nunito({
@@ -35,10 +34,9 @@ export default function RootLayout({
     <html lang="fr" className={sans.variable}>
       <body>
         {children}
-        {/* Contact (ou assistant) et traduction servent les membres, pas l'administration. */}
+        {/* Contact (ou assistant) et traduction (posée par ContactOuAssistant) servent les membres, pas l'administration. */}
         <HorsAdmin>
           <ContactOuAssistant />
-          <Traduction />
         </HorsAdmin>
         <EnregistrerServiceWorker />
         <InviterInstallation />
