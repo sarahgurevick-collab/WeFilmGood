@@ -398,10 +398,38 @@ export const PRODUCTEURS: { nom: string; lien?: string }[] = [
  * `titre` = le titre de la section ; `texte` = une phrase déjà écrite sur
  * la page (rien d'inventé), montrée à côté de l'ascenseur.
  */
-export type EtageAssociation = { id: string; nom: string; titre: string; texte?: string; image: string; alt: string };
+export type EtageAssociation = {
+  id: string;
+  nom: string;
+  titre: string;
+  texte?: string;
+  image: string;
+  alt: string;
+  /** Des affiches à la place de la photo : « Entrer » les range dans le cadre de droite. */
+  affiches?: AfficheMaison[];
+};
+
+/**
+ * Les affiches de la Maison des Scénaristes au Festival de Cannes, reprises
+ * de « Nos affiches à Cannes » sur maisondesscenaristes.org (17/10/2026),
+ * avec le nom de leur auteur tel qu'il y est écrit.
+ */
+export type AfficheMaison = { image: string; annee: number; auteur: string };
+
+export const AFFICHES: AfficheMaison[] = [
+  { image: "/association/affiches/2012.jpg", annee: 2012, auteur: "Anjaya" },
+  { image: "/association/affiches/2013.jpg", annee: 2013, auteur: "Romain Ceccaldi" },
+  { image: "/association/affiches/2014.jpg", annee: 2014, auteur: "Romain Ceccaldi" },
+  { image: "/association/affiches/2015.jpg", annee: 2015, auteur: "Leila Haloui" },
+  { image: "/association/affiches/2016.jpg", annee: 2016, auteur: "Eric Malacchina" },
+  { image: "/association/affiches/2017.jpg", annee: 2017, auteur: "Roxanne Brennen" },
+  { image: "/association/affiches/2018.jpg", annee: 2018, auteur: "Lola Penicaud" },
+  { image: "/association/affiches/2019.jpg", annee: 2019, auteur: "Joséphine Rigon" },
+];
 
 export const ETAGES: EtageAssociation[] = [
-  { id: "philosophie", nom: "Philosophie", titre: "Philosophie", texte: PHILOSOPHIE[0], image: "/association/rencontres/01.jpg", alt: "La terrasse du pavillon des Scénaristes au Festival de Cannes" },
+  // Le rez-de-chaussée (Sarah, 17/10) : le titre « Notre histoire : 2012 - 2026 », les affiches de la Maison en photo.
+  { id: "philosophie", nom: "Notre histoire", titre: "Notre histoire : 2012 - 2026", texte: PHILOSOPHIE[0], image: AFFICHES[0].image, alt: "Les affiches de la Maison des Scénaristes au Festival de Cannes", affiches: AFFICHES },
   { id: "chiffres", nom: "Nos stats", titre: "Nos stats depuis notre naissance en 2012", image: "/association/rencontres/13.jpg", alt: "Les rencontres au Festival de Clermont-Ferrand" },
   { id: "histoire", nom: "Notre Histoire", titre: "Notre Histoire", texte: `${HISTOIRE[0].date} : ${HISTOIRE[0].texte}`, image: "/association/rencontres/02.jpg", alt: "Un rendez-vous au pavillon de la Maison des Scénaristes, Festival de Cannes" },
   { id: "films", nom: "Projets sélectionnés", titre: "Projets sélectionnés 2012-2026", image: "/association/films/les-bienheureux.jpg", alt: "« Les Bienheureux » de Sofia Djama à la Mostra de Venise" },
