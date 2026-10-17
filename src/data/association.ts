@@ -430,8 +430,9 @@ export const AFFICHES: AfficheMaison[] = [
 export const ETAGES: EtageAssociation[] = [
   // Le rez-de-chaussée (Sarah, 17/10) : le titre « Notre histoire : 2012 - 2026 », les affiches de la Maison en photo.
   { id: "philosophie", nom: "Notre histoire", titre: "Notre histoire : 2012 - 2026", texte: PHILOSOPHIE[0], image: AFFICHES[0].image, alt: "Les affiches de la Maison des Scénaristes au Festival de Cannes", affiches: AFFICHES },
-  { id: "chiffres", nom: "Nos stats", titre: "Nos stats depuis notre naissance en 2012", image: "/association/rencontres/13.jpg", alt: "Les rencontres au Festival de Clermont-Ferrand" },
-  { id: "histoire", nom: "Notre Histoire", titre: "Notre Histoire", texte: `${HISTOIRE[0].date} : ${HISTOIRE[0].texte}`, image: "/association/rencontres/02.jpg", alt: "Un rendez-vous au pavillon de la Maison des Scénaristes, Festival de Cannes" },
+  // Étages 1 et 2 renommés par Sarah le 17/10.
+  { id: "chiffres", nom: "Inauguration du 1er pavillon des Scénaristes au Festival de Cannes en 2012", titre: "Inauguration du 1er pavillon des Scénaristes au Festival de Cannes en 2012", image: "/association/rencontres/13.jpg", alt: "Les rencontres au Festival de Clermont-Ferrand" },
+  { id: "histoire", nom: "2eme année à Cannes et la 1ere édition à Paris Courts Devant", titre: "2eme année à Cannes et la 1ere édition à Paris Courts Devant", texte: `${HISTOIRE[0].date} : ${HISTOIRE[0].texte}`, image: "/association/rencontres/02.jpg", alt: "Un rendez-vous au pavillon de la Maison des Scénaristes, Festival de Cannes" },
   { id: "films", nom: "Projets sélectionnés", titre: "Projets sélectionnés 2012-2026", image: "/association/films/les-bienheureux.jpg", alt: "« Les Bienheureux » de Sofia Djama à la Mostra de Venise" },
   { id: "wall-of-fame", nom: "Wall of Fame", titre: "Wall of Fame", image: "/association/films/you-will-die-at-twenty.jpg", alt: "« You Will Die at Twenty », prix à la Mostra de Venise" },
   { id: "rencontres", nom: "Rencontres Auteurs-Producteurs", titre: "Rencontres Auteurs-Producteurs à la Maison des Scénaristes", texte: "Festival de Cannes, Festival de Clermont-Ferrand, Festival Séries Mania et 360 Film Festival", image: "/association/rencontres/03.jpg", alt: "Une rencontre auteur-producteur au Festival de Cannes" },
