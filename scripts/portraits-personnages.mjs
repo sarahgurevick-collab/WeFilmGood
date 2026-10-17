@@ -18,6 +18,18 @@
 //         note le suivi (table portraits_suivi, migration 0121)
 //   node scripts/portraits-personnages.mjs fiche <dossier>
 //       → ~/exports : la fiche des « moyens » et des « sans portrait »
+//
+// Seconde passe (17/10/2026, accord de Sarah) : PASSE=2 devant lot, chercher
+// et poser. Elle reprend les personnages restés « rien » au premier tour,
+// avec une recherche plus simple (consignes : scripts/portraits-consignes-
+// passe2.md) et une seconde banque, Openverse (domaine public et CC0 : aucune
+// mention d'auteur à afficher). Openverse sans clé : 200 recherches par jour
+// et 20 par minute, une seule par personnage ; au premier refus, la suite du
+// lot se fait avec Pixabay seul.
+//   PASSE=2 node scripts/portraits-personnages.mjs reste
+//   PASSE=2 node scripts/portraits-personnages.mjs lot 100 50 <dossier>
+//   PASSE=2 node scripts/portraits-personnages.mjs chercher <dossier> <N>
+//   PASSE=2 node scripts/portraits-personnages.mjs poser <dossier> <N>
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
 import { basename, join } from "node:path";
 import sharp from "sharp";
@@ -45,7 +57,10 @@ async function tout(table, colonnes, filtre = (q) => q) {
   }
 }
 
+const PASSE = process.env.PASSE === "2" ? 2 : 1;
+
 async function aTraiter() {
+  if (PASSE === 2) return aReprendre();
   const deja = new Set((await tout("portraits_suivi", "character_id")).map((l) => l.character_id));
   const persos = await tout(
     "characters",
@@ -53,6 +68,23 @@ async function aTraiter() {
     (q) => q.is("photo_path", null).order("id"),
   );
   return persos.filter((p) => !deja.has(p.id));
+}
+
+// Seconde passe : les « rien » du premier tour, encore sans photo, avec une
+// recherche connue (ni personne réelle, ni personnage non humain).
+async function aReprendre() {
+  const rien = await tout("portraits_suivi", "character_id, requete, note", (q) =>
+    q.eq("avis", "rien").eq("passe", 1).neq("requete", "").not("requete", "like", "WIKI:%"),
+  );
+  const parId = new Map(rien.map((l) => [l.character_id, l]));
+  const persos = await tout(
+    "characters",
+    "id, name, gender, age_range, character_type, biography, project:projects!inner(id, title, genre_slug, is_public)",
+    (q) => q.is("photo_path", null).order("id"),
+  );
+  return persos
+    .filter((p) => parId.has(p.id))
+    .map((p) => ({ ...p, ancienne_recherche: parId.get(p.id).requete, ancienne_note: parId.get(p.id).note }));
 }
 
 const MOTS = {
@@ -78,6 +110,31 @@ async function pixabay(q, pris) {
   return (d.hits ?? [])
     .filter((h) => !pris.has(String(h.id)))
     .map((h) => ({ apercu: h.webformatURL, url: h.largeImageURL, source: "pixabay", source_id: String(h.id), page: h.pageURL }));
+}
+
+// Openverse (seconde passe) : domaine public et CC0 seulement, photographies,
+// sans contenu signalé. Sans clé : 200 recherches par jour, 20 par minute.
+let openverseFerme = false;
+let dernierOpenverse = 0;
+async function openverse(q, pris) {
+  if (openverseFerme || !q) return [];
+  const attente = 3500 - (Date.now() - dernierOpenverse);
+  if (attente > 0) await pause(attente);
+  dernierOpenverse = Date.now();
+  const adresse =
+    `https://api.openverse.org/v1/images/?q=${encodeURIComponent(q.slice(0, 100))}` +
+    `&license=cc0,pdm&category=photograph&mature=false&page_size=30`;
+  const r = await fetch(adresse, { headers: AGENT });
+  if (r.status === 429) {
+    console.log("  Openverse : limite du jour atteinte, la suite du lot se fait avec Pixabay seul.");
+    openverseFerme = true;
+    return [];
+  }
+  if (!r.ok) return [];
+  const d = await r.json();
+  return (d.results ?? [])
+    .filter((h) => h.url && !pris.has(String(h.id)))
+    .map((h) => ({ apercu: h.url, url: h.url, source: "openverse", source_id: String(h.id), page: h.foreign_landing_url, licence: h.license }));
 }
 
 async function wikipedia(nom) {
@@ -167,6 +224,7 @@ if (commande === "reste") {
     projet: p.project.title,
     genre_du_film: p.project.genre_slug,
     description: (p.biography ?? "").replace(/\s+/g, " ").slice(0, 700),
+    ...(PASSE === 2 ? { ancienne_recherche: p.ancienne_recherche, ancienne_note: p.ancienne_note } : {}),
   }));
   for (let n = 0; n * parPart < lot.length; n++) {
     writeFileSync(join(dossier, `part-${n + 1}.json`), JSON.stringify(lot.slice(n * parPart, (n + 1) * parPart), null, 1));
@@ -182,9 +240,29 @@ if (commande === "reste") {
   mkdirSync(join(dossier, "images"), { recursive: true });
   const candidats = {};
   const planches = [];
+  const prisOpenverse = new Set(
+    (await tout("portraits_suivi", "source_id", (q) => q.eq("source", "openverse").not("source_id", "is", null))).map((l) => l.source_id),
+  );
+  const melange = (liste) => [...liste.slice(0, 2), ...liste.slice(2).sort(() => Math.random() - 0.5)];
   for (const p of part) {
-    const q = String(requetes[p.k] ?? "").trim();
     let c = [];
+    if (PASSE === 2) {
+      // Seconde passe : { p: recherche Pixabay, o: recherche Openverse }.
+      const r = requetes[p.k] ?? {};
+      try {
+        let px = String(r.p ?? "").trim() ? await pixabay(String(r.p), pris) : [];
+        if (px.length < 6) px = [...px, ...(await pixabay(generique(p), pris))];
+        const ov = await openverse(String(r.o ?? "").trim(), prisOpenverse);
+        const a = melange(px.filter((x, i) => px.findIndex((y) => y.source_id === x.source_id) === i));
+        const b = ov.slice(0, 12);
+        // Six de chaque banque ; si l'une en a moins, l'autre complète.
+        const nb = Math.min(b.length, Math.max(6, 12 - a.length));
+        c = [...a.slice(0, 12 - nb), ...b.slice(0, nb)];
+      } catch (e) {
+        console.log(p.k, "ERREUR", e.message);
+      }
+    } else {
+    const q = String(requetes[p.k] ?? "").trim();
     try {
       if (q.startsWith("WIKI:")) c = await wikipedia(q.slice(5));
       else if (q) c = await pixabay(q, pris);
@@ -192,11 +270,12 @@ if (commande === "reste") {
     } catch (e) {
       console.log(p.k, "ERREUR", e.message);
     }
+    }
     c = c.filter((x, i) => c.findIndex((y) => y.source_id === x.source_id) === i);
     // Pixabay classe par popularité : les mêmes têtes d'affiche reviennent
     // d'un personnage à l'autre. On garde les 4 premières et on tire les 8
     // autres au hasard dans la suite, pour varier les visages proposés.
-    if (c.length > 12 && c[0].source === "pixabay") {
+    if (PASSE === 1 && c.length > 12 && c[0].source === "pixabay") {
       const suite = c.slice(4).sort(() => Math.random() - 0.5);
       c = [...c.slice(0, 4), ...suite.slice(0, 8)];
     }
@@ -247,6 +326,9 @@ if (commande === "reste") {
   const pris = new Set(
     (await tout("portraits_suivi", "source_id", (q) => q.eq("source", "pixabay").not("source_id", "is", null))).map((l) => l.source_id),
   );
+  const prisOpenverse = new Set(
+    (await tout("portraits_suivi", "source_id", (q) => q.eq("source", "openverse").not("source_id", "is", null))).map((l) => l.source_id),
+  );
   const bilan = { bon: 0, moyen: 0, rien: 0, saute: 0 };
   for (const p of part) {
     const c = choix[p.k];
@@ -259,7 +341,10 @@ if (commande === "reste") {
     const image = avis === "rien" ? null : candidats[p.k]?.[c.n];
     // Photo déjà donnée à un autre personnage : rien n'est noté, le
     // personnage repassera dans un prochain lot avec d'autres photos.
-    if (avis !== "rien" && image?.source === "pixabay" && pris.has(image.source_id)) {
+    if (
+      avis !== "rien" &&
+      ((image?.source === "pixabay" && pris.has(image.source_id)) || (image?.source === "openverse" && prisOpenverse.has(image.source_id)))
+    ) {
       bilan.saute++;
       continue;
     }
@@ -289,6 +374,7 @@ if (commande === "reste") {
         const maj = await supabase.from("characters").update({ photo_path: chemin, photo_proposee: true }).eq("id", p.id).is("photo_path", null);
         if (maj.error) throw new Error(maj.error.message);
         if (image.source === "pixabay") pris.add(image.source_id);
+        if (image.source === "openverse") prisOpenverse.add(image.source_id);
         writeFileSync(join(dossier, "images", `pose-${p.id}.jpg`), await sharp(donnees).resize(300, 300, { fit: "contain", background: "#eee" }).jpeg({ quality: 80 }).toBuffer());
       } catch (e) {
         console.log(p.k, p.nom, "ÉCHEC", e.message);
@@ -306,9 +392,13 @@ if (commande === "reste") {
       lot,
       avis,
       note,
-      requete: String(requetes[p.k] ?? ""),
+      // La recherche Pixabay reste dans le suivi : l'écran Portraits s'en sert
+      // pour ses boutons Unsplash, Google et Adobe Stock.
+      requete: PASSE === 2 ? String(requetes[p.k]?.p ?? "") : String(requetes[p.k] ?? ""),
       source: image?.source ?? null,
       source_id: image?.source_id ?? null,
+      passe: PASSE,
+      traite_le: new Date().toISOString(),
     });
     if (suivi.error) console.log(p.k, "suivi :", suivi.error.message);
     bilan[avis]++;
