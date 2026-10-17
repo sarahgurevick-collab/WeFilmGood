@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import BlocProjet from "./BlocProjet";
 import ChampsFiche from "./ChampsFiche";
 import { createProject } from "./actions";
+import VisiteGuidee from "@/components/VisiteGuidee";
+import { VISITE_NOUVELLE_FICHE } from "@/lib/visites";
 import styles from "./deposer.module.css";
 
 /**
@@ -56,10 +58,12 @@ export default async function NouvelleFichePage({
           <input type="file" name="vignette" accept="image/jpeg,image/png,image/webp" />
           <span className={formStyles.hint}>Inutile de la compresser : nous nous en chargeons.</span>
         </label>
-        <button type="submit" className={formStyles.submit}>
+        <button type="submit" className={formStyles.submit} data-visite="creer-fiche">
           Créer ma fiche projet
         </button>
       </form>
+      {/* Visite guidée : seulement avec « ?visite=1 » (essai du 17/10). */}
+      <VisiteGuidee etapes={VISITE_NOUVELLE_FICHE} />
     </BlocProjet>
   );
 }

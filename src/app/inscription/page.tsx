@@ -5,6 +5,8 @@ import BoutonGoogle from "@/components/BoutonGoogle";
 import formStyles from "@/components/form.module.css";
 import styles from "./inscription.module.css";
 import { signUp } from "./actions";
+import VisiteGuidee from "@/components/VisiteGuidee";
+import { VISITE_INSCRIPTION } from "@/lib/visites";
 
 export default async function InscriptionPage({
   searchParams,
@@ -50,7 +52,9 @@ export default async function InscriptionPage({
       </div>
 
       {/* Un formulaire à part : on ne peut pas en mettre un dans l'autre. */}
-      <BoutonGoogle next={nextPath} depuis="inscription" />
+      <div data-visite="google">
+        <BoutonGoogle next={nextPath} depuis="inscription" />
+      </div>
 
       <form className={formStyles.form} action={signUp}>
         <input type="hidden" name="next" value={nextPath} />
@@ -62,7 +66,7 @@ export default async function InscriptionPage({
           </label>
         </div>
 
-        <div className={styles.rangee}>
+        <div className={styles.rangee} data-visite="noms">
           <label className={formStyles.field}>
             <span>Prénom</span>
             <input type="text" name="first_name" required autoComplete="given-name" placeholder="Jeanne" />
@@ -94,11 +98,15 @@ export default async function InscriptionPage({
           <p className={formStyles.hint} style={{ textAlign: "center" }}>
             Pas de mot de passe : vous recevrez un lien par email pour activer votre profil.
           </p>
-          <BoutonFeuArtifice className={`${formStyles.submitWide} ${formStyles.rouge}`}>
-            Créer mon profil
-          </BoutonFeuArtifice>
+          <div data-visite="creer">
+            <BoutonFeuArtifice className={`${formStyles.submitWide} ${formStyles.rouge}`}>
+              Créer mon profil
+            </BoutonFeuArtifice>
+          </div>
         </div>
       </form>
+      {/* Visite guidée : seulement avec « ?visite=1 » (essai du 17/10). */}
+      <VisiteGuidee etapes={VISITE_INSCRIPTION} />
     </AuthCard>
   );
 }

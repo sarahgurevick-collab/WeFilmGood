@@ -53,7 +53,7 @@ export default async function BlocProjet({
   return (
     <PageShell nav="deposer" connecte>
       <div className={styles.scene}>
-        <div className={styles.colonneAffiche}>
+        <div className={styles.colonneAffiche} data-visite="affiche">
           <AfficheProjet
             initial={{
               title: projet?.title ?? "",
@@ -74,7 +74,7 @@ export default async function BlocProjet({
         </div>
 
         <div className={styles.colonneFormulaire}>
-          <nav className={styles.generique} aria-label="Les trois blocs de la fiche">
+          <nav className={styles.generique} aria-label="Les trois blocs de la fiche" data-visite="blocs">
             {BLOCS.map((b) => {
               const estFait = etat?.fait[b.cle] ?? false;
               const pourcent = etat?.pourcent[b.cle] ?? 0;
