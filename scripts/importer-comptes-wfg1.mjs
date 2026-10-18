@@ -53,12 +53,17 @@ const dejaLa = new Set(existants.map((p) => p.legacy_id));
 // et 4627 (Clément Raynaud, ancien compte « Auteur de BD » supprimé ; le bon est 5477).
 // 11/10/2026 (Sarah) : 1009 = Talia Sourdin, compte gmail de 2017 vide ; le bon profil est 1882 (hotmail, projet LEF).
 for (const id of ["3866", "8144", "10560", "10563", "4627", "1009"]) dejaLa.add(id);
+// Et tous les membres supprimés depuis l'écran des membres (table
+// membres_supprimes, 18/10/2026), par numéro WFG 1 ou par adresse.
+const { data: supprimes } = await supabase.from("membres_supprimes").select("legacy_user_id, email");
+const emailsSupprimes = new Set((supprimes ?? []).map((m) => (m.email ?? "").toLowerCase()).filter(Boolean));
+for (const m of supprimes ?? []) if (m.legacy_user_id) dejaLa.add(String(m.legacy_user_id));
 
 let crees = 0, sautes = 0, echoues = 0;
 const debut = Date.now();
 for (const a of comptes) {
   const legacyId = String(a.user_id);
-  if (dejaLa.has(legacyId)) { sautes++; continue; }
+  if (dejaLa.has(legacyId) || emailsSupprimes.has((a.email ?? "").toLowerCase())) { sautes++; continue; }
 
   const prenom = (a.first_name ?? "").trim() || null;
   const nom = (a.last_name ?? "").trim() || null;

@@ -96,3 +96,75 @@ export async function changerCategorie(formData: FormData) {
   if (error) console.error("Changement de catégorie refusé :", error.message);
   revalidatePath("/admin/membres");
 }
+
+/**
+ * Supprimer un membre (18/10/2026, Sarah). Réservé aux profils vides : sans
+ * projet, sans message, sans adhésion, sans fiche de lecture ni place dans
+ * une équipe. Sinon on refuse en disant pourquoi : effacer un vrai membre
+ * ferait disparaître ses projets ou ses échanges. La suppression est notée
+ * dans membres_supprimes, que la réimportation de WFG 1 consulte, et le
+ * profil est d'abord sauvegardé dans la même ligne (motif).
+ * Renvoie un message d'erreur, ou rien.
+ */
+export async function supprimerMembre(profileId: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  if (!isAdmin) return "Réservé à l'administration.";
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user || user.id === profileId) return "Vous ne pouvez pas supprimer votre propre compte.";
+
+  const admin = createAdminClient();
+  if (!admin) return "Suppression momentanément indisponible.";
+
+  const compter = async (table: string, colonne: string) =>
+    (await admin.from(table).select("*", { count: "exact", head: true }).eq(colonne, profileId)).count ?? 0;
+  const [projets, envoyes, recus, adhesions, fiches, equipes, admins] = await Promise.all([
+    compter("projects", "owner_id"),
+    compter("project_messages", "sender_id"),
+    compter("project_messages", "recipient_id"),
+    compter("memberships", "profile_id"),
+    compter("reading_reports", "reader_id"),
+    compter("project_co_authors", "profile_id"),
+    compter("admins", "profile_id"),
+  ]);
+  if (admins > 0) return "C'est un compte administrateur : il ne se supprime pas d'ici.";
+  const raisons = [
+    projets && `${projets} projet${projets > 1 ? "s" : ""}`,
+    envoyes + recus && `${envoyes + recus} message${envoyes + recus > 1 ? "s" : ""}`,
+    adhesions && "une adhésion",
+    fiches && `${fiches} fiche${fiches > 1 ? "s" : ""} de lecture`,
+    equipes && "une place dans une équipe",
+  ].filter(Boolean);
+  if (raisons.length) return `Ce membre a ${raisons.join(", ")} : il ne peut pas être supprimé d'ici.`;
+
+  const { data: profil } = await admin
+    .from("profiles")
+    .select("full_name, legacy_user_id")
+    .eq("id", profileId)
+    .maybeSingle<{ full_name: string | null; legacy_user_id: number | null }>();
+  const { data: compte } = await admin.auth.admin.getUserById(profileId);
+  const email = compte.user?.email ?? "";
+
+  await admin.from("membres_supprimes").insert({
+    legacy_user_id: profil?.legacy_user_id ?? null,
+    email,
+    nom: profil?.full_name ?? null,
+    motif: "Supprimé depuis l'écran des membres",
+    supprime_par: user.id,
+  });
+  await admin.from("admin_impersonations").delete().eq("target_id", profileId);
+  if (profil?.legacy_user_id) await admin.from("legacy_profiles").delete().eq("legacy_user_id", profil.legacy_user_id);
+
+  const { error: errProfil } = await admin.from("profiles").delete().eq("id", profileId);
+  if (errProfil) {
+    console.error("Suppression du membre refusée :", errProfil.message);
+    return "Le profil est encore relié à d'autres éléments du site : demandez à Claude.";
+  }
+  const { error: errCompte } = await admin.auth.admin.deleteUser(profileId);
+  if (errCompte) console.error("Compte de connexion non supprimé :", errCompte.message);
+
+  revalidatePath("/admin/membres");
+  return null;
+}
