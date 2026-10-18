@@ -32,7 +32,7 @@ language sql stable security definer set search_path = public, auth as $$
   where p.category = 'producteur'
     and p.avatar_url is null
     and split_part(lower(u.email), '@', 2) !~ '^(gmail|googlemail|hotmail|yahoo|outlook|live|msn|icloud|me|mac|orange|free|wanadoo|sfr|laposte|aol|gmx|protonmail|proton|yandex|mail|neuf|bbox|numericable|club-internet|libertysurf|tiscali|voila|aliceadsl|noos|cegetel|9online|ymail|rocketmail|web|t-online|skynet|telenet|bluewin|sympatico|videotron|comcast|verizon|att|sbcglobal|hotmail\.co|yahoo\.co|qq|163|naver|seznam|wp|o2|libero|virgilio|tin|alice|terra|uol|bol|ig|rediffmail|zoho|fastmail|tutanota|posteo|me\.com)\.'
-    and split_part(lower(u.email), '@', 2) !~ '(\.gouv\.fr$|\.gov|\.edu$|^univ|\.ac\.|^ac-|^sacd\.fr$|^scam\.fr$|^cnc\.fr$|^ciclic\.fr$|^adami\.fr$|^femis\.fr$|^lafemis\.fr$|^procirep\.fr$|^unifrance\.org$|^mairie|^ville-|^region|^departement)'
+    and split_part(lower(u.email), '@', 2) !~ '(\.gouv\.fr$|\.gov|\.edu$|^univ|\.ac\.|^ac-|^wefilmgood\.com$|^netplus\.ch$|^virginmedia\.|^ikmail\.com$|^sacd\.fr$|^scam\.fr$|^cnc\.fr$|^ciclic\.fr$|^adami\.fr$|^femis\.fr$|^lafemis\.fr$|^procirep\.fr$|^unifrance\.org$|^mairie|^ville-|^region|^departement)'
     and not exists (select 1 from public.logos_producteurs l where l.profile_id = p.id)
   order by random()
   limit p_limite;
