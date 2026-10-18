@@ -15,6 +15,7 @@ type Ligne = {
   page_source: string | null;
   url_logo: string | null;
   statut: Onglet;
+  note: string | null;
   profiles: { full_name: string | null; avatar_url: string | null; legacy_id: string | null } | null;
 };
 
@@ -41,7 +42,7 @@ export default async function LogosPage({ searchParams }: { searchParams: Promis
     compter("ecarte"),
     a
       .from("logos_producteurs")
-      .select("profile_id, domaine, page_source, url_logo, statut, profiles(full_name, avatar_url, legacy_id)")
+      .select("profile_id, domaine, page_source, url_logo, statut, note, profiles(full_name, avatar_url, legacy_id)")
       .eq("statut", onglet)
       .order("cree_le", { ascending: false })
       .limit(200)
@@ -94,6 +95,16 @@ export default async function LogosPage({ searchParams }: { searchParams: Promis
                   </Link>
                 </h2>
                 {societe && <p className={styles.projet}>{societe}</p>}
+                {/* Site deviné d'après le nom de la société (18/10) : à vérifier de plus près. */}
+                {l.note === "site deviné d'après le nom de la société" && (
+                  <p className={styles.note}>Site deviné d&apos;après le nom de la société : vérifiez que c&apos;est bien la sienne.</p>
+                )}
+                {l.note === "logo d'un collègue de la même société" && (
+                  <p className={styles.lot}>Même logo qu&apos;un collègue de sa société</p>
+                )}
+                {onglet === "ecarte" && l.note?.startsWith("Écarté au contrôle : ") && (
+                  <p className={styles.lot}>{l.note.replace("Écarté au contrôle : ", "Écarté : ")}</p>
+                )}
                 <p className={styles.lot}>
                   <a href={l.page_source ?? `https://${l.domaine}`} target="_blank" rel="noopener noreferrer">
                     {l.domaine}

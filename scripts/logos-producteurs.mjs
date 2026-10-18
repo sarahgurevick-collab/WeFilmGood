@@ -12,6 +12,7 @@
 // Une seule requête à la fois, avec une pause : on visite des sites de
 // petites sociétés, pas question de les charger.
 import { createClient } from "@supabase/supabase-js";
+import { promises as dns } from "node:dns";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";
@@ -86,8 +87,10 @@ function candidats(html, base) {
   // Pas d'image de partage (og:image) : à l'essai du 18/10 elle donnait une
   // photo publicitaire ou une affiche de film, jamais un logo.
   ajouter("/apple-touch-icon.png", 3, "apple-touch-icon");
+  // Les icônes des outils qui fabriquent les sites, jamais celles de la société.
+  const OUTILS = /squarespace|linktr\.?ee|wixstatic|wix\.com|parastorage|vimeo|webflow|weebly|jimdo|godaddy|shopify|wordpress\.com\/i\/|s\.w\.org|gravatar/i;
   const vus = new Set();
-  return liste.filter((c) => !vus.has(c.url) && vus.add(c.url)).sort((a, b) => b.score - a.score);
+  return liste.filter((c) => !OUTILS.test(c.url) && !vus.has(c.url) && vus.add(c.url)).sort((a, b) => b.score - a.score);
 }
 
 /**
@@ -163,9 +166,116 @@ async function planche(dossier, faits) {
     .toFile(join(dossier, "planche.jpg"));
 }
 
+// ---------------------------------------------------------------------
+// « deviner » (18/10, Sarah) : pour les producteurs inscrits avec une
+// adresse personnelle, le site est deviné à partir du nom de la société
+// connu par WFG 1 (« Les Films du Castel » → lesfilmsducastel.fr, .com…).
+// Un site n'est retenu que si sa page cite bien la société, et s'il n'est
+// pas un domaine en vente. Si un collègue de la même société a déjà un
+// logo, on le reprend tel quel.
+const GENERIQUES = new Set(["productions", "production", "prod", "prods", "films", "film", "pictures", "picture", "studio", "studios", "entertainment", "media", "medias", "compagnie", "company", "cie", "sarl", "sas", "sasu", "eurl", "ltd", "limited", "gmbh", "inc", "llc", "srl", "sl", "sa", "bv", "les", "the", "la", "le", "l", "de", "du", "des", "et", "and", "d"]);
+const normaliser = (t) => String(t ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/&/g, " et ").replace(/[^a-z0-9]+/g, " ").trim();
+const EXTENSIONS = { FR: ["fr", "com"], BE: ["be", "com", "eu"], CH: ["ch", "com"], CA: ["ca", "com"], DE: ["de", "com"], GB: ["co.uk", "com"], IE: ["ie", "com"], IT: ["it", "com"], ES: ["es", "com"], US: ["com"] };
+
+function domainesPossibles(societe, pays) {
+  const mots = normaliser(societe).split(" ").filter(Boolean);
+  const coeur = mots.filter((m) => !GENERIQUES.has(m)).join("");
+  const bases = [mots.join(""), mots.join("-"), coeur, coeur && `${coeur}films`, coeur && `${coeur}productions`, coeur && `${coeur}prod`, coeur && `${coeur}-films`, coeur && `${coeur}pictures`];
+  const tlds = EXTENSIONS[pays] ?? [...(/^[A-Z]{2}$/.test(pays ?? "") ? [pays.toLowerCase()] : []), "com"];
+  const liste = [];
+  for (const b of bases) if (b && b.replace(/-/g, "").length >= 4) for (const t of tlds) liste.push(`${b}.${t}`);
+  return [...new Set(liste)].slice(0, 18);
+}
+
+const EN_VENTE = /hugedomains|domain (is )?for sale|buy this domain|domaine (est )?a vendre|this domain (name )?(may be|is) for sale|sedo|parkingcrew|bodis|godaddy|namecheap|domain parking|parked free|site en construction par/i;
+
+// Un site de société de production parle de films : sans ces mots, c'est
+// un homonyme (recursive.com, panorama.com à l'essai du 18/10).
+const CINEMA = /\b(film|films|cinema|cinéma|court[- ]m[eé]trage|long[- ]m[eé]trage|documentaire|documentary|production|productions|producteur|producer|s[eé]rie|series|movie|movies|feature|fiction|realisat|réalisat|director|tournage|shooting)\b/i;
+
+function citeLaSociete(html, societe, domaine) {
+  if (!CINEMA.test(html.slice(0, 120_000).replace(/<[^>]+>/g, " "))) return false;
+  const mots = normaliser(societe).split(" ").filter(Boolean);
+  const coeur = mots.filter((m) => !GENERIQUES.has(m)).join("");
+  // Domaine nu (recursive.com pour « Recursive Pictures ») : la page doit
+  // citer le nom complet, pas seulement le mot commun.
+  const nu = domaine.split(".")[0].replace(/-/g, "") === coeur && mots.length > 1;
+  const cible = nu ? mots.join("") : coeur.length >= 4 ? coeur : mots.join("");
+  const titre = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? "") + " " + (html.match(/og:site_name[^>]*content=["']([^"']*)/i)?.[1] ?? "");
+  const texte = normaliser(titre + " " + html.slice(0, 60_000).replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<[^>]+>/g, " ")).replace(/ /g, "");
+  return cible.length >= 4 && texte.includes(cible);
+}
+
+async function existe(domaine) {
+  try {
+    await Promise.race([dns.lookup(domaine), new Promise((_, r) => setTimeout(() => r(new Error("dns")), 4000))]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function deviner(combien, dossier) {
+  mkdirSync(join(dossier, "images"), { recursive: true });
+  const lot = dossier.split("/").filter(Boolean).pop();
+  const { data: producteurs, error } = await supabase.rpc("producteurs_a_logo_par_societe", { p_limite: combien });
+  if (error) throw error;
+  const faits = [];
+  let repris = 0, sansSite = 0, sansLogo = 0;
+  for (const p of producteurs) {
+    if (p.logo_existant) {
+      await supabase.from("logos_producteurs").upsert({ profile_id: p.profile_id, domaine: p.domaine_existant, url_logo: p.logo_existant, statut: "a_valider", note: "logo d'un collègue de la même société", lot });
+      repris++;
+      continue;
+    }
+    let trouve = null;
+    for (const d of domainesPossibles(p.societe, p.pays)) {
+      if (!(await existe(d))) continue;
+      const page = await lire(`https://${d}`) ?? (await lire(`http://${d}`));
+      if (!page || page.html.length < 200 || EN_VENTE.test(page.html.slice(0, 80_000)) || !citeLaSociete(page.html, p.societe, d)) continue;
+      trouve = { domaine: d, page };
+      break;
+    }
+    if (!trouve) {
+      sansSite++;
+      await supabase.from("logos_producteurs").upsert({ profile_id: p.profile_id, domaine: `(${p.societe})`, statut: "introuvable", note: "Aucun site trouvé d'après le nom de la société", lot, traite_le: new Date().toISOString() });
+      continue;
+    }
+    let logo = null;
+    for (const c of candidats(trouve.page.html, trouve.page.url).slice(0, 6)) {
+      const buf = await lire(c.url, true);
+      if (!buf) continue;
+      try {
+        const png = await preparer(buf);
+        if (png) { logo = { image: c.url, genre: c.genre, png }; break; }
+      } catch {}
+    }
+    if (!logo) {
+      sansLogo++;
+      await supabase.from("logos_producteurs").upsert({ profile_id: p.profile_id, domaine: trouve.domaine, page_source: trouve.page.url, statut: "introuvable", note: "Site deviné, sans logo exploitable", lot, traite_le: new Date().toISOString() });
+      continue;
+    }
+    writeFileSync(join(dossier, "images", `${p.profile_id}.png`), logo.png);
+    const chemin = `${p.profile_id}/logo-${Date.now()}.png`;
+    const { error: e } = await supabase.storage.from("avatars").upload(chemin, logo.png, { contentType: "image/png" });
+    if (e) { console.error(trouve.domaine, e.message); continue; }
+    const url = supabase.storage.from("avatars").getPublicUrl(chemin).data.publicUrl;
+    await supabase.from("logos_producteurs").upsert({ profile_id: p.profile_id, domaine: trouve.domaine, page_source: trouve.page.url, image_source: logo.image, url_logo: url, statut: "a_valider", note: "site deviné d'après le nom de la société", lot });
+    faits.push({ profile_id: p.profile_id, domaine: trouve.domaine, societe: p.societe, nom: p.nom, genre: logo.genre });
+    await pause(800);
+  }
+  writeFileSync(join(dossier, "faits.json"), JSON.stringify(faits, null, 1));
+  await planche(dossier, faits);
+  console.log(`${producteurs.length} producteurs : ${faits.length} logos trouvés par le nom, ${repris} logos repris d'un collègue, ${sansSite} sans site, ${sansLogo} site sans logo. Planche : ${join(dossier, "planche.jpg")}`);
+}
+
 const [commande, combien, dossier] = process.argv.slice(2);
+if (commande === "deviner" && dossier) {
+  await deviner(Number(combien) || 30, dossier);
+  process.exit(0);
+}
 if (commande !== "lot" || !dossier) {
-  console.log("Usage : node scripts/logos-producteurs.mjs lot <combien> <dossier>");
+  console.log("Usage : node scripts/logos-producteurs.mjs lot|deviner <combien> <dossier>");
   process.exit(1);
 }
 mkdirSync(join(dossier, "images"), { recursive: true });
