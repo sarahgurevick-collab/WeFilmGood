@@ -62,10 +62,9 @@ export async function saveIdentite(formData: FormData) {
     redirect("/profil/identite?erreur=" + encodeURIComponent("Le pays est obligatoire."));
   }
 
+  // Le téléphone n'empêche plus d'enregistrer (18/10, Sarah) : l'exiger
+  // poussait ceux qui ne veulent pas le donner à taper un numéro bidon.
   const phone = texte(formData, "phone");
-  if (!phone) {
-    redirect("/profil/identite?erreur=" + encodeURIComponent("Le téléphone est obligatoire."));
-  }
 
   const languages = formData.getAll("languages").map(String);
   if (!languages.length) {

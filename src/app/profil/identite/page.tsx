@@ -156,7 +156,6 @@ export default async function IdentitePage({
               <input
                 type="tel"
                 name="phone"
-                required
                 defaultValue={prive?.phone ?? ""}
                 placeholder="+33 6 12 34 56 78"
                 autoComplete="tel"
