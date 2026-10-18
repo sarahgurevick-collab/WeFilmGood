@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { access, writeFile } from "node:fs/promises";
+import { access, stat, writeFile } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -16,10 +16,16 @@ export const dynamic = "force-dynamic";
 
 const LISEZMOI = "/home/wfg/.sauvegarde-LISEZMOI.txt";
 
-export async function GET() {
+export async function GET(req: Request) {
+  // Une clé réservée au serveur (SAUVEGARDE_JETON) permet de vérifier le
+  // téléchargement sans session ; sinon, administratrices seules.
+  const jeton = process.env.SAUVEGARDE_JETON;
+  const parJeton = !!jeton && req.headers.get("authorization") === `Bearer ${jeton}`;
   const supabase = await createClient();
-  const { data: isAdmin } = await supabase.rpc("is_admin");
-  if (!isAdmin) return new Response("Accès réservé à l'administration.", { status: 403 });
+  if (!parJeton) {
+    const { data: isAdmin } = await supabase.rpc("is_admin");
+    if (!isAdmin) return new Response("Accès réservé à l'administration.", { status: 403 });
+  }
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -51,17 +57,31 @@ export async function GET() {
     ].join("\n"),
   );
 
+  // La taille exacte de l'archive, pour que le navigateur affiche la
+  // progression et le temps restant : chaque fichier = 512 octets d'en-tête
+  // + son contenu arrondi à 512, puis 1 024 octets de fin, le tout arrondi
+  // au bloc de 10 240 octets de tar.
+  const chemins = [
+    ...FICHIERS_SAUVEGARDE.map((f) => `${s.dossier}/${f}`),
+    LISEZMOI,
+    ...reglages.map((r) => `${r.dossier}/${r.fichier}`),
+  ];
+  let taille = 1024;
+  for (const c of chemins) taille += 512 + Math.ceil((await stat(c)).size / 512) * 512;
+  taille = Math.ceil(taille / 10240) * 10240;
+
   const args = ["-cf", "-", "-C", s.dossier, ...FICHIERS_SAUVEGARDE, "-C", "/home/wfg", ".sauvegarde-LISEZMOI.txt"];
   for (const r of reglages) args.push("-C", r.dossier, r.fichier);
   const tar = spawn("tar", args, { stdio: ["ignore", "pipe", "ignore"] });
 
   const admin = createAdminClient();
-  await admin?.from("telechargements_sauvegarde").insert({ sauvegarde: s.nom, par: user?.id ?? null });
+  if (!parJeton) await admin?.from("telechargements_sauvegarde").insert({ sauvegarde: s.nom, par: user?.id ?? null });
 
   const nom = `wefilmgood-sauvegarde-${s.nom.slice(0, 8)}.tar`;
   return new Response(Readable.toWeb(tar.stdout) as ReadableStream, {
     headers: {
       "Content-Type": "application/x-tar",
+      "Content-Length": String(taille),
       "Content-Disposition": `attachment; filename="${nom}"`,
       "Cache-Control": "no-store",
       "X-Accel-Buffering": "no",
