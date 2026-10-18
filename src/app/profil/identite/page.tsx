@@ -5,6 +5,7 @@ import { PAYS } from "@/lib/pays";
 import { createClient } from "@/lib/supabase/server";
 import BlocProfil from "../BlocProfil";
 import ChampPhoto from "./ChampPhoto";
+import VerifierAvantEnvoi from "./VerifierAvantEnvoi";
 import { saveIdentite } from "../actions";
 import styles from "../profil.module.css";
 
@@ -50,6 +51,7 @@ export default async function IdentitePage({
       />
       <form className={`${formStyles.form} ${styles.formulaireIdentite}`} action={saveIdentite} style={{ marginTop: 24 }}>
         {erreur && <p className={formStyles.error}>{erreur}</p>}
+        <VerifierAvantEnvoi />
 
         {/* Le nom sous lequel le membre apparaît partout sur le site. Un
             nom de plume se met ici, tel quel : il n'y a pas de case
@@ -121,6 +123,7 @@ export default async function IdentitePage({
             métrage ou un clip. C&apos;est sur cette référence que l&apos;administration
             valide votre profil.
           </span>
+          <span className={formStyles.error} data-erreur="website" hidden />
         </label>
 
         <div className={formStyles.field}>
@@ -133,6 +136,7 @@ export default async function IdentitePage({
               </label>
             ))}
           </div>
+          <span className={formStyles.error} data-erreur="languages" hidden />
         </div>
 
         <fieldset className={styles.cadreAdmin}>
