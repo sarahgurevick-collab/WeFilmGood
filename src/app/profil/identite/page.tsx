@@ -160,6 +160,11 @@ export default async function IdentitePage({
                 placeholder="+33 6 12 34 56 78"
                 autoComplete="tel"
               />
+              {/* Texte de Sarah (18/10). */}
+              <span className={formStyles.hint}>
+                Numéro réservé à l&apos;équipe de la Maison des Scénaristes. Utilisation
+                exceptionnelle, le contact par email est prioritaire.
+              </span>
             </label>
           </div>
 
