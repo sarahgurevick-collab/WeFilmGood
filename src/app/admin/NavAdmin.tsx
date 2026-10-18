@@ -10,6 +10,7 @@ const PAGES = [
   { href: "/admin/membres", libelle: "Membres" },
   { href: "/admin/fiches", libelle: "Projets" },
   { href: "/admin/portraits", libelle: "Portraits" },
+  { href: "/admin/logos", libelle: "Logos" },
   { href: "/admin/ateliers", libelle: "Ateliers" },
   { href: "/admin/tchat", libelle: "Tchat" },
   { href: "/admin/recherches", libelle: "Recherches" },
