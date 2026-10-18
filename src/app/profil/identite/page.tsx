@@ -113,11 +113,11 @@ export default async function IdentitePage({
             inputMode="url"
             name="website"
             defaultValue={profil?.website ?? ""}
-            placeholder="https://www.imdb.com/name/…"
+            placeholder="www.votresite.com (ou page IMDb)"
           />
           <span className={formStyles.hint}>
-            Obligatoire pour un producteur ou un autre talent : votre page IMDb, Unifrance
-            ou votre site — de quoi montrer au moins une expérience sur un film, un court
+            Obligatoire pour un producteur ou un autre talent : votre site (ou votre page
+            IMDb, Unifrance) — de quoi montrer au moins une expérience sur un film, un court
             métrage ou un clip. C&apos;est sur cette référence que l&apos;administration
             valide votre profil.
           </span>

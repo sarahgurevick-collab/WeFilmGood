@@ -33,7 +33,7 @@ Profil (menu « Mon profil »)
 - Bloc 2 « Votre parcours » (le parcours est obligatoire, le reste facultatif) : parcours, autres compétences, genres de prédilection, site internet (auteurs), agent, réseaux. Chaque liste de pastilles finit par « Un autre métier… » ou « Un autre genre… » avec un champ libre facultatif ; pour le site, l'agent et les réseaux, un interrupteur oui/non (non = rien à renseigner), ce qui permet à chacun d'atteindre 100 %. Visible des membres connectés.
 - Bloc 3 « Mieux vous connaître » (facultatif) : le portrait chinois, vingt questions « si j'étais… ».
 - Un profil complet est mieux repéré par les producteurs.
-- Validation : un auteur est actif immédiatement. Un producteur ou un talent (réalisateur, compositeur, comédien…) indique une référence (IMDb, Unifrance, site) montrant au moins une expérience sur un film, un court métrage ou un clip ; avec une référence, le profil est validé d'office, sauf si l'équipe juge la référence fausse. Sans référence, il reste en attente.
+- Validation : un auteur est actif immédiatement. Un producteur ou un talent (réalisateur, compositeur, comédien…) indique une référence (son site, ou sa page IMDb ou Unifrance) montrant au moins une expérience sur un film, un court métrage ou un clip ; avec une référence, le profil est validé d'office, sauf si l'équipe juge la référence fausse. Sans référence, il reste en attente.
 - « Fermer mon accès » ne supprime pas le compte : le profil quitte l'annuaire, les projets restent en ligne. Pour un effacement définitif, il faut écrire à l'équipe.
 
 Fiche projet (menu « Créer une fiche projet »)
