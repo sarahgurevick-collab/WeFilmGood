@@ -24,7 +24,8 @@ export default function ChampTitre({ existants }: { existants: { id: string; tit
           <Link href={`/projet/${semblable.id}`}>Voir cette fiche</Link>
           <br />
           <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 6, cursor: "pointer" }}>
-            <input type="checkbox" name="autre_projet" value="1" />
+            {/* Obligatoire tant que le titre ressemble : le navigateur arrête l'envoi ici, sans rien effacer (18/10). */}
+            <input type="checkbox" name="autre_projet" value="1" required />
             C&apos;est bien un autre projet
           </label>
         </span>
