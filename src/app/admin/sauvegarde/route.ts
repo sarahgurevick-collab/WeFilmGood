@@ -1,24 +1,28 @@
-import { spawn } from "node:child_process";
-import { access, stat, writeFile } from "node:fs/promises";
+import { createReadStream } from "node:fs";
+import { readdir, stat } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { FICHIERS_SAUVEGARDE, REGLAGES, derniereSauvegarde } from "@/lib/sauvegarde";
 
 /**
- * Télécharger la dernière sauvegarde complète du site en un seul fichier
- * (18/10/2026, Sarah : copie hebdomadaire sur son disque de 2 To). Le
- * fichier .tar est fabriqué à la volée, sans copie sur le serveur (dont le
- * disque est compté) : la sauvegarde de la nuit, plus les réglages du site
- * qu'aucune sauvegarde ne contient, plus un LISEZMOI. Administratrices seules.
+ * Télécharger la sauvegarde complète du site (18/10/2026, Sarah : copie
+ * hebdomadaire sur son disque chiffré de 2 To).
+ *
+ * Le fichier est préparé chaque matin par scripts/preparer-sauvegarde.sh
+ * (crontab de wfg) dans ~/sauvegarde-prete/ : la sauvegarde de la nuit, les
+ * réglages du site et un LISEZMOI. Il est servi ici avec reprise possible
+ * (en-têtes Range) : le premier essai de Sarah s'était coupé à 158 Mo sur
+ * sa connexion, et sans reprise Firefox repartait de zéro. Avec la reprise,
+ * « Réessayer » continue là où le téléchargement s'était arrêté.
+ *
+ * Administratrices seules ; une clé réservée au serveur (SAUVEGARDE_JETON)
+ * permet de vérifier le téléchargement sans session.
  */
 export const dynamic = "force-dynamic";
 
-const LISEZMOI = "/home/wfg/.sauvegarde-LISEZMOI.txt";
+const DOSSIER = "/home/wfg/sauvegarde-prete";
 
 export async function GET(req: Request) {
-  // Une clé réservée au serveur (SAUVEGARDE_JETON) permet de vérifier le
-  // téléchargement sans session ; sinon, administratrices seules.
   const jeton = process.env.SAUVEGARDE_JETON;
   const parJeton = !!jeton && req.headers.get("authorization") === `Bearer ${jeton}`;
   const supabase = await createClient();
@@ -26,63 +30,56 @@ export async function GET(req: Request) {
     const { data: isAdmin } = await supabase.rpc("is_admin");
     if (!isAdmin) return new Response("Accès réservé à l'administration.", { status: 403 });
   }
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
-  const s = await derniereSauvegarde();
-  if (!s) return new Response("Aucune sauvegarde trouvée sur le serveur.", { status: 404 });
+  let nom: string | undefined;
+  try {
+    nom = (await readdir(DOSSIER)).filter((n) => /^wefilmgood-sauvegarde-\d{8}\.tar$/.test(n)).sort().pop();
+  } catch {}
+  if (!nom) return new Response("La sauvegarde n'est pas encore prête. Réessayez dans une heure, ou prévenez Claude.", { status: 404 });
 
-  const reglages: { dossier: string; fichier: string }[] = [];
-  for (const r of REGLAGES) {
-    try {
-      await access(`${r.dossier}/${r.fichier}`);
-      reglages.push(r);
-    } catch {}
+  const chemin = `${DOSSIER}/${nom}`;
+  const info = await stat(chemin);
+  const taille = info.size;
+  const etag = `"${nom}-${taille}-${info.mtimeMs}"`;
+
+  // Reprise : « bytes=debut-[fin] », seulement si c'est bien le même fichier.
+  let debut = 0;
+  let fin = taille - 1;
+  const plage = req.headers.get("range");
+  const memeFichier = !req.headers.get("if-range") || req.headers.get("if-range") === etag;
+  const m = plage && memeFichier ? plage.match(/^bytes=(\d*)-(\d*)$/) : null;
+  if (m && (m[1] || m[2])) {
+    if (m[1]) {
+      debut = Number(m[1]);
+      if (m[2]) fin = Math.min(Number(m[2]), taille - 1);
+    } else {
+      debut = Math.max(0, taille - Number(m[2]));
+    }
+    if (debut > fin || debut >= taille) {
+      return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${taille}` } });
+    }
   }
-  await writeFile(
-    LISEZMOI,
-    [
-      `Sauvegarde complète de WeFilmGood (app.wefilmgood.com), prise le ${s.date.toLocaleString("fr-FR", { timeZone: "Europe/Paris" })}.`,
-      "",
-      "postgres.sql.gz : toute la base de données (membres, projets, fiches de lecture, messages, ancienne base WFG 1).",
-      "storage.tar.gz : tous les fichiers déposés (scénarios, images, photos, documents).",
-      "config.tar.gz : la configuration de Supabase.",
-      "SHA256SUMS : les empreintes pour vérifier que rien n'est abîmé.",
-      "Réglages du site (clés secrètes, nginx, programme de sauvegarde) : " + reglages.map((r) => r.fichier).join(", ") + ".",
-      "",
-      "CE FICHIER CONTIENT LES DONNÉES PERSONNELLES DES MEMBRES ET LES CLÉS SECRÈTES DU SITE.",
-      "À garder sur un disque chiffré, chez vous. Pour restaurer le site : demander à Claude.",
-      "",
-    ].join("\n"),
-  );
+  const partiel = debut > 0 || fin < taille - 1;
 
-  // La taille exacte de l'archive, pour que le navigateur affiche la
-  // progression et le temps restant : chaque fichier = 512 octets d'en-tête
-  // + son contenu arrondi à 512, puis 1 024 octets de fin, le tout arrondi
-  // au bloc de 10 240 octets de tar.
-  const chemins = [
-    ...FICHIERS_SAUVEGARDE.map((f) => `${s.dossier}/${f}`),
-    LISEZMOI,
-    ...reglages.map((r) => `${r.dossier}/${r.fichier}`),
-  ];
-  let taille = 1024;
-  for (const c of chemins) taille += 512 + Math.ceil((await stat(c)).size / 512) * 512;
-  taille = Math.ceil(taille / 10240) * 10240;
+  // Un téléchargement noté seulement quand il commence au début.
+  if (!parJeton && debut === 0) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    await createAdminClient()?.from("telechargements_sauvegarde").insert({ sauvegarde: nom, par: user?.id ?? null });
+  }
 
-  const args = ["-cf", "-", "-C", s.dossier, ...FICHIERS_SAUVEGARDE, "-C", "/home/wfg", ".sauvegarde-LISEZMOI.txt"];
-  for (const r of reglages) args.push("-C", r.dossier, r.fichier);
-  const tar = spawn("tar", args, { stdio: ["ignore", "pipe", "ignore"] });
-
-  const admin = createAdminClient();
-  if (!parJeton) await admin?.from("telechargements_sauvegarde").insert({ sauvegarde: s.nom, par: user?.id ?? null });
-
-  const nom = `wefilmgood-sauvegarde-${s.nom.slice(0, 8)}.tar`;
-  return new Response(Readable.toWeb(tar.stdout) as ReadableStream, {
+  const flux = createReadStream(chemin, { start: debut, end: fin });
+  return new Response(Readable.toWeb(flux) as ReadableStream, {
+    status: partiel ? 206 : 200,
     headers: {
       "Content-Type": "application/x-tar",
-      "Content-Length": String(taille),
+      "Content-Length": String(fin - debut + 1),
       "Content-Disposition": `attachment; filename="${nom}"`,
+      "Accept-Ranges": "bytes",
+      ETag: etag,
+      "Last-Modified": info.mtime.toUTCString(),
+      ...(partiel ? { "Content-Range": `bytes ${debut}-${fin}/${taille}` } : {}),
       "Cache-Control": "no-store",
       "X-Accel-Buffering": "no",
     },
