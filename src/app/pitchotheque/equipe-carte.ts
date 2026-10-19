@@ -11,7 +11,7 @@ export type EquipeCarte = {
 
 export const NB_PORTRAITS_EQUIPE = 3;
 
-type Ligne = { project_id: string; profile_id: string; role: string | null; avatar_url: string | null };
+type Ligne = { project_id: string; profile_id: string | null; role: string | null; avatar_url: string | null };
 
 /**
  * Pour une liste de projets : les talents déjà rattachés (l'auteur exclu).
@@ -31,7 +31,8 @@ export async function equipesDesCartes(
     const eq = parProjet.get(l.project_id) ?? { total: 0, metiers: [], portraits: [] };
     eq.total += 1;
     if (l.role && !eq.metiers.includes(l.role)) eq.metiers.push(l.role);
-    if (eq.portraits.length < NB_PORTRAITS_EQUIPE) {
+    // Pas de portrait pour qui n'est pas encore inscrit : le métier seul.
+    if (l.profile_id && eq.portraits.length < NB_PORTRAITS_EQUIPE) {
       eq.portraits.push({
         id: l.profile_id,
         src: l.avatar_url ? (restreint ? `/api/talents/photo?id=${l.profile_id}` : l.avatar_url) : null,
