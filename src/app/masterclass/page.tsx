@@ -9,6 +9,7 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Jacques FIESCHI - Cannes 2012", vimeoId: "669374688" },
   { titre: "Israël HOROWITZ - Cannes 2015", vimeoId: "1236608372" },
   { titre: "Thomas BIDEGAIN & Noé DEBRÉ - Cannes 2015", vimeoId: "1236608373" },
+  { titre: "Jeremy SAULNIER - Cannes 2015", vimeoId: "1237071653", film: "Green Room" },
   { titre: "Paul LAVERTY - Cannes 2016", vimeoId: "168531815", film: "I, Daniel Blake (Ken LOACH)" },
   { titre: "Kim NGUYEN - Cannes 2016", vimeoId: "169153806", film: "Two Lovers and a Bear" },
   { titre: "Sacha WOLFF - Cannes 2016", vimeoId: "170454805", film: "Mercenaire" },
@@ -29,7 +30,6 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Hong-Jin NA - Clermont-Ferrand 2018", vimeoId: "305807052" },
   { titre: "David OELHOFFEN - Clermont-Ferrand 2019", vimeoId: "340089009" },
   { titre: "Pierre SCHOELLER Clermont-Ferrand 2020", vimeoId: "904082025" },
-  { titre: "Jeremy SAULNIER", vimeoId: "1237071653", film: "Green Room" },
 ];
 
 export default async function MasterclassPage() {
