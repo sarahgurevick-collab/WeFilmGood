@@ -29,6 +29,7 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Hong-Jin NA - Clermont-Ferrand 2018", vimeoId: "305807052" },
   { titre: "David OELHOFFEN - Clermont-Ferrand 2019", vimeoId: "340089009" },
   { titre: "Pierre SCHOELLER Clermont-Ferrand 2020", vimeoId: "904082025" },
+  { titre: "Jeremy SAULNIER", vimeoId: "1237071653", film: "Green Room" },
 ];
 
 export default async function MasterclassPage() {
