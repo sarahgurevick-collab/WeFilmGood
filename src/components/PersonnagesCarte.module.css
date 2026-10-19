@@ -45,3 +45,10 @@
   object-fit: cover;
   display: block;
 }
+
+/* Sans photo : la lettre du métier sur fond rouge (19/10/2026). */
+.lettre {
+  background: #da2c25;
+  font-size: 10px;
+  letter-spacing: -0.02em;
+}

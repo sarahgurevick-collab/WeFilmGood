@@ -1,12 +1,13 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { lettreDuMetier } from "@/lib/lettre-metier";
 
 /** L'équipe déjà en place, telle que la carte d'un projet la montre (19/10/2026). */
 export type EquipeCarte = {
   total: number;
   /** Les métiers, une fois chacun, dans l'ordre de la liste des métiers. */
   metiers: string[];
-  /** Les premiers portraits ; floutés par le serveur sans adhésion. */
-  portraits: { id: string; src: string | null }[];
+  /** Les premiers ronds : la photo (floutée par le serveur sans adhésion), ou la lettre du métier sur fond rouge. */
+  portraits: { id: string; src: string | null; lettre: string }[];
 };
 
 export const NB_PORTRAITS_EQUIPE = 3;
@@ -31,11 +32,12 @@ export async function equipesDesCartes(
     const eq = parProjet.get(l.project_id) ?? { total: 0, metiers: [], portraits: [] };
     eq.total += 1;
     if (l.role && !eq.metiers.includes(l.role)) eq.metiers.push(l.role);
-    // Pas de portrait pour qui n'est pas encore inscrit : le métier seul.
-    if (l.profile_id && eq.portraits.length < NB_PORTRAITS_EQUIPE) {
+    // Sans photo, ou pas encore inscrit : la lettre du métier.
+    if (eq.portraits.length < NB_PORTRAITS_EQUIPE) {
       eq.portraits.push({
-        id: l.profile_id,
-        src: l.avatar_url ? (restreint ? `/api/talents/photo?id=${l.profile_id}` : l.avatar_url) : null,
+        id: l.profile_id ?? `sans-compte-${eq.total}`,
+        src: l.profile_id && l.avatar_url ? (restreint ? `/api/talents/photo?id=${l.profile_id}` : l.avatar_url) : null,
+        lettre: lettreDuMetier(l.role),
       });
     }
     parProjet.set(l.project_id, eq);

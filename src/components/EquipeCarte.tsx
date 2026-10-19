@@ -20,10 +20,10 @@ export default function EquipeCarte({ projetId, equipe }: { projetId: string; eq
   return (
     <Link href={`/projet/${projetId}`} className={styles.ligne} title="Les talents déjà rattachés à ce projet">
       <span className={styles.portraits}>
-        {equipe.portraits.map((p) => (
-          <span key={p.id} className={styles.portrait}>
+        {equipe.portraits.map((p, i) => (
+          <span key={`${p.id}-${i}`} className={`${styles.portrait} ${p.src ? "" : styles.lettre}`}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            {p.src ? <img src={p.src} alt="" loading="lazy" /> : null}
+            {p.src ? <img src={p.src} alt="" loading="lazy" /> : p.lettre}
           </span>
         ))}
       </span>
