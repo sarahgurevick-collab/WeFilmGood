@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { AUCUN, parametresRpc, type Filtres } from "./filtres";
 import { enTexte, vecteur } from "@/lib/vecteurs";
+import { equipesDesCartes, lectureRestreinte, type EquipeCarte } from "./equipe-carte";
 import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut, type PersonnagesCarte } from "./personnages-carte";
 
 export type ProjetTrouve = {
@@ -18,6 +19,8 @@ export type ProjetTrouve = {
   vu?: boolean;
   /** Les premiers personnages et leur nombre (14/10). */
   personnages?: PersonnagesCarte | null;
+  /** Les talents déjà rattachés (19/10). */
+  equipe?: EquipeCarte | null;
 };
 
 export type ResultatRecherche = {
@@ -150,6 +153,8 @@ export async function rechercherProjets(
 
   const urlDe = new Map((signes ?? []).map((s) => [s.path, s.signedUrl]));
   const ordreDe = new Map<string, number>(ids.map((id, i) => [id, i]));
+  const { data: { user } } = await supabase.auth.getUser();
+  const equipes = await equipesDesCartes(supabase, ids, await lectureRestreinte(supabase, user?.id));
 
   const projets = (projects ?? [])
     .map((p) => {
@@ -163,6 +168,7 @@ export async function rechercherProjets(
         genre: p.genre,
         vignette: chemin ? (urlDe.get(chemin) ?? null) : null,
         personnages: personnagesDeLaCarte(p.characters, urlDe),
+        equipe: equipes.get(p.id) ?? null,
       };
     })
     .sort((a, b) => (ordreDe.get(a.id) ?? 0) - (ordreDe.get(b.id) ?? 0));

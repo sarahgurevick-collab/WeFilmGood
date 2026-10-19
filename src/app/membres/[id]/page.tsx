@@ -5,6 +5,10 @@ import LogoComplet from "@/components/LogoComplet";
 import VignetteEau from "@/components/VignetteEau";
 import ContactEnveloppe from "@/app/projet/[id]/ContactEnveloppe";
 import projetsStyles from "@/app/pitchotheque/projets.module.css";
+import EquipeCarte from "@/components/EquipeCarte";
+import PersonnagesCarte from "@/components/PersonnagesCarte";
+import { equipesDesCartes, lectureRestreinte } from "@/app/pitchotheque/equipe-carte";
+import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut } from "@/app/pitchotheque/personnages-carte";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
@@ -79,7 +83,7 @@ export default async function ProfilMembrePage({
   // projets visibles des membres, et pas d'image, pas de carte.
   const { data: projetsBruts } = await supabase
     .from("projects")
-    .select("id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind)")
+    .select(`id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind), ${SELECTION_PERSONNAGES}`)
     .eq("owner_id", membre.id)
     .eq("is_public", true)
     .order("created_at", { ascending: false })
@@ -92,6 +96,7 @@ export default async function ProfilMembrePage({
         bandeau: string | null;
         genre: { label_fr: string } | null;
         files: { storage_path: string; kind: string }[];
+        characters: PersonnageBrut[] | null;
       }[]
     >();
   const vignetteChemin = (p: { files: { storage_path: string; kind: string }[] }) =>
@@ -100,9 +105,15 @@ export default async function ProfilMembrePage({
   const { data: signes } = projets.length
     ? await supabase.storage
         .from("project-media")
-        .createSignedUrls(projets.map((p) => vignetteChemin(p) as string), 60 * 60)
+        .createSignedUrls(
+          projets.flatMap((p) => [vignetteChemin(p) as string, ...cheminsPortraits(p.characters)]),
+          60 * 60,
+        )
     : { data: [] };
   const urlDe = new Map((signes ?? []).map((s) => [s.path, s.signedUrl]));
+  // Les talents déjà rattachés et les personnages, sous chaque projet (19/10,
+  // Sarah : un producteur choisit avant de dépenser un crédit).
+  const equipes = await equipesDesCartes(supabase, projets.map((p) => p.id), await lectureRestreinte(supabase, user.id));
 
   // L'enveloppe (10/10, Sarah) : on écrit à un talent depuis son profil, sans
   // passer par un projet ; le message porte un objet. Comme sur la fiche d'un
@@ -192,6 +203,8 @@ export default async function ProfilMembrePage({
                       {p.tagline && <p className={projetsStyles.logline}>{p.tagline}</p>}
                     </div>
                   </Link>
+                  <EquipeCarte projetId={p.id} equipe={equipes.get(p.id)} />
+                  <PersonnagesCarte projetId={p.id} personnages={personnagesDeLaCarte(p.characters, urlDe)} />
                 </li>
               );
             })}

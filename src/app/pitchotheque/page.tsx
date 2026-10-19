@@ -9,6 +9,8 @@ import VignetteEau from "@/components/VignetteEau";
 import { categorieDeDepart, peutVoirLeNuage, personnagesDeLaGalaxie, talentsDeLaGalaxie } from "./actions";
 import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut } from "./personnages-carte";
 import PersonnagesCarte from "@/components/PersonnagesCarte";
+import EquipeCarte from "@/components/EquipeCarte";
+import { equipesDesCartes, lectureRestreinte } from "./equipe-carte";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
@@ -188,6 +190,8 @@ export default async function ProjetsPage({
   const urlDe = new Map((signes ?? []).map((s) => [s.path, s.signedUrl]));
   // Les fiches que ce membre a déjà ouvertes (03/10) : un petit œil sur la carte.
   const dejaOuverts = await projetsDejaOuverts(supabase, (projects ?? []).map((p) => p.id));
+  // Les talents déjà rattachés (19/10), sous chaque carte.
+  const equipes = await equipesDesCartes(supabase, (projects ?? []).map((p) => p.id), await lectureRestreinte(supabase, user?.id));
 
   const vignetteDe = (p: Projet) => {
     const chemin = (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path;
@@ -276,6 +280,7 @@ export default async function ProjetsPage({
                       {p.tagline && <p className={styles.logline}>{p.tagline}</p>}
                     </div>
                   </Link>
+                  <EquipeCarte projetId={p.id} equipe={equipes.get(p.id)} />
                   <PersonnagesCarte projetId={p.id} personnages={personnagesDeLaCarte(p.characters, urlDe)} />
                 </li>
               );

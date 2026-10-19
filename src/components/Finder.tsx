@@ -16,6 +16,7 @@ import Bandeau from "./Bandeau";
 import LogoComplet from "./LogoComplet";
 import MarqueDejaOuvert from "./MarqueDejaOuvert";
 import PersonnagesCarte from "./PersonnagesCarte";
+import EquipeCarte from "./EquipeCarte";
 import formStyles from "./form.module.css";
 import NuageCouleurs from "./NuageCouleurs";
 import NuageDisque from "./NuageDisque";
@@ -497,6 +498,7 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
         {p.tagline && <p className={projetsStyles.logline}>{p.tagline}</p>}
       </div>
     </Link>
+    <EquipeCarte projetId={p.id} equipe={p.equipe} />
     <PersonnagesCarte projetId={p.id} personnages={p.personnages} />
     </>
   );
