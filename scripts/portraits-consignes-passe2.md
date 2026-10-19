@@ -32,6 +32,16 @@ On te confie soit l'étape 1, soit l'étape 3 : ne fais que celle demandée.
   Openverse a beaucoup de vieilles photographies : `victorian woman`,
   `1920s man`, `ww1 soldier`.
 - Pour une femme de 40 à 60 ans : `mature woman` ou `middle aged woman`.
+- **Évite les recherches nues comme `young woman portrait` ou `man suit portrait`** :
+  Pixabay ne renvoie alors que des photos de mode (poses de magazine, épaules
+  nues, personnes allongées), toutes refusées au tri (constaté le 20/10 : 1 seul
+  portrait sur 50). Ajoute un mot qui tire vers une **photo de la vie
+  ordinaire** : `candid`, `casual`, `street`, `smiling`, `headshot`, ou un
+  lieu ou une activité simple (`office`, `kitchen`, `outdoors`). Exemples :
+  `young woman casual smiling`, `man 45 office headshot`,
+  `mature woman candid street`.
+- Donne l'âge en chiffres quand la description le précise et qu'il compte :
+  `man 45 portrait`, `woman 40 headshot`.
 - Personnage non humain ou personne réelle (cela ne devrait plus arriver ici) :
   `{ "p": "", "o": "" }`.
 
