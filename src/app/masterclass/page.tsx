@@ -10,6 +10,7 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Israël HOROWITZ - Cannes 2015", vimeoId: "1236608372" },
   { titre: "Thomas BIDEGAIN & Noé DEBRÉ - Cannes 2015", vimeoId: "1236608373" },
   { titre: "Jeremy SAULNIER - Cannes 2015", vimeoId: "1237071653", film: "Green Room" },
+  { titre: "Chris SPARLING - Cannes 2015", vimeoId: "1237374644", film: "The Sea of Trees (Gus VAN SANT)" },
   { titre: "Paul LAVERTY - Cannes 2016", vimeoId: "168531815", film: "I, Daniel Blake (Ken LOACH)" },
   { titre: "Kim NGUYEN - Cannes 2016", vimeoId: "169153806", film: "Two Lovers and a Bear" },
   { titre: "Sacha WOLFF - Cannes 2016", vimeoId: "170454805", film: "Mercenaire" },
