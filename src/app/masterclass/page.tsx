@@ -17,7 +17,12 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "David BIRKE - Cannes 2016", vimeoId: "170676380", film: "Elle (Paul VERHOEVEN)" },
   { titre: "Brian SZELNICK - Cannes 2017", vimeoId: "220287202" },
   { titre: "Anahita GHAZVINIZADEH - Cannes 2017", vimeoId: "220597607" },
-  { titre: "Beatriz SEIGNER Cannes 2018", vimeoId: "281351697" },
+  {
+    titre: "Beatriz SEIGNER Cannes 2018",
+    vimeoId: "281351697",
+    film: "Los Silencios",
+    affiche: "/masterclass/los-silencios.webp",
+  },
   {
     titre: "Romain GAVRAS - Cannes 2018",
     vimeoId: "277538414",
