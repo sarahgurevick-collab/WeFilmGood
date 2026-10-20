@@ -206,7 +206,8 @@ export default function RoueTitres({
               {(t.dessous || t.apres) && (
                 <span className={styles.ligneDessous}>
                   {t.dessous && <em className={styles.dessous}>{t.dessous}</em>}
-                  {t.apres && <span className={styles.apres}>{t.apres}</span>}
+                  {/* Un tiret entre le film et l'année : « Les Cowboys - Cannes 2015 ». */}
+                  {t.apres && <span className={styles.apres}>{t.dessous ? `- ${t.apres}` : t.apres}</span>}
                 </span>
               )}
             </span>
