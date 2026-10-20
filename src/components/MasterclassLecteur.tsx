@@ -11,6 +11,8 @@ export type Masterclass = {
   film?: string;
   /** L'affiche du film : elle remplace l'écran jusqu'au clic, puis la vidéo démarre (20/10). */
   affiche?: string;
+  /** Le teaser (bande-annonce) du film, ouvert dans un autre onglet (20/10). */
+  teaser?: string;
 };
 
 /** « Jacques FIESCHI - Cannes 2012 » → le nom, puis le festival et l'année. */
@@ -46,6 +48,7 @@ export default function MasterclassLecteur({
 
   return (
     <div className={styles.lecteur}>
+      <div className={styles.colonneEcran}>
       <div className={styles.ecran}>
         {actuelle.affiche && lancee !== actuelle.vimeoId ? (
           <button
@@ -74,6 +77,12 @@ export default function MasterclassLecteur({
             title={actuelle.titre}
           />
         )}
+      </div>
+      {actuelle.teaser && (
+        <a href={actuelle.teaser} target="_blank" rel="noopener noreferrer" className={styles.teaser}>
+          Voir le teaser du film ↗
+        </a>
+      )}
       </div>
       <RoueTitres titres={titres} valeur={id} onChange={(nouveau) => {
           setId(nouveau);

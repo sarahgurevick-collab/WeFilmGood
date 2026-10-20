@@ -80,3 +80,24 @@
 .affiche:focus-visible .lire {
   transform: translateX(-50%) scale(1.1);
 }
+
+/* L'écran et, dessous, le lien vers le teaser du film (20/10/2026). */
+.colonneEcran {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.teaser {
+  align-self: flex-start;
+  font-size: 14px;
+  font-weight: 700;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.teaser:hover {
+  color: var(--rouge-wfg, #da2c25);
+}
