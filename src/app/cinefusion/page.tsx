@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -68,7 +69,7 @@ export default async function CinefusionPage({
   }
 
   const [{ data: fiche }, { data: adherent }, completion] = await Promise.all([
-    supabase.from("profiles").select("personality_answers").eq("id", user.id).maybeSingle(),
+    supabase.from("profiles").select("personality_answers, category").eq("id", user.id).maybeSingle(),
     supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id }),
     calculerCompletion(supabase, user.id),
   ]);
@@ -92,6 +93,14 @@ export default async function CinefusionPage({
         <p className={formStyles.hint}>{TEXTES.retourBienvenue}</p>
       ) : (
         enregistre && <p className={formStyles.hint}>{TEXTES.enregistre}</p>
+      )}
+      {/* Une personne du métier arrivée par CinéMatch n'a pas encore choisi sa
+          catégorie : tant que son profil n'est pas complété, elle n'entre pas
+          dans les matchs des autres. */}
+      {!fiche?.category && (
+        <p className={formStyles.hint}>
+          {TEXTES.completerProfil} <Link href="/profil/identite">{TEXTES.completerProfilLien}</Link>
+        </p>
       )}
       {Object.keys(reponses).length > 0 && (
         <ResultatMatch match={match} adherent={adherent === true} nom={nom} connecte />
