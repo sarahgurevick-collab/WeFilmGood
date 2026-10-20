@@ -9,6 +9,8 @@ export type Masterclass = {
   vimeoId: string;
   /** Le film dont parle la masterclass, en italique sous le titre (16/10). */
   film?: string;
+  /** L'affiche du film : elle remplace l'écran jusqu'au clic, puis la vidéo démarre (20/10). */
+  affiche?: string;
 };
 
 /** « Jacques FIESCHI - Cannes 2012 » → le nom, puis le festival et l'année. */
@@ -34,6 +36,8 @@ export default function MasterclassLecteur({
   const [id, setId] = useState(
     masterclasses.some((m) => m.vimeoId === parDefaut) ? (parDefaut as string) : (masterclasses[0]?.vimeoId ?? ""),
   );
+  // La masterclass dont l'affiche a été cliquée : sa vidéo est lancée.
+  const [lancee, setLancee] = useState<string | null>(null);
   const actuelle = masterclasses.find((m) => m.vimeoId === id) ?? masterclasses[0];
   const titres = masterclasses.map((m) => {
     const { nom, sous } = decouper(m.titre);
@@ -43,13 +47,33 @@ export default function MasterclassLecteur({
   return (
     <div className={styles.lecteur}>
       <div className={styles.ecran}>
-        <iframe
-          key={actuelle.vimeoId}
-          src={`https://player.vimeo.com/video/${actuelle.vimeoId}`}
-          allow="autoplay; fullscreen; picture-in-picture"
-          allowFullScreen
-          title={actuelle.titre}
-        />
+        {actuelle.affiche && lancee !== actuelle.vimeoId ? (
+          <button
+            type="button"
+            className={styles.affiche}
+            onClick={() => setLancee(actuelle.vimeoId)}
+            aria-label={`Lire la masterclass : ${actuelle.titre}`}
+          >
+            {/* Le même visuel flouté remplit l'écran, l'affiche (portrait) au centre. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={actuelle.affiche} alt="" className={styles.fond} aria-hidden="true" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={actuelle.affiche} alt={`Affiche : ${actuelle.film ?? actuelle.titre}`} className={styles.visuel} />
+            <span className={styles.lire} aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28">
+                <path d="M8 5v14l11-7z" fill="#fff" />
+              </svg>
+            </span>
+          </button>
+        ) : (
+          <iframe
+            key={actuelle.vimeoId}
+            src={`https://player.vimeo.com/video/${actuelle.vimeoId}${actuelle.affiche ? "?autoplay=1" : ""}`}
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+            title={actuelle.titre}
+          />
+        )}
       </div>
       <RoueTitres titres={titres} valeur={id} onChange={setId} etiquette="Choisir une masterclass" />
     </div>

@@ -22,7 +22,12 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Abu BAKR SHAWKY - Cannes 2018", vimeoId: "279861719" },
   { titre: "Andrea BESCOND & Eric METAYER - Cannes 2018", vimeoId: "1236601048" },
   { titre: "Paul LAVERTY 2 - Cannes 2019", vimeoId: "338559739" },
-  { titre: "Alice FURTADO & Leonardo LEVIS - Cannes 2019", vimeoId: "1227885383" },
+  {
+    titre: "Alice FURTADO & Leonardo LEVIS - Cannes 2019",
+    vimeoId: "1227885383",
+    film: "Sick Sick Sick",
+    affiche: "/masterclass/sick-sick-sick.webp",
+  },
   { titre: "Melina LEON - Cannes 2019", vimeoId: "1227885384", film: "Canción sin nombre" },
   { titre: "Larisa SADILOVA - Cannes 2019", vimeoId: "1227885382", film: "Once in Trubchevsk" },
   { titre: "Gérard KRAWCZYK - Clermont-Ferrand 2014", vimeoId: "1236608380" },
