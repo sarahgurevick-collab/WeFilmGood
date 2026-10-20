@@ -16,7 +16,13 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Sacha WOLFF - Cannes 2016", vimeoId: "170454805", teaser: "https://www.youtube.com/watch?v=AjtL-KAxXD0", film: "Mercenaire" },
   { titre: "David BIRKE - Cannes 2016", vimeoId: "170676380", teaser: "https://www.youtube.com/watch?v=gM96ne-XiH0", film: "Elle (Paul VERHOEVEN)" },
   { titre: "Brian SZELNICK - Cannes 2017", vimeoId: "220287202" },
-  { titre: "Anahita GHAZVINIZADEH - Cannes 2017", vimeoId: "220597607" },
+  {
+    titre: "Anahita GHAZVINIZADEH - Cannes 2017",
+    vimeoId: "220597607",
+    teaser: "https://www.youtube.com/watch?v=PFO_4hLcszI",
+    film: "They",
+    affiche: "/masterclass/they.webp",
+  },
   {
     titre: "Beatriz SEIGNER - Cannes 2018",
     vimeoId: "281351697", teaser: "https://www.youtube.com/watch?v=A6jBRLMwRMo",
