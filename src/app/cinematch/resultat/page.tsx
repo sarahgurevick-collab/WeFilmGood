@@ -24,7 +24,7 @@ const PIEGE = (
  *  - Non : l'adresse email seulement, et il devient Greenlighter ;
  *  - Oui : l'inscription habituelle (prénom, nom, email), puis son profil.
  */
-export default async function ResultatCinefusionPage({
+export default async function ResultatCineMatchPage({
   searchParams,
 }: {
   searchParams: Promise<{ envoye?: string; erreur?: string; metier?: string }>;

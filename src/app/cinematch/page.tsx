@@ -21,7 +21,7 @@ import { TEXTES } from "./textes";
  * (/cinematch/resultat) : ses réponses arrivent sur son profil quand il
  * clique sur le lien reçu.
  */
-export default async function CinefusionPage({
+export default async function CineMatchPage({
   searchParams,
 }: {
   searchParams: Promise<{ enregistre?: string; bienvenue?: string; erreur?: string }>;
