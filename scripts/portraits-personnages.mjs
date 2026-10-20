@@ -107,8 +107,11 @@ async function pixabay(q, pris) {
   }
   if (!r.ok) return [];
   const d = await r.json();
+  // Pixabay marque les images fabriquées par ordinateur (champ isAiGenerated,
+  // absent de sa documentation, vérifié le 20/10/2026 : les six images retirées
+  // à l'œil comme fabriquées étaient toutes marquées). On ne les propose plus.
   return (d.hits ?? [])
-    .filter((h) => !pris.has(String(h.id)))
+    .filter((h) => !pris.has(String(h.id)) && !h.isAiGenerated)
     .map((h) => ({ apercu: h.webformatURL, url: h.largeImageURL, source: "pixabay", source_id: String(h.id), page: h.pageURL }));
 }
 
