@@ -66,10 +66,21 @@ export default async function MesMessagesPage() {
         ) : (
           <ul className={styles.liste}>
             {conversations.map((c) => (
-              <li key={`${c.autre_id}-${c.projet_id ?? ""}`}>
+              <li key={`${c.autre_id}-${c.projet_id ?? ""}`} className={`${styles.carte} ${styles.conversation}`}>
+                {/* Toute la carte ouvre la conversation (le lien étiré) ; la photo et
+                    le titre du projet sont deux liens à part, dans un autre onglet
+                    (20/10, Sarah : retrouver de quel projet il s'agit). */}
                 <Link
                   href={`/mes-messages/avec/${c.autre_id}${c.projet_id ? `?projet=${c.projet_id}` : ""}`}
-                  className={`${styles.carte} ${styles.conversation}`}
+                  className={styles.etire}
+                  aria-label={`Ouvrir la conversation avec ${c.autre_nom ?? "ce membre"}`}
+                />
+                <Link
+                  href={`/membres/${c.autre_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.lienPhoto}
+                  title="Voir son profil"
                 >
                   <AvatarMembre
                     src={avatars.get(c.autre_id)?.src ?? null}
@@ -77,7 +88,8 @@ export default async function MesMessagesPage() {
                     nom={c.autre_nom ?? undefined}
                     taille={44}
                   />
-                  <div className={styles.contenu}>
+                </Link>
+                <div className={styles.contenu}>
                   <div className={styles.entete}>
                     <span className={styles.projet}>
                       {c.autre_nom ?? "Un membre"}
@@ -89,15 +101,24 @@ export default async function MesMessagesPage() {
                   </div>
                   {(c.projet_titre || c.objet) && (
                     <p className={formStyles.hint} style={{ margin: "0 0 6px" }}>
-                      {c.projet_titre ? `À propos de « ${c.projet_titre} »` : `Objet : ${c.objet}`}
+                      {c.projet_titre ? (
+                        <>
+                          À propos de «{" "}
+                          <Link href={`/projet/${c.projet_id}`} target="_blank" rel="noopener noreferrer" className={styles.lienProjet}>
+                            {c.projet_titre}
+                          </Link>{" "}
+                          »
+                        </>
+                      ) : (
+                        `Objet : ${c.objet}`
+                      )}
                     </p>
                   )}
                   <p className={`${styles.apercu} ${c.non_lus > 0 ? styles.apercuNonLu : ""}`}>
                     {c.dernier_de_moi && <span className={styles.vous}>Vous : </span>}
                     {c.dernier_corps}
                   </p>
-                  </div>
-                </Link>
+                </div>
               </li>
             ))}
           </ul>

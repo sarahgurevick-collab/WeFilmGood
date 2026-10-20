@@ -68,6 +68,7 @@
 
 /* Les conversations (03/10) : une carte cliquable par correspondant et par projet. */
 .conversation {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 14px;
@@ -77,7 +78,7 @@
 }
 
 .conversation:hover,
-.conversation:focus-visible {
+.conversation:focus-within {
   border-color: var(--rouge-wfg);
 }
 
@@ -119,4 +120,22 @@
 .contenu {
   flex: 1;
   min-width: 0;
+}
+
+/* Le lien qui couvre toute la carte ; la photo et le projet passent par-dessus. */
+.etire {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+}
+
+.lienPhoto,
+.lienProjet {
+  position: relative;
+  z-index: 1;
+}
+
+.lienProjet {
+  color: inherit;
+  text-decoration: underline;
 }
