@@ -1,8 +1,8 @@
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
-import { apercuCineMatch } from "@/app/cinefusion/actions";
-import BrouillonCineMatch from "@/app/cinefusion/BrouillonCineMatch";
-import { TEXTES } from "@/app/cinefusion/textes";
+import { apercuCineMatch } from "@/app/cinematch/actions";
+import BrouillonCineMatch from "@/app/cinematch/BrouillonCineMatch";
+import { TEXTES } from "@/app/cinematch/textes";
 import { saveGouts } from "../actions";
 import styles from "../profil.module.css";
 
@@ -15,7 +15,7 @@ type Option = { question_key: string; option_slug: string; label_fr: string; pos
  * autre chose (enregistré « autre:… », comme les réponses reprises de WFG 1).
  *
  * Le même formulaire sert au bloc 3 du profil (/profil/gouts) et à la page
- * CinéMatch du Menu (/cinefusion), ouverte à tout compte connecté, même
+ * CinéMatch du Menu (/cinematch), ouverte à tout compte connecté, même
  * réduit à une adresse email. `retour` dit où revenir après l'envoi.
  *
  * Sans `userId` (visiteur sans compte), le formulaire mène au meilleur
@@ -27,7 +27,7 @@ export default async function QuestionnaireCineMatch({
   retour,
 }: {
   userId?: string;
-  retour?: "/cinefusion";
+  retour?: "/cinematch";
 }) {
   const supabase = await createClient();
   const [{ data: profil }, { data: questions }, { data: options }] =

@@ -50,7 +50,7 @@ export async function garderBrouillon(reponses: Reponses) {
     httpOnly: true,
     secure: true,
     sameSite: "lax",
-    path: "/cinefusion",
+    path: "/cinematch",
     maxAge: DUREE_BROUILLON_S,
   });
 }
@@ -74,7 +74,7 @@ export async function lireBrouillon(): Promise<Reponses | null> {
 
 export async function oublierBrouillon() {
   const jar = await cookies();
-  jar.delete({ name: COOKIE_BROUILLON, path: "/cinefusion" });
+  jar.delete({ name: COOKIE_BROUILLON, path: "/cinematch" });
 }
 
 export type Match = {

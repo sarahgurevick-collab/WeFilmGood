@@ -22,10 +22,10 @@ export async function apercuCineMatch(formData: FormData) {
   const cles = (questions ?? []).map((q) => q.key as string);
 
   const reponses = reponsesDuFormulaire(formData, cles, PLAFOND_TEXTE_VISITEUR);
-  if (Object.keys(reponses).length < MIN_REPONSES) redirect("/cinefusion?erreur=peu");
+  if (Object.keys(reponses).length < MIN_REPONSES) redirect("/cinematch?erreur=peu");
 
   await garderBrouillon(reponses);
-  redirect("/cinefusion/resultat");
+  redirect("/cinematch/resultat");
 }
 
 /**
@@ -39,25 +39,25 @@ export async function apercuCineMatch(formData: FormData) {
  */
 export async function demanderLeMatch(formData: FormData) {
   const email = (formData.get("email") as string | null)?.trim().toLowerCase();
-  if (!email) redirect("/cinefusion/resultat?metier=non&erreur=email");
+  if (!email) redirect("/cinematch/resultat?metier=non&erreur=email");
 
   if (rempliParUnRobot(formData)) {
     console.warn("CinéMatch : formulaire rempli par un robot, ignoré");
-    redirect(`/cinefusion/resultat?envoye=${encodeURIComponent(email)}`);
+    redirect(`/cinematch/resultat?envoye=${encodeURIComponent(email)}`);
   }
 
   const reponses = await lireBrouillon();
-  if (!reponses) redirect("/cinefusion");
+  if (!reponses) redirect("/cinematch");
 
   const resultat = await envoyerLienDInscription(
     email,
     "",
     { category: "cinephile", reponses_cinematch: JSON.stringify(reponses) },
-    "/cinefusion?bienvenue=1",
+    "/cinematch?bienvenue=1",
   );
-  if (!resultat.ok) redirect("/cinefusion/resultat?metier=non&erreur=email");
+  if (!resultat.ok) redirect("/cinematch/resultat?metier=non&erreur=email");
 
-  redirect(`/cinefusion/resultat?envoye=${encodeURIComponent(email)}`);
+  redirect(`/cinematch/resultat?envoye=${encodeURIComponent(email)}`);
 }
 
 /**
@@ -69,23 +69,23 @@ export async function creerProfilMetier(formData: FormData) {
   const prenom = (formData.get("first_name") as string | null)?.trim();
   const nom = (formData.get("last_name") as string | null)?.trim();
   const email = (formData.get("email") as string | null)?.trim().toLowerCase();
-  if (!prenom || !nom || !email) redirect("/cinefusion/resultat?metier=oui&erreur=champs");
+  if (!prenom || !nom || !email) redirect("/cinematch/resultat?metier=oui&erreur=champs");
 
   if (rempliParUnRobot(formData)) {
     console.warn("CinéMatch : formulaire rempli par un robot, ignoré");
-    redirect(`/cinefusion/resultat?envoye=${encodeURIComponent(email)}`);
+    redirect(`/cinematch/resultat?envoye=${encodeURIComponent(email)}`);
   }
 
   const reponses = await lireBrouillon();
-  if (!reponses) redirect("/cinefusion");
+  if (!reponses) redirect("/cinematch");
 
   const resultat = await envoyerLienDInscription(
     email,
     `${prenom} ${nom}`,
     { first_name: prenom, last_name: nom, reponses_cinematch: JSON.stringify(reponses) },
-    "/cinefusion?bienvenue=1",
+    "/cinematch?bienvenue=1",
   );
-  if (!resultat.ok) redirect("/cinefusion/resultat?metier=oui&erreur=email");
+  if (!resultat.ok) redirect("/cinematch/resultat?metier=oui&erreur=email");
 
-  redirect(`/cinefusion/resultat?envoye=${encodeURIComponent(email)}`);
+  redirect(`/cinematch/resultat?envoye=${encodeURIComponent(email)}`);
 }

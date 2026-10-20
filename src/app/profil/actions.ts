@@ -251,7 +251,7 @@ export async function saveGouts(formData: FormData) {
 
   revalidatePath("/profil");
   // Depuis la page CinéMatch du Menu, on y revient plutôt que d'aller au sommaire.
-  if (formData.get("retour") === "/cinefusion") redirect("/cinefusion?enregistre=1");
+  if (formData.get("retour") === "/cinematch") redirect("/cinematch?enregistre=1");
   redirect("/profil?enregistre=1");
 }
 

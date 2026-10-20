@@ -31,6 +31,9 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // CinéFusion est devenu CinéMatch (20/10/2026).
+      { source: "/cinefusion", destination: "/cinematch", permanent: true },
+      { source: "/cinefusion/:path*", destination: "/cinematch/:path*", permanent: true },
       { source: "/projets", destination: "/pitchotheque", permanent: true },
       { source: "/projets/:path*", destination: "/projet/:path*", permanent: true },
       { source: "/deposer", destination: "/projet", permanent: true },

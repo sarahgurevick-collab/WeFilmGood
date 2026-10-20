@@ -18,7 +18,7 @@ import { TEXTES } from "./textes";
  * Elle est ouverte à tout compte connecté, même un profil réduit à une
  * adresse email (catégorie Greenlighter). Un visiteur sans compte répond
  * d'abord, voit son pourcentage, puis donne son adresse email
- * (/cinefusion/resultat) : ses réponses arrivent sur son profil quand il
+ * (/cinematch/resultat) : ses réponses arrivent sur son profil quand il
  * clique sur le lien reçu.
  */
 export default async function CinefusionPage({
@@ -36,7 +36,7 @@ export default async function CinefusionPage({
   if (!user) {
     // Déjà répondu : les réponses sont mémorisées, on ne refait pas le jeu
     // pour voir ce que ça donne (ni pour gonfler son match).
-    if (await lireBrouillon()) redirect("/cinefusion/resultat");
+    if (await lireBrouillon()) redirect("/cinematch/resultat");
     return (
       <PageShell title={TEXTES.titre} theme="clair" enTeteAnime connecte={false}>
         <p className={formStyles.hint}>{TEXTES.introVisiteur}</p>
@@ -105,7 +105,7 @@ export default async function CinefusionPage({
       {Object.keys(reponses).length > 0 && (
         <ResultatMatch match={match} adherent={adherent === true} nom={nom} connecte />
       )}
-      <QuestionnaireCineMatch userId={user.id} retour="/cinefusion" />
+      <QuestionnaireCineMatch userId={user.id} retour="/cinematch" />
     </PageShell>
   );
 }

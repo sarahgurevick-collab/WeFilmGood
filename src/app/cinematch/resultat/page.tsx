@@ -20,7 +20,7 @@ const PIEGE = (
 /**
  * Après « Enregistrer vos réponses », pour un visiteur sans compte : le
  * résultat ne se montre pas encore, il s'ouvre par le lien magique, sur la
- * page liée à son profil (/cinefusion). Ici : « Êtes-vous du métier ? ».
+ * page liée à son profil (/cinematch). Ici : « Êtes-vous du métier ? ».
  *  - Non : l'adresse email seulement, et il devient Greenlighter ;
  *  - Oui : l'inscription habituelle (prénom, nom, email), puis son profil.
  */
@@ -35,7 +35,7 @@ export default async function ResultatCinefusionPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (user) redirect("/cinefusion");
+  if (user) redirect("/cinematch");
 
   if (envoye) {
     return (
@@ -46,7 +46,7 @@ export default async function ResultatCinefusionPage({
     );
   }
 
-  if (!(await lireBrouillon())) redirect("/cinefusion");
+  if (!(await lireBrouillon())) redirect("/cinematch");
 
   const mentionCgu = (
     <p className={formStyles.mentionCgu}>
@@ -64,10 +64,10 @@ export default async function ResultatCinefusionPage({
           <h2 style={{ fontSize: 18, margin: "0 0 4px" }}>{TEXTES.questionMetier}</h2>
           <p className={formStyles.hint}>{TEXTES.questionMetierPrecision}</p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 12 }}>
-            <Link href="/cinefusion/resultat?metier=oui" className={formStyles.submit}>
+            <Link href="/cinematch/resultat?metier=oui" className={formStyles.submit}>
               {TEXTES.reponseOui}
             </Link>
-            <Link href="/cinefusion/resultat?metier=non" className={formStyles.submit}>
+            <Link href="/cinematch/resultat?metier=non" className={formStyles.submit}>
               {TEXTES.reponseNon}
             </Link>
           </div>
@@ -89,7 +89,7 @@ export default async function ResultatCinefusionPage({
               {TEXTES.emailBouton}
             </button>
           </div>
-          <Link href="/cinefusion/resultat" className={formStyles.hint}>
+          <Link href="/cinematch/resultat" className={formStyles.hint}>
             {TEXTES.changerReponse}
           </Link>
         </form>
@@ -120,7 +120,7 @@ export default async function ResultatCinefusionPage({
               {TEXTES.metierBouton}
             </button>
           </div>
-          <Link href="/cinefusion/resultat" className={formStyles.hint}>
+          <Link href="/cinematch/resultat" className={formStyles.hint}>
             {TEXTES.changerReponse}
           </Link>
         </form>
