@@ -36,7 +36,7 @@ export default function MasterclassLecteur({
   const [id, setId] = useState(
     masterclasses.some((m) => m.vimeoId === parDefaut) ? (parDefaut as string) : (masterclasses[0]?.vimeoId ?? ""),
   );
-  // La masterclass dont l'affiche a été cliquée : sa vidéo est lancée.
+  // La masterclass dont l'affiche a été cliquée : sa vidéo est lancée, jusqu'à ce qu'on en choisisse une autre.
   const [lancee, setLancee] = useState<string | null>(null);
   const actuelle = masterclasses.find((m) => m.vimeoId === id) ?? masterclasses[0];
   const titres = masterclasses.map((m) => {
@@ -75,7 +75,11 @@ export default function MasterclassLecteur({
           />
         )}
       </div>
-      <RoueTitres titres={titres} valeur={id} onChange={setId} etiquette="Choisir une masterclass" />
+      <RoueTitres titres={titres} valeur={id} onChange={(nouveau) => {
+          setId(nouveau);
+          // Quand on change de masterclass, la vidéo lancée s'arrête : en revenant, on retrouve l'affiche.
+          setLancee(null);
+        }} etiquette="Choisir une masterclass" />
     </div>
   );
 }
