@@ -170,3 +170,28 @@ export async function supprimerMembre(profileId: string): Promise<string | null>
   revalidatePath("/admin/membres");
   return null;
 }
+
+/**
+ * Déverrouille les réponses CinéMatch d'un membre (20/10/2026) : sa prochaine
+ * sauvegarde pourra modifier celles déjà données, puis le verrou se remet.
+ * Renvoie un message d'erreur, ou rien.
+ */
+export async function deverrouillerCineMatch(profileId: string): Promise<string | null> {
+  const supabase = await createClient();
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  if (!isAdmin) return "Réservé à l'administration.";
+
+  const admin = createAdminClient();
+  if (!admin) return "Déverrouillage momentanément indisponible.";
+
+  const { error } = await admin
+    .from("profiles")
+    .update({ personality_unlocked_at: new Date().toISOString() })
+    .eq("id", profileId);
+  if (error) {
+    console.error("Déverrouillage CinéMatch refusé :", error.message);
+    return "Le déverrouillage a échoué.";
+  }
+  revalidatePath("/admin/membres");
+  return null;
+}

@@ -15,6 +15,7 @@ import AdhesionMembre from "./AdhesionMembre";
 import CategorieMembre from "./CategorieMembre";
 import ChangerAdresseMembre from "./ChangerAdresseMembre";
 import ControleNom from "./ControleNom";
+import DeverrouillerCineMatch from "./DeverrouillerCineMatch";
 import SupprimerMembre from "./SupprimerMembre";
 import LienScenario from "../LienScenario";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -590,6 +591,7 @@ export default async function MembresPage({
                       Prendre sa place
                     </button>
                   </form>
+                  <DeverrouillerCineMatch profileId={m.profile_id} />
                   <SupprimerMembre profileId={m.profile_id} />
                 </td>
               </tr>

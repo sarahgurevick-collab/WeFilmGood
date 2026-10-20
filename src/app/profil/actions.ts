@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { reponsesDuFormulaire } from "@/lib/cinematch";
 import { createClient } from "@/lib/supabase/server";
 import sharp from "sharp";
 import { metiersPourCategorie } from "./metiers";
@@ -223,20 +224,34 @@ export async function saveParcours(formData: FormData) {
 export async function saveGouts(formData: FormData) {
   const { supabase, user } = await requireUser("/profil/gouts");
 
-  const { data: questions } = await supabase.from("personality_questions").select("key");
-  const reponses: Record<string, string> = {};
-  for (const { key } of questions ?? []) {
-    const libre = texte(formData, `q_${key}_autre`);
-    const liste = texte(formData, `q_${key}`);
-    if (libre) reponses[key] = "autre:" + libre.toLowerCase().slice(0, 200);
-    else if (liste) reponses[key] = liste;
-  }
+  const [{ data: questions }, { data: fiche }] = await Promise.all([
+    supabase.from("personality_questions").select("key"),
+    supabase.from("profiles").select("personality_answers, personality_unlocked_at").eq("id", user.id).maybeSingle(),
+  ]);
+  const nouvelles = reponsesDuFormulaire(
+    formData,
+    (questions ?? []).map((q) => q.key as string),
+  );
+
+  // Les réponses déjà données sont verrouillées (20/10/2026) : on ne
+  // peut que répondre aux questions restées vides, sauf si l'administration
+  // a déverrouillé ce membre (une seule sauvegarde).
+  const deverrouille = !!fiche?.personality_unlocked_at;
+  const anciennes = (fiche?.personality_answers ?? {}) as Record<string, string>;
+  const reponses = deverrouille ? nouvelles : { ...nouvelles, ...anciennes };
+
   await supabase
     .from("profiles")
-    .update({ personality_answers: reponses, updated_at: new Date().toISOString() })
+    .update({
+      personality_answers: reponses,
+      personality_unlocked_at: null,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", user.id);
 
   revalidatePath("/profil");
+  // Depuis la page CinéMatch du Menu, on y revient plutôt que d'aller au sommaire.
+  if (formData.get("retour") === "/cinefusion") redirect("/cinefusion?enregistre=1");
   redirect("/profil?enregistre=1");
 }
 

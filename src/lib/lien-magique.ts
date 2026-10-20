@@ -179,7 +179,7 @@ export async function envoyerLienDInscription(
   const { data, error } = await admin.auth.admin.generateLink({
     type: "invite",
     email,
-    options: { data: { full_name: nom, ...donnees } },
+    options: { data: { ...(nom ? { full_name: nom } : {}), ...donnees } },
   });
 
   if (error) {
@@ -197,10 +197,10 @@ export async function envoyerLienDInscription(
   if (tropTot(email)) return { ok: true };
 
   await envoyerEmail({
-    to: [{ email, name: nom }],
+    to: [{ email, name: nom || undefined }],
     subject: "Bienvenue sur WeFilmGood — activez votre profil",
     htmlContent: gabarit(
-      `Bonjour ${echapper(nom)},`,
+      nom ? `Bonjour ${echapper(nom)},` : "Bonjour,",
       "Bienvenue sur WeFilmGood ! Il ne reste qu'un clic pour activer votre profil.",
       await lienVers(data.properties.hashed_token, "invite", next),
       "Activer mon profil",

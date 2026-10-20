@@ -1,0 +1,61 @@
+"use server";
+
+import { redirect } from "next/navigation";
+import {
+  MIN_REPONSES,
+  PLAFOND_TEXTE_VISITEUR,
+  garderBrouillon,
+  lireBrouillon,
+  reponsesDuFormulaire,
+} from "@/lib/cinematch";
+import { envoyerLienDInscription, rempliParUnRobot } from "@/lib/lien-magique";
+import { createClient } from "@/lib/supabase/server";
+
+/**
+ * Étape 1 d'un visiteur sans compte : il a répondu aux questions. Rien n'est
+ * écrit dans la base : les réponses attendent dans un cookie, on lui montre
+ * le pourcentage de son meilleur match, puis on lui demande son adresse email.
+ */
+export async function apercuCineMatch(formData: FormData) {
+  const supabase = await createClient();
+  const { data: questions } = await supabase.from("personality_questions").select("key");
+  const cles = (questions ?? []).map((q) => q.key as string);
+
+  const reponses = reponsesDuFormulaire(formData, cles, PLAFOND_TEXTE_VISITEUR);
+  if (Object.keys(reponses).length < MIN_REPONSES) redirect("/cinefusion?erreur=peu");
+
+  await garderBrouillon(reponses);
+  redirect("/cinefusion/resultat");
+}
+
+/**
+ * Étape 2 : l'adresse email. On crée un profil réduit à cette adresse (la
+ * catégorie « cinephile », affichée Greenlighter) et on envoie le lien qui
+ * l'active. Les réponses voyagent dans les métadonnées du compte : elles sont
+ * posées sur le profil quand la personne arrive par le lien (voir la page).
+ *
+ * Même écran dans tous les cas (robot, plafond atteint, adresse déjà connue)
+ * pour ne renseigner personne sur les comptes existants.
+ */
+export async function demanderLeMatch(formData: FormData) {
+  const email = (formData.get("email") as string | null)?.trim().toLowerCase();
+  if (!email) redirect("/cinefusion/resultat?erreur=email");
+
+  if (rempliParUnRobot(formData)) {
+    console.warn("CinéMatch : formulaire rempli par un robot, ignoré");
+    redirect(`/cinefusion/resultat?envoye=${encodeURIComponent(email)}`);
+  }
+
+  const reponses = await lireBrouillon();
+  if (!reponses) redirect("/cinefusion");
+
+  const resultat = await envoyerLienDInscription(
+    email,
+    "",
+    { category: "cinephile", reponses_cinematch: JSON.stringify(reponses) },
+    "/cinefusion?bienvenue=1",
+  );
+  if (!resultat.ok) redirect("/cinefusion/resultat?erreur=email");
+
+  redirect(`/cinefusion/resultat?envoye=${encodeURIComponent(email)}`);
+}

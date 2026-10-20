@@ -21,7 +21,7 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
   {
     cle: "gouts",
     numero: 3,
-    titre: "Mieux vous connaître",
+    titre: "CinéMatch",
     resume: "Votre portrait chinois : vingt questions « si j'étais… ».",
     duree: "5 minutes · facultatif",
   },
