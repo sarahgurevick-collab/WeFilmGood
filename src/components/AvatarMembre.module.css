@@ -1,0 +1,24 @@
+.rond {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #3a3a3a;
+  color: #fff;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rond img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Sans photo : la lettre du métier sur fond rouge. */
+.lettre {
+  background: #da2c25;
+  letter-spacing: -0.02em;
+}

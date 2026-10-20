@@ -4,6 +4,8 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./page.module.css";
 import { createClient } from "@/lib/supabase/server";
+import AvatarMembre from "@/components/AvatarMembre";
+import { avatarsDe } from "./avatars";
 
 type Conversation = {
   autre_id: string;
@@ -46,6 +48,8 @@ export default async function MesMessagesPage() {
     adherent === true
       ? ((await supabase.rpc("mes_conversations")).data as Conversation[] | null) ?? []
       : [];
+  // Les photos (20/10) : seulement avec une adhésion, comme les noms.
+  const avatars = await avatarsDe(supabase, conversations.map((c) => c.autre_id));
   // Sans adhésion : les messages en attente, sans leur expéditeur.
   const enAttente =
     adherent === true
@@ -67,6 +71,13 @@ export default async function MesMessagesPage() {
                   href={`/mes-messages/avec/${c.autre_id}${c.projet_id ? `?projet=${c.projet_id}` : ""}`}
                   className={`${styles.carte} ${styles.conversation}`}
                 >
+                  <AvatarMembre
+                    src={avatars.get(c.autre_id)?.src ?? null}
+                    lettre={avatars.get(c.autre_id)?.lettre ?? "?"}
+                    nom={c.autre_nom ?? undefined}
+                    taille={44}
+                  />
+                  <div className={styles.contenu}>
                   <div className={styles.entete}>
                     <span className={styles.projet}>
                       {c.autre_nom ?? "Un membre"}
@@ -85,6 +96,7 @@ export default async function MesMessagesPage() {
                     {c.dernier_de_moi && <span className={styles.vous}>Vous : </span>}
                     {c.dernier_corps}
                   </p>
+                  </div>
                 </Link>
               </li>
             ))}

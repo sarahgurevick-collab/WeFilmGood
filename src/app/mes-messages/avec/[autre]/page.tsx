@@ -5,6 +5,8 @@ import formStyles from "@/components/form.module.css";
 import { ecrire } from "../../actions";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./conversation.module.css";
+import AvatarMembre from "@/components/AvatarMembre";
+import { avatarsDe } from "../../avatars";
 
 type Message = {
   msg_id: string;
@@ -64,11 +66,15 @@ export default async function ConversationPage({
   ]);
   // Le nom complet : écrire demande une adhésion, le contact est payé (03/10).
   const nom = interlocuteur?.display_name ?? interlocuteur?.full_name ?? interlocuteur?.first_name ?? "Un membre";
+  const avatar = (await avatarsDe(supabase, [autre])).get(autre) ?? { src: null, lettre: "?" };
   // Hors projet : l'objet du premier message qui en porte un (10/10).
   const objet = projet ? null : (fil.find((m) => m.objet)?.objet ?? null);
 
   return (
     <PageShell eyebrow="Mes messages" title={nom} connecte nav="messages">
+      <Link href={`/membres/${autre}`} className={styles.entete} title={nom}>
+        <AvatarMembre src={avatar.src} lettre={avatar.lettre} nom={nom} taille={56} />
+      </Link>
       {projet && (
         <p className={formStyles.hint}>
           À propos de « <Link href={`/projet/${projet.id}`}>{projet.title}</Link> ».
@@ -78,11 +84,14 @@ export default async function ConversationPage({
 
       <ul className={styles.fil}>
         {fil.map((m) => (
-          <li key={m.msg_id} className={`${styles.message} ${m.de_moi ? styles.moi : styles.autre}`}>
-            <p className={styles.corps}>{m.corps}</p>
-            <span className={styles.date}>
-              {new Date(m.envoye_le).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}
-            </span>
+          <li key={m.msg_id} className={`${styles.ligne} ${m.de_moi ? styles.ligneMoi : ""}`}>
+            {!m.de_moi && <AvatarMembre src={avatar.src} lettre={avatar.lettre} nom={nom} taille={32} />}
+            <div className={`${styles.message} ${m.de_moi ? styles.moi : styles.autre}`}>
+              <p className={styles.corps}>{m.corps}</p>
+              <span className={styles.date}>
+                {new Date(m.envoye_le).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}
+              </span>
+            </div>
           </li>
         ))}
       </ul>

@@ -9,6 +9,23 @@
   list-style: none;
 }
 
+/* Une ligne : la photo de l'autre, puis la bulle (20/10). */
+.ligne {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.ligneMoi {
+  align-self: flex-end;
+}
+
+.entete {
+  display: inline-block;
+  margin-top: 8px;
+}
+
 .message {
   max-width: 85%;
   padding: 12px 16px;
@@ -16,13 +33,11 @@
 }
 
 .autre {
-  align-self: flex-start;
   border: 1px solid var(--bordure);
   background: var(--surface);
 }
 
 .moi {
-  align-self: flex-end;
   border: 1px solid var(--rouge-wfg);
 }
 

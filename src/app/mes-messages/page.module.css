@@ -68,7 +68,9 @@
 
 /* Les conversations (03/10) : une carte cliquable par correspondant et par projet. */
 .conversation {
-  display: block;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
   color: inherit;
   text-decoration: none;
   transition: border-color 0.2s ease;
@@ -111,4 +113,10 @@
 
 .vous {
   color: var(--dim);
+}
+
+/* Le texte d'une conversation, à droite de la photo (20/10). */
+.contenu {
+  flex: 1;
+  min-width: 0;
 }

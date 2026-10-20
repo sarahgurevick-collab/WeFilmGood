@@ -27,9 +27,8 @@ export async function choisirFormatsLecteur(formData: FormData) {
 
 /**
  * L'adhésion d'un membre, choisie dans le tableau des membres (27/09,
- * comme la colonne Adhésion de WFG 1) : aucune, 50 € ou 500 €. Une
- * adhésion offerte ou réglée autrement dure un an, comme celle payée en
- * ligne.
+ * comme la colonne Adhésion de WFG 1) : aucune, 5 € (un mois), 50 € ou 500 €
+ * (un an, comme celle payée en ligne).
  */
 export async function changerAdhesion(formData: FormData) {
   const supabase = await createClient();
@@ -47,17 +46,20 @@ export async function changerAdhesion(formData: FormData) {
     .eq("profile_id", profileId)
     .eq("status", "active");
 
-  if (plan === "palier_50" || plan === "palier_500") {
-    const dansUnAn = new Date(maintenant);
-    dansUnAn.setFullYear(dansUnAn.getFullYear() + 1);
-    await supabase.from("memberships").insert({
+  if (plan === "palier_5" || plan === "palier_50" || plan === "palier_500") {
+    // 5 € : un mois ; 50 € et 500 € : un an.
+    const fin = new Date(maintenant);
+    if (plan === "palier_5") fin.setMonth(fin.getMonth() + 1);
+    else fin.setFullYear(fin.getFullYear() + 1);
+    const { error } = await supabase.from("memberships").insert({
       profile_id: profileId,
       plan_slug: plan,
       status: "active",
       payment_provider: "admin",
       started_at: maintenant.toISOString(),
-      expires_at: dansUnAn.toISOString(),
+      expires_at: fin.toISOString(),
     });
+    if (error) console.error("Adhésion non enregistrée :", error.message);
   }
   revalidatePath("/admin/membres");
 }
