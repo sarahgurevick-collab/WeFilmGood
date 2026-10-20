@@ -19,7 +19,12 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Anahita GHAZVINIZADEH - Cannes 2017", vimeoId: "220597607" },
   { titre: "Beatriz SEIGNER Cannes 2018", vimeoId: "281351697" },
   { titre: "Romain GAVRAS - Cannes 2018", vimeoId: "277538414" },
-  { titre: "Abu BAKR SHAWKY - Cannes 2018", vimeoId: "279861719" },
+  {
+    titre: "Abu BAKR SHAWKY - Cannes 2018",
+    vimeoId: "279861719",
+    film: "Yomeddine",
+    affiche: "/masterclass/yomeddine.webp",
+  },
   {
     titre: "Andrea BESCOND & Eric METAYER - Cannes 2018",
     vimeoId: "1236601048",
