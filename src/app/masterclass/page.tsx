@@ -8,6 +8,12 @@ import styles from "./page.module.css";
 const MASTERCLASSES: Masterclass[] = [
   { titre: "Jacques FIESCHI - Cannes 2012", vimeoId: "669374688" },
   {
+    titre: "Salvatore LISTA - Cannes 2014",
+    vimeoId: "669771058",
+    teaser: "https://www.youtube.com/watch?v=t77nPp14rDs",
+    film: "Mange tes morts : tu ne diras point (Jean-Charles HUE)",
+  },
+  {
     titre: "Israël HOROWITZ - Cannes 2015",
     vimeoId: "1236608372",
     teaser: "https://www.youtube.com/watch?v=a50XaMJ043g",
