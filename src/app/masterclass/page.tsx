@@ -14,6 +14,13 @@ const MASTERCLASSES: Masterclass[] = [
     film: "Mange tes morts : tu ne diras point (Jean-Charles HUE)",
   },
   {
+    titre: "Cédric ANGER - Cannes 2014",
+    vimeoId: "1237033872",
+    teaser: "https://www.youtube.com/watch?v=LhBUyZuPdCg",
+    film: "L'Homme qu'on aimait trop (André TÉCHINÉ)",
+    affiche: "/masterclass/l-homme-qu-on-aimait-trop.webp",
+  },
+  {
     titre: "Israël HOROWITZ - Cannes 2015",
     vimeoId: "1236608372",
     teaser: "https://www.youtube.com/watch?v=a50XaMJ043g",
