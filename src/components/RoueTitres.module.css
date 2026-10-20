@@ -75,6 +75,23 @@
   color: var(--dim);
 }
 
+.ligneDessous {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.ligneDessous .dessous {
+  margin-top: 0;
+}
+
+.apres {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--dim);
+}
+
 .sous {
   display: block;
   margin-left: 10px;

@@ -43,7 +43,8 @@ export default function MasterclassLecteur({
   const actuelle = masterclasses.find((m) => m.vimeoId === id) ?? masterclasses[0];
   const titres = masterclasses.map((m) => {
     const { nom, sous } = decouper(m.titre);
-    return { id: m.vimeoId, label: nom, sous, dessous: m.film };
+    // Le festival et l'année vont à côté du film, sous le nom (20/10) : à côté du nom, c'était trop long.
+    return { id: m.vimeoId, label: nom, dessous: m.film, apres: sous };
   });
 
   return (

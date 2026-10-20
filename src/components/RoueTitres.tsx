@@ -9,6 +9,8 @@ export type TitreRoue = {
   sous?: string;
   /** Une ligne en italique sous le titre (ex. le film d'une masterclass). */
   dessous?: string;
+  /** À côté de la ligne du dessous (ou seul sous le titre sans elle) : le festival et l'année d'une masterclass. */
+  apres?: string;
 };
 
 /**
@@ -201,7 +203,12 @@ export default function RoueTitres({
             <span className={styles.point} aria-hidden="true" />
             <span className={styles.label}>
               {t.label}
-              {t.dessous && <em className={styles.dessous}>{t.dessous}</em>}
+              {(t.dessous || t.apres) && (
+                <span className={styles.ligneDessous}>
+                  {t.dessous && <em className={styles.dessous}>{t.dessous}</em>}
+                  {t.apres && <span className={styles.apres}>{t.apres}</span>}
+                </span>
+              )}
             </span>
             {t.sous && <span className={styles.sous}>{t.sous}</span>}
           </button>
