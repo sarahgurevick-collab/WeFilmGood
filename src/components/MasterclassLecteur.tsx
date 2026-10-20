@@ -81,7 +81,7 @@ export default function MasterclassLecteur({
       </div>
       {actuelle.teaser && (
         <a href={actuelle.teaser} target="_blank" rel="noopener noreferrer" className={styles.teaser}>
-          Voir le teaser du film ↗
+          ▶ Voir le teaser du film
         </a>
       )}
       </div>

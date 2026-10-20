@@ -91,13 +91,20 @@
 
 .teaser {
   align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
   font-size: 14px;
   font-weight: 700;
   color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-.teaser:hover {
+.teaser:hover,
+.teaser:focus-visible {
   color: var(--rouge-wfg, #da2c25);
 }
