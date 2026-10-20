@@ -7,7 +7,13 @@ import styles from "./page.module.css";
 
 const MASTERCLASSES: Masterclass[] = [
   { titre: "Jacques FIESCHI - Cannes 2012", vimeoId: "669374688" },
-  { titre: "Israël HOROWITZ - Cannes 2015", vimeoId: "1236608372" },
+  {
+    titre: "Israël HOROWITZ - Cannes 2015",
+    vimeoId: "1236608372",
+    teaser: "https://www.youtube.com/watch?v=a50XaMJ043g",
+    film: "My Old Lady",
+    affiche: "/masterclass/my-old-lady.webp",
+  },
   {
     titre: "Thomas BIDEGAIN & Noé DEBRÉ - Cannes 2015",
     vimeoId: "1236608373",
