@@ -1,3 +1,4 @@
+import AjouterUnTalent from "./AjouterUnTalent";
 import { ordonnerPersonnages } from "./ordre-personnages";
 import Link from "next/link";
 import { headers } from "next/headers";
@@ -74,10 +75,10 @@ export default async function ProjetPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ message?: string; enregistre?: string; depuis?: string; personnage?: string }>;
+  searchParams: Promise<{ message?: string; enregistre?: string; depuis?: string; personnage?: string; talent?: string }>;
 }) {
   const { id } = await params;
-  const { enregistre, depuis, personnage, message } = await searchParams;
+  const { enregistre, depuis, personnage, message, talent } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -498,6 +499,7 @@ export default async function ProjetPage({
             : undefined
         }
       />
+      {(isOwner || estAdmin) && <AjouterUnTalent projectId={id} resultat={talent} />}
 
       {/* Sous le cadre : les prix — puis les sélections et comédiens repris
           de WFG 1, en petit (28/09 : page allégée à la demande de Sarah).

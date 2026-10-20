@@ -99,7 +99,7 @@ async function lienVers(tokenHash: string, type: "magiclink" | "invite", next: s
   return `${await origineDuSite()}/auth/confirm?${params.toString()}`;
 }
 
-export function gabarit(titre: string, texte: string, lien: string, bouton: string) {
+export function gabarit(titre: string, texte: string, lien: string, bouton: string, apres?: string) {
   return `
     <div style="font-family: Helvetica, Arial, sans-serif; color: #1a1a1a; max-width: 520px;">
       <p style="font-size: 17px; font-weight: 600;">${titre}</p>
@@ -107,6 +107,7 @@ export function gabarit(titre: string, texte: string, lien: string, bouton: stri
       <p style="margin: 28px 0;">
         <a href="${lien}" style="background: #DA2C25; color: #fff; padding: 12px 22px; border-radius: 6px; text-decoration: none; font-weight: 600;">${bouton}</a>
       </p>
+      ${apres ? `<p>${apres}</p>` : ""}
       <p style="font-size: 13px; color: #666;">
         Ce lien ne sert qu'une fois et expire au bout d'une heure.
         Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.
@@ -207,4 +208,69 @@ export async function envoyerLienDInscription(
   });
 
   return { ok: true };
+}
+
+
+/**
+ * Invitation d'un talent sur un projet (20/10/2026, Sarah). Première étape :
+ * le compte et le lien. Une adresse inconnue reçoit un compte vide (comme les
+ * profils en attente) ; une adresse connue, un lien de connexion. Rien n'est
+ * envoyé ici : l'appelant crée d'abord la ligne de l'invitation, dont
+ * l'identifiant part dans le lien.
+ */
+export async function preparerInvitation(
+  email: string,
+): Promise<{ ok: true; profileId: string; tokenHash: string; nouveau: boolean } | { ok: false; erreur: string }> {
+  const admin = createAdminClient();
+  if (!admin) {
+    console.error("Lien magique : SUPABASE_SERVICE_ROLE_KEY manquante");
+    return { ok: false, erreur: "L'invitation est momentanément indisponible." };
+  }
+  let nouveau = true;
+  let { data, error } = await admin.auth.admin.generateLink({
+    type: "invite",
+    email,
+    options: { data: { imported_from: "invitation_projet" } },
+  });
+  if (error) {
+    if (error.code === "email_exists" || /already (been )?registered|already exists/i.test(error.message)) {
+      nouveau = false;
+      ({ data, error } = await admin.auth.admin.generateLink({ type: "magiclink", email }));
+    }
+    if (error) {
+      if (/valid.*email|email.*invalid/i.test(error.message)) return { ok: false, erreur: "Cette adresse email n'est pas valide." };
+      console.error("Lien magique : échec de l'invitation", error.message);
+      return { ok: false, erreur: "L'invitation a échoué. Réessayez dans un instant." };
+    }
+  }
+  if (!data?.properties?.hashed_token || !data.user) return { ok: false, erreur: "L'invitation a échoué. Réessayez dans un instant." };
+  return { ok: true, profileId: data.user.id, tokenHash: data.properties.hashed_token, nouveau };
+}
+
+/** L'email d'invitation : le texte de WFG 1 (Sarah, 20/10/2026), orthographe corrigée. */
+export async function envoyerInvitationEquipe(p: {
+  email: string;
+  prenom: string | null;
+  titreProjet: string;
+  porteur: string;
+  metier: string;
+  tokenHash: string;
+  nouveau: boolean;
+  ligneId: string;
+}): Promise<boolean> {
+  const lien = await lienVers(p.tokenHash, p.nouveau ? "invite" : "magiclink", `/invitation/${p.ligneId}`);
+  const metier = p.metier.charAt(0).toLowerCase() + p.metier.slice(1);
+  return envoyerEmail({
+    to: [{ email: p.email, name: p.prenom ?? undefined }],
+    subject: `Connaissez-vous le projet « ${p.titreProjet} » ?`,
+    htmlContent: gabarit(
+      p.prenom ? `Bonjour ${echapper(p.prenom)},` : "Bonjour,",
+      `Connaissez-vous le projet « ${echapper(p.titreProjet)} » de ${echapper(p.porteur)} ?<br><br>` +
+        `Ce projet est maintenant sur WeFilmGood, et nous vous invitons à le rejoindre afin de vous identifier en tant que ${echapper(metier)} du projet.<br><br>` +
+        "Vous pouvez vous inscrire en cliquant sur le lien magique suivant, valable 1h. Vous n'aurez plus besoin de vous reconnecter.",
+      lien,
+      "Rejoindre le projet",
+      "Vous êtes attendu !",
+    ),
+  });
 }
