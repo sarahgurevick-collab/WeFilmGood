@@ -78,7 +78,7 @@ const MASTERCLASSES: Masterclass[] = [
     affiche: "/masterclass/sick-sick-sick.webp",
   },
   { titre: "Melina LEON - Cannes 2019", vimeoId: "1227885384", teaser: "https://www.youtube.com/watch?v=E7UyDw1h6ag", film: "Canción sin nombre", affiche: "/masterclass/cancion-sin-nombre.webp" },
-  { titre: "Larisa SADILOVA - Cannes 2019", vimeoId: "1227885382", teaser: "https://www.youtube.com/watch?v=gdvJGoVua2s", film: "Once in Trubchevsk" },
+  { titre: "Larisa SADILOVA - Cannes 2019", vimeoId: "1227885382", teaser: "https://www.youtube.com/watch?v=gdvJGoVua2s", film: "Once in Trubchevsk", affiche: "/masterclass/once-in-trubchevsk.webp" },
   { titre: "Gérard KRAWCZYK - Clermont-Ferrand 2014", vimeoId: "1236608380" },
   { titre: "Olivier MEGATON - Clermont-Ferrand 2016", vimeoId: "164111497" },
   { titre: "Julien SERI - Clermont-Ferrand 2017", vimeoId: "206539679" },
