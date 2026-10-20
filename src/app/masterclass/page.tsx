@@ -14,7 +14,7 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Paul LAVERTY - Cannes 2016", vimeoId: "168531815", teaser: "https://www.youtube.com/watch?v=2BK4jRYx0Ps", film: "I, Daniel Blake (Ken LOACH)" },
   { titre: "Kim NGUYEN - Cannes 2016", vimeoId: "169153806", teaser: "https://www.youtube.com/watch?v=cFyg2AuD86M", film: "Two Lovers and a Bear" },
   { titre: "Sacha WOLFF - Cannes 2016", vimeoId: "170454805", teaser: "https://www.youtube.com/watch?v=AjtL-KAxXD0", film: "Mercenaire" },
-  { titre: "David BIRKE - Cannes 2016", vimeoId: "170676380", teaser: "https://www.youtube.com/watch?v=gM96ne-XiH0", film: "Elle (Paul VERHOEVEN)" },
+  { titre: "David BIRKE - Cannes 2016", vimeoId: "170676380", teaser: "https://www.youtube.com/watch?v=gM96ne-XiH0", film: "Elle (Paul VERHOEVEN)", affiche: "/masterclass/elle.webp" },
   {
     titre: "Brian SZELNICK - Cannes 2017",
     vimeoId: "220287202",
