@@ -21,7 +21,12 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Romain GAVRAS - Cannes 2018", vimeoId: "277538414" },
   { titre: "Abu BAKR SHAWKY - Cannes 2018", vimeoId: "279861719" },
   { titre: "Andrea BESCOND & Eric METAYER - Cannes 2018", vimeoId: "1236601048" },
-  { titre: "Paul LAVERTY 2 - Cannes 2019", vimeoId: "338559739" },
+  {
+    titre: "Paul LAVERTY 2 - Cannes 2019",
+    vimeoId: "338559739",
+    film: "Sorry We Missed You (Ken LOACH)",
+    affiche: "/masterclass/sorry-we-missed-you.webp",
+  },
   {
     titre: "Alice FURTADO & Leonardo LEVIS - Cannes 2019",
     vimeoId: "1227885383",
