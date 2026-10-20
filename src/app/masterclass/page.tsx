@@ -12,7 +12,7 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Jeremy SAULNIER - Cannes 2015", vimeoId: "1237071653", teaser: "https://www.youtube.com/watch?v=yKdVYUXyBzU", film: "Green Room" },
   { titre: "Chris SPARLING - Cannes 2015", vimeoId: "1237374644", teaser: "https://www.youtube.com/watch?v=PQvC9V1eLsE", film: "The Sea of Trees (Gus VAN SANT)" },
   { titre: "Paul LAVERTY - Cannes 2016", vimeoId: "168531815", teaser: "https://www.youtube.com/watch?v=2BK4jRYx0Ps", film: "I, Daniel Blake (Ken LOACH)" },
-  { titre: "Kim NGUYEN - Cannes 2016", vimeoId: "169153806", teaser: "https://www.youtube.com/watch?v=cFyg2AuD86M", film: "Two Lovers and a Bear" },
+  { titre: "Kim NGUYEN - Cannes 2016", vimeoId: "169153806", teaser: "https://www.youtube.com/watch?v=cFyg2AuD86M", film: "Two Lovers and a Bear", affiche: "/masterclass/two-lovers-and-a-bear.webp" },
   { titre: "Sacha WOLFF - Cannes 2016", vimeoId: "170454805", teaser: "https://www.youtube.com/watch?v=AjtL-KAxXD0", film: "Mercenaire", affiche: "/masterclass/mercenaire.webp" },
   { titre: "David BIRKE - Cannes 2016", vimeoId: "170676380", teaser: "https://www.youtube.com/watch?v=gM96ne-XiH0", film: "Elle (Paul VERHOEVEN)", affiche: "/masterclass/elle.webp" },
   {
