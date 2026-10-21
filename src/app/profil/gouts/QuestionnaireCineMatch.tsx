@@ -80,7 +80,7 @@ export default async function QuestionnaireCineMatch({
         )}
 
         {((questions ?? []) as Question[]).map((q) => (
-          <div key={q.key} className={formStyles.field}>
+          <div key={q.key} className={`${formStyles.field} ${styles.question}`}>
             <span>{q.label_fr}</span>
             <div className={styles.row}>
               <select name={`q_${q.key}`} defaultValue={reponseListe(q.key)} disabled={verrouillee(q.key)}>

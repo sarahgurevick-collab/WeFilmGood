@@ -784,3 +784,28 @@ a.manque:hover {
   color: var(--dim);
   text-transform: none;
 }
+
+/* CinéMatch : chaque question dans un cadre, comme les blocs de « Mon
+   profil » (21/10, Sarah : la page manquait de couleur). Sans réponse, le
+   cadre suit l'horloge des engagements ; répondue (liste choisie ou champ
+   libre rempli), il se fixe au rouge WeFilmGood. Tout en CSS (:has), donc
+   la couleur change au fil de la saisie, pour un visiteur comme pour un
+   membre. */
+.question {
+  padding: 14px 16px;
+  border: 2px solid var(--engagement, #da2c25);
+  border-radius: 14px;
+  background: var(--surface);
+  transition: border-color 0.3s ease;
+}
+
+.question > span:first-child {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.question:has(select option:checked:not([value=""])),
+.question:has(input[type="text"]:not(:placeholder-shown)) {
+  border-color: var(--rouge-wfg);
+}
