@@ -105,6 +105,7 @@ const MASTERCLASSES: Masterclass[] = [
       { image: "/masterclass/oelhoffen/laffaire-sk1.webp", film: "L'Affaire SK1 (Frédéric TELLIER)", annee: 2014, teaser: "https://www.youtube.com/watch?v=WR-qmom7D6k" },
       { image: "/masterclass/oelhoffen/dans-les-forets-de-siberie.webp", film: "Dans les forêts de Sibérie (Safy NEBBOU)", annee: 2016, teaser: "https://www.youtube.com/watch?v=L9Wdhll3KC8" },
       { image: "/masterclass/oelhoffen/freres-ennemis.webp", film: "Frères ennemis", annee: 2018, teaser: "https://www.youtube.com/watch?v=t3CKrGmf33o" },
+      { image: "/masterclass/oelhoffen/sauver-ou-perir.webp", film: "Sauver ou périr (Frédéric TELLIER)", annee: 2018, teaser: "https://www.youtube.com/watch?v=guSf6fw_UnM" },
     ],
   },
   { titre: "Pierre SCHOELLER - Clermont-Ferrand 2020", vimeoId: "904082025" },
