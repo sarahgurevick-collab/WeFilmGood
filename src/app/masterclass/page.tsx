@@ -94,7 +94,15 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Larisa SADILOVA - Cannes 2019", vimeoId: "1227885382", teaser: "https://www.youtube.com/watch?v=gdvJGoVua2s", film: "Once in Trubchevsk", affiche: "/masterclass/once-in-trubchevsk.webp" },
   { titre: "Gérard KRAWCZYK - Clermont-Ferrand 2014", vimeoId: "1236608380" },
   { titre: "Olivier MEGATON - Clermont-Ferrand 2016", vimeoId: "164111497" },
-  { titre: "Julien SERI - Clermont-Ferrand 2017", vimeoId: "206539679" },
+  {
+    titre: "Julien SERI - Clermont-Ferrand 2017",
+    vimeoId: "206539679",
+    mur: [
+      { image: "/masterclass/seri/yamakasi.webp", film: "Yamakasi (Ariel ZEITOUN)", annee: 2001, teaser: "https://www.youtube.com/watch?v=cCH4DJ58l0s" },
+      { image: "/masterclass/seri/les-fils-du-vent.webp", film: "Les Fils du vent", annee: 2004, teaser: "https://www.youtube.com/watch?v=FQPejg4RHmU" },
+      { image: "/masterclass/seri/night-fare.webp", film: "Night Fare", annee: 2015, teaser: "https://www.youtube.com/watch?v=rlbvpwRWuoE" },
+    ],
+  },
   {
     titre: "Hong-Jin NA - Clermont-Ferrand 2018",
     vimeoId: "305807052",
