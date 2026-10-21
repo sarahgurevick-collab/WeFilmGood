@@ -93,3 +93,109 @@
 .teaser {
   align-self: flex-start;
 }
+
+/* Le mur d'affiches des masterclass de carrière (21/10/2026). */
+.mur {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2%;
+  padding: 3% 4%;
+  background: radial-gradient(ellipse at 50% 40%, #2a1210 0%, #0d0d0d 70%);
+}
+
+.rangee {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 68%;
+}
+
+.carte,
+.carteChoisie {
+  flex: none;
+  height: 100%;
+  aspect-ratio: 2 / 3;
+  margin: 0 -2.2%;
+  padding: 0;
+  border: 0;
+  background: #000;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+  transform: translateY(var(--decalage, 0)) rotate(var(--inclinaison, 0deg));
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: monte 0.55s ease both;
+}
+
+.carte img,
+.carteChoisie img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carte:hover,
+.carte:focus-visible,
+.carteChoisie {
+  position: relative;
+  z-index: 3;
+  transform: translateY(-4%) rotate(0deg) scale(1.12);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.7), 0 0 0 2px #da2c25;
+}
+
+@keyframes monte {
+  from {
+    opacity: 0;
+    transform: translateY(24px) rotate(var(--inclinaison, 0deg)) scale(0.95);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pied {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 14%;
+}
+
+.legende {
+  margin: 0;
+  color: #fff;
+  font-size: 15px;
+}
+
+.legende span {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.lireMur {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 50%;
+  background: #da2c25;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.lireMur:hover,
+.lireMur:focus-visible {
+  transform: scale(1.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carte,
+  .carteChoisie {
+    animation: none;
+  }
+}

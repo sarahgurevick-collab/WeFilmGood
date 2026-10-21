@@ -96,7 +96,17 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Olivier MEGATON - Clermont-Ferrand 2016", vimeoId: "164111497" },
   { titre: "Julien SERI - Clermont-Ferrand 2017", vimeoId: "206539679" },
   { titre: "Hong-Jin NA - Clermont-Ferrand 2018", vimeoId: "305807052" },
-  { titre: "David OELHOFFEN - Clermont-Ferrand 2019", vimeoId: "340089009" },
+  {
+    titre: "David OELHOFFEN - Clermont-Ferrand 2019",
+    vimeoId: "340089009",
+    mur: [
+      { image: "/masterclass/oelhoffen/nos-retrouvailles.webp", film: "Nos retrouvailles", annee: 2007, teaser: "https://www.youtube.com/watch?v=xXaQnT1tVc0" },
+      { image: "/masterclass/oelhoffen/loin-des-hommes.webp", film: "Loin des hommes", annee: 2014, teaser: "https://www.youtube.com/watch?v=Z4XtbWIIni4" },
+      { image: "/masterclass/oelhoffen/laffaire-sk1.webp", film: "L'Affaire SK1 (Frédéric TELLIER)", annee: 2014, teaser: "https://www.youtube.com/watch?v=WR-qmom7D6k" },
+      { image: "/masterclass/oelhoffen/dans-les-forets-de-siberie.webp", film: "Dans les forêts de Sibérie (Safy NEBBOU)", annee: 2016, teaser: "https://www.youtube.com/watch?v=L9Wdhll3KC8" },
+      { image: "/masterclass/oelhoffen/freres-ennemis.webp", film: "Frères ennemis", annee: 2018, teaser: "https://www.youtube.com/watch?v=t3CKrGmf33o" },
+    ],
+  },
   { titre: "Pierre SCHOELLER - Clermont-Ferrand 2020", vimeoId: "904082025" },
 ];
 
