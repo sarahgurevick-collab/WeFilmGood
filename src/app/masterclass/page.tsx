@@ -100,15 +100,22 @@ const MASTERCLASSES: Masterclass[] = [
     titre: "David OELHOFFEN - Clermont-Ferrand 2019",
     vimeoId: "340089009",
     mur: [
-      { image: "/masterclass/oelhoffen/nos-retrouvailles.webp", film: "Nos retrouvailles", annee: 2007, teaser: "https://www.youtube.com/watch?v=xXaQnT1tVc0" },
       { image: "/masterclass/oelhoffen/loin-des-hommes.webp", film: "Loin des hommes", annee: 2014, teaser: "https://www.youtube.com/watch?v=Z4XtbWIIni4" },
       { image: "/masterclass/oelhoffen/laffaire-sk1.webp", film: "L'Affaire SK1 (Frédéric TELLIER)", annee: 2014, teaser: "https://www.youtube.com/watch?v=WR-qmom7D6k" },
       { image: "/masterclass/oelhoffen/dans-les-forets-de-siberie.webp", film: "Dans les forêts de Sibérie (Safy NEBBOU)", annee: 2016, teaser: "https://www.youtube.com/watch?v=L9Wdhll3KC8" },
       { image: "/masterclass/oelhoffen/freres-ennemis.webp", film: "Frères ennemis", annee: 2018, teaser: "https://www.youtube.com/watch?v=t3CKrGmf33o" },
-      { image: "/masterclass/oelhoffen/sauver-ou-perir.webp", film: "Sauver ou périr (Frédéric TELLIER)", annee: 2018, teaser: "https://www.youtube.com/watch?v=guSf6fw_UnM" },
     ],
   },
-  { titre: "Pierre SCHOELLER - Clermont-Ferrand 2020", vimeoId: "904082025" },
+  {
+    titre: "Pierre SCHOELLER - Clermont-Ferrand 2020",
+    vimeoId: "904082025",
+    mur: [
+      { image: "/masterclass/schoeller/zero-defaut.webp", film: "Zéro défaut", annee: 2003 },
+      { image: "/masterclass/schoeller/versailles.webp", film: "Versailles", annee: 2008, teaser: "https://www.youtube.com/watch?v=lx8PTmQNCIo" },
+      { image: "/masterclass/schoeller/lexercice-de-letat.webp", film: "L'Exercice de l'État", annee: 2011, teaser: "https://www.youtube.com/watch?v=01JpZ8iOQH8" },
+      { image: "/masterclass/schoeller/un-peuple-et-son-roi.webp", film: "Un peuple et son roi", annee: 2018, teaser: "https://www.youtube.com/watch?v=rexq82lZ-hg" },
+    ],
+  },
 ];
 
 export default async function MasterclassPage() {
