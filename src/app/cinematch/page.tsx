@@ -8,6 +8,7 @@ import { calculerCompletion } from "@/app/profil/completion";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import ResultatMatch from "./ResultatMatch";
+import TitreCineMatch from "./TitreCineMatch";
 import { TEXTES } from "./textes";
 
 /**
@@ -38,7 +39,7 @@ export default async function CineMatchPage({
     // pour voir ce que ça donne (ni pour gonfler son match).
     if (await lireBrouillon()) redirect("/cinematch/resultat");
     return (
-      <PageShell title={TEXTES.titre} theme="clair" enTeteAnime connecte={false}>
+      <PageShell title={<TitreCineMatch />} theme="clair" enTeteAnime connecte={false}>
         <p className={formStyles.hint}>{TEXTES.introVisiteur}</p>
         {erreur === "peu" && (
           <p id="etat" className={formStyles.error} style={{ scrollMarginTop: 100 }}>
@@ -95,7 +96,7 @@ export default async function CineMatchPage({
   }
 
   return (
-    <PageShell title={TEXTES.titre} theme="clair" enTeteAnime connecte>
+    <PageShell title={<TitreCineMatch />} theme="clair" enTeteAnime connecte>
       {/* L'état des réponses, tout en haut et visible d'emblée : le bouton
           d'enregistrement est tout en bas, la page se recharge sur cet encadré. */}
       <div

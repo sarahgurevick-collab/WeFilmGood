@@ -11,8 +11,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export type Reponses = Record<string, string>;
 
-/** Il faut avoir répondu à autant de questions pour qu'un match soit calculé. */
-export const MIN_REPONSES = 12;
+import { MIN_REPONSES } from "@/lib/cinematch-constantes";
+
+export { MIN_REPONSES };
 
 const COOKIE_BROUILLON = "cinematch";
 const DUREE_BROUILLON_S = 7 * 24 * 60 * 60;

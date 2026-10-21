@@ -1,6 +1,7 @@
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { apercuCineMatch } from "@/app/cinematch/actions";
+import BoutonEnregistrer from "@/app/cinematch/BoutonEnregistrer";
 import BrouillonCineMatch from "@/app/cinematch/BrouillonCineMatch";
 import { TEXTES } from "@/app/cinematch/textes";
 import { MIN_REPONSES } from "@/lib/cinematch";
@@ -104,9 +105,9 @@ export default async function QuestionnaireCineMatch({
       </div>
 
       <div className={styles.pied}>
-        <button type="submit" className={formStyles.submit}>
-          {userId ? "Enregistrer et terminer →" : TEXTES.boutonVisiteur}
-        </button>
+        {/* « Enregistrer » sous 12 réponses, « Enregistrer et terminer » à partir
+            de 12 (21/10, Sarah) : le bouton compte au fil de la saisie. */}
+        <BoutonEnregistrer reponsesInitiales={Object.keys(reponses).length} />
       </div>
     </form>
   );

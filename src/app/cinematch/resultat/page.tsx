@@ -5,6 +5,7 @@ import formStyles from "@/components/form.module.css";
 import { lireBrouillon } from "@/lib/cinematch";
 import { createClient } from "@/lib/supabase/server";
 import { creerProfilMetier, demanderLeMatch } from "../actions";
+import TitreCineMatch from "../TitreCineMatch";
 import { TEXTES } from "../textes";
 
 /** Champ piège : invisible pour une personne, rempli par les robots. */
@@ -39,7 +40,7 @@ export default async function ResultatCineMatchPage({
 
   if (envoye) {
     return (
-      <PageShell title={TEXTES.titre} theme="clair" enTeteAnime connecte={false}>
+      <PageShell title={<TitreCineMatch />} theme="clair" enTeteAnime connecte={false}>
         <p className={formStyles.hint}>{TEXTES.emailEnvoye(envoye)}</p>
         <p className={formStyles.hint}>{TEXTES.emailRien}</p>
       </PageShell>
@@ -57,7 +58,7 @@ export default async function ResultatCineMatchPage({
   );
 
   return (
-    <PageShell title={TEXTES.titre} theme="clair" enTeteAnime connecte={false}>
+    <PageShell title={<TitreCineMatch />} theme="clair" enTeteAnime connecte={false}>
       {metier !== "oui" && metier !== "non" && (
         <section style={{ textAlign: "center" }}>
           <p className={formStyles.hint}>{TEXTES.reponsesMemorisees}</p>
