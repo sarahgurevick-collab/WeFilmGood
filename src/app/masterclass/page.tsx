@@ -93,7 +93,16 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Melina LEON - Cannes 2019", vimeoId: "1227885384", teaser: "https://www.youtube.com/watch?v=E7UyDw1h6ag", film: "Canción sin nombre", affiche: "/masterclass/cancion-sin-nombre.webp" },
   { titre: "Larisa SADILOVA - Cannes 2019", vimeoId: "1227885382", teaser: "https://www.youtube.com/watch?v=gdvJGoVua2s", film: "Once in Trubchevsk", affiche: "/masterclass/once-in-trubchevsk.webp" },
   { titre: "Gérard KRAWCZYK - Clermont-Ferrand 2014", vimeoId: "1236608380" },
-  { titre: "Olivier MEGATON - Clermont-Ferrand 2016", vimeoId: "164111497" },
+  {
+    titre: "Olivier MEGATON - Clermont-Ferrand 2016",
+    vimeoId: "164111497",
+    mur: [
+      { image: "/masterclass/megaton/la-sirene-rouge.webp", film: "La Sirène rouge", annee: 2002 },
+      { image: "/masterclass/megaton/le-transporteur-3.webp", film: "Le Transporteur 3", annee: 2008, teaser: "https://www.youtube.com/watch?v=8doYFuKuDPw" },
+      { image: "/masterclass/megaton/colombiana.webp", film: "Colombiana", annee: 2011, teaser: "https://www.youtube.com/watch?v=xWQo0pQCvpc" },
+      { image: "/masterclass/megaton/taken-2.webp", film: "Taken 2", annee: 2012, teaser: "https://www.youtube.com/watch?v=G_U2ZpXjpeg" },
+    ],
+  },
   {
     titre: "Julien SERI - Clermont-Ferrand 2017",
     vimeoId: "206539679",
