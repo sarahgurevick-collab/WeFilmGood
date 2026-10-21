@@ -807,3 +807,12 @@ a.manque:hover {
   border-color: var(--engagement, #da2c25);
   background: var(--surface);
 }
+
+/* Le même rose des champs remplis que dans « Mon profil » (règle .colonne
+   ci-dessus), pour le questionnaire CinéMatch quand il est hors du profil
+   (page du Menu, 21/10, Sarah : « la même chose aux deux endroits »). */
+.portrait select:has(option:checked:not([value=""])),
+.portrait input[type="text"]:not(:placeholder-shown) {
+  border-color: var(--rouge-wfg);
+  background: rgba(218, 44, 37, 0.08);
+}
