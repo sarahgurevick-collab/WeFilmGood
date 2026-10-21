@@ -49,5 +49,9 @@ export const TEXTES = {
   reponsesVerrouillees:
     "Vos réponses sont mémorisées : elles ne se modifient plus. Vous pouvez répondre aux questions restées vides.",
   enregistre: "Vos réponses sont enregistrées.",
+  // Moins de 12 réponses : enregistrées, mais pas encore de match.
+  aucuneReponse: "Aucune réponse n'est enregistrée. Répondez à au moins 12 questions pour découvrir votre meilleur match.",
+  peuDeReponses: (n: number, manque: number) =>
+    `Vos ${n} réponse${n > 1 ? "s sont enregistrées" : " est enregistrée"}. Répondez à au moins 12 questions pour découvrir votre meilleur match : il vous en manque ${manque}.`,
   retourBienvenue: "Bienvenue ! Vos réponses sont enregistrées.",
 };

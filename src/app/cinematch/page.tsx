@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import QuestionnaireCineMatch from "@/app/profil/gouts/QuestionnaireCineMatch";
-import { lireBrouillon, meilleurMatch, type Reponses } from "@/lib/cinematch";
+import { MIN_REPONSES, lireBrouillon, meilleurMatch, type Reponses } from "@/lib/cinematch";
 import { calculerCompletion } from "@/app/profil/completion";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -40,7 +40,11 @@ export default async function CineMatchPage({
     return (
       <PageShell title={TEXTES.titre} theme="clair" enTeteAnime connecte={false}>
         <p className={formStyles.hint}>{TEXTES.introVisiteur}</p>
-        {erreur === "peu" && <p className={formStyles.error}>{TEXTES.trop_peu}</p>}
+        {erreur === "peu" && (
+          <p id="etat" className={formStyles.error} style={{ scrollMarginTop: 100 }}>
+            {TEXTES.trop_peu}
+          </p>
+        )}
         <QuestionnaireCineMatch />
       </PageShell>
     );
@@ -74,7 +78,10 @@ export default async function CineMatchPage({
     calculerCompletion(supabase, user.id),
   ]);
   const reponses = (fiche?.personality_answers ?? {}) as Reponses;
-  const match = await meilleurMatch(reponses, user.id);
+  const nbReponses = Object.keys(reponses).length;
+  // Moins de 12 réponses : pas de match, et on le dit (au lieu de « aucun profil trouvé »).
+  const assez = nbReponses >= MIN_REPONSES;
+  const match = assez ? await meilleurMatch(reponses, user.id) : null;
 
   let nom: string | null = null;
   // Le nom : une adhésion ET un profil complet.
@@ -89,11 +96,24 @@ export default async function CineMatchPage({
 
   return (
     <PageShell title={TEXTES.titre} theme="clair" enTeteAnime connecte>
-      {bienvenue ? (
-        <p className={formStyles.hint}>{TEXTES.retourBienvenue}</p>
-      ) : (
-        enregistre && <p className={formStyles.hint}>{TEXTES.enregistre}</p>
-      )}
+      {/* L'état des réponses, tout en haut et visible d'emblée : le bouton
+          d'enregistrement est tout en bas, la page se recharge sur cet encadré. */}
+      <div
+        id="etat"
+        role="status"
+        style={{ scrollMarginTop: 100, margin: "0 0 16px", padding: "14px 18px", border: "2px solid var(--rouge-wfg, #da2c25)", borderRadius: 12 }}
+        hidden={!enregistre && !bienvenue && (nbReponses === 0 || assez)}
+      >
+        <p className={formStyles.hint} style={{ margin: 0, fontWeight: 600 }}>
+          {nbReponses === 0
+            ? TEXTES.aucuneReponse
+            : assez
+              ? bienvenue
+                ? TEXTES.retourBienvenue
+                : TEXTES.enregistre
+              : TEXTES.peuDeReponses(nbReponses, MIN_REPONSES - nbReponses)}
+        </p>
+      </div>
       {/* Une personne du métier arrivée par CinéMatch n'a pas encore choisi sa
           catégorie : tant que son profil n'est pas complété, elle n'entre pas
           dans les matchs des autres. */}
@@ -102,7 +122,7 @@ export default async function CineMatchPage({
           {TEXTES.completerProfil} <Link href="/profil/identite">{TEXTES.completerProfilLien}</Link>
         </p>
       )}
-      {Object.keys(reponses).length > 0 && (
+      {assez && (
         <ResultatMatch match={match} adherent={adherent === true} nom={nom} connecte />
       )}
       <QuestionnaireCineMatch userId={user.id} retour="/cinematch" />

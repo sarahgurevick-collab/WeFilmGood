@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { reponsesDuFormulaire } from "@/lib/cinematch";
+import { MIN_REPONSES, reponsesDuFormulaire } from "@/lib/cinematch";
 import { createClient } from "@/lib/supabase/server";
 import sharp from "sharp";
 import { metiersPourCategorie } from "./metiers";
@@ -233,12 +233,15 @@ export async function saveGouts(formData: FormData) {
     (questions ?? []).map((q) => q.key as string),
   );
 
-  // Les réponses déjà données sont verrouillées (20/10/2026) : on ne
-  // peut que répondre aux questions restées vides, sauf si l'administration
-  // a déverrouillé ce membre (une seule sauvegarde).
+  // Les réponses déjà données sont verrouillées (20/10/2026) : on ne peut
+  // que répondre aux questions restées vides, sauf si l'administration a
+  // déverrouillé ce membre (une seule sauvegarde). Le verrou ne vient qu'une
+  // fois assez de réponses enregistrées pour qu'un match existe (21/10) : qui
+  // sauvegarde 4 réponses en chemin peut encore les changer.
   const deverrouille = !!fiche?.personality_unlocked_at;
   const anciennes = (fiche?.personality_answers ?? {}) as Record<string, string>;
-  const reponses = deverrouille ? nouvelles : { ...nouvelles, ...anciennes };
+  const verrouille = !deverrouille && Object.keys(anciennes).length >= MIN_REPONSES;
+  const reponses = verrouille ? { ...nouvelles, ...anciennes } : nouvelles;
 
   await supabase
     .from("profiles")
@@ -251,7 +254,7 @@ export async function saveGouts(formData: FormData) {
 
   revalidatePath("/profil");
   // Depuis la page CinéMatch du Menu, on y revient plutôt que d'aller au sommaire.
-  if (formData.get("retour") === "/cinematch") redirect("/cinematch?enregistre=1");
+  if (formData.get("retour") === "/cinematch") redirect("/cinematch?enregistre=1#etat");
   redirect("/profil?enregistre=1");
 }
 

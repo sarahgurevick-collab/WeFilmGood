@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { apercuCineMatch } from "@/app/cinematch/actions";
 import BrouillonCineMatch from "@/app/cinematch/BrouillonCineMatch";
 import { TEXTES } from "@/app/cinematch/textes";
+import { MIN_REPONSES } from "@/lib/cinematch";
 import { saveGouts } from "../actions";
 import styles from "../profil.module.css";
 
@@ -46,7 +47,10 @@ export default async function QuestionnaireCineMatch({
   // Une réponse donnée est verrouillée (le serveur la garde de toute façon),
   // sauf si l'administration a déverrouillé ce membre.
   const deverrouille = !!profil?.personality_unlocked_at;
-  const verrouillee = (key: string) => !deverrouille && !!reponses[key];
+  // Le grisé ne vient qu'à la fin : une fois assez de réponses enregistrées
+  // pour avoir un match. Avant, on peut tout changer.
+  const verrouille = !deverrouille && Object.keys(reponses).length >= MIN_REPONSES;
+  const verrouillee = (key: string) => verrouille && !!reponses[key];
   const optionsDe = (key: string) =>
     ((options ?? []) as Option[]).filter((o) => o.question_key === key);
 
@@ -70,7 +74,7 @@ export default async function QuestionnaireCineMatch({
           Le principe du portrait chinois consiste à définir une personne en l&apos;associant
           à des métaphores, à travers une série de questions rituelles.
         </p>
-        {userId && Object.keys(reponses).length > 0 && !deverrouille && (
+        {userId && verrouille && (
           <p className={formStyles.hint}>{TEXTES.reponsesVerrouillees}</p>
         )}
 

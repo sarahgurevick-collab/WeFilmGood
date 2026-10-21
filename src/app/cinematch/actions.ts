@@ -22,7 +22,7 @@ export async function apercuCineMatch(formData: FormData) {
   const cles = (questions ?? []).map((q) => q.key as string);
 
   const reponses = reponsesDuFormulaire(formData, cles, PLAFOND_TEXTE_VISITEUR);
-  if (Object.keys(reponses).length < MIN_REPONSES) redirect("/cinematch?erreur=peu");
+  if (Object.keys(reponses).length < MIN_REPONSES) redirect("/cinematch?erreur=peu#etat");
 
   await garderBrouillon(reponses);
   redirect("/cinematch/resultat");
