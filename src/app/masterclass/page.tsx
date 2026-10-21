@@ -3,7 +3,6 @@ import MasterclassLecteur, {
 } from "@/components/MasterclassLecteur";
 import PageShell from "@/components/PageShell";
 import { createClient } from "@/lib/supabase/server";
-import styles from "./page.module.css";
 
 const MASTERCLASSES: Masterclass[] = [
   { titre: "Jacques FIESCHI - Cannes 2012", vimeoId: "669374688" },
@@ -12,6 +11,7 @@ const MASTERCLASSES: Masterclass[] = [
     vimeoId: "669771058",
     teaser: "https://www.youtube.com/watch?v=t77nPp14rDs",
     film: "Mange tes morts : tu ne diras point (Jean-Charles HUE)",
+    affiche: "/masterclass/mange-tes-morts.webp",
   },
   {
     titre: "Cédric ANGER - Cannes 2014",
@@ -113,12 +113,7 @@ export default async function MasterclassPage() {
       enTeteAnime
       connecte={!!user}
     >
-      <p className={styles.intro}>
-        WeFilmGood et La Maison des Scénaristes organisent des masterclass en
-        festival afin de partager les expériences des auteurs et des
-        réalisateurs. Profitez de ces rares moments en vidéo.
-      </p>
-      {/* À l'arrivée, Paul Laverty 2 (Cannes 2019) : la première de 2012
+      {/* À l'arrivée, Paul Laverty (Cannes 2019) : la première de 2012
           n'est pas la meilleure (15/10, Sarah). */}
       <MasterclassLecteur masterclasses={MASTERCLASSES} parDefaut="338559739" />
     </PageShell>

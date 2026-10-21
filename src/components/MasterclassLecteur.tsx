@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import formStyles from "./form.module.css";
 import RoueTitres from "./RoueTitres";
 import styles from "./MasterclassLecteur.module.css";
 
@@ -80,8 +81,8 @@ export default function MasterclassLecteur({
         )}
       </div>
       {actuelle.teaser && (
-        <a href={actuelle.teaser} target="_blank" rel="noopener noreferrer" className={styles.teaser}>
-          ▶ Voir le teaser du film
+        <a href={actuelle.teaser} target="_blank" rel="noopener noreferrer" className={`${formStyles.submit} ${styles.teaser}`}>
+          Voir le teaser du film
         </a>
       )}
       </div>
