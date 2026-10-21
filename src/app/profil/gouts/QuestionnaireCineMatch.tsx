@@ -20,8 +20,8 @@ type Option = { question_key: string; option_slug: string; label_fr: string; pos
  * CinéMatch du Menu (/cinematch), ouverte à tout compte connecté, même
  * réduit à une adresse email. `retour` dit où revenir après l'envoi.
  *
- * `mettreEnLumiere` : après « Enregistrer », les questions restantes prennent
- * un cadre aux couleurs des engagements (rien au départ, 21/10).
+ * `questionsMatchees` : les questions où la personne a répondu comme son
+ * meilleur match prennent un cadre aux couleurs des engagements (21/10).
  *
  * Sans `userId` (visiteur sans compte), le formulaire mène au meilleur
  * match puis à la demande d'adresse email ; ses réponses sont gardées dans
@@ -30,11 +30,11 @@ type Option = { question_key: string; option_slug: string; label_fr: string; pos
 export default async function QuestionnaireCineMatch({
   userId,
   retour,
-  mettreEnLumiere = false,
+  questionsMatchees = [],
 }: {
   userId?: string;
   retour?: "/cinematch";
-  mettreEnLumiere?: boolean;
+  questionsMatchees?: string[];
 }) {
   const supabase = await createClient();
   const [{ data: profil }, { data: questions }, { data: options }, { data: suggestions }] =
@@ -85,7 +85,7 @@ export default async function QuestionnaireCineMatch({
     <form className={formStyles.form} action={userId ? saveGouts : apercuCineMatch} style={{ marginTop: 24 }}>
       {!userId && <BrouillonCineMatch />}
       {retour && <input type="hidden" name="retour" value={retour} />}
-      <div className={`${styles.portrait} ${mettreEnLumiere ? styles.enLumiere : ""}`}>
+      <div className={styles.portrait}>
         <p className={styles.portraitIntro}>
           Le principe du portrait chinois consiste à définir une personne en l&apos;associant
           à des métaphores, à travers une série de questions rituelles.
@@ -95,7 +95,7 @@ export default async function QuestionnaireCineMatch({
         )}
 
         {((questions ?? []) as Question[]).map((q) => (
-          <div key={q.key} className={`${formStyles.field} ${styles.question}`}>
+          <div key={q.key} className={`${formStyles.field} ${styles.question} ${questionsMatchees.includes(q.key) ? styles.matchee : ""}`}>
             <span>{q.label_fr}</span>
             <div className={styles.row}>
               <select name={`q_${q.key}`} defaultValue={reponseListe(q.key)} disabled={verrouillee(q.key)}>

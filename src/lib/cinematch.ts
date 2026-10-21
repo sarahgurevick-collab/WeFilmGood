@@ -1,6 +1,8 @@
 import "server-only";
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { calculerCompletion } from "@/app/profil/completion";
 import { nomDuPays } from "@/lib/pays";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -117,4 +119,75 @@ export async function meilleurMatch(reponses: Reponses, exclure?: string): Promi
         pays: nomDuPays(ligne.pays),
       }
     : null;
+}
+
+export type ResultatCineMatch = {
+  reponses: Reponses;
+  nbReponses: number;
+  /** Assez de réponses (12) pour qu'un match soit calculé. */
+  assez: boolean;
+  match: Match | null;
+  adherent: boolean;
+  /** Profil complété à 100 % : avec l'adhésion, donne droit au nom et à la photo nette. */
+  complet: boolean;
+  category: string | null;
+  nom: string | null;
+  /** La photo du match : nette si le nom est visible, floutée sinon (même règle que la Galaxie de Talents, 02/10). */
+  photo: string | null;
+  /** Les questions où la personne et son match ont donné la même réponse. */
+  questionsMatchees: string[];
+};
+
+/**
+ * Tout ce que la page CinéMatch et le bloc 3 du profil montrent à un membre
+ * connecté : ses réponses, son meilleur match, et ce qu'il a le droit d'en
+ * voir (21/10/2026, Sarah : photo, réponses communes mises en couleur).
+ */
+export async function resultatCineMatch(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<ResultatCineMatch> {
+  const [{ data: fiche }, { data: adhesion }, completion] = await Promise.all([
+    supabase.from("profiles").select("personality_answers, category").eq("id", userId).maybeSingle(),
+    supabase.rpc("a_une_adhesion_active", { p_profile_id: userId }),
+    calculerCompletion(supabase, userId),
+  ]);
+  const reponses = (fiche?.personality_answers ?? {}) as Reponses;
+  const nbReponses = Object.keys(reponses).length;
+  const assez = nbReponses >= MIN_REPONSES;
+  const adherent = adhesion === true;
+  const complet = completion.pourcent === 100;
+  const match = assez ? await meilleurMatch(reponses, userId) : null;
+
+  let nom: string | null = null;
+  let photo: string | null = null;
+  let questionsMatchees: string[] = [];
+  const admin = createAdminClient();
+  if (match && admin) {
+    const { data: leMatch } = await admin
+      .from("profiles")
+      .select("full_name, first_name, avatar_url, personality_answers")
+      .eq("id", match.profileId)
+      .maybeSingle();
+    const siennes = (leMatch?.personality_answers ?? {}) as Reponses;
+    questionsMatchees = Object.keys(reponses).filter((k) => siennes[k] === reponses[k]);
+    const nomVisible = adherent && complet;
+    if (nomVisible) nom = leMatch?.full_name ?? leMatch?.first_name ?? null;
+    if (leMatch?.avatar_url) {
+      photo = nomVisible ? leMatch.avatar_url : `/api/talents/photo?id=${match.profileId}`;
+    }
+  }
+
+  return {
+    reponses,
+    nbReponses,
+    assez,
+    match,
+    adherent,
+    complet,
+    category: (fiche?.category as string | null) ?? null,
+    nom,
+    photo,
+    questionsMatchees,
+  };
 }

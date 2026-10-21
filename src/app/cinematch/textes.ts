@@ -11,7 +11,6 @@ export const TEXTES = {
   trop_peu: "Répondez à au moins 12 questions pour que nous puissions chercher votre meilleur match.",
 
   resultatTitre: "Votre meilleur match",
-  resultatPourcent: (p: number) => `${p} % de réponses en commun`,
   resultatPoids: (communes: number, comparees: number) =>
     `${communes} réponses identiques sur ${comparees} questions`,
   aucunMatch: "Nous n'avons pas encore trouvé de profil à rapprocher de vos réponses. Revenez bientôt.",

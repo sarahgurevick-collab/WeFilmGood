@@ -3,8 +3,7 @@ import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import QuestionnaireCineMatch from "@/app/profil/gouts/QuestionnaireCineMatch";
-import { MIN_REPONSES, lireBrouillon, meilleurMatch, type Reponses } from "@/lib/cinematch";
-import { calculerCompletion } from "@/app/profil/completion";
+import { MIN_REPONSES, lireBrouillon, resultatCineMatch, type Reponses } from "@/lib/cinematch";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import RemonterEnHaut from "./RemonterEnHaut";
@@ -48,7 +47,7 @@ export default async function CineMatchPage({
             {TEXTES.trop_peu}
           </p>
         )}
-        <QuestionnaireCineMatch mettreEnLumiere={erreur === "peu"} />
+        <QuestionnaireCineMatch />
       </PageShell>
     );
   }
@@ -75,27 +74,8 @@ export default async function CineMatchPage({
     await admin.auth.admin.updateUserById(user.id, { user_metadata: { reponses_cinematch: null } });
   }
 
-  const [{ data: fiche }, { data: adherent }, completion] = await Promise.all([
-    supabase.from("profiles").select("personality_answers, category").eq("id", user.id).maybeSingle(),
-    supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id }),
-    calculerCompletion(supabase, user.id),
-  ]);
-  const reponses = (fiche?.personality_answers ?? {}) as Reponses;
-  const nbReponses = Object.keys(reponses).length;
-  // Moins de 12 réponses : pas de match, et on le dit (au lieu de « aucun profil trouvé »).
-  const assez = nbReponses >= MIN_REPONSES;
-  const match = assez ? await meilleurMatch(reponses, user.id) : null;
-
-  let nom: string | null = null;
-  // Le nom : une adhésion ET un profil complet.
-  if (match && adherent === true && completion.pourcent === 100 && admin) {
-    const { data: leMatch } = await admin
-      .from("profiles")
-      .select("full_name, first_name")
-      .eq("id", match.profileId)
-      .maybeSingle();
-    nom = leMatch?.full_name ?? leMatch?.first_name ?? null;
-  }
+  const { nbReponses, assez, match, adherent, category, nom, photo, questionsMatchees } =
+    await resultatCineMatch(supabase, user.id);
 
   return (
     <PageShell title={<TitreCineMatch />} theme="clair" enTeteAnime connecte>
@@ -121,15 +101,15 @@ export default async function CineMatchPage({
       {/* Une personne du métier arrivée par CinéMatch n'a pas encore choisi sa
           catégorie : tant que son profil n'est pas complété, elle n'entre pas
           dans les matchs des autres. */}
-      {!fiche?.category && (
+      {!category && (
         <p className={formStyles.hint}>
           {TEXTES.completerProfil} <Link href="/profil/identite">{TEXTES.completerProfilLien}</Link>
         </p>
       )}
       {assez && (
-        <ResultatMatch match={match} adherent={adherent === true} nom={nom} connecte />
+        <ResultatMatch match={match} adherent={adherent} nom={nom} photo={photo} connecte />
       )}
-      <QuestionnaireCineMatch userId={user.id} retour="/cinematch" mettreEnLumiere={!!enregistre || !!bienvenue} />
+      <QuestionnaireCineMatch userId={user.id} retour="/cinematch" questionsMatchees={questionsMatchees} />
     </PageShell>
   );
 }

@@ -1,24 +1,30 @@
 import Link from "next/link";
+import AvatarMembre from "@/components/AvatarMembre";
 import formStyles from "@/components/form.module.css";
 import type { Match } from "@/lib/cinematch";
+import { lettreDuMetier } from "@/lib/lettre-metier";
 import { TEXTES } from "./textes";
 
 /**
- * Le meilleur match : pour tout le monde le pourcentage, le métier et le
- * pays (« Producteur · Singapour ») ; le nom seulement avec un profil complet
- * ET une adhésion (`nom` n'est fourni que dans ce cas ; `profileId` mène à
- * sa fiche). Sans adhésion on renvoie vers l'adhésion, avec une adhésion mais
- * un profil incomplet vers le profil.
+ * Le meilleur match (21/10/2026, Sarah) : sa photo (nette si le nom est
+ * visible, floutée sinon ; la lettre du métier sans photo), le pourcentage,
+ * « Votre meilleur match : 6 réponses identiques sur 13 questions », le
+ * métier et le pays (« Producteur · Singapour ») ; le nom seulement avec un
+ * profil complet ET une adhésion (`nom` n'est fourni que dans ce cas ;
+ * `profileId` mène à sa fiche). Sans adhésion on renvoie vers l'adhésion,
+ * avec une adhésion mais un profil incomplet vers le profil.
  */
 export default function ResultatMatch({
   match,
   adherent = false,
   nom,
+  photo,
   connecte = false,
 }: {
   match: Match | null;
   adherent?: boolean;
   nom?: string | null;
+  photo?: string | null;
   connecte?: boolean;
 }) {
   if (!match) {
@@ -36,15 +42,14 @@ export default function ResultatMatch({
         textAlign: "center",
       }}
     >
-      <p className={formStyles.hint} style={{ margin: 0 }}>
-        {TEXTES.resultatTitre}
-      </p>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <AvatarMembre src={photo ?? null} lettre={lettreDuMetier(match.metier)} taille={72} />
+      </div>
       <p style={{ fontSize: 44, fontWeight: 800, margin: "6px 0", color: "var(--rouge-wfg, #da2c25)" }}>
         {match.pourcentage} %
       </p>
-      <p style={{ margin: 0, fontWeight: 700 }}>{TEXTES.resultatPourcent(match.pourcentage)}</p>
-      <p className={formStyles.hint} style={{ margin: "4px 0 0" }}>
-        {TEXTES.resultatPoids(match.communes, match.comparees)}
+      <p style={{ margin: 0, fontWeight: 700 }}>
+        {TEXTES.resultatTitre} : {TEXTES.resultatPoids(match.communes, match.comparees)}
       </p>
 
       {(match.metier || match.pays) && (
