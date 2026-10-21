@@ -95,7 +95,16 @@ const MASTERCLASSES: Masterclass[] = [
   { titre: "Gérard KRAWCZYK - Clermont-Ferrand 2014", vimeoId: "1236608380" },
   { titre: "Olivier MEGATON - Clermont-Ferrand 2016", vimeoId: "164111497" },
   { titre: "Julien SERI - Clermont-Ferrand 2017", vimeoId: "206539679" },
-  { titre: "Hong-Jin NA - Clermont-Ferrand 2018", vimeoId: "305807052" },
+  {
+    titre: "Hong-Jin NA - Clermont-Ferrand 2018",
+    vimeoId: "305807052",
+    mur: [
+      { image: "/masterclass/na/the-chaser.webp", film: "The Chaser", annee: 2008, teaser: "https://www.youtube.com/watch?v=HojsA30_sy0" },
+      { image: "/masterclass/na/the-murderer.webp", film: "The Murderer", annee: 2010, teaser: "https://www.youtube.com/watch?v=xAwzL8Pf5VY" },
+      { image: "/masterclass/na/the-strangers.webp", film: "The Strangers", annee: 2016, teaser: "https://www.youtube.com/watch?v=vMapqiPeioM" },
+      { image: "/masterclass/na/hope.webp", film: "Hope", annee: 2026, teaser: "https://www.youtube.com/watch?v=R5jcEBVBEbQ" },
+    ],
+  },
   {
     titre: "David OELHOFFEN - Clermont-Ferrand 2019",
     vimeoId: "340089009",
