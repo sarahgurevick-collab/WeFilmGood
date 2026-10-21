@@ -108,7 +108,6 @@ export default async function MasterclassPage() {
 
   return (
     <PageShell
-      eyebrow="WeFilmGood"
       title="Masterclass"
       enTeteAnime
       connecte={!!user}
