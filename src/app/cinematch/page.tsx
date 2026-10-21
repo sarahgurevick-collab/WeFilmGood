@@ -7,6 +7,7 @@ import { MIN_REPONSES, lireBrouillon, meilleurMatch, type Reponses } from "@/lib
 import { calculerCompletion } from "@/app/profil/completion";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import RemonterEnHaut from "./RemonterEnHaut";
 import ResultatMatch from "./ResultatMatch";
 import TitreCineMatch from "./TitreCineMatch";
 import { TEXTES } from "./textes";
@@ -41,6 +42,7 @@ export default async function CineMatchPage({
     return (
       <PageShell title={<TitreCineMatch />} theme="clair" enTeteAnime connecte={false}>
         <p className={formStyles.hint}>{TEXTES.introVisiteur}</p>
+        {erreur === "peu" && <RemonterEnHaut />}
         {erreur === "peu" && (
           <p id="etat" className={formStyles.error} style={{ scrollMarginTop: 100 }}>
             {TEXTES.trop_peu}
@@ -97,6 +99,7 @@ export default async function CineMatchPage({
 
   return (
     <PageShell title={<TitreCineMatch />} theme="clair" enTeteAnime connecte>
+      {(enregistre || bienvenue) && <RemonterEnHaut />}
       {/* L'état des réponses, tout en haut et visible d'emblée : le bouton
           d'enregistrement est tout en bas, la page se recharge sur cet encadré. */}
       <div
