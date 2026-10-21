@@ -92,7 +92,16 @@ const MASTERCLASSES: Masterclass[] = [
   },
   { titre: "Melina LEON - Cannes 2019", vimeoId: "1227885384", teaser: "https://www.youtube.com/watch?v=E7UyDw1h6ag", film: "Canción sin nombre", affiche: "/masterclass/cancion-sin-nombre.webp" },
   { titre: "Larisa SADILOVA - Cannes 2019", vimeoId: "1227885382", teaser: "https://www.youtube.com/watch?v=gdvJGoVua2s", film: "Once in Trubchevsk", affiche: "/masterclass/once-in-trubchevsk.webp" },
-  { titre: "Gérard KRAWCZYK - Clermont-Ferrand 2014", vimeoId: "1236608380" },
+  {
+    titre: "Gérard KRAWCZYK - Clermont-Ferrand 2014",
+    vimeoId: "1236608380",
+    mur: [
+      { image: "/masterclass/krawczyk/lete-en-pente-douce.webp", film: "L'Été en pente douce", annee: 1987, teaser: "https://www.youtube.com/watch?v=qhgm2OzY-qc" },
+      { image: "/masterclass/krawczyk/heroines.webp", film: "Héroïnes", annee: 1997, teaser: "https://www.youtube.com/watch?v=gD_icsWaUTU" },
+      { image: "/masterclass/krawczyk/taxi-2.webp", film: "Taxi 2", annee: 2000, teaser: "https://www.youtube.com/watch?v=YPH92ex4nzA" },
+      { image: "/masterclass/krawczyk/wasabi.webp", film: "Wasabi", annee: 2001, teaser: "https://www.youtube.com/watch?v=gTGpW30As38" },
+    ],
+  },
   {
     titre: "Olivier MEGATON - Clermont-Ferrand 2016",
     vimeoId: "164111497",
