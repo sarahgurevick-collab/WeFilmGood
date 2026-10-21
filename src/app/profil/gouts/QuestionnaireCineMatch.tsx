@@ -64,12 +64,17 @@ export default async function QuestionnaireCineMatch({
   const verrouillee = (key: string) => verrouille && !!reponses[key];
   const optionsDe = (key: string) =>
     ((options ?? []) as Option[]).filter((o) => o.question_key === key);
-  // Les suggestions sont enregistrées en minuscules : une majuscule au
-  // début pour l'affichage ; l'enregistrement remet en minuscules.
+  // Les réponses libres sont stockées sous une forme de comparaison
+  // (« incompris ») ; on affiche leur libellé (« L'Incompris », table
+  // personality_libre_libelles, migration 0185), sinon une majuscule au début.
+  // Ce qui est recopié dans le champ repasse en forme de comparaison à
+  // l'enregistrement (déclencheur).
+  type Suggestion = { question_key: string; texte: string; libelle: string };
+  const libelleDe = (key: string, texte: string) =>
+    ((suggestions ?? []) as Suggestion[]).find((s) => s.question_key === key && s.texte === texte)?.libelle ??
+    texte.charAt(0).toUpperCase() + texte.slice(1);
   const suggestionsDe = (key: string) =>
-    ((suggestions ?? []) as { question_key: string; texte: string }[])
-      .filter((s) => s.question_key === key)
-      .map((s) => s.texte.charAt(0).toUpperCase() + s.texte.slice(1));
+    ((suggestions ?? []) as Suggestion[]).filter((s) => s.question_key === key).map((s) => s.libelle);
 
   // Une réponse « autre:… » ne figure pas dans la liste : on la montre
   // dans le champ libre, et la liste reste sur « Choisir ».
@@ -79,7 +84,7 @@ export default async function QuestionnaireCineMatch({
   };
   const reponseLibre = (key: string) => {
     const r = reponses[key];
-    return r && r.startsWith("autre:") ? r.slice("autre:".length) : "";
+    return r && r.startsWith("autre:") ? libelleDe(key, r.slice("autre:".length)) : "";
   };
 
   return (
