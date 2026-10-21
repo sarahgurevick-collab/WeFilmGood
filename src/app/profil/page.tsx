@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import AvatarMembre from "@/components/AvatarMembre";
 import PageShell from "@/components/PageShell";
+import { resultatCineMatch } from "@/lib/cinematch";
+import { lettreDuMetier } from "@/lib/lettre-metier";
 import { createClient } from "@/lib/supabase/server";
 import { BLOCS, calculerCompletion } from "./completion";
 import styles from "./profil.module.css";
@@ -69,6 +72,9 @@ export default async function ProfilPage({
     supabase.from("personality_questions").select("key, label_fr").order("position"),
     supabase.from("personality_options").select("question_key, option_slug, label_fr"),
   ]);
+
+  // Le match du jour (21/10, Sarah) : dans l'affiche, avec un lien vers CinéMatch.
+  const cinematch = await resultatCineMatch(supabase, user.id);
 
   const prenom = profil?.first_name ?? profil?.full_name?.split(" ")[0] ?? null;
   const nom = profil?.full_name ?? prenom ?? "Mon profil";
@@ -164,6 +170,24 @@ export default async function ProfilPage({
           ) : (
             <Link href="/profil/gouts" className={`${styles.replique} ${styles.manque}`}>
               « Si j&apos;étais un film… » à compléter
+            </Link>
+          )}
+
+          {cinematch.match && (
+            <Link href="/cinematch" className={styles.matchDuJour}>
+              <AvatarMembre
+                src={cinematch.photo}
+                lettre={lettreDuMetier(cinematch.match.metier)}
+                taille={36}
+              />
+              <span>
+                Votre match du jour : <strong>{cinematch.match.pourcentage} %</strong>
+                {cinematch.nom
+                  ? ` · ${cinematch.nom}`
+                  : [cinematch.match.metier, cinematch.match.pays].filter(Boolean).length > 0
+                    ? ` · ${[cinematch.match.metier, cinematch.match.pays].filter(Boolean).join(" · ")}`
+                    : ""}
+              </span>
             </Link>
           )}
 

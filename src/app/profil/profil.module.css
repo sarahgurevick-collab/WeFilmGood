@@ -562,6 +562,28 @@
   color: var(--fg);
 }
 
+/* Le match du jour (21/10, Sarah) : la photo du match et le pourcentage,
+   sous la réplique, vers CinéMatch. */
+.matchDuJour {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--fg);
+  text-transform: none;
+  text-decoration: none;
+}
+
+.matchDuJour strong {
+  color: var(--rouge-wfg);
+}
+
+.matchDuJour:hover span {
+  text-decoration: underline;
+}
+
 /* Ce qui manque : en pointillés, et cliquable vers le bon bloc. */
 .manque {
   color: var(--dim);
