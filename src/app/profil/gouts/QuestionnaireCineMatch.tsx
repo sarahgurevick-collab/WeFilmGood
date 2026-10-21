@@ -6,6 +6,7 @@ import BrouillonCineMatch from "@/app/cinematch/BrouillonCineMatch";
 import ChampLibre from "@/app/cinematch/ChampLibre";
 import { TEXTES } from "@/app/cinematch/textes";
 import { MIN_REPONSES } from "@/lib/cinematch";
+import { joliLibelle } from "@/lib/cinematch-constantes";
 import { saveGouts } from "../actions";
 import styles from "../profil.module.css";
 
@@ -38,7 +39,7 @@ export default async function QuestionnaireCineMatch({
   questionsMatchees?: string[];
 }) {
   const supabase = await createClient();
-  const [{ data: profil }, { data: questions }, { data: options }, { data: suggestions }] =
+  const [{ data: profil }, { data: questions }, { data: options }, { data: suggestions }, { data: libelles }] =
     await Promise.all([
       userId
         ? supabase.from("profiles").select("personality_answers, personality_unlocked_at").eq("id", userId).maybeSingle()
@@ -52,6 +53,8 @@ export default async function QuestionnaireCineMatch({
       // personnes, jamais nominatif), proposées en tapant dans le champ de
       // droite (21/10, Sarah) : voir la migration 0179.
       supabase.rpc("suggestions_portrait"),
+      // Les libellés posés, même pour une réponse donnée une seule fois.
+      supabase.from("personality_libre_libelles").select("question_key, texte, libelle"),
     ]);
 
   const reponses = (profil?.personality_answers ?? {}) as Record<string, string>;
@@ -71,8 +74,9 @@ export default async function QuestionnaireCineMatch({
   // l'enregistrement (déclencheur).
   type Suggestion = { question_key: string; texte: string; libelle: string };
   const libelleDe = (key: string, texte: string) =>
+    ((libelles ?? []) as Suggestion[]).find((s) => s.question_key === key && s.texte === texte)?.libelle ??
     ((suggestions ?? []) as Suggestion[]).find((s) => s.question_key === key && s.texte === texte)?.libelle ??
-    texte.charAt(0).toUpperCase() + texte.slice(1);
+    joliLibelle(texte);
   const suggestionsDe = (key: string) =>
     ((suggestions ?? []) as Suggestion[]).filter((s) => s.question_key === key).map((s) => s.libelle);
 

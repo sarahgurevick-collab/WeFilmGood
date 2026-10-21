@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import AvatarMembre from "@/components/AvatarMembre";
 import PageShell from "@/components/PageShell";
 import { resultatCineMatch } from "@/lib/cinematch";
+import { joliLibelle } from "@/lib/cinematch-constantes";
 import { lettreDuMetier } from "@/lib/lettre-metier";
 import { createClient } from "@/lib/supabase/server";
 import { BLOCS, calculerCompletion } from "./completion";
@@ -98,11 +99,24 @@ export default async function ProfilPage({
   const question = ((questions ?? []) as { key: string; label_fr: string }[]).find(
     (q) => reponses[q.key],
   );
+  // Une réponse libre s'affiche avec son libellé (« L'Incompris »), jamais
+  // sous sa forme de comparaison (« incompris ») — 21/10, Sarah.
+  const texteLibre =
+    question && reponses[question.key].startsWith("autre:") ? reponses[question.key].slice("autre:".length) : null;
+  const { data: libellePose } =
+    question && texteLibre
+      ? await supabase
+          .from("personality_libre_libelles")
+          .select("libelle")
+          .eq("question_key", question.key)
+          .eq("texte", texteLibre)
+          .maybeSingle()
+      : { data: null };
   const replique = question
     ? {
         question: question.label_fr,
-        reponse: reponses[question.key].startsWith("autre:")
-          ? reponses[question.key].slice("autre:".length)
+        reponse: texteLibre
+          ? (libellePose?.libelle ?? joliLibelle(texteLibre))
           : (((options ?? []) as { question_key: string; option_slug: string; label_fr: string }[]).find(
               (o) => o.question_key === question.key && o.option_slug === reponses[question.key],
             )?.label_fr ?? reponses[question.key]),
