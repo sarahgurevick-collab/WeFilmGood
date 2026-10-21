@@ -37,7 +37,7 @@ export default async function QuestionnaireCineMatch({
   mettreEnLumiere?: boolean;
 }) {
   const supabase = await createClient();
-  const [{ data: profil }, { data: questions }, { data: options }] =
+  const [{ data: profil }, { data: questions }, { data: options }, { data: suggestions }] =
     await Promise.all([
       userId
         ? supabase.from("profiles").select("personality_answers, personality_unlocked_at").eq("id", userId).maybeSingle()
@@ -47,6 +47,10 @@ export default async function QuestionnaireCineMatch({
         .from("personality_options")
         .select("question_key, option_slug, label_fr, position")
         .order("position"),
+      // Les réponses libres déjà données par d'autres (au moins deux
+      // personnes, jamais nominatif), proposées en tapant dans le champ de
+      // droite (21/10, Sarah) : voir la migration 0179.
+      supabase.rpc("suggestions_portrait"),
     ]);
 
   const reponses = (profil?.personality_answers ?? {}) as Record<string, string>;
@@ -59,6 +63,12 @@ export default async function QuestionnaireCineMatch({
   const verrouillee = (key: string) => verrouille && !!reponses[key];
   const optionsDe = (key: string) =>
     ((options ?? []) as Option[]).filter((o) => o.question_key === key);
+  // Les suggestions sont enregistrées en minuscules : une majuscule au
+  // début pour l'affichage ; l'enregistrement remet en minuscules.
+  const suggestionsDe = (key: string) =>
+    ((suggestions ?? []) as { question_key: string; texte: string }[])
+      .filter((s) => s.question_key === key)
+      .map((s) => s.texte.charAt(0).toUpperCase() + s.texte.slice(1));
 
   // Une réponse « autre:… » ne figure pas dans la liste : on la montre
   // dans le champ libre, et la liste reste sur « Choisir ».
@@ -102,8 +112,14 @@ export default async function QuestionnaireCineMatch({
                 defaultValue={reponseLibre(q.key)}
                 placeholder="ou autre chose…"
                 autoComplete="off"
+                list={`suggestions_${q.key}`}
                 disabled={verrouillee(q.key)}
               />
+              <datalist id={`suggestions_${q.key}`}>
+                {suggestionsDe(q.key).map((texte) => (
+                  <option key={texte} value={texte} />
+                ))}
+              </datalist>
             </div>
           </div>
         ))}
