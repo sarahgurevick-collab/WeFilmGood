@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { apercuCineMatch } from "@/app/cinematch/actions";
 import BoutonEnregistrer from "@/app/cinematch/BoutonEnregistrer";
 import BrouillonCineMatch from "@/app/cinematch/BrouillonCineMatch";
+import ChampLibre from "@/app/cinematch/ChampLibre";
 import { TEXTES } from "@/app/cinematch/textes";
 import { MIN_REPONSES } from "@/lib/cinematch";
 import { saveGouts } from "../actions";
@@ -106,20 +107,13 @@ export default async function QuestionnaireCineMatch({
                   </option>
                 ))}
               </select>
-              <input
-                type="text"
+              <ChampLibre
                 name={`q_${q.key}_autre`}
                 defaultValue={reponseLibre(q.key)}
                 placeholder="ou autre chose…"
-                autoComplete="off"
-                list={`suggestions_${q.key}`}
+                suggestions={suggestionsDe(q.key)}
                 disabled={verrouillee(q.key)}
               />
-              <datalist id={`suggestions_${q.key}`}>
-                {suggestionsDe(q.key).map((texte) => (
-                  <option key={texte} value={texte} />
-                ))}
-              </datalist>
             </div>
           </div>
         ))}

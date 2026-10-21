@@ -837,3 +837,52 @@ a.manque:hover {
   border-color: var(--rouge-wfg);
   background: rgba(218, 44, 37, 0.08);
 }
+
+/* Le champ libre de CinéMatch et sa liste de réponses des autres (21/10) :
+   la liste s'ouvre sous le champ dès le premier clic. */
+.champLibre {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.champLibre input {
+  width: 100%;
+}
+
+.suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.suggestions button {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--fg);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.suggestions button:hover,
+.suggestions li[aria-selected="true"] button {
+  background: rgba(218, 44, 37, 0.08);
+  color: var(--rouge-wfg);
+}
