@@ -46,7 +46,7 @@ export default async function CineMatchPage({
             {TEXTES.trop_peu}
           </p>
         )}
-        <QuestionnaireCineMatch />
+        <QuestionnaireCineMatch mettreEnLumiere={erreur === "peu"} />
       </PageShell>
     );
   }
@@ -126,7 +126,7 @@ export default async function CineMatchPage({
       {assez && (
         <ResultatMatch match={match} adherent={adherent === true} nom={nom} connecte />
       )}
-      <QuestionnaireCineMatch userId={user.id} retour="/cinematch" />
+      <QuestionnaireCineMatch userId={user.id} retour="/cinematch" mettreEnLumiere={!!enregistre || !!bienvenue} />
     </PageShell>
   );
 }

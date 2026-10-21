@@ -20,6 +20,9 @@ type Option = { question_key: string; option_slug: string; label_fr: string; pos
  * CinéMatch du Menu (/cinematch), ouverte à tout compte connecté, même
  * réduit à une adresse email. `retour` dit où revenir après l'envoi.
  *
+ * `mettreEnLumiere` : après « Enregistrer », les questions restantes prennent
+ * un cadre aux couleurs des engagements (rien au départ, 21/10).
+ *
  * Sans `userId` (visiteur sans compte), le formulaire mène au meilleur
  * match puis à la demande d'adresse email ; ses réponses sont gardées dans
  * son navigateur le temps qu'il termine.
@@ -27,9 +30,11 @@ type Option = { question_key: string; option_slug: string; label_fr: string; pos
 export default async function QuestionnaireCineMatch({
   userId,
   retour,
+  mettreEnLumiere = false,
 }: {
   userId?: string;
   retour?: "/cinematch";
+  mettreEnLumiere?: boolean;
 }) {
   const supabase = await createClient();
   const [{ data: profil }, { data: questions }, { data: options }] =
@@ -70,7 +75,7 @@ export default async function QuestionnaireCineMatch({
     <form className={formStyles.form} action={userId ? saveGouts : apercuCineMatch} style={{ marginTop: 24 }}>
       {!userId && <BrouillonCineMatch />}
       {retour && <input type="hidden" name="retour" value={retour} />}
-      <div className={styles.portrait}>
+      <div className={`${styles.portrait} ${mettreEnLumiere ? styles.enLumiere : ""}`}>
         <p className={styles.portraitIntro}>
           Le principe du portrait chinois consiste à définir une personne en l&apos;associant
           à des métaphores, à travers une série de questions rituelles.
