@@ -100,6 +100,7 @@ const MASTERCLASSES: Masterclass[] = [
     mur: [
       { image: "/masterclass/seri/yamakasi.webp", film: "Yamakasi (Ariel ZEITOUN)", annee: 2001, teaser: "https://www.youtube.com/watch?v=cCH4DJ58l0s" },
       { image: "/masterclass/seri/les-fils-du-vent.webp", film: "Les Fils du vent", annee: 2004, teaser: "https://www.youtube.com/watch?v=FQPejg4RHmU" },
+      { image: "/masterclass/seri/scorpion.webp", film: "Scorpion", annee: 2007 },
       { image: "/masterclass/seri/night-fare.webp", film: "Night Fare", annee: 2015, teaser: "https://www.youtube.com/watch?v=rlbvpwRWuoE" },
     ],
   },
