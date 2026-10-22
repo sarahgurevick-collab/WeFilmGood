@@ -159,7 +159,7 @@ export default async function AppelsAProjetsPage() {
         appels={appels}
         aujourdHui={aujourdHui}
         titre="Nos appels à projets"
-        libelleBouton="Lire le texte de l'appel à projets"
+        libelleBouton="Appel à projet en cours"
         texteAppel={<TexteAppel />}
       />
 

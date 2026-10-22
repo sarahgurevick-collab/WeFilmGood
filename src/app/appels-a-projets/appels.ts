@@ -3,7 +3,7 @@
  * la frise de la page : logo du festival, date limite en gros, format et
  * événement. Pour un nouvel appel : ajouter une ligne, la frise s'allonge
  * d'elle-même. Les textes de l'appel (modalités, sélection, frais) sont dans
- * page.tsx, derrière le bouton « Lire le texte de l'appel à projets ».
+ * page.tsx, derrière le bouton « Appel à projet en cours ».
  */
 export type Appel = {
   id: string;
