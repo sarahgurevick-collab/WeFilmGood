@@ -50,7 +50,7 @@ export const APPELS: Appel[] = [
     festival: "Paris Courts Devant",
     edition: "Appel à pitchs long métrage francophone, 2027",
     format: "Long métrage",
-    logo: "/festivals/paris-courts-devant.jpg",
+    logo: "/festivals/paris-courts-devant.png",
     dateLimite: "2026-10-26",
     evenement: "Présentation du projet aux professionnels du secteur",
   },

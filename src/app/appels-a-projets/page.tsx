@@ -91,7 +91,7 @@ function TexteAppel() {
               className={styles.logoLarge}
             />
             <img
-              src="/festivals/paris-courts-devant.jpg"
+              src="/festivals/paris-courts-devant.png"
               alt="Paris Courts Devant"
               className={styles.logoRond}
             />
