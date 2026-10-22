@@ -28,6 +28,7 @@ const PROGRAMMES_EN_ROUGE = [
 export default function VueFestival({
   nom,
   logo,
+  logoRond = false,
   annees,
   anneeInitiale,
   selections,
@@ -35,6 +36,7 @@ export default function VueFestival({
 }: {
   nom: string;
   logo: string | null;
+  logoRond?: boolean;
   annees: number[];
   anneeInitiale?: number;
   selections: AnneeSelection[];
@@ -53,7 +55,7 @@ export default function VueFestival({
 
       {logo && (
         <div className={styles.entete}>
-          <span className={styles.enteteLogo}>
+          <span className={logoRond ? styles.enteteLogoRond : styles.enteteLogo}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={logo} alt="" />
           </span>

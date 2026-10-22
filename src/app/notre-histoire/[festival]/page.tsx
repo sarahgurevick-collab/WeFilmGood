@@ -44,6 +44,7 @@ export default async function FestivalPage({
       <VueFestival
         nom={f.nom}
         logo={f.logo ?? null}
+        logoRond={f.logoRond ?? false}
         annees={annees}
         anneeInitiale={anneeInitiale}
         selections={f.selections}
