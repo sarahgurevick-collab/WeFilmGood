@@ -65,8 +65,8 @@ function TexteAppel() {
 
           <h3>Ce que la plateforme vous apporte</h3>
           <p>
-            Accès à plus de 1 900 producteurs internationaux, retour de
-            lecture constructif sous 10 jours, visibilité du projet pendant
+            Accès à près de 2 000 producteurs internationaux, retour de
+            lecture constructif sous 15 jours, visibilité du projet pendant
             un an, adhésion de 30 € à la Maison des Scénaristes incluse. Les
             frais de candidature de 50 € couvrent les évaluations des
             lecteurs.
@@ -159,7 +159,7 @@ function TexteLecteurs() {
         formuler les besoins de réécriture pour l&apos;amélioration
         d&apos;un projet. Chaque lecteur reçoit aléatoirement et
         confidentiellement un projet via la plateforme. Il fait un retour
-        précis et constructif sur le projet dans un délai de 10 jours
+        précis et constructif sur le projet dans un délai de 15 jours
         sous forme de fiche de lecture motivée.
       </p>
       <p>
