@@ -7,6 +7,13 @@
 
 .section {
   --actif: #da2c25;
+  /* Les largeurs de la composition, posées noir sur blanc : la piste et
+     la zone en sont la somme (--n = nombre d'appels, posé par le
+     composant), rien n'est laissé au calcul intrinsèque du navigateur. */
+  --marge: 5vw;
+  --ecart: 5vw;
+  --image: 30vw;
+  --entete: 24vw;
   --colonne: 34vw;
   position: relative;
   /* Pleine largeur, par-dessus les marges de la page. */
@@ -31,16 +38,18 @@
 .piste {
   display: flex;
   align-items: center;
-  gap: 5vw;
-  /* Aussi large que son contenu, jamais rétrécie par l'écran. */
-  width: max-content;
+  gap: var(--ecart);
+  width: calc(
+    var(--marge) * 2 + var(--image) + var(--ecart) + var(--entete) +
+      var(--colonne) * var(--n, 1)
+  );
   height: 36vw;
-  padding: 0 5vw;
+  padding: 0 var(--marge);
   will-change: transform;
 }
 
 .image {
-  flex: 0 0 30vw;
+  flex: 0 0 var(--image);
   height: 100%;
   overflow: hidden;
   border-radius: 1vw;
@@ -58,15 +67,16 @@
 .zone {
   position: relative;
   display: flex;
-  width: max-content;
+  width: calc(var(--entete) + var(--colonne) * var(--n, 1));
   height: 100%;
   flex: 0 0 auto;
 }
 
+/* Sa largeur est posée par le composant, du départ au dernier point. */
 .ligneCentrale {
   position: absolute;
   left: 0;
-  right: 0;
+  width: 100%;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
@@ -95,7 +105,7 @@
 }
 
 .entete {
-  flex: 0 0 24vw;
+  flex: 0 0 var(--entete);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -137,6 +147,7 @@
 .colonnes {
   display: flex;
   flex: 0 0 auto;
+  width: calc(var(--colonne) * var(--n, 1));
   height: 100%;
   margin: 0;
   padding: 0;
@@ -353,18 +364,19 @@
 /* Téléphone : tout grossit, la frise défile plus longtemps. */
 @media (max-width: 600px) {
   .section {
+    --marge: 7vw;
+    --ecart: 7vw;
+    --image: 80vw;
+    --entete: 66vw;
     --colonne: 74vw;
     margin-top: 0;
   }
 
   .piste {
     height: 78vh;
-    gap: 7vw;
-    padding: 0 7vw;
   }
 
   .image {
-    flex: 0 0 80vw;
     height: 60%;
     border-radius: 5vw;
   }
@@ -375,7 +387,6 @@
   }
 
   .entete {
-    flex: 0 0 66vw;
     padding: 4vw 2vw 4vw 0;
   }
 

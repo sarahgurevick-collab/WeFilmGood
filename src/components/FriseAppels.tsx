@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  type CSSProperties,
   useLayoutEffect,
   useRef,
   useSyncExternalStore,
@@ -74,6 +75,7 @@ export default function FriseAppels({
   const sectionRef = useRef<HTMLElement>(null);
   const pisteRef = useRef<HTMLDivElement>(null);
   const ligneRef = useRef<HTMLDivElement>(null);
+  const ligneCentraleRef = useRef<HTMLDivElement>(null);
   const dialogsRef = useRef<(HTMLDialogElement | null)[]>([]);
   const statique = useMoinsDAnimations();
 
@@ -89,7 +91,8 @@ export default function FriseAppels({
     const section = sectionRef.current;
     const piste = pisteRef.current;
     const ligne = ligneRef.current;
-    if (!section || !piste || !ligne) return;
+    const ligneCentrale = ligneCentraleRef.current;
+    if (!section || !piste || !ligne || !ligneCentrale) return;
 
     if (statique) return;
 
@@ -100,7 +103,19 @@ export default function FriseAppels({
         Math.max(0, piste.scrollWidth - window.innerWidth + window.innerWidth * 0.04);
       // La section est aussi haute que le chemin à parcourir : le panneau
       // reste collé pendant toute la glissade.
+      // La ligne va de son point de départ au point du dernier appel :
+      // mesurée à l'écran plutôt que déduite de la largeur de la zone, que
+      // le navigateur de Sarah rendait trop courte (22/10).
+      const poserLigne = () => {
+        const points = section.querySelectorAll<HTMLElement>(`.${styles.point}`);
+        const dernier = points[points.length - 1];
+        if (!dernier) return;
+        const r = dernier.getBoundingClientRect();
+        const depart = ligneCentrale.getBoundingClientRect().left;
+        ligneCentrale.style.width = `${r.left + r.width / 2 - depart}px`;
+      };
       const poserHauteur = () => {
+        poserLigne();
         section.style.height = `${window.innerHeight + distance()}px`;
       };
       poserHauteur();
@@ -200,6 +215,7 @@ export default function FriseAppels({
       <section
         ref={sectionRef}
         className={`${styles.section} ${statique ? styles.statique : ""}`}
+        style={{ "--n": appels.length } as CSSProperties}
         aria-label={titre}
       >
         <div className={styles.panneau}>
@@ -213,10 +229,13 @@ export default function FriseAppels({
             </div>
 
             <div className={styles.zone}>
-              <div className={styles.ligneCentrale} aria-hidden="true">
+              <div
+                ref={ligneCentraleRef}
+                className={styles.ligneCentrale}
+                aria-hidden="true"
+              >
                 <span className={styles.bout} />
                 <div ref={ligneRef} className={styles.ligne} />
-                <span className={styles.bout} />
               </div>
 
               <div className={styles.entete}>
