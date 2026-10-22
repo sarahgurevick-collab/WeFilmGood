@@ -7,6 +7,7 @@ import styles from "./admin.module.css";
 const PAGES = [
   { href: "/admin/projets-en-attente", libelle: "Projets en attente" },
   { href: "/admin/fiches-a-valider", libelle: "Fiches à valider" },
+  { href: "/admin/videopitchs", libelle: "Videopitchs" },
   { href: "/admin/membres", libelle: "Membres" },
   { href: "/admin/fiches", libelle: "Projets" },
   { href: "/admin/portraits", libelle: "Portraits" },

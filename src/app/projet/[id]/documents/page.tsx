@@ -8,6 +8,7 @@ import { signerImages } from "../fichiers";
 import { enregistrerDocuments } from "./actions";
 import BoutonRetirerPhoto from "./BoutonRetirerPhoto";
 import ImagePresentation from "./ImagePresentation";
+import EnvoiVideopitch, { type DepotAffiche } from "./EnvoiVideopitch";
 
 type Fichier = { id: string; kind: string; storage_path: string; original_name: string | null };
 
@@ -45,6 +46,24 @@ export default async function DocumentsPage({
     ...moodboard.map((m) => m.storage_path),
   ]);
   const accept = "image/jpeg,image/png,image/webp";
+
+  // Le videopitch (22/10) : ce qui est en ligne (Vimeo), ce qui attend, et
+  // si la personne peut en déposer un — le porteur adhérent, ou l'admin.
+  const [{ data: videopitchEnLigne }, { data: depots }, { data: adherent }, { data: estAdmin }] = await Promise.all([
+    supabase.from("project_videopitchs").select("videopitch_fr, videopitch_en").eq("project_id", id).maybeSingle(),
+    supabase
+      .from("videopitch_depots")
+      .select("langue, etat, nom_origine, motif_refus, cree_le")
+      .eq("project_id", id)
+      .order("cree_le", { ascending: false })
+      .returns<DepotAffiche[]>(),
+    supabase.rpc("a_une_adhesion_active", { p_profile_id: projet.owner_id }),
+    supabase.rpc("is_admin"),
+  ]);
+  const peutDeposerVideopitch = adherent === true || estAdmin === true;
+  const dernierParLangue = (["fr", "en"] as const)
+    .map((l) => (depots ?? []).find((d) => d.langue === l))
+    .filter((d): d is DepotAffiche => Boolean(d));
 
   return (
     <BlocProjet actif="documents" projet={projet}>
@@ -120,6 +139,26 @@ export default async function DocumentsPage({
           </button>
         </div>
       </form>
+
+      {/* Le videopitch s'envoie à part du formulaire : la vidéo part par
+          morceaux dès le clic, sans passer par « Enregistrer ». */}
+      <h2 className={styles.sousTitre} style={{ marginTop: 32 }}>Le videopitch</h2>
+      <p className={formStyles.hint}>
+        Deux minutes face caméra pour donner envie de lire votre scénario. Visible des membres
+        adhérents sur votre fiche, après un regard de l&apos;équipe.
+      </p>
+      {peutDeposerVideopitch ? (
+        <EnvoiVideopitch
+          projectId={projet.id}
+          enLigne={{ fr: !!videopitchEnLigne?.videopitch_fr, en: !!videopitchEnLigne?.videopitch_en }}
+          depots={dernierParLangue}
+        />
+      ) : (
+        <p className={formStyles.hint}>
+          L&apos;envoi d&apos;un videopitch fait partie de l&apos;adhésion.{" "}
+          <Link href="/adhesion">Adhérer</Link>
+        </p>
+      )}
     </BlocProjet>
   );
 }
