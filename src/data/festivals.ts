@@ -23,7 +23,7 @@ export type Festival = {
 };
 
 export const FESTIVALS: Festival[] = [
-  { id: "cannes", nom: "Festival de Cannes", logo: "/festivals/festival-de-cannes.png", selections: SELECTIONS_CANNES, motsPhotos: ["Cannes"] },
+  { id: "cannes", nom: "Festival de Cannes", logo: "/festivals/marche-du-film.png", selections: SELECTIONS_CANNES, motsPhotos: ["Cannes"] },
   { id: "clermont-ferrand", nom: "Clermont-Ferrand", logo: "/festivals/clermont-ferrand.jpg", selections: SELECTIONS_CLERMONT_FERRAND, motsPhotos: ["Clermont"] },
   { id: "pcdv", nom: "Paris Courts Devant", logo: "/festivals/paris-courts-devant.jpg", selections: SELECTIONS_PCDV, motsPhotos: ["Paris Courts Devant"] },
   { id: "serie-mania", nom: "Série Mania", selections: [], motsPhotos: ["Série Mania", "Series Mania"] },
