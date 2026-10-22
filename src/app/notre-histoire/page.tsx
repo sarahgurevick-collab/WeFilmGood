@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Frise from "@/components/Frise";
 import PageShell from "@/components/PageShell";
 import { RENCONTRES } from "@/data/association";
 import { FESTIVALS } from "@/data/festivals";
 import { createClient } from "@/lib/supabase/server";
+import { etapesHistoire } from "./etapes";
 import VisionneusePhotos, { type PhotoHistoire } from "./VisionneusePhotos";
 import styles from "./notre-histoire.module.css";
 
@@ -14,6 +16,10 @@ export const metadata: Metadata = { title: "Notre histoire — WeFilmGood" };
  * à Cannes, puis les photos des rencontres, la photo à gauche et la roue
  * des titres à droite, exactement comme les Masterclass. Les projets
  * sélectionnés sont sur une autre page, festival par festival.
+ *
+ * ESSAI (22/10/2026) : la frise horizontale des appels à projets, sur
+ * fond noir, en tête de page — une étape par année depuis 2012 (voir
+ * etapes.tsx). Page d'avant : étiquette git « notre-histoire-avant-frise ».
  */
 export default async function NotreHistoirePage() {
   const supabase = await createClient();
@@ -32,7 +38,15 @@ export default async function NotreHistoirePage() {
   });
 
   return (
-    <PageShell eyebrow="WeFilmGood" title="Notre histoire" enTeteAnime connecte={!!user}>
+    <PageShell enTeteAnime connecte={!!user}>
+      <Frise
+        etapes={etapesHistoire()}
+        titre="Notre histoire"
+        periode="2012 — 2026"
+        image="/association/rencontres/02.jpg"
+        imageAlt="Un rendez-vous au pavillon de la Maison des Scénaristes, Festival de Cannes"
+      />
+
       {/* La phrase de la frise de l'association (2011-2012), reprise telle quelle. */}
       <p className={styles.ouverture}>
         <strong>2012.</strong> Le début d&apos;une très belle aventure humaine et la naissance du

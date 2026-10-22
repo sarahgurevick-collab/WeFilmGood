@@ -218,12 +218,20 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
-.logoLarge {
+.logoCarte {
   object-fit: contain;
   border-radius: 1vw;
   background: #fff;
   padding: 0.5vw;
   box-shadow: 0 0 0 1px var(--bordure-douce), 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Une affiche (portrait), à la place d'un logo rond. */
+.affiche {
+  width: auto;
+  height: 9vw;
+  border-radius: 0.5vw;
+  object-fit: contain;
 }
 
 .etiquette {
@@ -422,9 +430,14 @@
     height: 16vw;
   }
 
-  .logoLarge {
+  .logoCarte {
     border-radius: 3vw;
     padding: 1.5vw;
+  }
+
+  .affiche {
+    height: 22vw;
+    border-radius: 1.5vw;
   }
 
   .etiquette {
