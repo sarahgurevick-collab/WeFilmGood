@@ -32,6 +32,8 @@
   display: flex;
   align-items: center;
   gap: 5vw;
+  /* Aussi large que son contenu, jamais rétrécie par l'écran. */
+  width: max-content;
   height: 36vw;
   padding: 0 5vw;
   will-change: transform;
@@ -56,6 +58,7 @@
 .zone {
   position: relative;
   display: flex;
+  width: max-content;
   height: 100%;
   flex: 0 0 auto;
 }
@@ -79,15 +82,20 @@
   background: var(--actif);
 }
 
+/* Le trait a sa longueur dès le départ ; GSAP l'étire depuis la gauche
+   (scaleX de 0 à 1) : pas de pourcentage à convertir, le bout de droite
+   reste à sa place. */
 .ligne {
-  width: 0;
+  flex: 1 1 auto;
   height: 1px;
   border-radius: 1px;
   background: var(--actif);
+  transform-origin: left center;
+  transform: scaleX(0);
 }
 
 .entete {
-  flex: 0 0 22vw;
+  flex: 0 0 24vw;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -117,26 +125,18 @@
   color: var(--dim);
 }
 
-.bouton {
-  font: inherit;
-  font-size: max(13px, 0.95vw);
-  font-weight: 700;
-  padding: 0.7em 1.3em;
-  border: 0;
-  border-radius: 999px;
-  background: var(--actif);
-  color: #fff;
-  cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease;
-}
-
-.bouton:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.08);
+/* Les boutons sont ceux du site (form.module.css, .submit) ; ici on
+   les empile. */
+.boutons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
 }
 
 .colonnes {
   display: flex;
+  flex: 0 0 auto;
   height: 100%;
   margin: 0;
   padding: 0;
@@ -279,7 +279,7 @@
 }
 
 .statique .ligne {
-  width: 98%;
+  transform: none;
 }
 
 /* Le texte de l'appel, dans une feuille par-dessus la page. */
@@ -375,7 +375,7 @@
   }
 
   .entete {
-    flex: 0 0 62vw;
+    flex: 0 0 66vw;
     padding: 4vw 2vw 4vw 0;
   }
 
@@ -385,10 +385,6 @@
 
   .periode {
     font-size: 4.2vw;
-  }
-
-  .bouton {
-    font-size: 14px;
   }
 
   .colonne {

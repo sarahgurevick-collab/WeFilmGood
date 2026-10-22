@@ -1,16 +1,15 @@
 import FriseAppels from "@/components/FriseAppels";
-import LigneFAQ from "@/components/LigneFAQ";
 import PageShell from "@/components/PageShell";
 import SwitchFormat from "@/components/SwitchFormat";
 import { createClient } from "@/lib/supabase/server";
 import { APPELS } from "./appels";
-import styles from "./page.module.css";
 
 /*
  * ESSAI (22/10/2026) — la page s'ouvre sur la frise des appels à projets
  * (dates limites et logos des festivals en évidence). Le texte de l'appel,
  * qui change peu d'une édition à l'autre, est derrière un bouton : court
- * métrage ou long métrage. Page d'avant : étiquette git
+ * métrage ou long métrage. Les lecteurs ont leur bouton aussi, du même
+ * style que partout sur le site (22/10). Page d'avant : étiquette git
  * « appels-a-projets-avant-frise ».
  */
 
@@ -142,6 +141,46 @@ function TexteAppel() {
   );
 }
 
+function TexteLecteurs() {
+  return (
+    <>
+      <h3>En savoir plus sur nos lecteurs</h3>
+      <p>
+        Les lecteurs sont les piliers de la Maison des Scénaristes depuis
+        5 ans. Ils sont également lecteurs pour la plateforme WeFilmGood.
+        Ils sont scénaristes, réalisateurs avec une grande expérience de
+        la dramaturgie et une réelle envie de découvrir de nouvelles
+        histoires. Ils sont aussi extrêmement conscients des réalités du
+        marché.
+      </p>
+      <p>
+        Les lecteurs de WeFilmGood ont été retenus pour leurs aptitudes
+        d&apos;évaluation d&apos;un scénario et leurs capacités à pouvoir
+        formuler les besoins de réécriture pour l&apos;amélioration
+        d&apos;un projet. Chaque lecteur reçoit aléatoirement et
+        confidentiellement un projet via la plateforme. Il fait un retour
+        précis et constructif sur le projet dans un délai de 10 jours
+        sous forme de fiche de lecture motivée.
+      </p>
+      <p>
+        Les bonnes histoires sont rares, voilà pourquoi nous allons les
+        chercher partout où elles se trouvent. Si la majorité des
+        lecteurs de WFG sont européens, la plateforme dispose d&apos;au
+        moins un lecteur qui lit pour nous dans chaque continent. Sans
+        cette sensibilité multiculturelle propre à nos lecteurs, ces
+        récits resteraient dans l&apos;ombre et ne pourraient être
+        proposés sur la plateforme WFG.
+      </p>
+      <p>
+        Notre sélection assure à la filière de production, des projets
+        aux qualités dramatiques fortes, servant des récits originaux.
+        Elle permet à tous les partenaires de voir leurs démarches
+        soutenues par un socle narratif solide.
+      </p>
+    </>
+  );
+}
+
 export default async function AppelsAProjetsPage() {
   const supabase = await createClient();
   const {
@@ -159,46 +198,11 @@ export default async function AppelsAProjetsPage() {
         appels={appels}
         aujourdHui={aujourdHui}
         titre="Nos appels à projets"
-        libelleBouton="Appel à projet en cours"
-        texteAppel={<TexteAppel />}
+        feuilles={[
+          { libelle: "Appel à projet en cours", contenu: <TexteAppel /> },
+          { libelle: "En savoir plus sur nos lecteurs", contenu: <TexteLecteurs /> },
+        ]}
       />
-
-      <div className={styles.suite}>
-        <LigneFAQ question="En savoir plus sur nos lecteurs">
-          <p>
-            Les lecteurs sont les piliers de la Maison des Scénaristes depuis
-            5 ans. Ils sont également lecteurs pour la plateforme WeFilmGood.
-            Ils sont scénaristes, réalisateurs avec une grande expérience de
-            la dramaturgie et une réelle envie de découvrir de nouvelles
-            histoires. Ils sont aussi extrêmement conscients des réalités du
-            marché.
-          </p>
-          <p>
-            Les lecteurs de WeFilmGood ont été retenus pour leurs aptitudes
-            d&apos;évaluation d&apos;un scénario et leurs capacités à pouvoir
-            formuler les besoins de réécriture pour l&apos;amélioration
-            d&apos;un projet. Chaque lecteur reçoit aléatoirement et
-            confidentiellement un projet via la plateforme. Il fait un retour
-            précis et constructif sur le projet dans un délai de 10 jours
-            sous forme de fiche de lecture motivée.
-          </p>
-          <p>
-            Les bonnes histoires sont rares, voilà pourquoi nous allons les
-            chercher partout où elles se trouvent. Si la majorité des
-            lecteurs de WFG sont européens, la plateforme dispose d&apos;au
-            moins un lecteur qui lit pour nous dans chaque continent. Sans
-            cette sensibilité multiculturelle propre à nos lecteurs, ces
-            récits resteraient dans l&apos;ombre et ne pourraient être
-            proposés sur la plateforme WFG.
-          </p>
-          <p>
-            Notre sélection assure à la filière de production, des projets
-            aux qualités dramatiques fortes, servant des récits originaux.
-            Elle permet à tous les partenaires de voir leurs démarches
-            soutenues par un socle narratif solide.
-          </p>
-        </LigneFAQ>
-      </div>
     </PageShell>
   );
 }

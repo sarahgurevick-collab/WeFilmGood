@@ -14,6 +14,7 @@ import {
   dateEnLettres,
   type Appel,
 } from "@/app/appels-a-projets/appels";
+import form from "./form.module.css";
 import styles from "./FriseAppels.module.css";
 
 /*
@@ -59,22 +60,21 @@ export default function FriseAppels({
   appels,
   aujourdHui,
   titre,
-  texteAppel,
-  libelleBouton,
+  feuilles,
 }: {
   appels: Appel[];
   /** La date du jour (AAAA-MM-JJ), décidée par le serveur pour que le rendu
       soit le même des deux côtés. */
   aujourdHui: string;
   titre: string;
-  /** Le texte de l'appel à projets, ouvert par le bouton. */
-  texteAppel: ReactNode;
-  libelleBouton: string;
+  /** Un bouton par feuille : son libellé, et le texte qu'il ouvre
+      par-dessus la page (le texte de l'appel, les lecteurs…). */
+  feuilles: { libelle: string; contenu: ReactNode }[];
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const pisteRef = useRef<HTMLDivElement>(null);
   const ligneRef = useRef<HTMLDivElement>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const dialogsRef = useRef<(HTMLDialogElement | null)[]>([]);
   const statique = useMoinsDAnimations();
 
   const annees = appels.map((a) => annee(a.dateLimite));
@@ -121,7 +121,7 @@ export default function FriseAppels({
       // La ligne court plus vite que la piste : dessinée en entier à
       // mi-parcours, elle précède toujours les appels qui arrivent (Sarah,
       // 22/10 : « la ligne s'arrête trop tôt »).
-      tl.fromTo(ligne, { width: "0%" }, { width: "98%", duration: 0.43 }, 0.02);
+      tl.fromTo(ligne, { scaleX: 0 }, { scaleX: 1, duration: 0.43 }, 0.02);
 
       const colonnes = gsap.utils.toArray<HTMLElement>(`.${styles.colonne}`);
       const decoupes: SplitText[] = [];
@@ -150,7 +150,9 @@ export default function FriseAppels({
         // fraction du chemin ; la première se révèle dès les premiers tours
         // de molette, la dernière avant la fin de la glissade.
         const d = distance();
-        const x = colonne.offsetLeft;
+        // Position de la colonne sur l'écran avant toute glissade.
+        const xPiste = Number(gsap.getProperty(piste, "x")) || 0;
+        const x = colonne.getBoundingClientRect().left - xPiste;
         const debut =
           d === 0
             ? 0.02
@@ -190,8 +192,8 @@ export default function FriseAppels({
     return () => ctx.revert();
   }, [appels.length, statique]);
 
-  const ouvrir = () => dialogRef.current?.showModal();
-  const fermer = () => dialogRef.current?.close();
+  const ouvrir = (i: number) => dialogsRef.current[i]?.showModal();
+  const fermer = (i: number) => dialogsRef.current[i]?.close();
 
   return (
     <>
@@ -221,9 +223,18 @@ export default function FriseAppels({
                 <h1 className={styles.titre}>{titre}</h1>
                 <div className={styles.sousEntete}>
                   <p className={styles.periode}>{periode}</p>
-                  <button type="button" className={styles.bouton} onClick={ouvrir}>
-                    {libelleBouton}
-                  </button>
+                  <div className={styles.boutons}>
+                    {feuilles.map((f, i) => (
+                      <button
+                        key={f.libelle}
+                        type="button"
+                        className={form.submit}
+                        onClick={() => ouvrir(i)}
+                      >
+                        {f.libelle}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -274,27 +285,32 @@ export default function FriseAppels({
         </div>
       </section>
 
-      <dialog
-        ref={dialogRef}
-        className={styles.dialogue}
-        aria-label={libelleBouton}
-        onClick={(e) => {
-          // Un clic sur le voile, hors de la feuille, ferme.
-          if (e.target === e.currentTarget) fermer();
-        }}
-      >
-        <div className={styles.feuille}>
-          <button
-            type="button"
-            className={styles.fermer}
-            onClick={fermer}
-            aria-label="Fermer"
-          >
-            ×
-          </button>
-          <div className={styles.texte}>{texteAppel}</div>
-        </div>
-      </dialog>
+      {feuilles.map((f, i) => (
+        <dialog
+          key={f.libelle}
+          ref={(el) => {
+            dialogsRef.current[i] = el;
+          }}
+          className={styles.dialogue}
+          aria-label={f.libelle}
+          onClick={(e) => {
+            // Un clic sur le voile, hors de la feuille, ferme.
+            if (e.target === e.currentTarget) fermer(i);
+          }}
+        >
+          <div className={styles.feuille}>
+            <button
+              type="button"
+              className={styles.fermer}
+              onClick={() => fermer(i)}
+              aria-label="Fermer"
+            >
+              ×
+            </button>
+            <div className={styles.texte}>{f.contenu}</div>
+          </div>
+        </dialog>
+      ))}
     </>
   );
 }
