@@ -1,0 +1,442 @@
+/*
+ * La frise des appels à projets : un panneau collé à l'écran, une piste
+ * plus large que lui qui glisse vers la gauche (GSAP pose la hauteur de la
+ * section et le déplacement). Tailles en vw, comme le modèle, pour que la
+ * composition garde ses proportions d'un écran à l'autre.
+ */
+
+.section {
+  --actif: #da2c25;
+  --colonne: 34vw;
+  position: relative;
+  /* Pleine largeur, par-dessus les marges de la page. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  /* Le bandeau blanc flotte au-dessus : on commence sous lui. */
+  margin-top: -40px;
+  color: var(--fg);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.panneau {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.piste {
+  display: flex;
+  align-items: center;
+  gap: 5vw;
+  height: 32vw;
+  padding: 0 5vw;
+  will-change: transform;
+}
+
+.image {
+  flex: 0 0 30vw;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 1vw;
+  background: var(--surface-actif);
+}
+
+.image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* La zone des appels : ligne centrale, en-tête à gauche, colonnes. */
+.zone {
+  position: relative;
+  display: flex;
+  height: 100%;
+  flex: 0 0 auto;
+}
+
+.ligneCentrale {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.bout {
+  flex: 0 0 auto;
+  width: 0.8vw;
+  height: 0.8vw;
+  border-radius: 50%;
+  background: var(--actif);
+}
+
+.ligne {
+  width: 0;
+  height: 1px;
+  border-radius: 1px;
+  background: var(--actif);
+}
+
+.entete {
+  flex: 0 0 22vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2vw 1vw 2vw 0;
+}
+
+.titre {
+  margin: 0;
+  width: 90%;
+  font-size: 3vw;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+
+.sousEntete {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2vw;
+  align-items: flex-start;
+}
+
+.periode {
+  margin: 0;
+  font-size: 1.65vw;
+  line-height: 1;
+  color: var(--dim);
+}
+
+.bouton {
+  font: inherit;
+  font-size: max(13px, 0.95vw);
+  font-weight: 700;
+  padding: 0.7em 1.3em;
+  border: 0;
+  border-radius: 999px;
+  background: var(--actif);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.bouton:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+}
+
+.colonnes {
+  display: flex;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.colonne {
+  position: relative;
+  flex: 0 0 var(--colonne);
+  height: 100%;
+  padding: 0 3vw;
+}
+
+.point {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1vw;
+  height: 1vw;
+  border-radius: 50%;
+  background: var(--actif);
+  transform: translate(-50%, -50%);
+}
+
+.tige {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  background: var(--actif);
+  transform: translateX(-50%);
+}
+
+.haut .tige {
+  bottom: 50%;
+  top: 4%;
+}
+
+.bas .tige {
+  top: 50%;
+  bottom: 4%;
+}
+
+.contenu {
+  position: absolute;
+  left: 3vw;
+  right: 2vw;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6vw;
+}
+
+.haut .contenu {
+  top: 0;
+  margin-top: -1vw;
+}
+
+.bas .contenu {
+  bottom: 0;
+  margin-bottom: -0.5vw;
+}
+
+.logo {
+  width: 6.5vw;
+  height: 6.5vw;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.logoLarge {
+  object-fit: contain;
+  border-radius: 1vw;
+  background: #fff;
+  padding: 0.5vw;
+  box-shadow: 0 0 0 1px var(--bordure-douce), 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.etiquette {
+  margin: 0.4vw 0 0;
+  font-size: 0.85vw;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--actif);
+}
+
+.date {
+  margin: 0;
+  font-size: 2.5vw;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.detail {
+  margin: 0;
+  width: 92%;
+  font-size: 1.15vw;
+  line-height: 1.3;
+  color: var(--dim);
+}
+
+.detail strong {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+/* Un appel dont la date est passée reste sur la frise, en retrait. */
+.passe .point,
+.passe .tige,
+.passe .etiquette {
+  background-color: var(--bordure-forte);
+  color: var(--bordure-forte);
+}
+
+.passe .etiquette {
+  background: none;
+}
+
+.passe .date {
+  color: var(--dim);
+}
+
+.passe .logo {
+  filter: grayscale(1);
+  opacity: 0.8;
+}
+
+/* Moins d'animations : rien ne colle, la frise se fait défiler à la main. */
+.statique .panneau {
+  position: static;
+  height: auto;
+  overflow-x: auto;
+  padding: 24px 0;
+}
+
+.statique .piste {
+  transform: none !important;
+}
+
+.statique .ligne {
+  width: 98%;
+}
+
+/* Le texte de l'appel, dans une feuille par-dessus la page. */
+.dialogue {
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(85vh, 900px);
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  color: var(--fg);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.dialogue::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+.feuille {
+  position: relative;
+  max-height: min(85vh, 900px);
+  overflow-y: auto;
+  padding: 36px 40px 40px;
+  border-radius: 18px;
+  background: var(--bg);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+}
+
+.fermer {
+  position: sticky;
+  top: 0;
+  float: right;
+  margin: -16px -20px 0 0;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--surface-actif);
+  color: var(--fg);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.texte {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.texte h3 {
+  margin: 24px 0 8px;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.texte h3:first-child {
+  margin-top: 0;
+}
+
+.texte p,
+.texte ol {
+  margin: 0 0 12px;
+}
+
+.texte li {
+  margin-bottom: 8px;
+}
+
+/* Téléphone : tout grossit, la frise défile plus longtemps. */
+@media (max-width: 600px) {
+  .section {
+    --colonne: 74vw;
+    margin-top: 0;
+  }
+
+  .piste {
+    height: 78vh;
+    gap: 7vw;
+    padding: 0 7vw;
+  }
+
+  .image {
+    flex: 0 0 80vw;
+    height: 60%;
+    border-radius: 5vw;
+  }
+
+  .bout {
+    width: 2vw;
+    height: 2vw;
+  }
+
+  .entete {
+    flex: 0 0 62vw;
+    padding: 4vw 2vw 4vw 0;
+  }
+
+  .titre {
+    font-size: 9vw;
+  }
+
+  .periode {
+    font-size: 4.2vw;
+  }
+
+  .bouton {
+    font-size: 14px;
+  }
+
+  .colonne {
+    padding: 0 7vw;
+  }
+
+  .point {
+    width: 2.5vw;
+    height: 2.5vw;
+  }
+
+  .contenu {
+    left: 7vw;
+    right: 4vw;
+    gap: 1.6vw;
+  }
+
+  .haut .contenu {
+    margin-top: -2vw;
+  }
+
+  .logo {
+    width: 16vw;
+    height: 16vw;
+  }
+
+  .logoLarge {
+    border-radius: 3vw;
+    padding: 1.5vw;
+  }
+
+  .etiquette {
+    font-size: 2.8vw;
+  }
+
+  .date {
+    font-size: 6.4vw;
+  }
+
+  .detail {
+    font-size: 3.7vw;
+  }
+
+  .feuille {
+    padding: 28px 20px 32px;
+  }
+
+  .fermer {
+    margin: -12px -6px 0 0;
+  }
+}
