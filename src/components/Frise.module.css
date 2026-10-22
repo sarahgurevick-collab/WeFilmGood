@@ -369,6 +369,73 @@
   margin-bottom: 8px;
 }
 
+/* Une affiche se clique : la même, en grand, par-dessus la page. */
+.boutonAffiche {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  width: fit-content;
+}
+
+.dialogueImage {
+  max-width: calc(100vw - 24px);
+  max-height: 100vh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.dialogueImage::backdrop {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.grande {
+  position: relative;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.grande img {
+  display: block;
+  max-width: calc(100vw - 24px);
+  max-height: 86vh;
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.grande figcaption {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+
+.fermerGrande {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
 /* Téléphone : tout grossit, la frise défile plus longtemps. */
 @media (max-width: 600px) {
   .section {

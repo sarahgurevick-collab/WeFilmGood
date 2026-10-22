@@ -4,6 +4,7 @@ import {
   type CSSProperties,
   useLayoutEffect,
   useRef,
+  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -94,6 +95,10 @@ export default function Frise({
   const ligneRef = useRef<HTMLDivElement>(null);
   const ligneCentraleRef = useRef<HTMLDivElement>(null);
   const dialogsRef = useRef<(HTMLDialogElement | null)[]>([]);
+  const grandeRef = useRef<HTMLDialogElement>(null);
+  // L'affiche ouverte en grand (Sarah, 22/10 : « les affiches peuvent être
+  // cliquables pour être affichées en grand »).
+  const [grande, setGrande] = useState<{ src: string; alt: string } | null>(null);
   const statique = useMoinsDAnimations();
 
   useLayoutEffect(() => {
@@ -220,6 +225,11 @@ export default function Frise({
 
   const ouvrir = (i: number) => dialogsRef.current[i]?.showModal();
   const fermer = (i: number) => dialogsRef.current[i]?.close();
+  const agrandir = (visuel: { src: string; alt: string }) => {
+    setGrande(visuel);
+    grandeRef.current?.showModal();
+  };
+  const refermerGrande = () => grandeRef.current?.close();
 
   const classeVisuel = (forme?: "rond" | "carte" | "affiche") =>
     forme === "carte"
@@ -284,14 +294,28 @@ export default function Frise({
                       <span className={styles.point} aria-hidden="true" />
                       <span className={styles.tige} aria-hidden="true" />
                       <div className={styles.contenu}>
-                        {etape.visuel && (
+                        {etape.visuel && etape.visuel.forme === "affiche" ? (
+                          <button
+                            type="button"
+                            className={styles.boutonAffiche}
+                            onClick={() => agrandir(etape.visuel!)}
+                            aria-label={`Voir en grand : ${etape.visuel.alt}`}
+                          >
+                            <img
+                              src={etape.visuel.src}
+                              alt={etape.visuel.alt}
+                              className={classeVisuel("affiche")}
+                              draggable={false}
+                            />
+                          </button>
+                        ) : etape.visuel ? (
                           <img
                             src={etape.visuel.src}
                             alt={etape.visuel.alt}
                             className={classeVisuel(etape.visuel.forme)}
                             draggable={false}
                           />
-                        )}
+                        ) : null}
                         {etape.etiquette && (
                           <p className={styles.etiquette}>{etape.etiquette}</p>
                         )}
@@ -306,6 +330,31 @@ export default function Frise({
           </div>
         </div>
       </section>
+
+      <dialog
+        ref={grandeRef}
+        className={styles.dialogueImage}
+        aria-label={grande?.alt ?? "Affiche"}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) refermerGrande();
+        }}
+        onClose={() => setGrande(null)}
+      >
+        {grande && (
+          <figure className={styles.grande}>
+            <button
+              type="button"
+              className={styles.fermerGrande}
+              onClick={refermerGrande}
+              aria-label="Fermer"
+            >
+              ×
+            </button>
+            <img src={grande.src} alt={grande.alt} draggable={false} />
+            <figcaption>{grande.alt}</figcaption>
+          </figure>
+        )}
+      </dialog>
 
       {feuilles.map((f, i) => (
         <dialog
