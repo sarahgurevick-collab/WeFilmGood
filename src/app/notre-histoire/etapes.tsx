@@ -1,14 +1,17 @@
+import Link from "next/link";
 import type { EtapeFrise } from "@/components/Frise";
 import { AFFICHES, HISTOIRE } from "@/data/association";
 import { FESTIVALS } from "@/data/festivals";
+import { ancreProgramme } from "./rapprochement";
 
 /*
  * Les étapes de la frise « Notre histoire » (essai du 22/10/2026), bâties
  * avec ce qui existe déjà : une étape par année depuis 2012, l'affiche de
  * la Maison à Cannes quand il y en a une (2012-2019), sinon le logo du
  * premier festival de l'année ; le nombre de projets sélectionnés par
- * festival (listes de /notre-histoire/[festival]) ; les phrases datées de
- * la frise de l'association. Les phrases par année que Sarah écrira
+ * festival et par programme (Writers-Producers Meetings, Scenariolab…),
+ * chaque programme menant à sa liste dans /notre-histoire/[festival] ;
+ * les phrases datées de la frise de l'association. Les phrases par année que Sarah écrira
  * viendront s'y ajouter. Page d'avant : étiquette git
  * « notre-histoire-avant-frise ».
  */
@@ -30,11 +33,13 @@ export function etapesHistoire(): EtapeFrise[] {
 
   for (let annee = PREMIERE_ANNEE; annee <= derniereAnnee; annee++) {
     const selections = FESTIVALS.map((f) => {
-      const nb = f.selections
+      const programmes = f.selections
         .filter((s) => s.annee === annee)
-        .reduce((total, s) => total + s.blocs.reduce((t, b) => t + b.entrees.length, 0), 0);
-      return { festival: f, nb };
-    }).filter((s) => s.nb > 0);
+        .flatMap((s) => s.blocs)
+        .map((b) => ({ titre: b.titre, nb: b.entrees.length }))
+        .filter((b) => b.nb > 0);
+      return { festival: f, programmes };
+    }).filter((s) => s.programmes.length > 0);
     const phrases = phrasesDeLAnnee(annee);
     if (selections.length === 0 && phrases.length === 0) continue;
 
@@ -68,8 +73,18 @@ export function etapesHistoire(): EtapeFrise[] {
           ))}
           {selections.map((s, i) => (
             <span key={s.festival.id}>
-              <strong>{s.festival.nom}</strong> · {s.nb} projet{s.nb > 1 ? "s" : ""}{" "}
-              sélectionné{s.nb > 1 ? "s" : ""}
+              <strong>{s.festival.nom}</strong>
+              {s.programmes.map((p) => (
+                <span key={p.titre}>
+                  {" · "}
+                  <Link
+                    href={`/notre-histoire/${s.festival.id}?annee=${annee}#${ancreProgramme(p.titre)}`}
+                    className="lienProgramme"
+                  >
+                    {p.titre} · {p.nb}
+                  </Link>
+                </span>
+              ))}
               {i < selections.length - 1 && <br />}
             </span>
           ))}

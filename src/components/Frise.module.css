@@ -43,7 +43,7 @@
     var(--marge) * 2 + var(--image) + var(--ecart) + var(--entete) +
       var(--colonne) * var(--n, 1)
   );
-  height: 36vw;
+  height: 38vw;
   padding: 0 var(--marge);
   will-change: transform;
 }
@@ -229,7 +229,7 @@
 /* Une affiche (portrait), à la place d'un logo rond. */
 .affiche {
   width: auto;
-  height: 9vw;
+  height: 8vw;
   border-radius: 0.5vw;
   object-fit: contain;
 }
@@ -262,6 +262,18 @@
 .detail strong {
   color: var(--fg);
   font-weight: 700;
+}
+
+/* Un programme de « Notre histoire » : un lien vers sa liste d'auteurs. */
+.detail :global(.lienProgramme) {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--actif);
+  text-underline-offset: 0.2em;
+}
+
+.detail :global(.lienProgramme):hover {
+  color: var(--actif);
 }
 
 /* Un appel dont la date est passée reste sur la frise, en retrait. */

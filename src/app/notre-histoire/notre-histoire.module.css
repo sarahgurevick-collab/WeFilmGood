@@ -237,3 +237,15 @@
   text-underline-offset: 4px;
   text-decoration-color: var(--rouge-wfg, #da2c25);
 }
+
+/* Un titre ou un auteur retrouvé sur la plateforme : un lien discret. */
+.lienEntree {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--rouge-wfg, #da2c25);
+  text-underline-offset: 3px;
+}
+
+.lienEntree:hover {
+  color: var(--rouge-wfg, #da2c25);
+}
