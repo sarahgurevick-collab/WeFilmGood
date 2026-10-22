@@ -118,7 +118,10 @@ export default function FriseAppels({
       });
 
       tl.fromTo(piste, { x: 0 }, { x: () => -distance(), duration: 1 }, 0);
-      tl.fromTo(ligne, { width: "0%" }, { width: "98%", duration: 0.95 }, 0.02);
+      // La ligne court plus vite que la piste : dessinée en entier à
+      // mi-parcours, elle précède toujours les appels qui arrivent (Sarah,
+      // 22/10 : « la ligne s'arrête trop tôt »).
+      tl.fromTo(ligne, { width: "0%" }, { width: "98%", duration: 0.43 }, 0.02);
 
       const colonnes = gsap.utils.toArray<HTMLElement>(`.${styles.colonne}`);
       const decoupes: SplitText[] = [];
