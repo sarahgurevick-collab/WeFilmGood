@@ -86,8 +86,8 @@ function TexteAppel() {
         <>
           <div className={styles.logos}>
             <img
-              src="/festivals/festival-de-cannes.png"
-              alt="Festival de Cannes"
+              src="/festivals/marche-du-film.png"
+              alt="Marché du Film, Festival de Cannes"
               className={styles.logoLarge}
             />
             <img

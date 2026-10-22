@@ -39,7 +39,7 @@ export const APPELS: Appel[] = [
     festival: "Festival de Cannes",
     edition: "« Les Pitchs sans frontières », 2027",
     format: "Long métrage",
-    logo: "/festivals/festival-de-cannes.png",
+    logo: "/festivals/marche-du-film.png",
     logoLarge: true,
     dateLimite: "2027-03-10",
     heureLimite: "23h59 (heure française)",
