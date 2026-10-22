@@ -108,11 +108,13 @@ async function pixabay(q, pris) {
   if (!r.ok) return [];
   const d = await r.json();
   // Pixabay marque les images fabriquées par ordinateur (champ isAiGenerated,
-  // absent de sa documentation, vérifié le 20/10/2026 : les six images retirées
-  // à l'œil comme fabriquées étaient toutes marquées). On ne les propose plus.
+  // absent de sa documentation, vérifié le 20/10/2026). Écartées du 20 au
+  // 22/10, elles sont de nouveau acceptées (décision de Sarah, 22/10 : trop de
+  // personnages sans portrait), mais marquées dans le suivi (colonne « ia »,
+  // migration 0193) : l'admin les montre à part, Sarah les trie une par une.
   return (d.hits ?? [])
-    .filter((h) => !pris.has(String(h.id)) && !h.isAiGenerated)
-    .map((h) => ({ apercu: h.webformatURL, url: h.largeImageURL, source: "pixabay", source_id: String(h.id), page: h.pageURL }));
+    .filter((h) => !pris.has(String(h.id)))
+    .map((h) => ({ apercu: h.webformatURL, url: h.largeImageURL, source: "pixabay", source_id: String(h.id), page: h.pageURL, ia: Boolean(h.isAiGenerated) }));
 }
 
 // Openverse (seconde passe) : domaine public et CC0 seulement, photographies,
@@ -400,6 +402,7 @@ if (commande === "reste") {
       requete: PASSE === 2 ? String(requetes[p.k]?.p ?? "") : String(requetes[p.k] ?? ""),
       source: image?.source ?? null,
       source_id: image?.source_id ?? null,
+      ia: Boolean(image?.ia),
       passe: PASSE,
       traite_le: new Date().toISOString(),
     });

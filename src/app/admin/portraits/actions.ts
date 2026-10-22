@@ -55,6 +55,15 @@ export async function validerPortrait(formData: FormData) {
   revalidatePath("/admin/portraits");
 }
 
+/** « Garder » (onglet Fabriqués par IA) : Sarah a regardé l'image fabriquée et la garde. */
+export async function garderPortraitIA(formData: FormData) {
+  const id = String(formData.get("character_id") ?? "");
+  if (!id) return;
+  const a = await clientAidant();
+  await a.from("portraits_suivi").update({ ia_vue_le: new Date().toISOString() }).eq("character_id", id);
+  revalidatePath("/admin/portraits");
+}
+
 /**
  * « Retirer » : la photo posée par WeFilmGood est enlevée du personnage et
  * du stockage. Une photo choisie par l'auteur n'est jamais touchée.
@@ -78,7 +87,7 @@ export async function retirerPortrait(formData: FormData) {
     .eq("photo_proposee", true);
   await a
     .from("portraits_suivi")
-    .update({ avis: "rien", note: "Retiré par l’équipe" })
+    .update({ avis: "rien", note: "Retiré par l’équipe", ia_vue_le: new Date().toISOString() })
     .eq("character_id", id);
   if (perso.photo_path) await retirerImages(a, [perso.photo_path]);
   revalidatePath("/admin/portraits");

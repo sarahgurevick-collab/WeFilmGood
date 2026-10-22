@@ -13,13 +13,13 @@ import ListeASupprimer from "./ListeASupprimer";
 import LogoBanque from "./LogoBanque";
 import PoserPhoto from "./PoserPhoto";
 import { SEUIL_DESCRIPTION } from "./seuil";
-import { retirerPortrait, supprimerPersonnages, validerPortrait } from "./actions";
+import { garderPortraitIA, retirerPortrait, supprimerPersonnages, validerPortrait } from "./actions";
 import styles from "./portraits.module.css";
 
 const PAR_PAGE = 24;
 const PAR_PAGE_SECONDAIRES = 60;
 
-type Onglet = "sans" | "moyen" | "bon" | "secondaires";
+type Onglet = "sans" | "moyen" | "bon" | "ia" | "secondaires";
 
 type Perso = {
   id: string;
@@ -93,7 +93,11 @@ export default async function PortraitsAdminPage({
   const sp = await searchParams;
   // L'administration s'ouvre sur les moyens, l'aidant sur les personnages sans portrait.
   const onglet: Onglet =
-    sp.avis === "sans" || sp.avis === "moyen" || sp.avis === "bon" || (admin && sp.avis === "secondaires") ? sp.avis : admin ? "moyen" : "sans";
+    sp.avis === "sans" || sp.avis === "moyen" || sp.avis === "bon" || sp.avis === "ia" || (admin && sp.avis === "secondaires")
+      ? sp.avis
+      : admin
+        ? "moyen"
+        : "sans";
   const page = Math.max(1, Math.floor(Number(sp.page)) || 1);
 
   const compterAvis = async (avis: "moyen" | "bon") =>
@@ -102,6 +106,18 @@ export default async function PortraitsAdminPage({
         .from("portraits_suivi")
         .select("character_id", { count: "exact", head: true })
         .eq("avis", avis)
+        .not("source", "is", null)
+    ).count ?? 0;
+  // Les portraits fabriqués par ordinateur (Pixabay les signale ; acceptés
+  // depuis le 22/10, décision de Sarah) pas encore regardés par l'équipe.
+  const compterIA = async () =>
+    (
+      await a
+        .from("portraits_suivi")
+        .select("character_id", { count: "exact", head: true })
+        .eq("ia", true)
+        .is("ia_vue_le", null)
+        .neq("avis", "rien")
         .not("source", "is", null)
     ).count ?? 0;
   // Les personnages sans portrait qu'on sait chercher (mots de recherche connus).
@@ -129,12 +145,14 @@ export default async function PortraitsAdminPage({
   };
   const secondaires = admin ? await listerSecondaires() : [];
   const nSecondaires = secondaires.length;
-  const [nSans, nMoyens, nBons] = await Promise.all([
+  const [nSans, nMoyens, nBons, nIA] = await Promise.all([
     compterSans(),
     compterAvis("moyen"),
     compterAvis("bon"),
+    compterIA(),
   ]);
-  const total = onglet === "sans" ? nSans : onglet === "moyen" ? nMoyens : onglet === "bon" ? nBons : nSecondaires;
+  const total =
+    onglet === "sans" ? nSans : onglet === "moyen" ? nMoyens : onglet === "bon" ? nBons : onglet === "ia" ? nIA : nSecondaires;
   const parPage = onglet === "secondaires" ? PAR_PAGE_SECONDAIRES : PAR_PAGE;
   const nbPages = Math.max(1, Math.ceil(total / parPage));
   const de = (page - 1) * parPage;
@@ -162,17 +180,18 @@ export default async function PortraitsAdminPage({
   // ---- Onglets « Moyens » et « Bons » ----
   const secondairesPage = onglet === "secondaires" ? secondaires.slice(de, a_ + 1) : [];
 
-  let cartes: { s: { lot: string; note: string | null }; p: Perso; url: string | null }[] = [];
-  if (onglet === "moyen" || onglet === "bon") {
-    const { data: suivis } = await a
+  let cartes: { s: { lot: string; note: string | null; avis: string; ia: boolean }; p: Perso; url: string | null }[] = [];
+  if (onglet === "moyen" || onglet === "bon" || onglet === "ia") {
+    let requete = a
       .from("portraits_suivi")
-      .select("character_id, lot, note, traite_le")
-      .eq("avis", onglet)
-      .not("source", "is", null)
+      .select("character_id, lot, note, traite_le, avis, ia")
+      .not("source", "is", null);
+    requete = onglet === "ia" ? requete.eq("ia", true).is("ia_vue_le", null).neq("avis", "rien") : requete.eq("avis", onglet);
+    const { data: suivis } = await requete
       .order("traite_le", { ascending: false })
       .order("character_id", { ascending: true })
       .range(de, a_)
-      .returns<{ character_id: string; lot: string; note: string | null; traite_le: string }[]>();
+      .returns<{ character_id: string; lot: string; note: string | null; traite_le: string; avis: string; ia: boolean }[]>();
 
     const ids = (suivis ?? []).map((s) => s.character_id);
     const { data: persos } = ids.length
@@ -224,6 +243,9 @@ export default async function PortraitsAdminPage({
         </Link>
         <Link href={lien("bon")} className={onglet === "bon" ? styles.ongletActif : styles.onglet}>
           Bons ({nBons})
+        </Link>
+        <Link href={lien("ia")} className={onglet === "ia" ? styles.ongletActif : styles.onglet}>
+          Fabriqués par IA ({nIA})
         </Link>
         {admin && (
           <Link href={lien("secondaires")} className={onglet === "secondaires" ? styles.ongletActif : styles.onglet}>
@@ -331,6 +353,14 @@ export default async function PortraitsAdminPage({
       ) : cartes.length === 0 ? (
         <p className={formStyles.hint}>Aucun portrait dans cette liste.</p>
       ) : (
+        <>
+        {onglet === "ia" && (
+          <p className={formStyles.hint}>
+            Images générées par ordinateur, signalées comme telles par Pixabay. « Garder » si elle est
+            crédible ; « Retirer » si c&apos;est trop flagrant : le personnage revient sans portrait, un
+            prochain lot pourra lui en proposer un autre. L&apos;auteur ne voit que « Proposée par WeFilmGood ».
+          </p>
+        )}
         <ul className={styles.grille}>
           {cartes.map(({ s, p, url }) => (
             <li key={p.id} className={styles.carte}>
@@ -343,8 +373,19 @@ export default async function PortraitsAdminPage({
               {p.project && <p className={styles.projet}>« {p.project.title} »</p>}
               {s.note && <p className={styles.note}>{s.note}</p>}
               {p.biography && <p className={styles.bio}>{extrait(p.biography, 200)}</p>}
-              <p className={styles.lot}>{s.lot}</p>
+              <p className={styles.lot}>
+                {s.lot}
+                {s.ia && ` · image fabriquée par IA${onglet === "ia" ? ` · ${s.avis === "bon" ? "jugée bonne" : "jugée moyenne"}` : ""}`}
+              </p>
               <div className={styles.actions}>
+                {onglet === "ia" && (
+                  <form action={garderPortraitIA}>
+                    <input type="hidden" name="character_id" value={p.id} />
+                    <button type="submit" className={styles.valider}>
+                      Garder
+                    </button>
+                  </form>
+                )}
                 {onglet === "moyen" && (
                   <form action={validerPortrait}>
                     <input type="hidden" name="character_id" value={p.id} />
@@ -371,6 +412,7 @@ export default async function PortraitsAdminPage({
             </li>
           ))}
         </ul>
+        </>
       )}
 
       {nbPages > 1 && (
