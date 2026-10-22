@@ -329,18 +329,18 @@
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
 }
 
+/* La croix × rouge pour fermer, comme sur le moodboard de la fiche
+   projet (Sarah, 22/10). */
 .fermer {
   position: sticky;
   top: 0;
   float: right;
-  margin: -16px -20px 0 0;
-  width: 36px;
-  height: 36px;
+  margin: -16px -16px 0 0;
+  padding: 0 6px;
   border: 0;
-  border-radius: 50%;
-  background: var(--surface-actif);
-  color: var(--fg);
-  font-size: 24px;
+  background: none;
+  color: #e2231a;
+  font-size: 40px;
   line-height: 1;
   cursor: pointer;
 }
@@ -420,20 +420,21 @@
   text-align: center;
 }
 
+/* La croix rouge, posée dans le coin de l'image (dehors, la fenêtre la
+   rognait). */
 .fermerGrande {
   position: absolute;
-  top: -14px;
-  right: -14px;
+  top: 4px;
+  right: 10px;
   z-index: 1;
-  width: 36px;
-  height: 36px;
+  padding: 0 6px;
   border: 0;
-  border-radius: 50%;
-  background: #fff;
-  color: #1a1a1a;
-  font-size: 24px;
+  background: none;
+  color: #e2231a;
+  font-size: 40px;
   line-height: 1;
   cursor: pointer;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
 }
 
 /* Téléphone : tout grossit, la frise défile plus longtemps. */
@@ -524,6 +525,6 @@
   }
 
   .fermer {
-    margin: -12px -6px 0 0;
+    margin: -12px -4px 0 0;
   }
 }
