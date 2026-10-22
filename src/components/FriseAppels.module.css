@@ -32,7 +32,7 @@
   display: flex;
   align-items: center;
   gap: 5vw;
-  height: 32vw;
+  height: 36vw;
   padding: 0 5vw;
   will-change: transform;
 }
