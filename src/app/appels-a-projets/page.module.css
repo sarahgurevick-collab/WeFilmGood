@@ -1,0 +1,37 @@
+/* Les logos des festivals en tête du texte de l'appel, dans le cadre
+   ouvert par « Appel à projet en cours » : Clermont-Ferrand pour le court
+   métrage, Cannes et Paris Courts Devant pour le long (Sarah, 22/10). */
+.logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  margin: 4px 0 20px;
+}
+
+.logoRond {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.logoLarge {
+  width: 200px;
+  height: auto;
+}
+
+@media (max-width: 600px) {
+  .logos {
+    gap: 18px;
+  }
+
+  .logoRond {
+    width: 80px;
+    height: 80px;
+  }
+
+  .logoLarge {
+    width: 150px;
+  }
+}

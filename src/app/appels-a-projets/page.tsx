@@ -3,6 +3,7 @@ import PageShell from "@/components/PageShell";
 import SwitchFormat from "@/components/SwitchFormat";
 import { createClient } from "@/lib/supabase/server";
 import { APPELS } from "./appels";
+import styles from "./page.module.css";
 
 /*
  * ESSAI (22/10/2026) — la page s'ouvre sur la frise des appels à projets
@@ -21,6 +22,13 @@ function TexteAppel() {
       defaut="long"
       contenuCourt={
         <>
+          <div className={styles.logos}>
+            <img
+              src="/festivals/clermont-ferrand.jpg"
+              alt="Festival International du Court Métrage de Clermont-Ferrand"
+              className={styles.logoRond}
+            />
+          </div>
           <h3>Appel à projets court métrage</h3>
           <p>
             La Maison des Scénaristes et WeFilmGood, en partenariat avec le
@@ -76,6 +84,18 @@ function TexteAppel() {
       }
       contenuLong={
         <>
+          <div className={styles.logos}>
+            <img
+              src="/festivals/festival-de-cannes.png"
+              alt="Festival de Cannes"
+              className={styles.logoLarge}
+            />
+            <img
+              src="/festivals/paris-courts-devant.jpg"
+              alt="Paris Courts Devant"
+              className={styles.logoRond}
+            />
+          </div>
           <h3>Appel à pitchs long métrage</h3>
           <p>
             La Maison des Scénaristes et WeFilmGood lancent un appel à
