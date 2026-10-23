@@ -540,3 +540,134 @@
     margin: -12px -4px 0 0;
   }
 }
+
+/* La règle des douze mois d'une année (« Notre histoire », 23/10). */
+.calendrier {
+  position: relative;
+  width: 100%;
+  margin-top: 0.8vw;
+  /* La règle, puis un étage de noms par rangée (voir le composant). */
+  height: calc(1vw + var(--etages, 1) * 3.6vw);
+}
+
+.calRegle {
+  position: relative;
+  height: 1vw;
+  border-bottom: 1px solid var(--bordure-forte);
+}
+
+.calGraduation {
+  position: absolute;
+  bottom: 0;
+  width: 1px;
+  height: 0.5vw;
+  background: var(--bordure-forte);
+}
+
+.calNoms {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.calEntree {
+  position: absolute;
+  top: 1vw;
+}
+
+.calPoint {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.6vw;
+  height: 0.6vw;
+  border-radius: 50%;
+  background: var(--actif);
+  transform: translate(-50%, -50%);
+}
+
+.calTexte {
+  position: absolute;
+  top: calc(0.8vw + var(--etage, 0) * 3.6vw);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15vw;
+  white-space: nowrap;
+}
+
+.calGauche {
+  left: -0.3vw;
+}
+
+.calCentre {
+  left: 0;
+  transform: translateX(-50%);
+  align-items: center;
+}
+
+.calDroite {
+  right: -0.3vw;
+  align-items: flex-end;
+}
+
+.calMois {
+  font-size: 0.8vw;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--actif);
+}
+
+.calNom {
+  font-size: 1.15vw;
+  font-weight: 700;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+a.calNom:hover {
+  color: var(--actif);
+}
+
+@media (max-width: 600px) {
+  .calendrier {
+    margin-top: 2vw;
+    height: calc(2.5vw + var(--etages, 1) * 9vw);
+  }
+
+  .calRegle {
+    height: 2.5vw;
+  }
+
+  .calGraduation {
+    height: 1.2vw;
+  }
+
+  .calEntree {
+    top: 2.5vw;
+  }
+
+  .calPoint {
+    width: 1.6vw;
+    height: 1.6vw;
+  }
+
+  .calTexte {
+    top: calc(2vw + var(--etage, 0) * 9vw);
+  }
+
+  .calMois {
+    font-size: 2.4vw;
+  }
+
+  .calNom {
+    font-size: 3.4vw;
+  }
+}
+
+.detail :global(.lienFestival) {
+  display: block;
+  margin-top: 0.6vw;
+  color: inherit;
+  text-decoration: none;
+}

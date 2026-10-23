@@ -3,7 +3,6 @@ import type { EtapeFrise } from "@/components/Frise";
 import { AFFICHES, HISTOIRE } from "@/data/association";
 import { FESTIVALS, moisDuFestival, nomDuMois } from "@/data/festivals";
 import { premierePhotoParAnnee } from "./photos";
-import { ancreProgramme } from "./rapprochement";
 
 /*
  * Les étapes de la frise « Notre histoire » (essai du 22/10/2026), bâties
@@ -73,34 +72,34 @@ export function etapesHistoire(): EtapeFrise[] {
       id: String(annee),
       visuel,
       titre: String(annee),
-      detail: (
+      // Sarah, 23/10 : le nom des festivals seul, chacun sous son mois
+      // (sans les programmes ni les phrases en gris). Ce qui était
+      // affiché avant : étiquette git « frise-histoire-avant-mois ».
+      calendrier: selections
+        .filter((s) => s.mois)
+        .map((s) => ({
+          mois: s.mois!,
+          libelleMois: nomDuMois(s.mois!),
+          nom: s.festival.nom,
+          href: `/notre-histoire/${s.festival.id}?annee=${annee}`,
+        })),
+      // Un festival dont le mois n'est pas connu (SATIS/VR) : sous la
+      // règle, sans mois.
+      detail: selections.some((s) => !s.mois) ? (
         <>
-          {phrases.map((p, i) => (
-            <span key={`p-${i}`}>
-              {p}
-              <br />
-            </span>
-          ))}
-          {selections.map((s, i) => (
-            <span key={s.festival.id}>
-              <strong>{s.festival.nom}</strong>
-              {s.mois && ` (${nomDuMois(s.mois)})`}
-              {s.programmes.map((p) => (
-                <span key={p.titre}>
-                  {" · "}
-                  <Link
-                    href={`/notre-histoire/${s.festival.id}?annee=${annee}#${ancreProgramme(p.titre)}`}
-                    className="lienProgramme"
-                  >
-                    {p.titre} · {p.nb}
-                  </Link>
-                </span>
-              ))}
-              {i < selections.length - 1 && <br />}
-            </span>
-          ))}
+          {selections
+            .filter((s) => !s.mois)
+            .map((s) => (
+              <Link
+                key={s.festival.id}
+                href={`/notre-histoire/${s.festival.id}?annee=${annee}`}
+                className="lienFestival"
+              >
+                <strong>{s.festival.nom}</strong>
+              </Link>
+            ))}
         </>
-      ),
+      ) : undefined,
     });
   }
 

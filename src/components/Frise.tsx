@@ -42,9 +42,12 @@ export type EtapeFrise = {
   /** En gros : une date, une année. */
   titre: string;
   /** Le détail, en lignes (festival, format, phrase…). */
-  detail: ReactNode;
+  detail?: ReactNode;
   /** true pour une étape passée, en retrait (gris). */
   passe?: boolean;
+  /** Une petite règle des douze mois sous le titre : chaque nom est posé
+      sous son mois, et seuls ces mois-là sont nommés (Sarah, 23/10). */
+  calendrier?: { mois: number; libelleMois: string; nom: string; href?: string }[];
 };
 
 export type FeuilleFrise = { libelle: string; contenu: ReactNode };
@@ -68,6 +71,71 @@ function useMoinsDAnimations() {
     ecouterMoinsDAnimations,
     lireMoinsDAnimations,
     () => false,
+  );
+}
+
+/*
+ * La règle des douze mois d'une année : une graduation par mois, un point
+ * rouge aux mois où il se passe quelque chose, et sous lui le mois puis le
+ * nom. Deux noms trop proches (janvier et février) se rangent sur deux
+ * étages pour ne pas se chevaucher.
+ */
+function Calendrier({
+  entrees,
+}: {
+  entrees: NonNullable<EtapeFrise["calendrier"]>;
+}) {
+  const derniersParEtage: number[] = [];
+  const placees = [...entrees]
+    .sort((a, b) => a.mois - b.mois)
+    .map((e) => {
+      let etage = derniersParEtage.findIndex((m) => e.mois - m >= 4);
+      if (etage === -1) etage = derniersParEtage.length;
+      derniersParEtage[etage] = e.mois;
+      return { ...e, etage };
+    });
+  const etages = Math.max(1, derniersParEtage.length);
+  const ancrage = (mois: number) =>
+    mois <= 3 ? styles.calGauche : mois >= 10 ? styles.calDroite : styles.calCentre;
+
+  return (
+    <div
+      className={styles.calendrier}
+      style={{ "--etages": etages } as CSSProperties}
+    >
+      <div className={styles.calRegle} aria-hidden="true">
+        {Array.from({ length: 12 }, (_, i) => (
+          <span
+            key={i}
+            className={styles.calGraduation}
+            style={{ left: `${((i + 0.5) / 12) * 100}%` }}
+          />
+        ))}
+      </div>
+      <ul className={styles.calNoms}>
+        {placees.map((e) => {
+          const style = {
+            left: `${((e.mois - 0.5) / 12) * 100}%`,
+            "--etage": e.etage,
+          } as CSSProperties;
+          return (
+            <li key={`${e.mois}-${e.nom}`} className={styles.calEntree} style={style}>
+              <span className={styles.calPoint} aria-hidden="true" />
+              <span className={`${styles.calTexte} ${ancrage(e.mois)}`}>
+                <span className={styles.calMois}>{e.libelleMois}</span>
+                {e.href ? (
+                  <a href={e.href} className={styles.calNom}>
+                    {e.nom}
+                  </a>
+                ) : (
+                  <span className={styles.calNom}>{e.nom}</span>
+                )}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 
@@ -167,7 +235,8 @@ export default function Frise({
         const date = colonne.querySelector<HTMLElement>(`.${styles.date}`);
         const detail = colonne.querySelector<HTMLElement>(`.${styles.detail}`);
         const logo = colonne.querySelector<HTMLElement>(`.${styles.logo}`);
-        if (!tige || !point || !date || !detail) return;
+        const calendrier = colonne.querySelector<HTMLElement>(`.${styles.calendrier}`);
+        if (!tige || !point || !date) return;
 
         const enHaut = colonne.classList.contains(styles.haut);
         gsap.set(tige, {
@@ -176,10 +245,14 @@ export default function Frise({
         });
         gsap.set(point, { scale: 0 });
         if (logo) gsap.set(logo, { scale: 0.6, autoAlpha: 0 });
+        if (calendrier) gsap.set(calendrier, { autoAlpha: 0, y: 12 });
 
         const dateDecoupee = new SplitText(date, { type: "lines", mask: "lines" });
-        const detailDecoupe = new SplitText(detail, { type: "lines", mask: "lines" });
-        decoupes.push(dateDecoupee, detailDecoupe);
+        const detailDecoupe = detail
+          ? new SplitText(detail, { type: "lines", mask: "lines" })
+          : null;
+        decoupes.push(dateDecoupee);
+        if (detailDecoupe) decoupes.push(detailDecoupe);
 
         // Le moment où la colonne entre dans l'écran (à 85 % de sa
         // largeur), en fraction du chemin ; la première se révèle dès les
@@ -203,12 +276,22 @@ export default function Frise({
           { y: "110%" },
           { y: "0%", duration: duree * 0.6, stagger: 0.02, ease: "power2.out" },
           debut + duree * 0.15,
-        ).fromTo(
-          detailDecoupe.lines,
-          { y: "110%" },
-          { y: "0%", duration: duree * 0.6, stagger: 0.02, ease: "power2.out" },
-          debut + duree * 0.25,
         );
+        if (detailDecoupe) {
+          tl.fromTo(
+            detailDecoupe.lines,
+            { y: "110%" },
+            { y: "0%", duration: duree * 0.6, stagger: 0.02, ease: "power2.out" },
+            debut + duree * 0.25,
+          );
+        }
+        if (calendrier) {
+          tl.to(
+            calendrier,
+            { autoAlpha: 1, y: 0, duration: duree * 0.6, ease: "power2.out" },
+            debut + duree * 0.25,
+          );
+        }
       });
 
       // Les polices arrivent après le premier rendu : on remesure une fois
@@ -320,7 +403,10 @@ export default function Frise({
                           <p className={styles.etiquette}>{etape.etiquette}</p>
                         )}
                         <h2 className={styles.date}>{etape.titre}</h2>
-                        <p className={styles.detail}>{etape.detail}</p>
+                        {etape.calendrier && etape.calendrier.length > 0 && (
+                          <Calendrier entrees={etape.calendrier} />
+                        )}
+                        {etape.detail && <p className={styles.detail}>{etape.detail}</p>}
                       </div>
                     </li>
                   );
