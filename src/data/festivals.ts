@@ -39,12 +39,14 @@ export const FESTIVALS: Festival[] = [
  * « Notre histoire ». Paris Courts Devant change d'époque selon l'édition
  * (Sarah, 23/10/2026) : novembre 2013 et 2014, décembre 2015 et 2016, novembre
  * 2017 et 2019, pas de festival en 2018, janvier de 2020 à 2027. Cannes
- * est en mai, Clermont-Ferrand en février. Les autres : inconnu, pas de
+ * est en mai, Clermont-Ferrand en février, SATIS/VR en novembre. Les autres : inconnu, pas de
  * mois affiché.
  */
 const MOIS_FESTIVAL: Record<string, { parDefaut?: number; parAnnee?: Record<number, number> }> = {
   cannes: { parDefaut: 5 },
   "clermont-ferrand": { parDefaut: 2 },
+  // SATIS/VR-360° en novembre (Sarah, 23/10).
+  "satis-vr": { parDefaut: 11 },
   pcdv: {
     parAnnee: {
       2013: 11,
