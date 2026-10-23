@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { EtapeFrise } from "@/components/Frise";
 import { AFFICHES, HISTOIRE } from "@/data/association";
-import { FESTIVALS } from "@/data/festivals";
+import { FESTIVALS, moisDuFestival, nomDuMois } from "@/data/festivals";
 import { premierePhotoParAnnee } from "./photos";
 import { ancreProgramme } from "./rapprochement";
 
@@ -41,8 +41,12 @@ export function etapesHistoire(): EtapeFrise[] {
         .flatMap((s) => s.blocs)
         .map((b) => ({ titre: b.titre, nb: b.entrees.length }))
         .filter((b) => b.nb > 0);
-      return { festival: f, programmes };
-    }).filter((s) => s.programmes.length > 0);
+      return { festival: f, programmes, mois: moisDuFestival(f, annee) };
+    })
+      .filter((s) => s.programmes.length > 0)
+      // Dans l'ordre de l'année : février, mai, novembre… les mois
+      // inconnus à la fin.
+      .sort((a, b) => (a.mois ?? 99) - (b.mois ?? 99));
     const phrases = phrasesDeLAnnee(annee);
     if (selections.length === 0 && phrases.length === 0) continue;
 
@@ -80,6 +84,7 @@ export function etapesHistoire(): EtapeFrise[] {
           {selections.map((s, i) => (
             <span key={s.festival.id}>
               <strong>{s.festival.nom}</strong>
+              {s.mois && ` (${nomDuMois(s.mois)})`}
               {s.programmes.map((p) => (
                 <span key={p.titre}>
                   {" · "}
