@@ -39,7 +39,8 @@ export async function modifierProjet(formData: FormData) {
   const { count: nbSelections } = await supabase
     .from("project_selections")
     .select("project_id", { count: "exact", head: true })
-    .eq("project_id", id);
+    .eq("project_id", id)
+    .neq("libelle", "Vipfiction"); // étiquette interne, pas un prix (23/10)
   const hasAwards = formData.get("has_awards") === "oui" || (nbSelections ?? 0) > 0;
   const awardsDetail = hasAwards ? (formData.get("awards_detail") as string)?.trim() || null : null;
 

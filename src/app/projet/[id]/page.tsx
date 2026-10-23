@@ -10,7 +10,7 @@ import PartageProjet from "./PartageProjet";
 import { choisirVisibilite, setShareLink } from "./actions";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
-import LibelleSelection, { LignePartenariats, estPartenaire } from "../LibelleSelection";
+import LibelleSelection, { LignePartenariats, estEtiquetteInterne, estPartenaire } from "../LibelleSelection";
 import AccrocheProjet from "./AccrocheProjet";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
@@ -505,7 +505,7 @@ export default async function ProjetPage({
           de WFG 1, en petit (28/09 : page allégée à la demande de Sarah).
           Les partenariats, eux, sont sous le titre (14/10). */}
       {(() => {
-        const selectionsMaison = (selections ?? []).filter((x) => !estPartenaire(x.libelle));
+        const selectionsMaison = (selections ?? []).filter((x) => !estPartenaire(x.libelle) && !estEtiquetteInterne(x.libelle));
         if (!project.has_awards && selectionsMaison.length === 0) return null;
         return (
           <p className={presentation.prix}>
