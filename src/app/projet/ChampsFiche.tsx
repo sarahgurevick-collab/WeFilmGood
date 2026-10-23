@@ -173,7 +173,7 @@ export default function ChampsFiche({
       />
 
       <label className={styles.question}>
-        <span>Votre projet a-t-il eu des prix ?</span>
+        <span>Votre projet a-t-il eu des prix ou des sélections ?</span>
         <span className={styles.interrupteur}>
           {selections.length > 0 ? (
             <>
