@@ -84,6 +84,9 @@ export function etapesHistoire(): EtapeFrise[] {
           href: `/notre-histoire/${s.festival.id}?annee=${annee}`,
           // Sarah, 23/10 : Cannes au-dessus de la règle.
           dessus: s.festival.id === "cannes",
+          // Sarah, 23/10 : le logo, le nom au survol.
+          logo: s.festival.logo,
+          logoRond: s.festival.logoRond,
         })),
       // Un festival dont le mois n'est pas connu (SATIS/VR) : sous la
       // règle, sans mois.

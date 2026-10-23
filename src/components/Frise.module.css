@@ -544,7 +544,7 @@
 /* La règle des douze mois d'une année (« Notre histoire », 23/10) :
    des noms au-dessus (Cannes), la règle, des noms au-dessous. */
 .calendrier {
-  --hauteur-etage: 3.6vw;
+  --hauteur-etage: 5vw;
   --hauteur-regle: 1vw;
   width: 100%;
   margin-top: 0.8vw;
@@ -641,9 +641,64 @@ a.calNom:hover {
   color: var(--actif);
 }
 
+/* Le logo d'un festival ; son nom en bulle au survol. */
+.calLogoLien {
+  position: relative;
+  display: block;
+}
+
+.calLogo {
+  display: block;
+  height: 3.2vw;
+  transition: transform 0.2s ease;
+}
+
+.calLogoRond {
+  width: 3.2vw;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.calLogoCarte {
+  width: auto;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 0.4vw;
+  padding: 0.2vw;
+}
+
+.calLogoLien:hover .calLogo,
+.calLogoLien:focus-visible .calLogo {
+  transform: scale(1.12);
+}
+
+.calBulle {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.5vw);
+  z-index: 2;
+  padding: 0.3vw 0.7vw;
+  border-radius: 0.4vw;
+  background: var(--fg);
+  color: var(--bg, #000);
+  font-size: 0.95vw;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 0.3vw);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.calLogoLien:hover .calBulle,
+.calLogoLien:focus-visible .calBulle {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
 @media (max-width: 600px) {
   .calendrier {
-    --hauteur-etage: 9vw;
+    --hauteur-etage: 12vw;
     --hauteur-regle: 2.5vw;
     margin-top: 2vw;
   }
@@ -667,6 +722,19 @@ a.calNom:hover {
 
   .calNom {
     font-size: 3.4vw;
+  }
+
+  .calLogo {
+    height: 8vw;
+  }
+
+  .calLogoRond {
+    width: 8vw;
+  }
+
+  .calBulle {
+    font-size: 3vw;
+    padding: 1vw 2vw;
   }
 }
 

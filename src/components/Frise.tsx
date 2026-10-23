@@ -52,8 +52,12 @@ export type EtapeFrise = {
     libelleMois: string;
     nom: string;
     href?: string;
-    /** true : le nom au-dessus de la règle (Cannes). */
+    /** true : au-dessus de la règle (Cannes). */
     dessus?: boolean;
+    /** Le logo, à la place du nom ; le nom s'affiche au survol. */
+    logo?: string;
+    /** true : logo rond ; sinon posé sur une petite carte blanche. */
+    logoRond?: boolean;
   }[];
 };
 
@@ -83,8 +87,8 @@ function useMoinsDAnimations() {
 
 /*
  * La règle des douze mois d'une année : une graduation par mois, un point
- * rouge aux mois où il se passe quelque chose, et le mois puis le nom
- * au-dessus ou au-dessous de la règle (Cannes au-dessus, Sarah, 23/10).
+ * rouge aux mois où il se passe quelque chose, et le mois puis le logo
+ * (le nom au survol) ou le nom au-dessus ou au-dessous de la règle (Cannes au-dessus, Sarah, 23/10).
  * Deux noms trop proches du même côté (janvier et février) se rangent sur
  * deux étages pour ne pas se chevaucher.
  */
@@ -98,7 +102,9 @@ function Calendrier({
     const placees = [...liste]
       .sort((a, b) => a.mois - b.mois)
       .map((e) => {
-        let etage = derniers.findIndex((m) => e.mois - m >= 4);
+        // Un logo est plus étroit qu'un nom : deux mois d'écart suffisent.
+        const ecart = e.logo ? 2 : 4;
+        let etage = derniers.findIndex((m) => e.mois - m >= ecart);
         if (etage === -1) etage = derniers.length;
         derniers[etage] = e.mois;
         return { ...e, etage };
@@ -128,7 +134,25 @@ function Calendrier({
             <li key={`${e.mois}-${e.nom}`} className={styles.calEntree} style={style}>
               <span className={`${styles.calTexte} ${ancrage(e.mois)}`}>
                 <span className={styles.calMois}>{e.libelleMois}</span>
-                {e.href ? (
+                {e.logo ? (
+                  // Le logo seul ; le nom en bulle au survol (Sarah, 23/10 :
+                  // le clic ouvre la liste, où le nom est écrit en entier).
+                  <a
+                    href={e.href}
+                    className={styles.calLogoLien}
+                    aria-label={e.nom}
+                  >
+                    <img
+                      src={e.logo}
+                      alt=""
+                      className={`${styles.calLogo} ${e.logoRond ? styles.calLogoRond : styles.calLogoCarte}`}
+                      draggable={false}
+                    />
+                    <span className={styles.calBulle} aria-hidden="true">
+                      {e.nom}
+                    </span>
+                  </a>
+                ) : e.href ? (
                   <a href={e.href} className={styles.calNom}>
                     {e.nom}
                   </a>
