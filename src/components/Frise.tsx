@@ -47,7 +47,14 @@ export type EtapeFrise = {
   passe?: boolean;
   /** Une petite règle des douze mois sous le titre : chaque nom est posé
       sous son mois, et seuls ces mois-là sont nommés (Sarah, 23/10). */
-  calendrier?: { mois: number; libelleMois: string; nom: string; href?: string }[];
+  calendrier?: {
+    mois: number;
+    libelleMois: string;
+    nom: string;
+    href?: string;
+    /** true : le nom au-dessus de la règle (Cannes). */
+    dessus?: boolean;
+  }[];
 };
 
 export type FeuilleFrise = { libelle: string; contenu: ReactNode };
@@ -76,51 +83,49 @@ function useMoinsDAnimations() {
 
 /*
  * La règle des douze mois d'une année : une graduation par mois, un point
- * rouge aux mois où il se passe quelque chose, et sous lui le mois puis le
- * nom. Deux noms trop proches (janvier et février) se rangent sur deux
- * étages pour ne pas se chevaucher.
+ * rouge aux mois où il se passe quelque chose, et le mois puis le nom
+ * au-dessus ou au-dessous de la règle (Cannes au-dessus, Sarah, 23/10).
+ * Deux noms trop proches du même côté (janvier et février) se rangent sur
+ * deux étages pour ne pas se chevaucher.
  */
 function Calendrier({
   entrees,
 }: {
   entrees: NonNullable<EtapeFrise["calendrier"]>;
 }) {
-  const derniersParEtage: number[] = [];
-  const placees = [...entrees]
-    .sort((a, b) => a.mois - b.mois)
-    .map((e) => {
-      let etage = derniersParEtage.findIndex((m) => e.mois - m >= 4);
-      if (etage === -1) etage = derniersParEtage.length;
-      derniersParEtage[etage] = e.mois;
-      return { ...e, etage };
-    });
-  const etages = Math.max(1, derniersParEtage.length);
+  const ranger = (liste: typeof entrees) => {
+    const derniers: number[] = [];
+    const placees = [...liste]
+      .sort((a, b) => a.mois - b.mois)
+      .map((e) => {
+        let etage = derniers.findIndex((m) => e.mois - m >= 4);
+        if (etage === -1) etage = derniers.length;
+        derniers[etage] = e.mois;
+        return { ...e, etage };
+      });
+    return { placees, etages: derniers.length };
+  };
+  const dessus = ranger(entrees.filter((e) => e.dessus));
+  const dessous = ranger(entrees.filter((e) => !e.dessus));
   const ancrage = (mois: number) =>
     mois <= 3 ? styles.calGauche : mois >= 10 ? styles.calDroite : styles.calCentre;
 
-  return (
-    <div
-      className={styles.calendrier}
-      style={{ "--etages": etages } as CSSProperties}
-    >
-      <div className={styles.calRegle} aria-hidden="true">
-        {Array.from({ length: 12 }, (_, i) => (
-          <span
-            key={i}
-            className={styles.calGraduation}
-            style={{ left: `${((i + 0.5) / 12) * 100}%` }}
-          />
-        ))}
-      </div>
-      <ul className={styles.calNoms}>
-        {placees.map((e) => {
+  const noms = (
+    cote: typeof dessus,
+    enHaut: boolean,
+  ) =>
+    cote.placees.length > 0 && (
+      <ul
+        className={`${styles.calNoms} ${enHaut ? styles.calDessus : styles.calDessous}`}
+        style={{ "--etages": cote.etages } as CSSProperties}
+      >
+        {cote.placees.map((e) => {
           const style = {
             left: `${((e.mois - 0.5) / 12) * 100}%`,
             "--etage": e.etage,
           } as CSSProperties;
           return (
             <li key={`${e.mois}-${e.nom}`} className={styles.calEntree} style={style}>
-              <span className={styles.calPoint} aria-hidden="true" />
               <span className={`${styles.calTexte} ${ancrage(e.mois)}`}>
                 <span className={styles.calMois}>{e.libelleMois}</span>
                 {e.href ? (
@@ -135,6 +140,28 @@ function Calendrier({
           );
         })}
       </ul>
+    );
+
+  return (
+    <div className={styles.calendrier}>
+      {noms(dessus, true)}
+      <div className={styles.calRegle} aria-hidden="true">
+        {Array.from({ length: 12 }, (_, i) => (
+          <span
+            key={i}
+            className={styles.calGraduation}
+            style={{ left: `${((i + 0.5) / 12) * 100}%` }}
+          />
+        ))}
+        {entrees.map((e) => (
+          <span
+            key={`p-${e.mois}-${e.nom}`}
+            className={styles.calPoint}
+            style={{ left: `${((e.mois - 0.5) / 12) * 100}%` }}
+          />
+        ))}
+      </div>
+      {noms(dessous, false)}
     </div>
   );
 }

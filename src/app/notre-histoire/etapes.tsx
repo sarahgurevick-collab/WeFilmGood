@@ -82,6 +82,8 @@ export function etapesHistoire(): EtapeFrise[] {
           libelleMois: nomDuMois(s.mois!),
           nom: s.festival.nom,
           href: `/notre-histoire/${s.festival.id}?annee=${annee}`,
+          // Sarah, 23/10 : Cannes au-dessus de la règle.
+          dessus: s.festival.id === "cannes",
         })),
       // Un festival dont le mois n'est pas connu (SATIS/VR) : sous la
       // règle, sans mois.

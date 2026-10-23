@@ -541,18 +541,18 @@
   }
 }
 
-/* La règle des douze mois d'une année (« Notre histoire », 23/10). */
+/* La règle des douze mois d'une année (« Notre histoire », 23/10) :
+   des noms au-dessus (Cannes), la règle, des noms au-dessous. */
 .calendrier {
-  position: relative;
+  --hauteur-etage: 3.6vw;
+  --hauteur-regle: 1vw;
   width: 100%;
   margin-top: 0.8vw;
-  /* La règle, puis un étage de noms par rangée (voir le composant). */
-  height: calc(1vw + var(--etages, 1) * 3.6vw);
 }
 
 .calRegle {
   position: relative;
-  height: 1vw;
+  height: var(--hauteur-regle);
   border-bottom: 1px solid var(--bordure-forte);
 }
 
@@ -560,11 +560,23 @@
   position: absolute;
   bottom: 0;
   width: 1px;
-  height: 0.5vw;
+  height: 50%;
   background: var(--bordure-forte);
 }
 
+.calPoint {
+  position: absolute;
+  bottom: 0;
+  width: 0.6vw;
+  height: 0.6vw;
+  border-radius: 50%;
+  background: var(--actif);
+  transform: translate(-50%, 50%);
+}
+
 .calNoms {
+  position: relative;
+  height: calc(var(--etages, 1) * var(--hauteur-etage));
   margin: 0;
   padding: 0;
   list-style: none;
@@ -572,27 +584,27 @@
 
 .calEntree {
   position: absolute;
-  top: 1vw;
-}
-
-.calPoint {
-  position: absolute;
   top: 0;
-  left: 0;
-  width: 0.6vw;
-  height: 0.6vw;
-  border-radius: 50%;
-  background: var(--actif);
-  transform: translate(-50%, -50%);
+  bottom: 0;
 }
 
 .calTexte {
   position: absolute;
-  top: calc(0.8vw + var(--etage, 0) * 3.6vw);
   display: flex;
   flex-direction: column;
   gap: 0.15vw;
   white-space: nowrap;
+}
+
+/* Au-dessous : le mois en haut, contre la règle, le nom ensuite. */
+.calDessous .calTexte {
+  top: calc(0.6vw + var(--etage, 0) * var(--hauteur-etage));
+}
+
+/* Au-dessus : le nom en haut, le mois contre la règle. */
+.calDessus .calTexte {
+  bottom: calc(0.5vw + var(--etage, 0) * var(--hauteur-etage));
+  flex-direction: column-reverse;
 }
 
 .calGauche {
@@ -631,20 +643,9 @@ a.calNom:hover {
 
 @media (max-width: 600px) {
   .calendrier {
+    --hauteur-etage: 9vw;
+    --hauteur-regle: 2.5vw;
     margin-top: 2vw;
-    height: calc(2.5vw + var(--etages, 1) * 9vw);
-  }
-
-  .calRegle {
-    height: 2.5vw;
-  }
-
-  .calGraduation {
-    height: 1.2vw;
-  }
-
-  .calEntree {
-    top: 2.5vw;
   }
 
   .calPoint {
@@ -652,8 +653,12 @@ a.calNom:hover {
     height: 1.6vw;
   }
 
-  .calTexte {
-    top: calc(2vw + var(--etage, 0) * 9vw);
+  .calDessous .calTexte {
+    top: calc(1.6vw + var(--etage, 0) * var(--hauteur-etage));
+  }
+
+  .calDessus .calTexte {
+    bottom: calc(1.4vw + var(--etage, 0) * var(--hauteur-etage));
   }
 
   .calMois {
