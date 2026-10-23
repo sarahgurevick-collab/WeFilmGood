@@ -4,6 +4,7 @@ import { SELECTIONS_CLERMONT_FERRAND } from "./selectionsClermontFerrand";
 import { SELECTIONS_PCDV } from "./selectionsPCDV";
 import { SELECTIONS_SATIS_VR } from "./selectionsSatisVR";
 import { SELECTIONS_SERIE_MANIA } from "./selectionsSerieMania";
+import { SELECTIONS_VALENCE } from "./selectionsValence";
 
 /**
  * Les festivals et résidences de « Notre histoire » (15/10/2026, Sarah) :
@@ -33,7 +34,7 @@ export const FESTIVALS: Festival[] = [
   { id: "clermont-ferrand", nom: "Clermont-Ferrand", logo: "/festivals/clermont-ferrand.jpg", logoRond: true, selections: SELECTIONS_CLERMONT_FERRAND, motsPhotos: ["Clermont"] },
   { id: "pcdv", nom: "Paris Courts Devant", logo: "/festivals/paris-courts-devant.png", logoRond: true, selections: SELECTIONS_PCDV, motsPhotos: ["Paris Courts Devant"] },
   { id: "serie-mania", nom: "Série Mania", logo: "/festivals/serie-mania.jpg", logoRond: true, selections: SELECTIONS_SERIE_MANIA, motsPhotos: ["Série Mania", "Series Mania"] },
-  { id: "valence", nom: "Valence", logo: "/festivals/valence.png", logoClair: true, selections: [], motsPhotos: ["Valence"] },
+  { id: "valence", nom: "Valence", logo: "/festivals/valence.png", logoClair: true, selections: SELECTIONS_VALENCE, motsPhotos: ["Valence"] },
   { id: "satis-vr", nom: "SATIS/VR-360°", logo: "/festivals/satis.png", selections: SELECTIONS_SATIS_VR, motsPhotos: ["SATIS", "360"] },
   // Festival partenaire (Sarah, 23/10) : visuel provisoire en attendant
   // le logo ; années, mois et sélections à venir.
@@ -46,7 +47,7 @@ export const FESTIVALS: Festival[] = [
  * « Notre histoire ». Paris Courts Devant change d'époque selon l'édition
  * (Sarah, 23/10/2026) : novembre 2013 et 2014, décembre 2015 et 2016, novembre
  * 2017 et 2019, pas de festival en 2018, janvier de 2020 à 2027. Cannes
- * est en mai, Clermont-Ferrand en février, SATIS/VR en novembre, Série Mania en avril. Les autres : inconnu, pas de
+ * est en mai, Clermont-Ferrand en février, SATIS/VR en novembre, Série Mania et Valence en avril. Les autres : inconnu, pas de
  * mois affiché.
  */
 const MOIS_FESTIVAL: Record<string, { parDefaut?: number; parAnnee?: Record<number, number> }> = {
@@ -54,6 +55,8 @@ const MOIS_FESTIVAL: Record<string, { parDefaut?: number; parAnnee?: Record<numb
   "clermont-ferrand": { parDefaut: 2 },
   // Série Mania en avril (Sarah, 23/10).
   "serie-mania": { parDefaut: 4 },
+  // Valence Scénario en avril (Sarah, 23/10).
+  valence: { parDefaut: 4 },
   // SATIS/VR-360° en novembre (Sarah, 23/10).
   "satis-vr": { parDefaut: 11 },
   pcdv: {
