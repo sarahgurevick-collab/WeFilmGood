@@ -74,12 +74,16 @@ personnage. Écris `<dossier>/choix-<N>.json` :
 **Ce qui ne change pas, sans exception :**
 
 - Une seule personne, le visage bien visible.
-- Une **vraie photographie** : pas de tableau, de gravure, de dessin, de statue
-  (Openverse en propose beaucoup, venus des musées : « Portrait Seated… » est
-  presque toujours une peinture), ni d'image générée par ordinateur (peau
-  trop lisse ou parfaite, regard vitreux, lumière irréelle, mains déformées,
-  tout-petits « parfaits »). Une vieille photographie en noir et blanc
-  convient, surtout pour un personnage d'époque.
+- Un **portrait photographique** : pas de tableau, de gravure, de dessin, de
+  statue (Openverse en propose beaucoup, venus des musées : « Portrait
+  Seated… » est presque toujours une peinture). Une vieille photographie en
+  noir et blanc convient, surtout pour un personnage d'époque.
+- **Images fabriquées par ordinateur (décision de Sarah, 22/10/2026)** : elles
+  sont de nouveau acceptées. Pixabay les signale lui-même, le script les marque
+  dans le suivi et Sarah les trie à part. Ne refuse donc pas une image
+  seulement parce qu'elle a l'air fabriquée : juge-la comme les autres (sexe,
+  âge, allure, décence). Refuse-la seulement si un défaut se voit (mains
+  déformées, visage déformé, texte illisible ou absurde).
 - Jamais de nudité, de torse nu, de décolleté, d'épaules nues, de tenue
   moulante avec pose de magazine, ni de pose glamour ou suggestive. Pour un
   enfant ou un adolescent : habillé, pose ordinaire, rien d'ambigu.
