@@ -37,7 +37,7 @@ export const FESTIVALS: Festival[] = [
 /**
  * Le mois où le festival a lieu, par année (1 = janvier), pour la frise de
  * « Notre histoire ». Paris Courts Devant change d'époque selon l'édition
- * (Sarah, 23/10/2026) : novembre 2014, décembre 2015 et 2016, novembre
+ * (Sarah, 23/10/2026) : novembre 2013 et 2014, décembre 2015 et 2016, novembre
  * 2017 et 2019, pas de festival en 2018, janvier de 2020 à 2027. Cannes
  * est en mai, Clermont-Ferrand en février. Les autres : inconnu, pas de
  * mois affiché.
@@ -47,6 +47,7 @@ const MOIS_FESTIVAL: Record<string, { parDefaut?: number; parAnnee?: Record<numb
   "clermont-ferrand": { parDefaut: 2 },
   pcdv: {
     parAnnee: {
+      2013: 11,
       2014: 11,
       2015: 12,
       2016: 12,
