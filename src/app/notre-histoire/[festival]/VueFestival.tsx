@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import RoueAnnees from "@/components/RoueAnnees";
 import type { AnneeSelection } from "@/data/selectionsCannes";
+import type { PhotoEvenement } from "../photos";
 import { ancreProgramme, decouperLigne, type LiensSelection } from "../rapprochement";
 import styles from "../notre-histoire.module.css";
 
@@ -23,7 +24,8 @@ const PROGRAMMES_EN_ROUGE = [
  * 22/10 : chaque ligne « Titre - Auteur - Pays » relie le titre à sa fiche
  * et le nom à son profil quand la base les a retrouvés (liens), pour les
  * membres connectés. La frise arrive sur une année (anneeInitiale) et un
- * programme (ancre).
+ * programme (ancre). 23/10 : sous la liste, les photos de l'année choisie
+ * (photosParAnnee), un clic ouvre la photo en grand.
  */
 export default function VueFestival({
   nom,
@@ -33,6 +35,7 @@ export default function VueFestival({
   anneeInitiale,
   selections,
   liens = {},
+  photosParAnnee = {},
 }: {
   nom: string;
   logo: string | null;
@@ -41,8 +44,17 @@ export default function VueFestival({
   anneeInitiale?: number;
   selections: AnneeSelection[];
   liens?: LiensSelection;
+  photosParAnnee?: Record<number, PhotoEvenement[]>;
 }) {
   const [annee, setAnnee] = useState<number>(anneeInitiale ?? annees[0] ?? 0);
+  const photos = photosParAnnee[annee] ?? [];
+  const grandeRef = useRef<HTMLDialogElement>(null);
+  const [grande, setGrande] = useState<PhotoEvenement | null>(null);
+  const agrandir = (p: PhotoEvenement) => {
+    setGrande(p);
+    grandeRef.current?.showModal();
+  };
+  const refermer = () => grandeRef.current?.close();
   const choisie = selections.find((s) => s.annee === annee);
   // Les sélections sans année (SATIS…) s'affichent sous la liste.
   const sansAnnee = selections.filter((s) => s.annee === undefined);
@@ -81,9 +93,48 @@ export default function VueFestival({
                 <Bloc key={`${i}-${j}`} titre={bloc.titre} entrees={bloc.entrees} liens={liens} />
               )),
             )}
+
+            {photos.length > 0 && (
+              <ul className={styles.photosAnnee} aria-label={`Photos ${annee}`}>
+                {photos.map((p) => (
+                  <li key={p.src}>
+                    <button
+                      type="button"
+                      className={styles.vignette}
+                      onClick={() => agrandir(p)}
+                      aria-label={`Voir en grand : ${p.alt}`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={p.src} alt={p.alt} loading="lazy" draggable={false} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       )}
+
+      <dialog
+        ref={grandeRef}
+        className={styles.dialogueImage}
+        aria-label={grande?.alt ?? "Photo"}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) refermer();
+        }}
+        onClose={() => setGrande(null)}
+      >
+        {grande && (
+          <figure className={styles.grande}>
+            <button type="button" className={styles.fermerGrande} onClick={refermer} aria-label="Fermer">
+              ×
+            </button>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={grande.src} alt={grande.alt} draggable={false} />
+            <figcaption>{grande.alt}</figcaption>
+          </figure>
+        )}
+      </dialog>
 
       <span hidden>{nom}</span>
     </>

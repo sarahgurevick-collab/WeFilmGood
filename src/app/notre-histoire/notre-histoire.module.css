@@ -269,3 +269,95 @@
 .lienEntree:hover {
   color: var(--rouge-wfg, #da2c25);
 }
+
+/* Les photos de l'année choisie, sous la liste des sélections (23/10). */
+.photosAnnee {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vignette {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1c1c1c;
+  cursor: zoom-in;
+}
+
+.vignette img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.vignette:hover img {
+  transform: scale(1.04);
+}
+
+/* La photo en grand, par-dessus la page : même feuille que les affiches
+   de la frise, croix × rouge dans le coin. */
+.dialogueImage {
+  max-width: calc(100vw - 24px);
+  max-height: 100vh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.dialogueImage::backdrop {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+.grande {
+  position: relative;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.grande img {
+  display: block;
+  max-width: calc(100vw - 24px);
+  max-height: 86vh;
+  width: auto;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.grande figcaption {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+
+.fermerGrande {
+  position: absolute;
+  top: 4px;
+  right: 10px;
+  z-index: 1;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  color: #e2231a;
+  font-size: 40px;
+  line-height: 1;
+  cursor: pointer;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import { anneesDuFestival, festivalParId } from "@/data/festivals";
 import { createClient } from "@/lib/supabase/server";
+import { photosDuFestivalParAnnee } from "../photos";
 import { rapprocherSelections, type LiensSelection } from "../rapprochement";
 import VueFestival from "./VueFestival";
 
@@ -49,6 +50,7 @@ export default async function FestivalPage({
         anneeInitiale={anneeInitiale}
         selections={f.selections}
         liens={liens}
+        photosParAnnee={photosDuFestivalParAnnee(f)}
       />
     </PageShell>
   );

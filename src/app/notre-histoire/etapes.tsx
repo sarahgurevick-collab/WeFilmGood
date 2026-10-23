@@ -2,13 +2,15 @@ import Link from "next/link";
 import type { EtapeFrise } from "@/components/Frise";
 import { AFFICHES, HISTOIRE } from "@/data/association";
 import { FESTIVALS } from "@/data/festivals";
+import { premierePhotoParAnnee } from "./photos";
 import { ancreProgramme } from "./rapprochement";
 
 /*
  * Les étapes de la frise « Notre histoire » (essai du 22/10/2026), bâties
  * avec ce qui existe déjà : une étape par année depuis 2012, l'affiche de
- * la Maison à Cannes quand il y en a une (2012-2019), sinon le logo du
- * premier festival de l'année ; le nombre de projets sélectionnés par
+ * la Maison à Cannes quand il y en a une (2012-2019), sinon la première
+ * photo de l'année (public/histoire/<festival>/<année>/, voir photos.ts),
+ * sinon le logo du premier festival de l'année ; le nombre de projets sélectionnés par
  * festival et par programme (Writers-Producers Meetings, Scenariolab…),
  * chaque programme menant à sa liste dans /notre-histoire/[festival] ;
  * les phrases datées de la frise de l'association. Les phrases par année que Sarah écrira
@@ -30,6 +32,7 @@ export function etapesHistoire(): EtapeFrise[] {
     ...FESTIVALS.flatMap((f) => f.selections.map((s) => s.annee ?? 0)),
   );
   const etapes: EtapeFrise[] = [];
+  const photos = premierePhotoParAnnee();
 
   for (let annee = PREMIERE_ANNEE; annee <= derniereAnnee; annee++) {
     const selections = FESTIVALS.map((f) => {
@@ -44,6 +47,7 @@ export function etapesHistoire(): EtapeFrise[] {
     if (selections.length === 0 && phrases.length === 0) continue;
 
     const affiche = AFFICHES.find((a) => a.annee === annee);
+    const photo = photos[annee];
     const premier = selections[0]?.festival;
     const visuel = affiche
       ? {
@@ -51,7 +55,9 @@ export function etapesHistoire(): EtapeFrise[] {
           alt: `Affiche de la Maison des Scénaristes au Festival de Cannes, ${annee}, par ${affiche.auteur}`,
           forme: "affiche" as const,
         }
-      : premier?.logo
+      : photo
+        ? { src: photo.src, alt: photo.alt, forme: "affiche" as const }
+        : premier?.logo
         ? {
             src: premier.logo,
             alt: premier.nom,
