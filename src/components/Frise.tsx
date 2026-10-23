@@ -99,18 +99,27 @@ function Calendrier({
 }: {
   entrees: NonNullable<EtapeFrise["calendrier"]>;
 }) {
-  const ranger = (liste: typeof entrees) => {
+  type Entree = (typeof entrees)[number];
+  // Les festivals d'un même mois, du même côté, partagent un seul nom de
+  // mois et se posent côte à côte (Série Mania et Valence en avril 2018,
+  // Sarah, 23/10).
+  const ranger = (liste: Entree[]) => {
+    const groupes: { mois: number; libelleMois: string; membres: Entree[] }[] = [];
+    for (const e of [...liste].sort((x, y) => x.mois - y.mois)) {
+      const g = groupes.find((x) => x.mois === e.mois);
+      if (g) g.membres.push(e);
+      else groupes.push({ mois: e.mois, libelleMois: e.libelleMois, membres: [e] });
+    }
     const derniers: number[] = [];
-    const placees = [...liste]
-      .sort((a, b) => a.mois - b.mois)
-      .map((e) => {
-        // Un logo est plus étroit qu'un nom : deux mois d'écart suffisent.
-        const ecart = e.logo ? 2 : 4;
-        let etage = derniers.findIndex((m) => e.mois - m >= ecart);
-        if (etage === -1) etage = derniers.length;
-        derniers[etage] = e.mois;
-        return { ...e, etage };
-      });
+    const placees = groupes.map((g) => {
+      // Un logo est plus étroit qu'un nom : deux mois d'écart suffisent
+      // (un de plus par logo voisin).
+      const ecart = g.membres.every((m) => m.logo) ? 1 + g.membres.length : 4;
+      let etage = derniers.findIndex((m) => g.mois - m >= ecart);
+      if (etage === -1) etage = derniers.length;
+      derniers[etage] = g.mois;
+      return { ...g, etage };
+    });
     return { placees, etages: derniers.length };
   };
   const dessus = ranger(entrees.filter((e) => e.dessus));
@@ -118,49 +127,47 @@ function Calendrier({
   const ancrage = (mois: number) =>
     mois <= 3 ? styles.calGauche : mois >= 10 ? styles.calDroite : styles.calCentre;
 
-  const noms = (
-    cote: typeof dessus,
-    enHaut: boolean,
-  ) =>
+  const membre = (e: Entree) =>
+    e.logo ? (
+      // Le logo seul ; le nom en bulle au survol (Sarah, 23/10 : le clic
+      // ouvre la liste, où le nom est écrit en entier).
+      <a key={e.nom} href={e.href} className={styles.calLogoLien} aria-label={e.nom}>
+        <img
+          src={e.logo}
+          alt=""
+          className={`${styles.calLogo} ${e.logoRond ? styles.calLogoRond : e.logoClair ? styles.calLogoClair : styles.calLogoCarte}`}
+          draggable={false}
+        />
+        <span className={styles.calBulle} aria-hidden="true">
+          {e.nom}
+        </span>
+      </a>
+    ) : e.href ? (
+      <a key={e.nom} href={e.href} className={styles.calNom}>
+        {e.nom}
+      </a>
+    ) : (
+      <span key={e.nom} className={styles.calNom}>
+        {e.nom}
+      </span>
+    );
+
+  const noms = (cote: ReturnType<typeof ranger>, enHaut: boolean) =>
     cote.placees.length > 0 && (
       <ul
         className={`${styles.calNoms} ${enHaut ? styles.calDessus : styles.calDessous}`}
         style={{ "--etages": cote.etages } as CSSProperties}
       >
-        {cote.placees.map((e) => {
+        {cote.placees.map((g) => {
           const style = {
-            left: `${((e.mois - 0.5) / 12) * 100}%`,
-            "--etage": e.etage,
+            left: `${((g.mois - 0.5) / 12) * 100}%`,
+            "--etage": g.etage,
           } as CSSProperties;
           return (
-            <li key={`${e.mois}-${e.nom}`} className={styles.calEntree} style={style}>
-              <span className={`${styles.calTexte} ${ancrage(e.mois)}`}>
-                <span className={styles.calMois}>{e.libelleMois}</span>
-                {e.logo ? (
-                  // Le logo seul ; le nom en bulle au survol (Sarah, 23/10 :
-                  // le clic ouvre la liste, où le nom est écrit en entier).
-                  <a
-                    href={e.href}
-                    className={styles.calLogoLien}
-                    aria-label={e.nom}
-                  >
-                    <img
-                      src={e.logo}
-                      alt=""
-                      className={`${styles.calLogo} ${e.logoRond ? styles.calLogoRond : e.logoClair ? styles.calLogoClair : styles.calLogoCarte}`}
-                      draggable={false}
-                    />
-                    <span className={styles.calBulle} aria-hidden="true">
-                      {e.nom}
-                    </span>
-                  </a>
-                ) : e.href ? (
-                  <a href={e.href} className={styles.calNom}>
-                    {e.nom}
-                  </a>
-                ) : (
-                  <span className={styles.calNom}>{e.nom}</span>
-                )}
+            <li key={g.mois} className={styles.calEntree} style={style}>
+              <span className={`${styles.calTexte} ${ancrage(g.mois)}`}>
+                <span className={styles.calMois}>{g.libelleMois}</span>
+                <span className={styles.calMembres}>{g.membres.map(membre)}</span>
               </span>
             </li>
           );

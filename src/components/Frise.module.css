@@ -607,6 +607,13 @@
   flex-direction: column-reverse;
 }
 
+/* Plusieurs festivals le même mois : côte à côte. */
+.calMembres {
+  display: flex;
+  align-items: center;
+  gap: 0.5vw;
+}
+
 .calGauche {
   left: -0.3vw;
 }
