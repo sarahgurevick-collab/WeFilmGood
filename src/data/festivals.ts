@@ -31,6 +31,9 @@ export const FESTIVALS: Festival[] = [
   { id: "serie-mania", nom: "Série Mania", selections: [], motsPhotos: ["Série Mania", "Series Mania"] },
   { id: "valence", nom: "Valence", selections: [], motsPhotos: ["Valence"] },
   { id: "satis-vr", nom: "SATIS/VR-360°", logo: "/festivals/satis.png", selections: SELECTIONS_SATIS_VR, motsPhotos: ["SATIS", "360"] },
+  // Festival partenaire (Sarah, 23/10) : visuel provisoire en attendant
+  // le logo ; années, mois et sélections à venir.
+  { id: "regards", nom: "Regards sur le cinéma du Monde", logo: "/festivals/regards.png", selections: [], motsPhotos: ["Regards sur le cinéma"] },
   { id: "maison-bleue", nom: "Résidence d'écriture « La Maison Bleue »", selections: [], motsPhotos: ["Maison Bleue"] },
 ];
 
