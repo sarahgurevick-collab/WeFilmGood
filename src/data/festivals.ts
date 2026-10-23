@@ -3,6 +3,7 @@ import { SELECTIONS_CANNES, type AnneeSelection } from "./selectionsCannes";
 import { SELECTIONS_CLERMONT_FERRAND } from "./selectionsClermontFerrand";
 import { SELECTIONS_PCDV } from "./selectionsPCDV";
 import { SELECTIONS_SATIS_VR } from "./selectionsSatisVR";
+import { SELECTIONS_SERIE_MANIA } from "./selectionsSerieMania";
 
 /**
  * Les festivals et résidences de « Notre histoire » (15/10/2026, Sarah) :
@@ -31,7 +32,7 @@ export const FESTIVALS: Festival[] = [
   { id: "cannes", nom: "Festival de Cannes", logo: "/festivals/marche-du-film.png", selections: SELECTIONS_CANNES, motsPhotos: ["Cannes"] },
   { id: "clermont-ferrand", nom: "Clermont-Ferrand", logo: "/festivals/clermont-ferrand.jpg", logoRond: true, selections: SELECTIONS_CLERMONT_FERRAND, motsPhotos: ["Clermont"] },
   { id: "pcdv", nom: "Paris Courts Devant", logo: "/festivals/paris-courts-devant.png", logoRond: true, selections: SELECTIONS_PCDV, motsPhotos: ["Paris Courts Devant"] },
-  { id: "serie-mania", nom: "Série Mania", logo: "/festivals/serie-mania.jpg", logoRond: true, selections: [], motsPhotos: ["Série Mania", "Series Mania"] },
+  { id: "serie-mania", nom: "Série Mania", logo: "/festivals/serie-mania.jpg", logoRond: true, selections: SELECTIONS_SERIE_MANIA, motsPhotos: ["Série Mania", "Series Mania"] },
   { id: "valence", nom: "Valence", logo: "/festivals/valence.png", logoClair: true, selections: [], motsPhotos: ["Valence"] },
   { id: "satis-vr", nom: "SATIS/VR-360°", logo: "/festivals/satis.png", selections: SELECTIONS_SATIS_VR, motsPhotos: ["SATIS", "360"] },
   // Festival partenaire (Sarah, 23/10) : visuel provisoire en attendant
