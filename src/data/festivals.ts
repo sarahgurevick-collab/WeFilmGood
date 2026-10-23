@@ -19,6 +19,9 @@ export type Festival = {
   logo?: string;
   /** true pour un logo rond (fichier carré) : affiché rond, sans carte. */
   logoRond?: boolean;
+  /** true pour un logo blanc sur fond transparent : affiché tel quel,
+      sans carte claire (Valence, 23/10). */
+  logoClair?: boolean;
   selections: AnneeSelection[];
   /** Les photos des rencontres (légende contenant un de ces mots). */
   motsPhotos: string[];
@@ -28,8 +31,8 @@ export const FESTIVALS: Festival[] = [
   { id: "cannes", nom: "Festival de Cannes", logo: "/festivals/marche-du-film.png", selections: SELECTIONS_CANNES, motsPhotos: ["Cannes"] },
   { id: "clermont-ferrand", nom: "Clermont-Ferrand", logo: "/festivals/clermont-ferrand.jpg", logoRond: true, selections: SELECTIONS_CLERMONT_FERRAND, motsPhotos: ["Clermont"] },
   { id: "pcdv", nom: "Paris Courts Devant", logo: "/festivals/paris-courts-devant.png", logoRond: true, selections: SELECTIONS_PCDV, motsPhotos: ["Paris Courts Devant"] },
-  { id: "serie-mania", nom: "Série Mania", selections: [], motsPhotos: ["Série Mania", "Series Mania"] },
-  { id: "valence", nom: "Valence", selections: [], motsPhotos: ["Valence"] },
+  { id: "serie-mania", nom: "Série Mania", logo: "/festivals/serie-mania.jpg", logoRond: true, selections: [], motsPhotos: ["Série Mania", "Series Mania"] },
+  { id: "valence", nom: "Valence", logo: "/festivals/valence.png", logoClair: true, selections: [], motsPhotos: ["Valence"] },
   { id: "satis-vr", nom: "SATIS/VR-360°", logo: "/festivals/satis.png", selections: SELECTIONS_SATIS_VR, motsPhotos: ["SATIS", "360"] },
   // Festival partenaire (Sarah, 23/10) : visuel provisoire en attendant
   // le logo ; années, mois et sélections à venir.

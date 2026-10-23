@@ -667,6 +667,11 @@ a.calNom:hover {
   padding: 0.2vw;
 }
 
+.calLogoClair {
+  width: auto;
+  object-fit: contain;
+}
+
 .calLogoLien:hover .calLogo,
 .calLogoLien:focus-visible .calLogo {
   transform: scale(1.12);

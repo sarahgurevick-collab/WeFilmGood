@@ -83,6 +83,11 @@
   padding: 6px;
 }
 
+/* Un logo blanc (Valence) : pas de carte claire derrière. */
+.enteteLogoClair {
+  background: none;
+}
+
 /* Un logo rond (Clermont-Ferrand, Paris Courts Devant) reste rond, sans
    carte (Sarah, 22/10). */
 .enteteLogoRond {

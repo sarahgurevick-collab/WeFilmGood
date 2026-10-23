@@ -58,6 +58,8 @@ export type EtapeFrise = {
     logo?: string;
     /** true : logo rond ; sinon posé sur une petite carte blanche. */
     logoRond?: boolean;
+    /** true : logo blanc, affiché sans carte (Valence). */
+    logoClair?: boolean;
   }[];
 };
 
@@ -145,7 +147,7 @@ function Calendrier({
                     <img
                       src={e.logo}
                       alt=""
-                      className={`${styles.calLogo} ${e.logoRond ? styles.calLogoRond : styles.calLogoCarte}`}
+                      className={`${styles.calLogo} ${e.logoRond ? styles.calLogoRond : e.logoClair ? styles.calLogoClair : styles.calLogoCarte}`}
                       draggable={false}
                     />
                     <span className={styles.calBulle} aria-hidden="true">

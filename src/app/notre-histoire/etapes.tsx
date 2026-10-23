@@ -64,7 +64,11 @@ export function etapesHistoire(): EtapeFrise[] {
         ? {
             src: premier.logo,
             alt: premier.nom,
-            forme: premier.logoRond ? ("rond" as const) : ("carte" as const),
+            forme: premier.logoRond
+              ? ("rond" as const)
+              : premier.logoClair
+                ? ("affiche" as const)
+                : ("carte" as const),
           }
         : undefined;
 
@@ -87,6 +91,7 @@ export function etapesHistoire(): EtapeFrise[] {
           // Sarah, 23/10 : le logo, le nom au survol.
           logo: s.festival.logo,
           logoRond: s.festival.logoRond,
+          logoClair: s.festival.logoClair,
         })),
       // Un festival dont le mois n'est pas connu (SATIS/VR) : sous la
       // règle, sans mois.

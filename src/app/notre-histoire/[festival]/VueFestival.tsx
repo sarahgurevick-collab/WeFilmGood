@@ -31,6 +31,7 @@ export default function VueFestival({
   nom,
   logo,
   logoRond = false,
+  logoClair = false,
   annees,
   anneeInitiale,
   selections,
@@ -40,6 +41,7 @@ export default function VueFestival({
   nom: string;
   logo: string | null;
   logoRond?: boolean;
+  logoClair?: boolean;
   annees: number[];
   anneeInitiale?: number;
   selections: AnneeSelection[];
@@ -67,7 +69,13 @@ export default function VueFestival({
 
       {logo && (
         <div className={styles.entete}>
-          <span className={logoRond ? styles.enteteLogoRond : styles.enteteLogo}>
+          <span className={
+              logoRond
+                ? styles.enteteLogoRond
+                : logoClair
+                  ? `${styles.enteteLogo} ${styles.enteteLogoClair}`
+                  : styles.enteteLogo
+            }>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={logo} alt="" />
           </span>

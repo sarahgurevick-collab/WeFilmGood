@@ -46,6 +46,7 @@ export default async function FestivalPage({
         nom={f.nom}
         logo={f.logo ?? null}
         logoRond={f.logoRond ?? false}
+        logoClair={f.logoClair ?? false}
         annees={annees}
         anneeInitiale={anneeInitiale}
         selections={f.selections}
