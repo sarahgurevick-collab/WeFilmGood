@@ -659,8 +659,13 @@ a.calNom:hover {
   object-fit: cover;
 }
 
+/* Un logo large (SATIS) ne dépasse pas la largeur de celui de Cannes
+   (Sarah, 23/10) : hauteur et largeur plafonnées, proportions gardées. */
 .calLogoCarte {
   width: auto;
+  height: auto;
+  max-height: 3.2vw;
+  max-width: 4.9vw;
   object-fit: contain;
   background: #fff;
   border-radius: 0.4vw;
@@ -735,6 +740,11 @@ a.calNom:hover {
 
   .calLogoRond {
     width: 8vw;
+  }
+
+  .calLogoCarte {
+    max-height: 8vw;
+    max-width: 12.2vw;
   }
 
   .calBulle {
