@@ -30,7 +30,7 @@ export const FESTIVALS: Festival[] = [
   { id: "pcdv", nom: "Paris Courts Devant", logo: "/festivals/paris-courts-devant.png", logoRond: true, selections: SELECTIONS_PCDV, motsPhotos: ["Paris Courts Devant"] },
   { id: "serie-mania", nom: "Série Mania", selections: [], motsPhotos: ["Série Mania", "Series Mania"] },
   { id: "valence", nom: "Valence", selections: [], motsPhotos: ["Valence"] },
-  { id: "satis-vr", nom: "SATIS/VR-360°", selections: SELECTIONS_SATIS_VR, motsPhotos: ["SATIS", "360"] },
+  { id: "satis-vr", nom: "SATIS/VR-360°", logo: "/festivals/satis.png", selections: SELECTIONS_SATIS_VR, motsPhotos: ["SATIS", "360"] },
   { id: "maison-bleue", nom: "Résidence d'écriture « La Maison Bleue »", selections: [], motsPhotos: ["Maison Bleue"] },
 ];
 

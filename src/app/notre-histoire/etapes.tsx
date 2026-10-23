@@ -64,7 +64,7 @@ export function etapesHistoire(): EtapeFrise[] {
         ? {
             src: premier.logo,
             alt: premier.nom,
-            forme: premier.id === "cannes" ? ("carte" as const) : ("rond" as const),
+            forme: premier.logoRond ? ("rond" as const) : ("carte" as const),
           }
         : undefined;
 
