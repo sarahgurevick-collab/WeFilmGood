@@ -6,6 +6,9 @@ export const BANDEAUX: Record<string, string> = {
   tourne: "Tourné",
   script_prime: "Script primé",
   film_prime: "Film primé",
+  // Posé automatiquement par la base sur tout projet qui a une sélection de
+  // la Maison des Scénaristes / WeFilmGood (24/10, Sarah) ; les autres passent devant.
+  selection_mds: "Sélection MdS/WFG",
 };
 
 /**
@@ -15,6 +18,8 @@ export const BANDEAUX: Record<string, string> = {
 export default function Bandeau({ valeur, grand = false }: { valeur: string | null; grand?: boolean }) {
   if (!valeur || !BANDEAUX[valeur]) return null;
   return (
-    <span className={`${styles.bandeau} ${grand ? styles.grand : ""}`}>{BANDEAUX[valeur]}</span>
+    <span className={`${styles.bandeau} ${grand ? styles.grand : ""} ${BANDEAUX[valeur].length > 13 ? styles.long : ""}`}>
+      {BANDEAUX[valeur]}
+    </span>
   );
 }

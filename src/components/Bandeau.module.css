@@ -17,10 +17,20 @@
   pointer-events: none;
 }
 
+/* Un libellé long (« Sélection MdS/WFG ») : lettres plus serrées pour tenir. */
+.long {
+  letter-spacing: 0.08em;
+  font-size: 10px;
+}
+
 .grand {
   top: 44px;
   left: -78px;
   width: 320px;
   padding: 10px 0;
   font-size: 18px;
+}
+
+.grand.long {
+  font-size: 15px;
 }
