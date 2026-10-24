@@ -21,7 +21,6 @@ import { AUDIENCES, BUDGETS } from "../ChampsFiche";
 import { signerImages } from "./fichiers";
 import { chargerFiches } from "./fiches-donnees";
 import presentation from "./presentation.module.css";
-import SelectionsAdmin from "./SelectionsAdmin";
 import { nomDeLangue } from "@/lib/langues";
 import { nomDuPays } from "@/lib/pays";
 
@@ -180,11 +179,7 @@ export default async function ProjetPage({
     supabase.from("project_selections").select("libelle").eq("project_id", id).order("libelle"),
     supabase.from("project_actors").select("libelle").eq("project_id", id).order("libelle"),
   ]);
-  // Les libellés déjà posés sur d'autres projets, proposés à l'admin quand
-  // elle en ajoute un ici (24/10).
-  const { data: selectionsConnues } = estAdmin
-    ? await supabase.from("project_selections").select("libelle")
-    : { data: null };
+
 
   // « Où en est mon projet ? » — la réponse que l'auteur allait chercher
   // par e-mail auprès de l'administration.
@@ -524,13 +519,6 @@ export default async function ProjetPage({
           </p>
         );
       })()}
-      {estAdmin && (
-        <SelectionsAdmin
-          projectId={id}
-          selections={(selections ?? []).map((x) => x.libelle)}
-          connues={[...new Set((selectionsConnues ?? []).map((x) => x.libelle))].sort((a, b) => a.localeCompare(b, "fr"))}
-        />
-      )}
       {(comediens ?? []).length > 0 && (
         <p className={formStyles.hint} style={{ marginTop: 12 }}>
           {(comediens ?? []).length > 0 && (
