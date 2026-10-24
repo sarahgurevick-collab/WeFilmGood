@@ -10,8 +10,6 @@ const PARTENAIRES: Record<string, string | null> = {
   "Muse Awards": "https://museaward.com/",
   // La Sélection Cinephilia est la leur, pas celle de la Maison (Sarah, 24/10).
   Cinephilia: "https://www.cinephiliaproductions.com/",
-  // Partenariat (Sarah, 24/10) ; site à demander — sans lien en attendant.
-  "Digital Lab Africa": null,
 };
 
 /*
