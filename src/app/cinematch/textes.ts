@@ -17,7 +17,7 @@ export const TEXTES = {
 
   emailExplication:
     "Vos réponses sont mémorisées. Renseignez votre adresse email et cliquez sur le lien magique qui vous emmènera vers votre Match.",
-  // « Êtes-vous du métier ? » : Non = adresse email seulement (Greenlighter),
+  // « Êtes-vous du métier ? » : Non = adresse email seulement (StoryLighter),
   // Oui = l'inscription habituelle.
   questionMetier: "Êtes-vous cinéaste ?",
   questionMetierPrecision: "Auteur, producteur, comédien, réalisateur, compositeur…",

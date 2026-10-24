@@ -29,7 +29,7 @@ export default function CategorieMembre({ profileId, category }: { profileId: st
         <option value="auteur">Auteur</option>
         <option value="producteur">Producteur</option>
         <option value="talent">Autre talent</option>
-        <option value="cinephile">Greenlighter</option>
+        <option value="cinephile">StoryLighter</option>
       </select>
     </form>
   );

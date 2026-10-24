@@ -30,7 +30,7 @@ export async function apercuCineMatch(formData: FormData) {
 
 /**
  * Étape 2 : l'adresse email. On crée un profil réduit à cette adresse (la
- * catégorie « cinephile », affichée Greenlighter) et on envoie le lien qui
+ * catégorie « cinephile », affichée StoryLighter) et on envoie le lien qui
  * l'active. Les réponses voyagent dans les métadonnées du compte : elles sont
  * posées sur le profil quand la personne arrive par le lien (voir la page).
  *
@@ -63,7 +63,7 @@ export async function demanderLeMatch(formData: FormData) {
 /**
  * Étape 2 pour une personne « du métier » : l'inscription habituelle
  * (prénom, nom, email). Sa catégorie se choisit ensuite dans son profil ;
- * ses réponses arrivent comme pour un Greenlighter, par le lien reçu.
+ * ses réponses arrivent comme pour un StoryLighter, par le lien reçu.
  */
 export async function creerProfilMetier(formData: FormData) {
   const prenom = (formData.get("first_name") as string | null)?.trim();

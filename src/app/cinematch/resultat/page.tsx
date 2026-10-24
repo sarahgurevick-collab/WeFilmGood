@@ -22,7 +22,7 @@ const PIEGE = (
  * Après « Enregistrer vos réponses », pour un visiteur sans compte : le
  * résultat ne se montre pas encore, il s'ouvre par le lien magique, sur la
  * page liée à son profil (/cinematch). Ici : « Êtes-vous du métier ? ».
- *  - Non : l'adresse email seulement, et il devient Greenlighter ;
+ *  - Non : l'adresse email seulement, et il devient StoryLighter ;
  *  - Oui : l'inscription habituelle (prénom, nom, email), puis son profil.
  */
 export default async function ResultatCineMatchPage({

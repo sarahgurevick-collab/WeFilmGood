@@ -17,7 +17,7 @@ import { TEXTES } from "./textes";
  * le meilleur match de la personne.
  *
  * Elle est ouverte à tout compte connecté, même un profil réduit à une
- * adresse email (catégorie Greenlighter). Un visiteur sans compte répond
+ * adresse email (catégorie StoryLighter). Un visiteur sans compte répond
  * d'abord, voit son pourcentage, puis donne son adresse email
  * (/cinematch/resultat) : ses réponses arrivent sur son profil quand il
  * clique sur le lien reçu.
