@@ -12,6 +12,13 @@ const ETATS = ENGAGEMENTS;
 const DELAI_APRES_SCROLL_MS = 500;
 
 const ELEMENTS_MENU = [
+  // En tête, les deux éléments vivants du site (Sarah, 24/10 : « tout le
+  // reste sont des informations dormantes »). « Ciné » reste fixe en rouge
+  // WeFilmGood, la suite du mot suit la même horloge que le logo — les
+  // trois couleurs des engagements, Planet, Humanity, Education. Un
+  // battement sur quatre, les deux mots sont au rouge : la fusion.
+  { label: "CinéCrush", href: "/cinecrush", special: true },
+  { label: "CinéMatch", href: "/cinematch", special: true },
   { label: "Maison des Scénaristes", href: "/association" },
   { label: "Nos appels à projets", href: "/appels-a-projets" },
   { label: "Tutoriels", href: "/tutoriels" },
@@ -20,14 +27,6 @@ const ELEMENTS_MENU = [
   { label: "Notre histoire", href: "/notre-histoire" },
   { label: "Témoignages", href: "/temoignages" },
   { label: "Adhésion", href: "/adhesion" },
-  // Encore un concept, pas un jeu construit : « Ciné » reste fixe en
-  // rouge WeFilmGood, « Match » suit la même horloge que le logo — les
-  // trois couleurs des engagements, Planet, Humanity, Education. Un
-  // battement sur quatre, les deux mots sont au rouge : la fusion.
-  // Le coup de pouce de la semaine (24/10) : sa page à lui seul, et les
-  // mêmes couleurs que CinéMatch (Sarah).
-  { label: "CinéCrush", href: "/cinecrush", special: true },
-  { label: "CinéMatch", href: "/cinematch", special: true },
 ];
 
 /**
