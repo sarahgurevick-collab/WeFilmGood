@@ -193,6 +193,9 @@ async function principal() {
     // Hors album (publiées sur le mur) : rangées par année de publication.
     const dossierPhoto = basename(dirname(p));
     const horsAlbum = dossierPhoto === "your_posts" || (!info?.album && dossierPhoto === "media");
+    // Le grand album « Photos » de Facebook (photos du journal) mêle toutes
+    // les années : découpé par année pour qu'on retrouve chaque photo à la sienne.
+    if (info?.album === "Photos" && info.priseLe) info.album = `Photos ${new Date(info.priseLe).getFullYear()}`;
     const annee = info?.priseLe ? new Date(info.priseLe).getFullYear() : null;
     sources.set(
       rel,
