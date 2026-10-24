@@ -10,18 +10,10 @@ const PARTENAIRES: Record<string, string> = {
   "Muse Awards": "https://museaward.com/",
 };
 
-/**
- * Les étiquettes internes de WFG 1 rangées parmi les sélections, qui ne sont
- * pas des prix (23/10, Sarah) : « Vipfiction » donne à un producteur l'accès
- * gratuit au projet. Jamais affichées sur la fiche, jamais « Primé ».
+/*
+ * Les « clés Finder » de WFG 1 (Netflix, Vipfiction, FFFMED…) ne sont pas des
+ * sélections : la base les refuse (table selections_exclues, migration 0199).
  */
-const ETIQUETTES_INTERNES = ["Vipfiction"];
-
-/** Une étiquette interne (« Vipfiction ») : ni prix, ni sélection affichée. */
-export function estEtiquetteInterne(libelle: string): boolean {
-  return ETIQUETTES_INTERNES.includes(libelle);
-}
-
 /** Un partenaire (« Muse Awards ») plutôt qu'une sélection de la Maison. */
 export function estPartenaire(libelle: string): boolean {
   return libelle in PARTENAIRES;

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { estEtiquetteInterne } from "../../LibelleSelection";
 import formStyles from "@/components/form.module.css";
 import profilStyles from "@/app/profil/profil.module.css";
 import BlocProjet from "../../BlocProjet";
@@ -39,7 +38,7 @@ export default async function ModifierProjetPage({
         <input type="hidden" name="project_id" value={projet.id} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
-        <ChampsFiche valeurs={projet} genres={genres ?? []} selections={(selections ?? []).map((s) => s.libelle).filter((l) => !estEtiquetteInterne(l))} />
+        <ChampsFiche valeurs={projet} genres={genres ?? []} selections={(selections ?? []).map((s) => s.libelle)} />
 
         <div className={profilStyles.pied}>
           {/* Rien n'est enregistré sans le bouton : la flèche ramène à « Mes projets » (01/10). */}
