@@ -6,10 +6,12 @@
  */
 import styles from "./LibelleSelection.module.css";
 
-const PARTENAIRES: Record<string, string> = {
+const PARTENAIRES: Record<string, string | null> = {
   "Muse Awards": "https://museaward.com/",
   // La Sélection Cinephilia est la leur, pas celle de la Maison (Sarah, 24/10).
   Cinephilia: "https://www.cinephiliaproductions.com/",
+  // Partenariat (Sarah, 24/10) ; site à demander — sans lien en attendant.
+  "Digital Lab Africa": null,
 };
 
 /*
@@ -38,8 +40,9 @@ export function LignePartenariats({ libelles }: { libelles: string[] }) {
 }
 
 export default function LibelleSelection({ libelle }: { libelle: string }) {
+  if (!estPartenaire(libelle)) return <>Sélection Maison des Scénaristes, {libelle}</>;
   const site = PARTENAIRES[libelle];
-  if (!site) return <>Sélection Maison des Scénaristes, {libelle}</>;
+  if (!site) return <>Partenariat {libelle}</>;
   return (
     <>
       Partenariat{" "}
