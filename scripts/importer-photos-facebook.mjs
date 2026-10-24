@@ -128,12 +128,13 @@ async function principal() {
         {
           ...champsParents,
           priseLe: date(noeud.creation_timestamp) ?? champsParents.priseLe ?? null,
-          legende: reparer(noeud.description) || reparer(noeud.title) || champsParents.legende || null,
+          legende: reparer(noeud.description) || champsParents.legende || null,
         },
         false,
       );
     }
-    const texte = reparer(noeud.post) || reparer(noeud.description) || null;
+    const texteData = Array.isArray(noeud.data) ? noeud.data.map((d) => d && reparer(d.post)).find(Boolean) : null;
+    const texte = reparer(noeud.post) || texteData || reparer(noeud.description) || null;
     for (const v of Object.values(noeud)) {
       if (v && typeof v === "object") parcourir(v, { ...champsParents, legende: champsParents.legende || texte, priseLe: date(noeud.timestamp) ?? champsParents.priseLe });
     }
@@ -157,7 +158,7 @@ async function principal() {
               albumDesc: reparer(a.description),
               albumLe: date(a.last_modified_timestamp),
               priseLe: date(p.creation_timestamp),
-              legende: reparer(p.description) || reparer(p.title) || null,
+              legende: reparer(p.description) || (reparer(p.title) !== album ? reparer(p.title) : null) || null,
             },
             true,
           );
@@ -189,7 +190,18 @@ async function principal() {
     const rel = relative(extrait, p);
     // Les « uri » de Facebook partent de la racine de l'export, parfois d'un cran au-dessus.
     const info = infos.get(rel) ?? [...infos.entries()].find(([k]) => rel.endsWith(k) || k.endsWith(rel))?.[1];
-    sources.set(rel, info ?? { album: reparer(basename(dirname(p)).replace(/_\d+$/, "")) || "Sans album" });
+    // Hors album (publiées sur le mur) : rangées par année de publication.
+    const dossierPhoto = basename(dirname(p));
+    const horsAlbum = dossierPhoto === "your_posts" || (!info?.album && dossierPhoto === "media");
+    const annee = info?.priseLe ? new Date(info.priseLe).getFullYear() : null;
+    sources.set(
+      rel,
+      horsAlbum
+        ? { ...info, album: annee ? `Publications ${annee}` : "Publications" }
+        : info?.album
+          ? info
+          : { ...info, album: reparer(dossierPhoto.replace(/_\d+$/, "")) || "Sans album" },
+    );
   }
 
   const { data: deja } = await supabase.from("photos_archives").select("chemin_export").eq("source", etat.source).limit(100000);
