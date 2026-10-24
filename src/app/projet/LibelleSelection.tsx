@@ -8,6 +8,8 @@ import styles from "./LibelleSelection.module.css";
 
 const PARTENAIRES: Record<string, string> = {
   "Muse Awards": "https://museaward.com/",
+  // La Sélection Cinephilia est la leur, pas celle de la Maison (Sarah, 24/10).
+  Cinephilia: "https://www.cinephiliaproductions.com/",
 };
 
 /*
