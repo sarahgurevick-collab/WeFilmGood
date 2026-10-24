@@ -24,6 +24,8 @@ const ELEMENTS_MENU = [
   // rouge WeFilmGood, « Match » suit la même horloge que le logo — les
   // trois couleurs des engagements, Planet, Humanity, Education. Un
   // battement sur quatre, les deux mots sont au rouge : la fusion.
+  // Le coup de pouce de la semaine (24/10) : sa page à lui seul.
+  { label: "CinéCrush", href: "/cinecrush" },
   { label: "CinéMatch", href: "/cinematch", special: true },
 ];
 
