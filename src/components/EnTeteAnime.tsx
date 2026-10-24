@@ -24,8 +24,9 @@ const ELEMENTS_MENU = [
   // rouge WeFilmGood, « Match » suit la même horloge que le logo — les
   // trois couleurs des engagements, Planet, Humanity, Education. Un
   // battement sur quatre, les deux mots sont au rouge : la fusion.
-  // Le coup de pouce de la semaine (24/10) : sa page à lui seul.
-  { label: "CinéCrush", href: "/cinecrush" },
+  // Le coup de pouce de la semaine (24/10) : sa page à lui seul, et les
+  // mêmes couleurs que CinéMatch (Sarah).
+  { label: "CinéCrush", href: "/cinecrush", special: true },
   { label: "CinéMatch", href: "/cinematch", special: true },
 ];
 
@@ -122,7 +123,7 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
                     {"special" in el && el.special ? (
                       <>
                         <span style={{ color: ROUGE_WFG }}>Ciné</span>
-                        <span style={{ color: "var(--engagement, #da2c25)" }}>Match</span>
+                        <span style={{ color: "var(--engagement, #da2c25)" }}>{el.label.replace(/^Ciné/, "")}</span>
                       </>
                     ) : (
                       el.label
