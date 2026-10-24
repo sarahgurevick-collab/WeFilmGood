@@ -86,7 +86,7 @@ export async function programmerCineCrush(formData: FormData) {
       htmlContent: `<p>Bonjour,</p>
 <p>Votre projet <strong>${echapper(projet!.title)}</strong> a été choisi comme <strong>CinéCrush</strong> de WeFilmGood pour la semaine du ${date} (du dimanche minuit au dimanche minuit).</p>
 <p>Pendant cette semaine, votre videopitch est mis en avant sur la page CinéCrush et visible de tous les membres, qui peuvent laisser leurs avis en commentaires. Vous pourrez leur répondre.</p>
-<p>D'ici là, la semaine est annoncée sur la frise de la page CinéCrush : parlez-en autour de vous, c'est vous qui ferez venir du monde.</p>
+<p>D'ici là, c'est une surprise pour les membres : rien n'est annoncé sur le site avant le dimanche. Mais vous, vous pouvez prévenir votre entourage : c'est vous qui ferez venir du monde.</p>
 <p><a href="https://app.wefilmgood.com/cinecrush">https://app.wefilmgood.com/cinecrush</a></p>
 <p>L'équipe WeFilmGood</p>`,
     });

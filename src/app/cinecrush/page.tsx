@@ -15,9 +15,11 @@ export const metadata: Metadata = { title: "CinéCrush — WeFilmGood" };
  * CinéCrush (24/10/2026, Sarah) : le coup de pouce de la semaine. En haut,
  * le projet choisi, son videopitch (visible de tous les membres, gratuit),
  * le chrono jusqu'à dimanche minuit et les avis des membres. En dessous,
- * la frise des CinéCrush : passés, en cours, à venir — comme une
- * programmation, pour que l'auteur se prépare et fasse venir du monde.
- * Les semaines à venir ne montrent que le titre et l'image.
+ * la frise des CinéCrush : celui de la semaine d'abord, puis les anciens,
+ * de plus en plus anciens vers la droite. Les semaines programmées à
+ * l'avance ne se voient que dans l'admin : « cela doit rester une
+ * surprise à chaque semaine » (Sarah, 24/10, après un premier essai où
+ * les projets à venir étaient annoncés).
  */
 
 type Crush = {
@@ -77,7 +79,11 @@ export default async function CineCrushPage({
   ]);
   const dimancheEnCours = dimanche as unknown as string;
   const finMs = fin ? Date.parse(fin as unknown as string) : Date.now();
-  const liste = (crushs ?? []).filter((c) => c.project);
+  // La semaine en cours d'abord, puis du plus récent au plus ancien ;
+  // rien de ce qui vient.
+  const liste = (crushs ?? [])
+    .filter((c) => c.project && c.semaine <= dimancheEnCours)
+    .sort((a, b) => (a.semaine < b.semaine ? 1 : -1));
   const enCours = liste.find((c) => c.semaine === dimancheEnCours) ?? null;
 
   // Le stockage est privé : les vignettes sont signées pour une heure.
@@ -114,18 +120,14 @@ export default async function CineCrushPage({
     : { data: [] };
 
   const etapes: EtapeFrise[] = liste.map((c) => {
-    const aVenir = c.semaine > dimancheEnCours;
     const passe = c.semaine < dimancheEnCours;
     const vignette = vignetteDe(c);
     return {
       id: c.id,
       visuel: vignette ? { src: vignette, alt: c.project!.title, forme: "affiche" as const } : undefined,
-      etiquette: passe ? "CinéCrush" : aVenir ? "À venir" : "Cette semaine",
+      etiquette: passe ? "CinéCrush" : "Cette semaine",
       titre: dateCourte(c.semaine),
-      // Avant leur semaine : le titre et l'image seulement (Sarah, 24/10).
-      detail: aVenir ? (
-        <span>{c.project!.title}</span>
-      ) : (
+      detail: (
         <span>
           <Link href={`/projet/${c.project!.id}`}>{c.project!.title}</Link>
           {c.project!.owner?.full_name ? <> — {c.project!.owner.full_name}</> : null}
@@ -138,7 +140,7 @@ export default async function CineCrushPage({
     (enCours && vignetteDe(enCours)) ||
     liste.map(vignetteDe).find((v): v is string => Boolean(v)) ||
     "/association/rencontres/02.jpg";
-  const annees = [...new Set(liste.map((c) => c.semaine.slice(0, 4)))];
+  const annees = [...new Set(liste.map((c) => c.semaine.slice(0, 4)))].sort();
 
   return (
     <PageShell title="CinéCrush" enTeteAnime connecte>
@@ -195,9 +197,7 @@ export default async function CineCrushPage({
       {liste.length > 0 && (
         <section>
           <h2 className={styles.friseTitre}>Les CinéCrush</h2>
-          <p className={styles.friseNote}>
-            Les semaines passées, celle-ci, et celles qui viennent.
-          </p>
+          <p className={styles.friseNote}>Celui de la semaine, puis les précédents.</p>
           <Frise
             etapes={etapes}
             titre="CinéCrush"

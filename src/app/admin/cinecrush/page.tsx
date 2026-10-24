@@ -90,9 +90,9 @@ export default async function CineCrushAdminPage({
     <PageShell nav="admin" avantTitre={<NavAdmin />} title="CinéCrush" theme="clair">
       {erreur && <p className={formStyles.error}>{erreur}</p>}
       <p className={formStyles.hint}>
-        Un projet par semaine, du dimanche minuit au dimanche minuit. Les semaines à venir sont
-        annoncées sur la page CinéCrush (titre et image seulement) ; l&apos;auteur reçoit un e-mail
-        quand vous le programmez.
+        Un projet par semaine, du dimanche minuit au dimanche minuit. Programmez au moins quatre
+        semaines d&apos;avance : les membres ne voient rien avant le dimanche, c&apos;est une
+        surprise. L&apos;auteur, lui, reçoit un e-mail quand vous le programmez.
       </p>
 
       <h2 className={adminStyles.subhead}>Programmer une semaine</h2>
