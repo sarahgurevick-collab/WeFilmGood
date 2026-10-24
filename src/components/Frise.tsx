@@ -43,6 +43,9 @@ export type EtapeFrise = {
   titre: string;
   /** Le détail, en lignes (festival, format, phrase…). */
   detail?: ReactNode;
+  /** Une rangée de petites photos sous l'étape, qui s'ouvrent en grand
+      (les photos cochées de l'année, « Notre histoire », 24/10). */
+  photos?: { vignette: string; grand: string; alt: string }[];
   /** true pour une étape passée, en retrait (gris). */
   passe?: boolean;
   /** Une petite règle des douze mois sous le titre : chaque nom est posé
@@ -227,6 +230,8 @@ export default function Frise({
   // L'affiche ouverte en grand (Sarah, 22/10 : « les affiches peuvent être
   // cliquables pour être affichées en grand »).
   const [grande, setGrande] = useState<{ src: string; alt: string } | null>(null);
+  // Les photos de l'année ouverte en grand, pour passer de l'une à l'autre.
+  const [serie, setSerie] = useState<{ photos: { grand: string; alt: string }[]; i: number } | null>(null);
   const statique = useMoinsDAnimations();
 
   useLayoutEffect(() => {
@@ -373,6 +378,17 @@ export default function Frise({
     grandeRef.current?.showModal();
   };
   const refermerGrande = () => grandeRef.current?.close();
+  const ouvrirSerie = (photos: { grand: string; alt: string }[], i: number) => {
+    setSerie({ photos, i });
+    setGrande({ src: photos[i].grand, alt: photos[i].alt });
+    grandeRef.current?.showModal();
+  };
+  const avancer = (pas: number) => {
+    if (!serie) return;
+    const i = (serie.i + pas + serie.photos.length) % serie.photos.length;
+    setSerie({ ...serie, i });
+    setGrande({ src: serie.photos[i].grand, alt: serie.photos[i].alt });
+  };
 
   const classeVisuel = (forme?: "rond" | "carte" | "affiche") =>
     forme === "carte"
@@ -468,6 +484,32 @@ export default function Frise({
                         )}
                         {etape.detail && <p className={styles.detail}>{etape.detail}</p>}
                       </div>
+                      {/* De l'autre côté de la ligne, là où la colonne est vide. */}
+                      {etape.photos && etape.photos.length > 0 && (
+                        <div className={styles.photosAnnee}>
+                          {etape.photos.slice(0, 4).map((ph, j) => (
+                            <button
+                              key={ph.vignette}
+                              type="button"
+                              className={styles.boutonPhoto}
+                              onClick={() => ouvrirSerie(etape.photos!, j)}
+                              aria-label={`Voir en grand : ${ph.alt}`}
+                            >
+                              <img src={ph.vignette} alt={ph.alt} draggable={false} loading="lazy" />
+                            </button>
+                          ))}
+                          {etape.photos.length > 4 && (
+                            <button
+                              type="button"
+                              className={styles.plusPhotos}
+                              onClick={() => ouvrirSerie(etape.photos!, 4)}
+                              aria-label={`Voir les ${etape.photos.length} photos de ${etape.titre}`}
+                            >
+                              +{etape.photos.length - 4}
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </li>
                   );
                 })}
@@ -484,7 +526,15 @@ export default function Frise({
         onClick={(e) => {
           if (e.target === e.currentTarget) refermerGrande();
         }}
-        onClose={() => setGrande(null)}
+        onClose={() => {
+          setGrande(null);
+          setSerie(null);
+        }}
+        onKeyDown={(e) => {
+          if (!serie) return;
+          if (e.key === "ArrowRight") avancer(1);
+          if (e.key === "ArrowLeft") avancer(-1);
+        }}
       >
         {grande && (
           <figure className={styles.grande}>
@@ -497,7 +547,20 @@ export default function Frise({
               ×
             </button>
             <img src={grande.src} alt={grande.alt} draggable={false} />
-            <figcaption>{grande.alt}</figcaption>
+            <figcaption>
+              {grande.alt}
+              {serie && serie.photos.length > 1 && ` · ${serie.i + 1} / ${serie.photos.length}`}
+            </figcaption>
+            {serie && serie.photos.length > 1 && (
+              <>
+                <button type="button" className={`${styles.flecheGrande} ${styles.flecheGauche}`} onClick={() => avancer(-1)} aria-label="Photo précédente">
+                  ‹
+                </button>
+                <button type="button" className={`${styles.flecheGrande} ${styles.flecheDroite}`} onClick={() => avancer(1)} aria-label="Photo suivante">
+                  ›
+                </button>
+              </>
+            )}
           </figure>
         )}
       </dialog>

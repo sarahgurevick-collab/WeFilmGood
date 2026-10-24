@@ -92,7 +92,52 @@ export function lancerImport(id: string) {
   p.unref();
 }
 
-/** Liens temporaires (1 h) vers les images du bucket, pour l'administration. */
+/**
+ * L'année d'une photo : celle écrite dans le nom de l'album (« Cannes 2012 »,
+ * « @Clermont2023 »), sinon l'année où elle a été publiée sur Facebook.
+ */
+export function anneeDePhoto(album: string, priseLe: string | null): number | null {
+  const m = album.match(/(?:^|\D)(20[1-3]\d)(?!\d)/);
+  if (m) return Number(m[1]);
+  return priseLe ? new Date(priseLe).getFullYear() : null;
+}
+
+export type PhotoAnnee = { vignette: string; grand: string; alt: string };
+
+/**
+ * Les photos cochées par Sarah, rangées par année, pour la frise « Notre
+ * histoire » (24/10/2026). Tirées dans un ordre au hasard à chaque
+ * affichage : la frise change d'elle-même d'une visite à l'autre.
+ */
+export async function photosCocheesParAnnee(): Promise<Record<number, PhotoAnnee[]>> {
+  const admin = createAdminClient();
+  if (!admin) return {};
+  const { data } = await admin
+    .from("photos_archives")
+    .select("album, prise_le, legende, chemin, chemin_vignette")
+    .eq("en_ligne", true)
+    .limit(5000);
+  const lignes = (data ?? []) as { album: string; prise_le: string | null; legende: string | null; chemin: string; chemin_vignette: string }[];
+  if (lignes.length === 0) return {};
+  const liens = await liensSignes(lignes.flatMap((l) => [l.chemin_vignette, l.chemin]));
+  const resultat: Record<number, PhotoAnnee[]> = {};
+  for (const l of lignes) {
+    const annee = anneeDePhoto(l.album, l.prise_le);
+    const vignette = liens.get(l.chemin_vignette);
+    const grand = liens.get(l.chemin);
+    if (!annee || !vignette || !grand) continue;
+    (resultat[annee] ??= []).push({ vignette, grand, alt: l.album });
+  }
+  for (const liste of Object.values(resultat)) {
+    for (let i = liste.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [liste[i], liste[j]] = [liste[j], liste[i]];
+    }
+  }
+  return resultat;
+}
+
+/** Liens temporaires (1 h) vers les images du bucket (privé). */
 export async function liensSignes(chemins: string[]) {
   const admin = createAdminClient();
   if (!admin || chemins.length === 0) return new Map<string, string>();

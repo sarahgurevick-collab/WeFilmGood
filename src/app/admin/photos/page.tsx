@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
-import { NOM_SOURCE, estAdmin, listerDepots, liensSignes, type Source } from "@/lib/photos-archives";
+import { NOM_SOURCE, anneeDePhoto, estAdmin, listerDepots, liensSignes, type Source } from "@/lib/photos-archives";
 import { createAdminClient } from "@/lib/supabase/admin";
 import NavAdmin from "../NavAdmin";
 import styles from "../portraits/portraits.module.css";
@@ -55,9 +55,10 @@ export default async function PhotosPage({ searchParams }: { searchParams: Promi
     if (quand && (!al.debut || quand < al.debut)) al.debut = quand;
     albums.set(cle, al);
   }
-  for (const al of albums.values()) al.annee = al.debut ? new Date(al.debut).getFullYear() : null;
+  // Même règle que la frise « Notre histoire » : l'année du nom de l'album, sinon la date.
+  for (const al of albums.values()) al.annee = anneeDePhoto(al.nom, al.debut || null);
   const parAnnee = new Map<string, Album[]>();
-  for (const al of [...albums.values()].sort((x, y) => x.debut.localeCompare(y.debut))) {
+  for (const al of [...albums.values()].sort((x, y) => (x.annee ?? 9999) - (y.annee ?? 9999) || x.debut.localeCompare(y.debut))) {
     const an = al.annee ? String(al.annee) : "Sans date";
     parAnnee.set(an, [...(parAnnee.get(an) ?? []), al]);
   }

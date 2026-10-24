@@ -4,6 +4,7 @@ import Frise from "@/components/Frise";
 import PageShell from "@/components/PageShell";
 import { RENCONTRES } from "@/data/association";
 import { FESTIVALS } from "@/data/festivals";
+import { photosCocheesParAnnee } from "@/lib/photos-archives";
 import { createClient } from "@/lib/supabase/server";
 import { etapesHistoire } from "./etapes";
 import VisionneusePhotos, { type PhotoHistoire } from "./VisionneusePhotos";
@@ -40,7 +41,7 @@ export default async function NotreHistoirePage() {
   return (
     <PageShell enTeteAnime connecte={!!user}>
       <Frise
-        etapes={etapesHistoire()}
+        etapes={etapesHistoire(await photosCocheesParAnnee())}
         titre="Notre histoire"
         periode="2012 — 2026"
         image="/association/rencontres/02.jpg"

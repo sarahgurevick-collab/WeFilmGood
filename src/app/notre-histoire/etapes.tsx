@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { EtapeFrise } from "@/components/Frise";
 import { AFFICHES, HISTOIRE } from "@/data/association";
 import { FESTIVALS, moisDuFestival, nomDuMois } from "@/data/festivals";
+import type { PhotoAnnee } from "@/lib/photos-archives";
 import { premierePhotoParAnnee } from "./photos";
 
 /*
@@ -25,10 +26,12 @@ function phrasesDeLAnnee(annee: number): string[] {
   );
 }
 
-export function etapesHistoire(): EtapeFrise[] {
+/** photosCochees : les photos cochées par Sarah dans /admin/photos, par année (24/10). */
+export function etapesHistoire(photosCochees: Record<number, PhotoAnnee[]> = {}): EtapeFrise[] {
   const derniereAnnee = Math.max(
     PREMIERE_ANNEE,
     ...FESTIVALS.flatMap((f) => f.selections.map((s) => s.annee ?? 0)),
+    ...Object.keys(photosCochees).map(Number),
   );
   const etapes: EtapeFrise[] = [];
   const photos = premierePhotoParAnnee();
@@ -47,10 +50,14 @@ export function etapesHistoire(): EtapeFrise[] {
       // inconnus à la fin.
       .sort((a, b) => (a.mois ?? 99) - (b.mois ?? 99));
     const phrases = phrasesDeLAnnee(annee);
-    if (selections.length === 0 && phrases.length === 0) continue;
+    const cochees = photosCochees[annee] ?? [];
+    // Une année qui n'a que des photos a aussi son étape.
+    if (selections.length === 0 && phrases.length === 0 && cochees.length === 0) continue;
 
     const affiche = AFFICHES.find((a) => a.annee === annee);
-    const photo = photos[annee];
+    // Sans affiche ni photo déposée dans public/histoire, la première photo
+    // cochée de l'année (tirée au hasard) sert de visuel.
+    const photo = photos[annee] ?? (cochees[0] ? { src: cochees[0].vignette, alt: cochees[0].alt } : undefined);
     const premier = selections[0]?.festival;
     const visuel = affiche
       ? {
@@ -76,6 +83,7 @@ export function etapesHistoire(): EtapeFrise[] {
       id: String(annee),
       visuel,
       titre: String(annee),
+      photos: cochees.length > 0 ? cochees : undefined,
       // Sarah, 23/10 : le nom des festivals seul, chacun sous son mois
       // (sans les programmes ni les phrases en gris). Ce qui était
       // affiché avant : étiquette git « frise-histoire-avant-mois ».
