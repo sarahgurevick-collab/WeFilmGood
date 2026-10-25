@@ -510,7 +510,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
           "Mon supermarché sur Mars - Marc Bigand",
           "Suzy - Margherita Caron",
           "Tu as rêvé ma fille - Julie Bellenger-Adda",
-          "La mort du père - Yves Houtman",
+          "La mort du père - Yves Houtmann",
           "Le temps d'une danse - Camille Monin",
           "L'ampoule - Sophie Galibert",
           "Voyage à Cassis - Soiliho Bodin",
