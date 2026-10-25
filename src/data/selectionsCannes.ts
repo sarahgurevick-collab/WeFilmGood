@@ -515,7 +515,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
           "L'ampoule - Sophie Galibert",
           "Voyage à Cassis - Soiliho Bodin",
           "A contre corps - Pascal Marc",
-          "Dernière heure - Martin Brossolet",
+          "Dernière heure - Martin Brossollet",
           "Live Sharing - Maïlys Volpy",
           "Extinction des Dinosaures - Kate McNaughton",
           "Tombé du ciel - Julien Segard",
