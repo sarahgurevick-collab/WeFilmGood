@@ -4,8 +4,9 @@ import styles from "./Bandeau.module.css";
 export const BANDEAUX: Record<string, string> = {
   signe: "Signé",
   tourne: "Tourné",
+  // « Primé » est réservé au scénario ; « Film primé » a été retiré et ses
+  // projets passés en « Tourné » (25/10, Sarah).
   script_prime: "Script primé",
-  film_prime: "Film primé",
   // Posé automatiquement par la base sur tout projet qui a une sélection de
   // la Maison des Scénaristes / WeFilmGood (24/10, Sarah) ; les autres passent devant.
   selection_mds: "Sélectionné",

@@ -35,7 +35,7 @@ export async function choisirBandeau(formData: FormData) {
   const projectId = formData.get("project_id") as string;
   if (!isAdmin) redirect(`/projet/${projectId}`);
   const valeur = (formData.get("bandeau") as string) || null;
-  const permis = ["signe", "tourne", "script_prime", "film_prime", "selection_mds"];
+  const permis = ["signe", "tourne", "script_prime", "selection_mds"];
   if (valeur && !permis.includes(valeur)) redirect(`/projet/${projectId}`);
   await supabase.from("projects").update({ bandeau: valeur }).eq("id", projectId);
   revalidatePath(`/projet/${projectId}`);
