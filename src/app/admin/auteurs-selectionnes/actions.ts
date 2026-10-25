@@ -16,11 +16,11 @@ import { createClient } from "@/lib/supabase/server";
  * depuis l'écran des membres. Catégorie auteur, métier scénariste ; le
  * téléphone va dans les coordonnées réservées à l'équipe.
  *
- * Videopitch (25/10, Sarah : « Visible des membres tout de suite, comme les
- * fiches de WFG 1 ») : un lien Vimeo collé à côté d'un titre crée aussi la
- * fiche du projet (titre de la sélection, statut brouillon = aucune lecture
+ * Fiche du projet (25/10, Sarah : « Visible des membres tout de suite, comme
+ * les fiches de WFG 1 », puis « crée toujours la fiche du projet avec son
+ * titre, même sans lien Vimeo ») : chaque titre crée la fiche du projet (titre de la sélection, statut brouillon = aucune lecture
  * demandée, visible des membres), avec sa sélection (bandeau automatique)
- * et le videopitch. Si la fiche existe déjà (co-auteur créé avant), le
+ * et le videopitch s'il y a un lien Vimeo. Si la fiche existe déjà (co-auteur créé avant), le
  * videopitch y est seulement ajouté s'il manque.
  */
 export type FicheAuteur = { titre: string; selections: string[]; vimeo: string; langue: "fr" | "en" };
@@ -52,9 +52,9 @@ export async function creerProfilAuteur(champs: {
   }
 
   const fiches = champs.fiches
-    .filter((f) => f.vimeo.trim())
-    .map((f) => ({ ...f, numero: numeroVimeo(f.vimeo) }));
-  if (fiches.some((f) => !f.numero)) return { erreur: "Collez le lien Vimeo de la vidéo (vimeo.com/123456789)." };
+    .filter((f) => f.titre.trim())
+    .map((f) => ({ ...f, numero: f.vimeo.trim() ? numeroVimeo(f.vimeo) : null }));
+  if (fiches.some((f) => f.vimeo.trim() && !f.numero)) return { erreur: "Collez le lien Vimeo de la vidéo (vimeo.com/123456789)." };
 
   const id = randomUUID();
   const { error } = await admin.auth.admin.createUser({
@@ -108,6 +108,7 @@ export async function creerProfilAuteur(champs: {
       projet = cree.id as string;
       await admin.from("project_selections").insert(f.selections.map((libelle) => ({ project_id: projet, libelle })));
     }
+    if (!f.numero) continue;
     const { data: existant } = await admin
       .from("project_videopitchs")
       .select("videopitch_fr, videopitch_en")
