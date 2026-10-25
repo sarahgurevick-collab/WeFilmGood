@@ -286,6 +286,20 @@ export default async function MembresPage({
   const pageCourante = Math.min(page, nbPages);
   const visibles = filtres.slice((pageCourante - 1) * PAR_PAGE, pageCourante * PAR_PAGE);
 
+  // Le téléphone dans le profil étendu (25/10, Sarah) : celui du formulaire
+  // « Qui êtes-vous ? », sinon celui des coordonnées de dépôt.
+  const telephoneDe = new Map<string, string>();
+  if (service && affichage.has("etendu") && visibles.length) {
+    const ids = visibles.map((m) => m.profile_id);
+    const [{ data: prives }, { data: contacts }] = await Promise.all([
+      service.from("profile_private_details").select("profile_id, phone").in("profile_id", ids),
+      service.from("profile_contact_info").select("profile_id, phone").in("profile_id", ids),
+    ]);
+    for (const r of [...(contacts ?? []), ...(prives ?? [])] as { profile_id: string; phone: string | null }[]) {
+      if (r.phone?.trim()) telephoneDe.set(r.profile_id, r.phone.trim());
+    }
+  }
+
   // Les projets des membres affichés, pour y aller d'un clic (27/09,
   // comme le bouton « Fichier » de WFG 1).
   const idsVisibles = visibles.filter((m) => m.nb_projets > 0).map((m) => m.profile_id);
@@ -474,6 +488,12 @@ export default async function MembresPage({
                         <span className={formStyles.hint}>
                           {[nomDuPays(m.country), m.postal_code, m.city].filter((x) => x && x !== "—").join(" · ") || "—"}
                         </span>
+                        {telephoneDe.get(m.profile_id) && (
+                          <>
+                            <br />
+                            <span className={formStyles.hint}>{telephoneDe.get(m.profile_id)}</span>
+                          </>
+                        )}
                         {m.website && (
                           <>
                             <br />
