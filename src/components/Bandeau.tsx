@@ -1,12 +1,12 @@
 import styles from "./Bandeau.module.css";
 
-/** Les bandeaux posés par l'administration sur un projet signé, tourné ou primé. */
+/** Les bandeaux posés par l'administration sur un projet signé ou tourné, et notre sélection. */
 export const BANDEAUX: Record<string, string> = {
   signe: "Signé",
   tourne: "Tourné",
-  // « Primé » est réservé au scénario ; « Film primé » a été retiré et ses
-  // projets passés en « Tourné » (25/10, Sarah).
-  script_prime: "Script primé",
+  // Plus de « primé » dans le ruban (25/10, Sarah) : « Film primé » est passé
+  // en « Tourné », « Script primé » retiré ; les prix d'ailleurs sont écrits
+  // sous le titre, le ruban ne porte que nos sélections.
   // Posé automatiquement par la base sur tout projet qui a une sélection de
   // la Maison des Scénaristes / WeFilmGood (24/10, Sarah) ; les autres passent devant.
   selection_mds: "Sélectionné",
