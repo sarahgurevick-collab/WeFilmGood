@@ -516,7 +516,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
           "Voyage à Cassis - Soiliho Bodin",
           "A contre corps - Pascal Marc",
           "Dernière heure - Martin Brossollet",
-          "Live Sharing - Maïlys Volpy",
+          "Live Sharing - Mailys Volpi",
           "Extinction des Dinosaures - Kate McNaughton",
           "Tombé du ciel - Julien Segard",
           "Rechutes - Jérôme Nunes",
