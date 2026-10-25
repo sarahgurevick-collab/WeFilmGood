@@ -97,14 +97,32 @@ export default async function AuteursSelectionnesPage() {
     }
   }
   const tous = [...parCle.values()];
-  const { data: sans } = await supabase.rpc("noms_sans_profil", { noms: tous.map((c) => c.noms[0].nom) });
+  const [{ data: sans }, { data: crees }, { data: adresses }] = await Promise.all([
+    supabase.rpc("noms_sans_profil", { noms: tous.map((c) => c.noms[0].nom) }),
+    supabase.rpc("profils_auteurs_selectionnes"),
+    supabase.from("adresses_auteurs_selectionnes").select("cle, email"),
+  ]);
   const indices = new Set(((sans ?? []) as { idx: number }[]).map((r) => r.idx));
+  // Les profils déjà créés d'ici, retrouvés par le nom (mêmes mots, tout ordre).
+  const creeDe = new Map<string, { id: string; nom: string; avatar: string | null }>();
+  for (const p of (crees ?? []) as { id: string; full_name: string | null; first_name: string | null; last_name: string | null; avatar_url: string | null }[]) {
+    const fiche = { id: p.id, nom: p.full_name ?? "", avatar: p.avatar_url };
+    for (const n of [p.full_name, `${p.first_name ?? ""} ${p.last_name ?? ""}`]) if (n?.trim()) creeDe.set(cle(n), fiche);
+  }
+  const adresseDe = new Map(((adresses ?? []) as { cle: string; email: string }[]).map((a) => [a.cle, a.email]));
   const candidats = tous
-    .filter((_, i) => indices.has(i))
+    .filter((c, i) => indices.has(i) || c.noms.some((n) => creeDe.has(cle(n.nom))))
     .map((c) => {
       // Une écriture « Prénom Nom » d'un autre festival l'emporte sur 2014 à Cannes.
       const n = c.noms.find((x) => !x.inverse) ?? c.noms[0];
-      return { ...c, propose: couper(n.nom, n.inverse), premiere: Math.min(...c.selections.map((s) => s.annee)) };
+      const dejaCree = c.noms.map((x) => creeDe.get(cle(x.nom))).find(Boolean);
+      return {
+        ...c,
+        propose: couper(n.nom, n.inverse),
+        premiere: Math.min(...c.selections.map((s) => s.annee)),
+        email: adresseDe.get(c.cle) ?? "",
+        dejaCree,
+      };
     })
     .sort((a, b) => a.premiere - b.premiere || a.propose.nom.localeCompare(b.propose.nom, "fr"));
 
@@ -114,7 +132,13 @@ export default async function AuteursSelectionnesPage() {
         <tbody>
           {candidats.map((c) => (
             <tr key={c.cle}>
-              <CreerProfil prenom={c.propose.prenom} nom={c.propose.nom} fiches={fichesDe(c)} />
+              <CreerProfil
+                prenom={c.propose.prenom}
+                nom={c.propose.nom}
+                email={c.email}
+                fiches={fichesDe(c)}
+                dejaCree={c.dejaCree}
+              />
             </tr>
           ))}
         </tbody>

@@ -1,6 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import sharp from "sharp";
 import { ERREURS, adresseValide } from "@/lib/changement-adresse";
 import { adresseFictive } from "@/lib/sans-adresse";
 import { numeroVimeo } from "@/lib/videopitch";
@@ -79,11 +80,17 @@ export async function creerProfilAuteur(champs: {
   await admin
     .from("profile_roles")
     .upsert({ profile_id: id, role_slug: "scenariste" }, { onConflict: "profile_id,role_slug", ignoreDuplicates: true });
-  if (email || telephone) {
-    await admin.from("profile_contact_info").upsert(
-      { profile_id: id, email: email || null, phone: telephone || null, updated_at: new Date().toISOString() },
-      { onConflict: "profile_id" },
-    );
+  if (email) {
+    await admin
+      .from("profile_contact_info")
+      .upsert({ profile_id: id, email, updated_at: new Date().toISOString() }, { onConflict: "profile_id" });
+  }
+  // Le téléphone au même endroit que le formulaire du profil (« Qui êtes-
+  // vous ? ») : sinon il n'y apparaît pas (Santiago Alejos, 25/10).
+  if (telephone) {
+    await admin
+      .from("profile_private_details")
+      .upsert({ profile_id: id, phone: telephone, updated_at: new Date().toISOString() }, { onConflict: "profile_id" });
   }
 
   for (const f of fiches) {
@@ -120,4 +127,53 @@ export async function creerProfilAuteur(champs: {
       .upsert({ project_id: projet, ...(existant ?? {}), [colonne]: f.numero }, { onConflict: "project_id" });
   }
   return { id };
+}
+
+const PHOTOS = ["image/jpeg", "image/png", "image/webp"];
+
+/**
+ * La photo de profil d'un auteur créé depuis l'onglet (25/10, Sarah : « c'est
+ * assez long d'aller à leur place sur leur profil »). Même traitement que la
+ * photo posée par le membre lui-même : carré de 600 pixels centré sur le
+ * visage, JPEG. Renvoie l'adresse de la photo, ou un message d'erreur.
+ */
+export async function poserPhotoAuteur(formData: FormData): Promise<{ url: string } | { erreur: string }> {
+  const supabase = await createClient();
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  if (isAdmin !== true) return { erreur: "Réservé à l'administration." };
+  const admin = createAdminClient();
+  if (!admin) return { erreur: "La photo n'a pas pu être enregistrée. Réessayez dans un instant." };
+
+  const id = String(formData.get("profile_id") ?? "");
+  const fichier = formData.get("photo");
+  if (!id || !(fichier instanceof File) || fichier.size === 0) return { erreur: "Choisissez une photo." };
+  if (fichier.type && !PHOTOS.includes(fichier.type)) {
+    return { erreur: "Cette photo n'est pas dans un format accepté (JPEG, PNG ou WebP)." };
+  }
+  let donnees: Buffer;
+  try {
+    donnees = await sharp(Buffer.from(await fichier.arrayBuffer()), { failOn: "none" })
+      .rotate()
+      .resize(600, 600, { fit: "cover", position: sharp.strategy.attention })
+      .jpeg({ quality: 84, mozjpeg: true })
+      .toBuffer();
+  } catch {
+    return { erreur: "Cette photo n'a pas pu être lue. Essayez avec une autre image." };
+  }
+
+  const chemin = `${id}/avatar-${Date.now()}.jpg`;
+  const { error } = await admin.storage.from("avatars").upload(chemin, donnees, { contentType: "image/jpeg" });
+  if (error) {
+    console.error("Photo d'auteur sélectionné refusée :", error.message);
+    return { erreur: "La photo n'a pas pu être enregistrée. Réessayez dans un instant." };
+  }
+  const {
+    data: { publicUrl },
+  } = admin.storage.from("avatars").getPublicUrl(chemin);
+  await admin.from("profiles").update({ avatar_url: publicUrl }).eq("id", id);
+  // Les photos précédentes de ce profil ne servent plus.
+  const { data: fichiers } = await admin.storage.from("avatars").list(id);
+  const anciens = (fichiers ?? []).map((f) => `${id}/${f.name}`).filter((c) => c !== chemin);
+  if (anciens.length) await admin.storage.from("avatars").remove(anciens);
+  return { url: publicUrl };
 }

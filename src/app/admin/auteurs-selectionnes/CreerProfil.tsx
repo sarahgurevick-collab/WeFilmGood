@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import formStyles from "@/components/form.module.css";
-import { creerProfilAuteur } from "./actions";
+import { creerProfilAuteur, poserPhotoAuteur } from "./actions";
 
 export type FicheProposee = {
   titre: string;
@@ -20,10 +20,26 @@ const petitChamp = { fontSize: 13, padding: "4px 6px", minWidth: 150 } as const;
  * téléphone ; puis, pour chaque projet sélectionné, son titre (prérempli,
  * à corriger) et son lien Vimeo facultatif ; enfin le bouton.
  */
-export default function CreerProfil({ prenom, nom, fiches }: { prenom: string; nom: string; fiches: FicheProposee[] }) {
-  const [champs, setChamps] = useState({ prenom, nom, email: "", telephone: "" });
+export default function CreerProfil({
+  prenom,
+  nom,
+  email = "",
+  fiches,
+  dejaCree,
+}: {
+  prenom: string;
+  nom: string;
+  /** Adresse retrouvée par Sarah (table adresses_auteurs_selectionnes). */
+  email?: string;
+  fiches: FicheProposee[];
+  /** Profil déjà créé depuis cet onglet : il reste là pour poser la photo. */
+  dejaCree?: { id: string; nom: string; avatar: string | null };
+}) {
+  const [champs, setChamps] = useState({ prenom, nom, email, telephone: "" });
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [avatar, setAvatar] = useState<string | null>(dejaCree?.avatar ?? null);
   const [videos, setVideos] = useState(fiches.map((f) => ({ titre: f.titre, vimeo: "", langue: "fr" as "fr" | "en" })));
-  const [cree, setCree] = useState<string | null>(null);
+  const [cree, setCree] = useState<string | null>(dejaCree?.id ?? null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, demarrer] = useTransition();
 
@@ -52,13 +68,49 @@ export default function CreerProfil({ prenom, nom, fiches }: { prenom: string; n
     </label>
   );
 
+  const envoyerPhoto = async (id: string, fichier: File) => {
+    const donnees = new FormData();
+    donnees.set("profile_id", id);
+    donnees.set("photo", fichier);
+    const r = await poserPhotoAuteur(donnees);
+    if ("url" in r) {
+      setAvatar(r.url);
+      setErreur(null);
+    } else setErreur(r.erreur);
+  };
+
+  const champPhoto = (surChoix?: (f: File) => void) => (
+    <label style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: 12 }}>
+      Photo de profil (facultatif)
+      <input
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        onChange={(e) => {
+          const f = e.target.files?.[0] ?? null;
+          setPhoto(f);
+          if (f && surChoix) surChoix(f);
+        }}
+        style={{ fontSize: 12 }}
+      />
+    </label>
+  );
+
   if (cree) {
     return (
-      <td>
-        <strong style={{ fontSize: 14 }}>{`${champs.prenom} ${champs.nom}`.trim()}</strong>{" "}
-        <Link href={`/membres/${cree}`} className={formStyles.hint} style={{ textDecoration: "underline" }}>
-          Profil créé
-        </Link>
+      <td style={{ paddingTop: 10, paddingBottom: 10 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
+          {avatar && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatar} alt="" width={48} height={48} style={{ borderRadius: "50%", objectFit: "cover" }} />
+          )}
+          <strong style={{ fontSize: 14 }}>{dejaCree?.nom ?? `${champs.prenom} ${champs.nom}`.trim()}</strong>
+          <Link href={`/membres/${cree}`} className={formStyles.hint} style={{ textDecoration: "underline" }}>
+            Profil créé
+          </Link>
+          {champPhoto((f) => demarrer(() => envoyerPhoto(cree, f)))}
+          {enCours && <span className={formStyles.hint}>…</span>}
+        </div>
+        {erreur && <span className={formStyles.error} style={{ fontSize: 12 }}>{erreur}</span>}
       </td>
     );
   }
@@ -73,8 +125,10 @@ export default function CreerProfil({ prenom, nom, fiches }: { prenom: string; n
               ...champs,
               fiches: fiches.map((f, i) => ({ selections: f.selections, ...videos[i] })),
             });
-            if ("id" in r) setCree(r.id);
-            else setErreur(r.erreur);
+            if ("id" in r) {
+              if (photo) await envoyerPhoto(r.id, photo);
+              setCree(r.id);
+            } else setErreur(r.erreur);
           });
         }}
         style={{ display: "flex", flexDirection: "column", gap: 10 }}
@@ -84,6 +138,7 @@ export default function CreerProfil({ prenom, nom, fiches }: { prenom: string; n
           {champ("nom", "Nom")}
           {champ("email", "Adresse email (facultatif)", "email")}
           {champ("telephone", "Téléphone (facultatif)", "tel")}
+          {champPhoto()}
         </div>
         {fiches.map((f, i) => (
           <div key={f.titre} style={{ borderLeft: "3px solid #da2c25", paddingLeft: 10 }}>
