@@ -98,7 +98,7 @@ export async function creerProfilAuteur(champs: {
     if (!projet) {
       const { data: cree, error: e } = await admin
         .from("projects")
-        .insert({ owner_id: id, title: f.titre, status: "brouillon", is_public: true })
+        .insert({ owner_id: id, title: f.titre.trim(), status: "brouillon", is_public: true })
         .select("id")
         .single();
       if (e || !cree) {
