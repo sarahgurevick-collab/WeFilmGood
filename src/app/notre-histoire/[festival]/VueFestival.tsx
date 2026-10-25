@@ -14,6 +14,8 @@ const PROGRAMMES_EN_ROUGE = [
   "Pitchs sans frontières",
   "Pitchs de la francophonie",
   "Un pitch pour un long",
+  // Sarah, 25/10 (PCDV 2015).
+  "From short to long",
 ];
 
 /**
