@@ -16,7 +16,25 @@ export type LigneSelection = {
   reste: string;
 };
 
-export type LiensSelection = Record<string, { projet?: string; membre?: string }>;
+/** Pour une ligne : sa fiche, et le profil de chacun de ses auteurs (par nom). */
+export type LienLigne = { projet?: string; membres?: Record<string, string> };
+export type LiensSelection = Record<string, LienLigne>;
+
+/* « Fabrice Pierre et Murielle Therrin », « A / B », « A, B » : un projet à
+   plusieurs auteurs. Le découpage garde les séparateurs (indices impairs)
+   pour réafficher la ligne telle qu'elle est écrite. */
+const SEPARATEUR_AUTEURS = /(\s+(?:et|&|and)\s+|\s*\/\s*|\s*,\s*)/;
+
+export function morceauxAuteurs(auteur: string): string[] {
+  return auteur.split(SEPARATEUR_AUTEURS);
+}
+
+export function separerAuteurs(auteur: string): string[] {
+  return morceauxAuteurs(auteur)
+    .filter((_, i) => i % 2 === 0)
+    .map((n) => n.trim())
+    .filter(Boolean);
+}
 
 export function decouperLigne(brut: string): LigneSelection {
   const parts = brut.split(" - ").map((p) => p.trim());
@@ -40,19 +58,24 @@ export async function rapprocherSelections(
     new Set(selections.flatMap((s) => s.blocs.flatMap((b) => b.entrees))),
   );
   if (lignes.length === 0) return {};
-  const decoupees = lignes.map(decouperLigne);
+  // Une demande par auteur : chacun des co-auteurs a son lien.
+  const demandes: { ligne: string; titre: string; auteur: string }[] = [];
+  for (const brut of lignes) {
+    const l = decouperLigne(brut);
+    const auteurs = separerAuteurs(l.auteur);
+    for (const auteur of auteurs.length ? auteurs : [""]) demandes.push({ ligne: brut, titre: l.titre, auteur });
+  }
   const { data, error } = await supabase.rpc("rapprocher_selections", {
-    lignes: decoupees.map((l) => ({ titre: l.titre, auteur: l.auteur })),
+    lignes: demandes.map((d) => ({ titre: d.titre, auteur: d.auteur })),
   });
   if (error || !data) return {};
   const liens: LiensSelection = {};
   for (const r of data as { idx: number; project_id: string | null; profile_id: string | null }[]) {
-    const brut = lignes[r.idx];
-    if (!brut) continue;
-    liens[brut] = {
-      ...(r.project_id ? { projet: r.project_id } : {}),
-      ...(r.profile_id ? { membre: r.profile_id } : {}),
-    };
+    const d = demandes[r.idx];
+    if (!d) continue;
+    const lien = (liens[d.ligne] ??= {});
+    if (r.project_id && !lien.projet) lien.projet = r.project_id;
+    if (r.profile_id) lien.membres = { ...lien.membres, [d.auteur]: r.profile_id };
   }
   return liens;
 }

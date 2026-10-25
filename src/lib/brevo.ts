@@ -1,4 +1,5 @@
 import "server-only";
+import { estAdresseFictive } from "@/lib/sans-adresse";
 
 const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 
@@ -36,6 +37,10 @@ export async function envoyerEmail({
   htmlContent,
   replyTo,
 }: EnvoyerEmailParams): Promise<boolean> {
+  // Jamais d'envoi vers une adresse fictive (profil créé sans adresse).
+  to = to.filter((d) => !estAdresseFictive(d.email));
+  if (to.length === 0) return false;
+
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL;
 

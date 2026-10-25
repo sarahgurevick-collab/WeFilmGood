@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import RoueAnnees from "@/components/RoueAnnees";
 import type { AnneeSelection } from "@/data/selectionsCannes";
 import type { PhotoEvenement } from "../photos";
-import { ancreProgramme, decouperLigne, type LiensSelection } from "../rapprochement";
+import { ancreProgramme, decouperLigne, morceauxAuteurs, type LienLigne, type LiensSelection } from "../rapprochement";
 import styles from "../notre-histoire.module.css";
 
 const PROGRAMMES_EN_ROUGE = [
@@ -175,8 +175,8 @@ function Bloc({
 
 /* « Titre - Auteur - Pays » : le titre et le nom deviennent des liens quand
    la fiche et le profil existent ; sinon la ligne reste telle quelle. */
-function Entree({ brut, lien }: { brut: string; lien?: { projet?: string; membre?: string } }) {
-  if (!lien?.projet && !lien?.membre) return <>{brut}</>;
+function Entree({ brut, lien }: { brut: string; lien?: LienLigne }) {
+  if (!lien?.projet && !lien?.membres) return <>{brut}</>;
   const l = decouperLigne(brut);
   const titreAffiche = brut.split(" - ")[0]?.trim() ?? l.titre;
   return (
@@ -191,13 +191,16 @@ function Entree({ brut, lien }: { brut: string; lien?: { projet?: string; membre
       {l.auteur && (
         <>
           {" - "}
-          {lien.membre ? (
-            <Link href={`/membres/${lien.membre}`} className={styles.lienEntree}>
-              {l.auteur}
-            </Link>
-          ) : (
-            l.auteur
-          )}
+          {morceauxAuteurs(l.auteur).map((m, i) => {
+            const id = i % 2 === 0 ? lien.membres?.[m.trim()] : undefined;
+            return id ? (
+              <Link key={i} href={`/membres/${id}`} className={styles.lienEntree}>
+                {m}
+              </Link>
+            ) : (
+              <Fragment key={i}>{m}</Fragment>
+            );
+          })}
         </>
       )}
       {l.reste && (l.reste.startsWith("(") ? ` ${l.reste}` : ` - ${l.reste}`)}
