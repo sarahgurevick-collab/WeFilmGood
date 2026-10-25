@@ -90,9 +90,8 @@ export type MembreEquipe = {
  * Sous le grand cadre (03/10, Sarah : un seul bouton pour deux contenus ne
  * se comprenait pas), un cadre par contenu, chacun avec son titre fixe et
  * sans bouton pour passer de l'un à l'autre : le moodboard (s'il y a des
- * photos), les personnages, puis l'équipe. Dans le grand cadre, une fois la
- * vidéo lancée : si le videopitch existe aussi en anglais, l'étiquette
- * devient le bouton « Version anglaise » (français par défaut).
+ * photos), les personnages, puis l'équipe. Dans le grand cadre, la pastille
+ * FR | ENG du videopitch, visible dès l'arrivée (FR par défaut, 25/10).
  */
 export default function CadreEquipe({
   equipe,
@@ -141,7 +140,6 @@ export default function CadreEquipe({
   useEffect(() => {
     if (arrivee) document.getElementById(`personnage-${arrivee}`)?.scrollIntoView({ block: "center" });
   }, [arrivee]);
-  const [videoLancee, setVideoLancee] = useState(false);
   const [langue, setLangue] = useState<"fr" | "en">(videopitch?.fr ? "fr" : "en");
 
   // Chaque membre est un lien : la photo, le nom et le rôle mènent au
@@ -258,7 +256,6 @@ export default function CadreEquipe({
           image={image}
           bandeau={bandeau ?? null}
           lienRetour={retourSaisie ?? null}
-          onVideo={() => setVideoLancee(true)}
           videopitch={
             videopitch && (videopitch.fr || videopitch.en) ? (
               <VideopitchLecteur
@@ -270,14 +267,26 @@ export default function CadreEquipe({
             ) : undefined
           }
         />
-        {videoLancee && deuxLangues && (
-          <button
-            type="button"
-            className={styles.pastilleLangue}
-            onClick={() => setLangue(langue === "fr" ? "en" : "fr")}
-          >
-            {langue === "fr" ? "Version anglaise" : "Version française"}
-          </button>
+        {/* La langue du videopitch, visible dès l'arrivée (25/10, Sarah :
+            « on ne comprend pas qu'en cliquant dessus, on a la vidéo en
+            français ») : FR par défaut, la langue en cours en rouge. */}
+        {videopitch && (videopitch.fr || videopitch.en) && (
+          <div className={styles.pastilleLangue} role="group" aria-label="Langue du videopitch">
+            {(["fr", "en"] as const)
+              .filter((l) => videopitch[l])
+              .map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  className={(deuxLangues ? langue : videopitch.fr ? "fr" : "en") === l ? styles.langueActive : styles.langue}
+                  aria-pressed={(deuxLangues ? langue : videopitch.fr ? "fr" : "en") === l}
+                  disabled={!deuxLangues}
+                  onClick={() => setLangue(l)}
+                >
+                  {l === "fr" ? "FR" : "ENG"}
+                </button>
+              ))}
+          </div>
         )}
       </div>
 

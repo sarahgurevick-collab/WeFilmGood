@@ -400,25 +400,41 @@
 
 .pastilleLangue {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 14px;
+  right: 14px;
   z-index: 8;
-  padding: 6px 12px;
-  border: 0;
+  display: flex;
+  padding: 3px;
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.6);
+}
+
+.langue,
+.langueActive {
+  padding: 5px 11px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
   color: #fff;
   font: inherit;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
-  text-transform: uppercase;
   cursor: pointer;
 }
 
-.pastilleLangue:hover {
+.langue:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.langueActive {
   background: var(--engagement, #da2c25);
   color: var(--engagement-texte, #ffffff);
+}
+
+.langue:disabled,
+.langueActive:disabled {
+  cursor: default;
 }
 
 .dessousTitre {
