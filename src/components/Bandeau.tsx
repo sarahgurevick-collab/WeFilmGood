@@ -8,7 +8,7 @@ export const BANDEAUX: Record<string, string> = {
   film_prime: "Film primé",
   // Posé automatiquement par la base sur tout projet qui a une sélection de
   // la Maison des Scénaristes / WeFilmGood (24/10, Sarah) ; les autres passent devant.
-  selection_mds: "Sélection MdS",
+  selection_mds: "Sélectionné",
 };
 
 /**
