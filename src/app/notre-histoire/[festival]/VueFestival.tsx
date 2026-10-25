@@ -8,16 +8,6 @@ import type { PhotoEvenement } from "../photos";
 import { ancreProgramme, decouperLigne, morceauxAuteurs, type LienLigne, type LiensSelection } from "../rapprochement";
 import styles from "../notre-histoire.module.css";
 
-const PROGRAMMES_EN_ROUGE = [
-  "Writers-Producers Meetings",
-  "Scenariolab",
-  "Pitchs sans frontières",
-  "Pitchs de la francophonie",
-  "Un pitch pour un long",
-  // Sarah, 25/10 (PCDV 2015).
-  "From short to long",
-];
-
 /**
  * Un festival de « Notre histoire » (15/10/2026, Sarah) : en haut, la roue
  * des années à gauche et les projets sélectionnés à droite — les noms
@@ -160,10 +150,10 @@ function Bloc({
   entrees: string[];
   liens: LiensSelection;
 }) {
-  const rouge = PROGRAMMES_EN_ROUGE.some((p) => titre.includes(p));
   return (
     <div className={styles.bloc} id={ancreProgramme(titre)}>
-      <h3 className={rouge ? styles.blocTitreRouge : styles.blocTitre}>{titre}</h3>
+      {/* Tous les programmes en rouge (Sarah, 25/10). */}
+      <h3 className={styles.blocTitreRouge}>{titre}</h3>
       <ul className={styles.entrees}>
         {entrees.map((e, i) => (
           <li key={i}>
