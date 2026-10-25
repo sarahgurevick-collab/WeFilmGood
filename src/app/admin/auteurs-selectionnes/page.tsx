@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { decouperLigne, separerAuteurs } from "@/app/notre-histoire/rapprochement";
 import NavAdmin from "../NavAdmin";
 import styles from "../admin.module.css";
-import CreerProfil from "./CreerProfil";
+import CreerProfil, { type FicheProposee } from "./CreerProfil";
 
 /** Avant 2016, WFG 1 n'existait pas : ces auteurs n'ont jamais eu de compte. */
 const AVANT = 2016;
@@ -13,8 +13,32 @@ const AVANT = 2016;
 type Candidat = {
   cle: string;
   noms: { nom: string; inverse: boolean }[];
-  selections: { festival: string; annee: number; titre: string }[];
+  selections: { festival: string; libelle: string; annee: number; titre: string }[];
 };
+
+/* Le libellé de la sélection sur une fiche projet (project_selections). */
+const LIBELLE_SELECTION: Record<string, string> = {
+  cannes: "Cannes",
+  "clermont-ferrand": "Clermont",
+  pcdv: "PCDV",
+  "serie-mania": "SerieMania",
+  "satis-vr": "Satis",
+};
+
+/* Les projets d'un auteur, un par titre (« LNA » à Cannes 2013 et au PCDV
+   2015 = une seule fiche, deux sélections). */
+function fichesDe(c: Candidat): FicheProposee[] {
+  const parTitre = new Map<string, FicheProposee>();
+  for (const s of c.selections) {
+    const k = cle(s.titre);
+    const f = parTitre.get(k) ?? { titre: s.titre, lignes: [], selections: [] };
+    const ligne = `${s.annee} · ${s.festival}`;
+    if (!f.lignes.includes(ligne)) f.lignes.push(ligne);
+    if (!f.selections.includes(s.libelle)) f.selections.push(s.libelle);
+    parTitre.set(k, f);
+  }
+  return [...parTitre.values()];
+}
 
 const cle = (s: string) =>
   s
@@ -65,7 +89,7 @@ export default async function AuteursSelectionnesPage() {
             const c = parCle.get(k) ?? { cle: k, noms: [], selections: [] };
             const inverse = f.id === "cannes" && s.annee === 2014;
             if (!c.noms.some((n) => n.nom === nom)) c.noms.push({ nom, inverse });
-            c.selections.push({ festival: f.nom, annee: s.annee, titre });
+            c.selections.push({ festival: f.nom, libelle: `${LIBELLE_SELECTION[f.id] ?? f.nom} ${s.annee}`, annee: s.annee, titre });
             parCle.set(k, c);
           }
         }
@@ -90,16 +114,7 @@ export default async function AuteursSelectionnesPage() {
         <tbody>
           {candidats.map((c) => (
             <tr key={c.cle}>
-              <td style={{ verticalAlign: "top", minWidth: 220 }}>
-                {c.selections.map((s, i) => (
-                  <div key={i} style={{ fontSize: 13 }}>
-                    {s.annee} · {s.festival} · « {s.titre} »
-                  </div>
-                ))}
-              </td>
-              <td>
-                <CreerProfil prenom={c.propose.prenom} nom={c.propose.nom} />
-              </td>
+              <CreerProfil prenom={c.propose.prenom} nom={c.propose.nom} fiches={fichesDe(c)} />
             </tr>
           ))}
         </tbody>

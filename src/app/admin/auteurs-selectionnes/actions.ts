@@ -3,6 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { ERREURS, adresseValide } from "@/lib/changement-adresse";
 import { adresseFictive } from "@/lib/sans-adresse";
+import { numeroVimeo } from "@/lib/videopitch";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,12 +15,24 @@ import { createClient } from "@/lib/supabase/server";
  * porte une adresse fictive (src/lib/sans-adresse.ts), que Sarah remplacera
  * depuis l'écran des membres. Catégorie auteur, métier scénariste ; le
  * téléphone va dans les coordonnées réservées à l'équipe.
+ *
+ * Videopitch (25/10, Sarah : « Visible des membres tout de suite, comme les
+ * fiches de WFG 1 ») : un lien Vimeo collé à côté d'un titre crée aussi la
+ * fiche du projet (titre de la sélection, statut brouillon = aucune lecture
+ * demandée, visible des membres), avec sa sélection (bandeau automatique)
+ * et le videopitch. Si la fiche existe déjà (co-auteur créé avant), le
+ * videopitch y est seulement ajouté s'il manque.
  */
+export type FicheAuteur = { titre: string; selections: string[]; vimeo: string; langue: "fr" | "en" };
+
+const cleTitre = (s: string) =>
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 export async function creerProfilAuteur(champs: {
   prenom: string;
   nom: string;
   email: string;
   telephone: string;
+  fiches: FicheAuteur[];
 }): Promise<{ id: string } | { erreur: string }> {
   const supabase = await createClient();
   const { data: isAdmin } = await supabase.rpc("is_admin");
@@ -37,6 +50,11 @@ export async function creerProfilAuteur(champs: {
     const { data: prise } = await admin.rpc("adresse_deja_utilisee", { p_email: email });
     if (prise === true) return { erreur: ERREURS.dejaUtilisee };
   }
+
+  const fiches = champs.fiches
+    .filter((f) => f.vimeo.trim())
+    .map((f) => ({ ...f, numero: numeroVimeo(f.vimeo) }));
+  if (fiches.some((f) => !f.numero)) return { erreur: "Collez le lien Vimeo de la vidéo (vimeo.com/123456789)." };
 
   const id = randomUUID();
   const { error } = await admin.auth.admin.createUser({
@@ -66,6 +84,39 @@ export async function creerProfilAuteur(champs: {
       { profile_id: id, email: email || null, phone: telephone || null, updated_at: new Date().toISOString() },
       { onConflict: "profile_id" },
     );
+  }
+
+  for (const f of fiches) {
+    const colonne = f.langue === "en" ? "videopitch_en" : "videopitch_fr";
+    // Même titre, même sélection : la fiche d'un co-auteur déjà créée.
+    const { data: memeSelection } = await admin
+      .from("project_selections")
+      .select("project_id, projects(title)")
+      .in("libelle", f.selections)
+      .returns<{ project_id: string; projects: { title: string } | null }[]>();
+    let projet = (memeSelection ?? []).find((m) => cleTitre(m.projects?.title ?? "") === cleTitre(f.titre))?.project_id;
+    if (!projet) {
+      const { data: cree, error: e } = await admin
+        .from("projects")
+        .insert({ owner_id: id, title: f.titre, status: "brouillon", is_public: true })
+        .select("id")
+        .single();
+      if (e || !cree) {
+        console.error("Fiche d'auteur sélectionné : échec", e?.message);
+        continue;
+      }
+      projet = cree.id as string;
+      await admin.from("project_selections").insert(f.selections.map((libelle) => ({ project_id: projet, libelle })));
+    }
+    const { data: existant } = await admin
+      .from("project_videopitchs")
+      .select("videopitch_fr, videopitch_en")
+      .eq("project_id", projet)
+      .maybeSingle();
+    if (existant?.[colonne]) continue;
+    await admin
+      .from("project_videopitchs")
+      .upsert({ project_id: projet, ...(existant ?? {}), [colonne]: f.numero }, { onConflict: "project_id" });
   }
   return { id };
 }
