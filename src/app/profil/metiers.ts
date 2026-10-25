@@ -1,11 +1,13 @@
 /**
  * Les métiers proposés en bloc 2 (« Votre parcours ») dépendent de la
  * catégorie choisie en bloc 1 : un auteur voit les quatre métiers
- * d'écriture, un producteur ou un autre talent voit les métiers du
+ * d'écriture (plus réalisateur et producteur), un producteur ou un autre talent voit les métiers du
  * plateau et de la fabrication.
  */
 
-export const METIERS_AUTEUR = ["scenariste", "romancier", "auteur_theatre", "auteur_bd"];
+// Réalisateur et producteur en plus : « ils sont importants même en
+// seconde position » (Sarah, 25/10/2026).
+export const METIERS_AUTEUR = ["scenariste", "romancier", "auteur_theatre", "auteur_bd", "realisateur", "producteur"];
 
 export const METIERS_AUTRES = [
   // Un producteur ou un autre talent peut aussi écrire (Sarah, 10/10/2026).
