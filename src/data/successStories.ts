@@ -109,6 +109,21 @@ export const VRAIES: { position: number; diapo: DiapoSucces }[] = [
       marque: "When I'm Done Dying",
     },
   },
+  {
+    position: 8,
+    diapo: {
+      id: "b-for-boy",
+      // Sélectionné à Cannes en 2012 par la Maison des Scénaristes, réalisé
+      // depuis (Sarah, 25/10). Texte provisoire, tiré de l'affiche qu'elle a
+      // envoyée : à remplacer par celui de Sarah. Affiche : version TMDB, plus
+      // nette, sans le logo Cinéfondation.
+      titre: "B for Boy, de Chika Anadu.",
+      phrase: "Cinéfondation – La Résidence du Festival de Cannes.",
+      image: "/succes/b-for-boy.jpg",
+      imageAlt: "Affiche du film B for Boy de Chika Anadu",
+      marque: "B for Boy",
+    },
+  },
 ];
 
 const EN_ATTENTE: DiapoSucces[] = DEGRADES.map((fond, i) => ({
