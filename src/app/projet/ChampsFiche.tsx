@@ -197,7 +197,9 @@ export default function ChampsFiche({
         </div>
       )}
       <label className={`${formStyles.field} ${styles.prix}`}>
-        <span>Lesquels ?</span>
+        {/* Notre sélection est déjà inscrite au-dessus : la case ne sert qu'aux
+            autres prix (Sarah, 25/10). */}
+        <span>{selections.length > 0 ? "Autres prix (facultatif)" : "Lesquels ?"}</span>
         <textarea
           name="awards_detail"
           rows={3}
