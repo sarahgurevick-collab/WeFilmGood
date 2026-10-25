@@ -11,7 +11,13 @@
 const nomsDePays = new Intl.DisplayNames(["fr"], { type: "region", fallback: "none" });
 
 // Codes qui ne sont pas des pays.
-const EXCLUS = new Set(["EU", "UN", "EZ", "AQ", "QO", "ZZ", "XA", "XB", "BV", "HM", "UM"]);
+const EXCLUS = new Set([
+  "EU", "UN", "EZ", "AQ", "QO", "ZZ", "XA", "XB", "BV", "HM", "UM",
+  // Anciens codes qui donnent le même nom qu'un pays actuel : « France »
+  // apparaissait deux fois (FX, France métropolitaine), Royaume-Uni (UK),
+  // Russie (SU)… (Sarah, 25/10/2026).
+  "AN", "HV", "DY", "BU", "ZR", "CS", "YU", "DD", "FX", "UK", "NH", "RH", "SU", "TP", "VD", "YD",
+]);
 
 function tousLesPays(): { code: string; nom: string }[] {
   const liste: { code: string; nom: string }[] = [];
