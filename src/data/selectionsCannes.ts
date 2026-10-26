@@ -418,7 +418,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
         entrees: [
           "RomCom - André Charles Idier",
           "Rien de faux rien de vrai - Bachir Bensaddek",
-          "Hotel Bleu - Bethany Eden Jacobson",
+          "Hotel Bleu - Bethany Jacobson",
           "Monday Man - Eric de Roquefeuil & Ian Swan",
           "Fleur de Cannes - Fabrice Pierre & Murielle Therrin",
           "Le col du fémur - Frederic Quiring",
@@ -427,7 +427,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
           "Forever Giaying - Kristina Lauren Anderson",
           '🎥 Rien Sans Rien (aka "Corsé") - Lionel Abeillon-Kaplan',
           "Zorg Le Magnifique - Loïc Nicoloff",
-          "La carte de Fûler - Pierre-Yves Borgeaud",
+          "La Carte de Fuller - Pierre-Yves Borgeaud",
           "Les prénoms de nos âmes - Thomas Le Hir",
           "L'enlèvement - Mathilde Arnaud & Jean-Yves Arnaud",
           "Le Géant d'Odessa - Nicolas Engel & Cecile Vargaftig",

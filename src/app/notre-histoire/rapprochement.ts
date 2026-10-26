@@ -63,7 +63,9 @@ export async function rapprocherSelections(
   for (const brut of lignes) {
     const l = decouperLigne(brut);
     const auteurs = separerAuteurs(l.auteur);
-    for (const auteur of auteurs.length ? auteurs : [""]) demandes.push({ ligne: brut, titre: l.titre, auteur });
+    // « Rien Sans Rien (aka "Corsé") » : la fiche s'appelle « Rien Sans Rien » (26/10).
+    const titre = l.titre.replace(/\s*\(aka\b[^)]*\)\s*/gi, " ").trim();
+    for (const auteur of auteurs.length ? auteurs : [""]) demandes.push({ ligne: brut, titre, auteur });
   }
   const { data, error } = await supabase.rpc("rapprocher_selections", {
     lignes: demandes.map((d) => ({ titre: d.titre, auteur: d.auteur })),

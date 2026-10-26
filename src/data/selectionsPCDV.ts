@@ -227,7 +227,7 @@ export const SELECTIONS_PCDV: AnneeSelection[] = [
         entrees: [
           "Un coin de soleil - Yvan Delatour (court-métrage projeté : \"La poudre\")",
           "Atomes - Daniel Metge (court-métrage projeté : \"Poussières\")",
-          "Rien sans Rien - Lionel Kaplan (court-métrage projeté : \"Abymée\")",
+          "Rien sans Rien - Lionel Abeillon-Kaplan (court-métrage projeté : \"Abymée\")",
         ],
       },
     ],
