@@ -429,7 +429,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
           "Zorg Le Magnifique - Loïc Nicoloff",
           "La carte de Fûler - Pierre-Yves Borgeaud",
           "Les prénoms de nos âmes - Thomas Le Hir",
-          "L'enlèvement - Mathilde & Jean Yves Arnaud",
+          "L'enlèvement - Mathilde Arnaud & Jean-Yves Arnaud",
           "Le Géant d'Odessa - Nicolas Engel & Cecile Vargaftig",
           "Saint Lazare - Mathieu Roy",
           "🎥 Libertad - Xavier Ladjointe",
