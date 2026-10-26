@@ -484,7 +484,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
           "Serial - Nicolas Simonin",
           "Solitonn - Gorun Aprikian & Eric de Roquefeuil",
           "Paris Damas - Benedicte Frély",
-          "La fille de la forêt - Christian Monnier & Shela O'Connor",
+          "La fille de la forêt - Christian Monnier & Sheila O'Connor",
           "Remissionen - Eric Malacchina",
           "Adrien - Frédéric Castadot",
           "La vie comme elle vient - Isabelle Destrez",
