@@ -25,6 +25,12 @@ export type LiensSelection = Record<string, LienLigne>;
    pour réafficher la ligne telle qu'elle est écrite. */
 const SEPARATEUR_AUTEURS = /(\s+(?:et|&|and)\s+|\s*\/\s*|\s*,\s*)/;
 
+/* Le titre de la liste quand la fiche porte un autre titre (traduction,
+   Sarah 27/10). */
+const TITRES_FICHE: Record<string, string> = {
+  "C'est pas une histoire d'amour": "It's not a love story",
+};
+
 export function morceauxAuteurs(auteur: string): string[] {
   return auteur.split(SEPARATEUR_AUTEURS);
 }
@@ -64,7 +70,8 @@ export async function rapprocherSelections(
     const l = decouperLigne(brut);
     const auteurs = separerAuteurs(l.auteur);
     // « Rien Sans Rien (aka "Corsé") » : la fiche s'appelle « Rien Sans Rien » (26/10).
-    const titre = l.titre.replace(/\s*\(aka\b[^)]*\)\s*/gi, " ").trim();
+    const sansAka = l.titre.replace(/\s*\(aka\b[^)]*\)\s*/gi, " ").trim();
+    const titre = TITRES_FICHE[sansAka.replace(/^[^\p{L}\p{N}]+/u, "")] ?? sansAka;
     for (const auteur of auteurs.length ? auteurs : [""]) demandes.push({ ligne: brut, titre, auteur });
   }
   const { data, error } = await supabase.rpc("rapprocher_selections", {
