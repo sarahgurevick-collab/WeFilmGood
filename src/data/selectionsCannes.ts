@@ -450,7 +450,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
         entrees: [
           "Trois petits hommes et Nine - Constance Lefevre",
           "Transatlantique - Benoit Magne",
-          "🎥 C'est pas une histoire d'amour - Daisy Dahmane",
+          "🎥 C'est pas une histoire d'amour - Cecile Ragot & Daisy Dahmane",
           "🎥 Vous êtes beau je vous aime marions nous - Coco Tassel",
           "Cougar - Fairouz M'Silti",
           "Sirène - Fanny Meeschaert",
