@@ -23,6 +23,7 @@ import { chargerFiches } from "./fiches-donnees";
 import presentation from "./presentation.module.css";
 import { nomDeLangue } from "@/lib/langues";
 import { nomDuPays } from "@/lib/pays";
+import { lecteurBandeAnnonce } from "@/lib/videopitch";
 
 const FORMATS_LISIBLES: Record<string, string> = {
   long_metrage: "Long métrage",
@@ -42,6 +43,7 @@ type Project = {
   country: string | null;
   status: string;
   bandeau: string | null;
+  trailer_url: string | null;
   visible_pour: string[] | null;
   owner_id: string;
   legacy_id: string | null;
@@ -97,7 +99,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, tagline, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, visible_pour, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
+      "id, title, tagline, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, trailer_url, visible_pour, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -499,6 +501,26 @@ export default async function ProjetPage({
             : undefined
         }
       />
+      {/* La bande-annonce des films tournés, sous le videopitch (27/10,
+          Sarah). Sarah donne les liens à Claude : pas de case à remplir. */}
+      {(() => {
+        const lecteur = project.bandeau === "tourne" ? lecteurBandeAnnonce(project.trailer_url) : null;
+        if (!lecteur) return null;
+        return (
+          <section>
+            <h2 className={presentation.section}>Bande-annonce</h2>
+            <div className={presentation.bandeAnnonce}>
+              <iframe
+                src={lecteur}
+                title={`Bande-annonce de ${project.title}`}
+                allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                allowFullScreen
+                loading="lazy"
+              />
+            </div>
+          </section>
+        );
+      })()}
       {(isOwner || estAdmin) && <AjouterUnTalent projectId={id} resultat={talent} />}
 
       {/* Sous le cadre : les prix — puis les sélections et comédiens repris
