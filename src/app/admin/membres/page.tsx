@@ -323,6 +323,18 @@ export default async function MembresPage({
   const { data: scenarios } = idsProjets.length
     ? await supabase.from("project_files").select("project_id, storage_path").eq("kind", "scenario").in("project_id", idsProjets)
     : { data: [] };
+  // La date de dépôt devant le bouton du scénario (28/10, Sarah) : la vraie
+  // date de WFG 1 pour les projets repris (migration 0211).
+  const { data: dates } = idsProjets.length
+    ? await supabase.rpc("dates_depot_projets", { ids: idsProjets })
+    : { data: [] };
+  const deposeLe = new Map(
+    ((dates ?? []) as { project_id: string; depose_le: string }[]).map((d) => [d.project_id, d.depose_le]),
+  );
+  const dateDepot = (projectId: string) =>
+    deposeLe.has(projectId) ? (
+      <span className={formStyles.hint} title="Date de dépôt"> · {dateCourte(deposeLe.get(projectId)!)}</span>
+    ) : null;
   const cheminScenario = new Map((scenarios ?? []).map((f) => [f.project_id as string, f.storage_path as string]));
   const { data: signes } = cheminScenario.size
     ? await supabase.storage.from("scenarios").createSignedUrls([...cheminScenario.values()], 60 * 60)
@@ -539,6 +551,7 @@ export default async function MembresPage({
                       {/* Le format à côté du titre (10/10, Sarah) : LM, CM, Séries, VR/360. */}
                       {formatCourt(projetsDe.get(m.profile_id)![0].format)}
                       {masquee(projetsDe.get(m.profile_id)![0].masque_par_admin_le)}
+                      {dateDepot(projetsDe.get(m.profile_id)![0].id)}
                       {scenarioDe(projetsDe.get(m.profile_id)![0].id)}
                     </>
                   ) : (
@@ -550,6 +563,7 @@ export default async function MembresPage({
                             <Link href={`/projet/${pr.id}`}>{pr.title}</Link>
                             {formatCourt(pr.format)}
                             {masquee(pr.masque_par_admin_le)}
+                            {dateDepot(pr.id)}
                             {scenarioDe(pr.id)}
                           </li>
                         ))}
