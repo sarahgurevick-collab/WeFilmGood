@@ -311,7 +311,7 @@ export async function prevenirRefuse(depot: Depot, motif: string) {
 }
 
 /**
- * L'adresse du lecteur d'une bande-annonce (YouTube ou Vimeo), à partir du
+ * L'adresse du lecteur d'une bande-annonce (YouTube, Vimeo ou Dailymotion), à partir du
  * lien collé : youtube.com/watch?v=…, youtu.be/…, youtube.com/shorts/…,
  * vimeo.com/123456789. Rien si le lien n'est pas reconnu.
  */
@@ -320,6 +320,8 @@ export function lecteurBandeAnnonce(lien: string | null | undefined): string | n
   if (!t) return null;
   const yt = t.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/i);
   if (yt) return `https://www.youtube-nocookie.com/embed/${yt[1]}?rel=0`;
+  const dm = t.match(/(?:dailymotion\.com\/video\/|dai\.ly\/)([a-z0-9]+)/i);
+  if (dm) return `https://www.dailymotion.com/embed/video/${dm[1]}`;
   const vimeo = numeroVimeo(t);
   return vimeo ? `https://player.vimeo.com/video/${vimeo}` : null;
 }
