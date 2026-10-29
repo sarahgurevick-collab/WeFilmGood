@@ -38,7 +38,7 @@ const INCLINAISON = 0.35;
 const COS_I = Math.cos(INCLINAISON);
 const SIN_I = Math.sin(INCLINAISON);
 
-export default function OrbeAttente({ taille = 104, libelle = "Chargement" }: { taille?: number; libelle?: string }) {
+export default function OrbeAttente({ taille = 140, libelle = "Chargement" }: { taille?: number; libelle?: string }) {
   const toile = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function OrbeAttente({ taille = 104, libelle = "Chargement" }: { 
 
     const centre = taille / 2;
     const rayon = taille * 0.4;
-    const grosseur = taille * 0.0105;
+    const grosseur = taille * 0.0125;
     const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let t = 1.2;
     let avant = performance.now();
@@ -83,7 +83,7 @@ export default function OrbeAttente({ taille = 104, libelle = "Chargement" }: { 
         const db = p.y - bande;
         const lb = Math.max(0, 1 - (db * db) / 0.02);
         const reflet = Math.max(l1 * l1, l2 * l2, 0.5 * lb * lb);
-        let alpha = 0.12 + 0.035 * Math.sin(p.graine + t * 1.6) + 0.32 * devant * devant + 0.75 * reflet;
+        let alpha = 0.3 + 0.05 * Math.sin(p.graine + t * 1.6) + 0.45 * devant * devant + 0.6 * reflet;
         if (alpha > 1) alpha = 1;
         return {
           x: centre + mx * rayon * persp,
