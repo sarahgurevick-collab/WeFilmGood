@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import formStyles from "@/components/form.module.css";
-import { creerProfilAuteur, poserPhotoAuteur } from "./actions";
+import { creerProfilAuteur, poserPhotoAuteur, poserSiteAuteur } from "./actions";
 
 export type FicheProposee = {
   titre: string;
@@ -33,12 +33,13 @@ export default function CreerProfil({
   email?: string;
   fiches: FicheProposee[];
   /** Profil déjà créé depuis cet onglet : il reste là pour poser la photo. */
-  dejaCree?: { id: string; nom: string; avatar: string | null };
+  dejaCree?: { id: string; nom: string; avatar: string | null; site: string | null };
 }) {
-  const [champs, setChamps] = useState({ prenom, nom, email, telephone: "" });
+  const [champs, setChamps] = useState({ prenom, nom, email, telephone: "", site: dejaCree?.site ?? "" });
   const [photo, setPhoto] = useState<File | null>(null);
   const [avatar, setAvatar] = useState<string | null>(dejaCree?.avatar ?? null);
   const [videos, setVideos] = useState(fiches.map((f) => ({ titre: f.titre, vimeo: "", langue: "fr" as "fr" | "en" })));
+  const [siteEnregistre, setSiteEnregistre] = useState(dejaCree?.site ?? "");
   const [cree, setCree] = useState<string | null>(dejaCree?.id ?? null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, demarrer] = useTransition();
@@ -108,6 +109,27 @@ export default function CreerProfil({
             Profil créé
           </Link>
           {champPhoto((f) => demarrer(() => envoyerPhoto(cree, f)))}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              demarrer(async () => {
+                const r = await poserSiteAuteur(cree, champs.site);
+                if ("site" in r) {
+                  setChamps({ ...champs, site: r.site });
+                  setSiteEnregistre(r.site);
+                  setErreur(null);
+                } else setErreur(r.erreur);
+              });
+            }}
+            style={{ display: "flex", alignItems: "flex-end", gap: 6 }}
+          >
+            {champ("site", "Site internet pro (facultatif)", "text")}
+            {champs.site.trim() !== siteEnregistre && (
+              <button type="submit" disabled={enCours} className={formStyles.submit} style={{ padding: "4px 10px", fontSize: 12 }}>
+                Enregistrer
+              </button>
+            )}
+          </form>
           {enCours && <span className={formStyles.hint}>…</span>}
         </div>
         {erreur && <span className={formStyles.error} style={{ fontSize: 12 }}>{erreur}</span>}
@@ -138,6 +160,7 @@ export default function CreerProfil({
           {champ("nom", "Nom")}
           {champ("email", "Adresse email (facultatif)", "email")}
           {champ("telephone", "Téléphone (facultatif)", "tel")}
+          {champ("site", "Site internet pro (facultatif)", "text")}
           {champPhoto()}
         </div>
         {fiches.map((f, i) => (

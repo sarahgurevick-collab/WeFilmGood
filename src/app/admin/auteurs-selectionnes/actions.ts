@@ -33,6 +33,7 @@ export async function creerProfilAuteur(champs: {
   nom: string;
   email: string;
   telephone: string;
+  site?: string;
   fiches: FicheAuteur[];
 }): Promise<{ id: string } | { erreur: string }> {
   const supabase = await createClient();
@@ -93,6 +94,9 @@ export async function creerProfilAuteur(champs: {
       .upsert({ profile_id: id, phone: telephone, updated_at: new Date().toISOString() }, { onConflict: "profile_id" });
   }
 
+  const site = lienSite(champs.site ?? "");
+  if (site) await admin.from("profiles").update({ website: site, site_reponse: true }).eq("id", id);
+
   for (const f of fiches) {
     const colonne = f.langue === "en" ? "videopitch_en" : "videopitch_fr";
     // Même titre, même sélection : la fiche d'un co-auteur déjà créée.
@@ -127,6 +131,25 @@ export async function creerProfilAuteur(champs: {
       .upsert({ project_id: projet, ...(existant ?? {}), [colonne]: f.numero }, { onConflict: "project_id" });
   }
   return { id };
+}
+
+/* « www.exemple.fr » → « https://www.exemple.fr », comme le formulaire du profil. */
+const lienSite = (brut: string) => {
+  const t = brut.trim();
+  return t && !/^https?:\/\//i.test(t) ? `https://${t}` : t;
+};
+
+/** Le site internet pro d'un auteur déjà créé depuis l'onglet (29/10, Sarah). Vide = retiré. */
+export async function poserSiteAuteur(id: string, brut: string): Promise<{ site: string } | { erreur: string }> {
+  const supabase = await createClient();
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  if (isAdmin !== true) return { erreur: "Réservé à l'administration." };
+  const admin = createAdminClient();
+  if (!admin || !id) return { erreur: ERREURS.indisponible };
+  const site = lienSite(brut);
+  const { error } = await admin.from("profiles").update({ website: site || null, site_reponse: site ? true : null }).eq("id", id);
+  if (error) return { erreur: ERREURS.indisponible };
+  return { site };
 }
 
 const PHOTOS = ["image/jpeg", "image/png", "image/webp"];

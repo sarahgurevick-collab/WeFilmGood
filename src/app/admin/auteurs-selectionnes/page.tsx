@@ -51,6 +51,10 @@ const cle = (s: string) =>
     .sort()
     .join(" ");
 
+/* Noms de la liste qui ne sont pas des auteurs à créer : Daisy Dahmane, sur
+   la ligne de « C'est pas une histoire d'amour », introuvable (Sarah, 29/10). */
+const ECARTES = new Set(["Daisy Dahmane"].map((n) => cle(n)));
+
 const PARTICULES = new Set(["le", "la", "de", "des", "du", "d", "van", "von", "da", "di", "del", "mc", "y"]);
 
 /* Prénom et nom proposés, à corriger par Sarah. En 2014 à Cannes, les noms
@@ -85,7 +89,7 @@ export default async function AuteursSelectionnesPage() {
           const titre = l.titre.replace(/^[^\p{L}\p{N}]+/u, "").replace(/^["«»“”]+/, "").trim();
           for (const nom of separerAuteurs(l.auteur)) {
             const k = cle(nom);
-            if (!k) continue;
+            if (!k || ECARTES.has(k)) continue;
             const c = parCle.get(k) ?? { cle: k, noms: [], selections: [] };
             const inverse = f.id === "cannes" && s.annee === 2014;
             if (!c.noms.some((n) => n.nom === nom)) c.noms.push({ nom, inverse });
@@ -104,9 +108,9 @@ export default async function AuteursSelectionnesPage() {
   ]);
   const indices = new Set(((sans ?? []) as { idx: number }[]).map((r) => r.idx));
   // Les profils déjà créés d'ici, retrouvés par le nom (mêmes mots, tout ordre).
-  const creeDe = new Map<string, { id: string; nom: string; avatar: string | null }>();
-  for (const p of (crees ?? []) as { id: string; full_name: string | null; first_name: string | null; last_name: string | null; avatar_url: string | null }[]) {
-    const fiche = { id: p.id, nom: p.full_name ?? "", avatar: p.avatar_url };
+  const creeDe = new Map<string, { id: string; nom: string; avatar: string | null; site: string | null }>();
+  for (const p of (crees ?? []) as { id: string; full_name: string | null; first_name: string | null; last_name: string | null; avatar_url: string | null; website: string | null }[]) {
+    const fiche = { id: p.id, nom: p.full_name ?? "", avatar: p.avatar_url, site: p.website };
     for (const n of [p.full_name, `${p.first_name ?? ""} ${p.last_name ?? ""}`]) if (n?.trim()) creeDe.set(cle(n), fiche);
   }
   const adresseDe = new Map(((adresses ?? []) as { cle: string; email: string }[]).map((a) => [a.cle, a.email]));
