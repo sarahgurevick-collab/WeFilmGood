@@ -26,7 +26,7 @@ const CASES: [number, number, number][] = [
   [2, 2, 6],
 ];
 
-export default function MarcheRouge({ taille = 80, libelle = "Chargement" }: { taille?: number; libelle?: string }) {
+export default function MarcheRouge({ taille = 104, libelle = "Chargement" }: { taille?: number; libelle?: string }) {
   return (
     <span className={styles.marche} style={{ width: taille, height: taille }} role="status" aria-label={libelle}>
       <svg viewBox="40 -10 1140 1140" width={taille} height={taille} aria-hidden="true">
@@ -45,7 +45,7 @@ export default function MarcheRouge({ taille = 80, libelle = "Chargement" }: { t
             <rect
               key={n}
               className={styles.cube}
-              style={{ animationDelay: `${(n - 1) * 0.1}s` }}
+              style={{ animationDelay: `${(n - 1) * 0.16}s` }}
               x={X[c] + ECART}
               y={Y[l] + ECART}
               width={X[c + 1] - X[c] - 2 * ECART}

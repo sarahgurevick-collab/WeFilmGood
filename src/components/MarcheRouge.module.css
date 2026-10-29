@@ -19,7 +19,7 @@
   /* Éteint, le carré reste un peu visible : la forme en marches du logo
      se lit en permanence, et seule la lumière la parcourt. */
   opacity: 0.22;
-  animation: allumer 1.85s infinite;
+  animation: allumer 2.8s infinite;
 }
 
 @keyframes allumer {
