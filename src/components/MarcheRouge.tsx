@@ -8,12 +8,12 @@ import styles from "./MarcheRouge.module.css";
  */
 const CASES: (number | null)[] = [null, null, 1, null, 2, 4, 3, 5, 6];
 
-export default function MarcheRouge({ taille = 72 }: { taille?: number }) {
+export default function MarcheRouge({ taille = 72, libelle = "Chargement" }: { taille?: number; libelle?: string }) {
   return (
-    <div className={styles.marche} style={{ width: taille, height: taille }} role="status" aria-label="Chargement">
+    <span className={styles.marche} style={{ width: taille, height: taille }} role="status" aria-label={libelle}>
       {CASES.map((n, i) => (
         <span key={i} className={n ? styles.cube : undefined} style={n ? { animationDelay: `${(n - 1) * 0.1}s` } : undefined} />
       ))}
-    </div>
+    </span>
   );
 }

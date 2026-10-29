@@ -20,7 +20,7 @@ import EquipeCarte from "./EquipeCarte";
 import formStyles from "./form.module.css";
 import NuageCouleurs from "./NuageCouleurs";
 import NuageDisque from "./NuageDisque";
-import TroisBilles from "./TroisBilles";
+import MarcheRouge from "./MarcheRouge";
 import styles from "./Finder.module.css";
 import projetsStyles from "@/app/pitchotheque/projets.module.css";
 
@@ -230,13 +230,13 @@ export default function Finder({
             }}
           />
         </span>
-        {/* Un seul emplacement, à droite du champ (03/10, demande de Sarah) : les
-            billes pendant la recherche, puis le nombre de résultats quand elles
+        {/* Un seul emplacement, à droite du champ (03/10, demande de Sarah) : l'escalier
+            rouge (29/10, avant : trois billes) pendant la recherche, puis le nombre de résultats quand elles
             s'arrêtent. Sans mot cherché, c'est le petit disque du nuage. */}
         {requete.trim() && (
           <span className={styles.emplacementResultat} aria-live="polite">
             {enCours ? (
-              <TroisBilles libelle="Recherche…" />
+              <MarcheRouge taille={22} libelle="Recherche en cours" />
             ) : (
               <span className={styles.compte}>
                 {nombreEnTete} résultat{nombreEnTete > 1 ? "s" : ""}
@@ -322,7 +322,7 @@ export default function Finder({
             </div>
           </div>
           {nuageEnCours && !nuage ? (
-            <p className={styles.indice}>Chargement…</p>
+            <div className={styles.indice}><MarcheRouge taille={36} /></div>
           ) : !nuage || nuage.length === 0 ? (
             <p className={styles.indice}>Aucun mot-clé pour l&apos;instant.</p>
           ) : nuage.length >= G_MINIMUM ? (
