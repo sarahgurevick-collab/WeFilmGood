@@ -1,6 +1,6 @@
 "use client";
 
-import MarcheRouge from "./MarcheRouge";
+import OrbeAttente from "./OrbeAttente";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { compterRecherche, type DecompteRecherche } from "@/app/pitchotheque/actions";
@@ -66,7 +66,7 @@ export default function RechercheAccueil({
       {requete.trim() && (
         <div className={styles.reponse} aria-live="polite">
           {enCours && !decompte ? (
-            <div className={styles.attente}><MarcheRouge taille={40} libelle="Recherche en cours" /></div>
+            <div className={styles.attente}><OrbeAttente taille={40} libelle="Recherche en cours" /></div>
           ) : total === 0 ? (
             <p className={styles.attente}>
               Aucun résultat pour «&nbsp;{requete}&nbsp;».
