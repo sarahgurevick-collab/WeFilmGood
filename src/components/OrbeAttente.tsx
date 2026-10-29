@@ -38,7 +38,7 @@ const INCLINAISON = 0.35;
 const COS_I = Math.cos(INCLINAISON);
 const SIN_I = Math.sin(INCLINAISON);
 
-export default function OrbeAttente({ taille = 140, libelle = "Chargement" }: { taille?: number; libelle?: string }) {
+export default function OrbeAttente({ taille = 200, libelle = "Chargement" }: { taille?: number; libelle?: string }) {
   const toile = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -60,7 +60,19 @@ export default function OrbeAttente({ taille = 140, libelle = "Chargement" }: { 
 
     const dessiner = () => {
       ctx.clearRect(0, 0, taille, taille);
-      ctx.fillStyle = getComputedStyle(c).color;
+      // La couleur du moment, et une version éclaircie pour les points de
+      // devant : la sphère paraît éclairée de l'intérieur.
+      const couleur = getComputedStyle(c).color;
+      const m = couleur.match(/\d+/g) ?? ["218", "44", "37"];
+      const [cr, cg, cb] = m.slice(0, 3).map(Number);
+      const claire = (k: number) => `rgb(${Math.round(cr + (255 - cr) * k)}, ${Math.round(cg + (255 - cg) * k)}, ${Math.round(cb + (255 - cb) * k)})`;
+      // Halo coloré derrière la sphère.
+      const halo = ctx.createRadialGradient(centre, centre, rayon * 0.2, centre, centre, rayon * 1.25);
+      halo.addColorStop(0, `rgba(${cr}, ${cg}, ${cb}, 0.28)`);
+      halo.addColorStop(1, `rgba(${cr}, ${cg}, ${cb}, 0)`);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = halo;
+      ctx.fillRect(0, 0, taille, taille);
       const theta = t * 0.7;
       const cosT = Math.cos(theta);
       const sinT = Math.sin(theta);
@@ -83,7 +95,7 @@ export default function OrbeAttente({ taille = 140, libelle = "Chargement" }: { 
         const db = p.y - bande;
         const lb = Math.max(0, 1 - (db * db) / 0.02);
         const reflet = Math.max(l1 * l1, l2 * l2, 0.5 * lb * lb);
-        let alpha = 0.3 + 0.05 * Math.sin(p.graine + t * 1.6) + 0.45 * devant * devant + 0.6 * reflet;
+        let alpha = 0.45 + 0.05 * Math.sin(p.graine + t * 1.6) + 0.5 * devant * devant + 0.5 * reflet;
         if (alpha > 1) alpha = 1;
         return {
           x: centre + mx * rayon * persp,
@@ -91,18 +103,24 @@ export default function OrbeAttente({ taille = 140, libelle = "Chargement" }: { 
           r: grosseur * (0.45 + 0.75 * devant) * persp * (1 + 0.9 * reflet),
           alpha,
           devant,
+          reflet,
         };
       });
       // Le fond d'abord, le devant ensuite.
+      ctx.shadowColor = couleur;
       for (const passe of [0, 1]) {
+        // Les points de devant rayonnent un peu.
+        ctx.shadowBlur = passe === 1 ? grosseur * 1.6 : 0;
         for (const e of ecran) {
           if ((e.devant >= 0.5) !== (passe === 1)) continue;
           ctx.globalAlpha = e.alpha;
+          ctx.fillStyle = passe === 1 ? claire(0.15 * e.devant + 0.45 * e.reflet) : couleur;
           ctx.beginPath();
           ctx.arc(e.x, e.y, e.r, 0, DEUX_PI);
           ctx.fill();
         }
       }
+      ctx.shadowBlur = 0;
       ctx.globalAlpha = 1;
     };
 

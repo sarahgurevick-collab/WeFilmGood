@@ -108,7 +108,7 @@ export default function ChercheurPortrait({
           {/* Plus de deuxième bouton « Enregistrer ce portrait » (06/10, Sarah : « je clique
               sur les deux ») : il faisait exactement la même chose que « Enregistrer »,
               en bas du cadre. La croix de la case rappelle que le choix n'est pas encore enregistré. */}
-          {!choisi && enCours && <span style={{ display: "inline-flex", verticalAlign: "middle", marginLeft: 6 }}><OrbeAttente taille={34} libelle="Recherche en cours" /></span>}
+          {!choisi && enCours && <span style={{ display: "inline-flex", verticalAlign: "middle", marginLeft: 6 }}><OrbeAttente taille={44} libelle="Recherche en cours" /></span>}
         </span>
       </label>
 

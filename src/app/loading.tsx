@@ -4,7 +4,7 @@ import OrbeAttente from "@/components/OrbeAttente";
 export default function Chargement() {
   return (
     <div style={{ position: "fixed", inset: 0, display: "grid", placeItems: "center", background: "var(--bg)", zIndex: 50 }}>
-      <OrbeAttente taille={170} />
+      <OrbeAttente taille={240} />
     </div>
   );
 }
