@@ -98,6 +98,8 @@ export default function CadreEquipe({
   personnages,
   moodboard,
   videopitch,
+  bandeAnnonce,
+  langueProjet,
   image,
   bandeau,
   avis,
@@ -121,6 +123,12 @@ export default function CadreEquipe({
   bandeau?: string | null;
   /** Le videopitch (identifiants Vimeo), s'il y en a un. */
   videopitch?: { fr: string | null; en: string | null; titre: string };
+  /** La bande-annonce d'un film tourné (adresse du lecteur) : elle prend la
+      place du videopitch dans le cadre (29/10, Sarah). */
+  bandeAnnonce?: string | null;
+  /** La langue du projet (« fr », « en »…) : choisit le videopitch gardé
+      en second choix à côté de la bande-annonce. */
+  langueProjet?: string | null;
   /** Pour l'auteur et l'admin : la page de saisie où ramène un clic sur l'image. */
   retourSaisie?: string | null;
 }) {
@@ -141,6 +149,7 @@ export default function CadreEquipe({
     if (arrivee) document.getElementById(`personnage-${arrivee}`)?.scrollIntoView({ block: "center" });
   }, [arrivee]);
   const [langue, setLangue] = useState<"fr" | "en">(videopitch?.fr ? "fr" : "en");
+  const [voirBA, setVoirBA] = useState(true);
 
   // Chaque membre est un lien : la photo, le nom et le rôle mènent au
   // profil, comme un talent ou un personnage (plus de bouton « Voir le
@@ -243,6 +252,10 @@ export default function CadreEquipe({
   // La tagline et le résumé sont sous le titre depuis le 14/10 (AccrocheProjet).
 
   const deuxLangues = Boolean(videopitch?.fr && videopitch?.en);
+  const anglophone = Boolean(langueProjet && langueProjet !== "fr");
+  const vpSecond = videopitch
+    ? (anglophone ? videopitch.en ?? videopitch.fr : videopitch.fr ?? videopitch.en) ?? null
+    : null;
 
   return (
     <div className={styles.colonnes}>
@@ -257,7 +270,14 @@ export default function CadreEquipe({
           bandeau={bandeau ?? null}
           lienRetour={retourSaisie ?? null}
           videopitch={
-            videopitch && (videopitch.fr || videopitch.en) ? (
+            bandeAnnonce ? (
+              <VideopitchLecteur
+                fr={vpSecond}
+                en={null}
+                titre={videopitch?.titre ?? ""}
+                lien={voirBA || !vpSecond ? bandeAnnonce : null}
+              />
+            ) : videopitch && (videopitch.fr || videopitch.en) ? (
               <VideopitchLecteur
                 fr={videopitch.fr}
                 en={videopitch.en}
@@ -267,10 +287,29 @@ export default function CadreEquipe({
             ) : undefined
           }
         />
-        {/* La langue du videopitch, visible dès l'arrivée (25/10, Sarah :
+        {/* Film tourné (29/10, Sarah) : la bande-annonce d'abord ; le
+            videopitch en second choix, dans la langue du projet (anglais
+            pour un projet anglophone, sinon français). */}
+        {bandeAnnonce ? (
+          <div className={styles.pastilleLangue} role="group" aria-label="Vidéo">
+            {([["ba", "Bande-annonce"], ...(vpSecond ? [["vp", "Videopitch"]] : [])] as [string, string][]).map(([cle, libelle]) => (
+              <button
+                key={cle}
+                type="button"
+                className={(cle === "ba") === (voirBA || !vpSecond) ? styles.langueActive : styles.langue}
+                aria-pressed={(cle === "ba") === (voirBA || !vpSecond)}
+                disabled={!vpSecond}
+                onClick={() => setVoirBA(cle === "ba")}
+              >
+                {libelle}
+              </button>
+            ))}
+          </div>
+        ) : (
+        /* La langue du videopitch, visible dès l'arrivée (25/10, Sarah :
             « on ne comprend pas qu'en cliquant dessus, on a la vidéo en
-            français ») : FR par défaut, la langue en cours en rouge. */}
-        {videopitch && (videopitch.fr || videopitch.en) && (
+            français ») : FR par défaut, la langue en cours en rouge. */
+        videopitch && (videopitch.fr || videopitch.en) && (
           <div className={styles.pastilleLangue} role="group" aria-label="Langue du videopitch">
             {(["fr", "en"] as const)
               .filter((l) => videopitch[l])
@@ -287,7 +326,7 @@ export default function CadreEquipe({
                 </button>
               ))}
           </div>
-        )}
+        ))}
       </div>
 
       {/* Sous le cadre : l'« Avis WeFilmGood » d'un projet labellisé, la

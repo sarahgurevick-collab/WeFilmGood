@@ -13,6 +13,7 @@ export default function VideopitchLecteur({
   en,
   titre,
   langue: langueImposee,
+  lien,
 }: {
   fr: string | null;
   en: string | null;
@@ -20,10 +21,28 @@ export default function VideopitchLecteur({
   /** Langue choisie ailleurs (le bouton du cadre de la fiche projet) :
       l'interrupteur n'est alors pas affiché. */
   langue?: "fr" | "en";
+  /** Une autre vidéo à lire à la place (la bande-annonce d'un film tourné,
+      adresse de lecteur YouTube, Vimeo ou Dailymotion). */
+  lien?: string | null;
 }) {
   const [langueLocale, setLangue] = useState<"fr" | "en">(fr ? "fr" : "en");
   const langue = langueImposee ?? langueLocale;
   const vimeoId = (langue === "fr" ? fr : en) ?? fr ?? en;
+  if (lien) {
+    return (
+      <div className={styles.lecteur}>
+        <div className={styles.ecran}>
+          <iframe
+            key={lien}
+            src={lien}
+            allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+            allowFullScreen
+            title={`Bande-annonce — ${titre}`}
+          />
+        </div>
+      </div>
+    );
+  }
   if (!vimeoId) return null;
 
   return (

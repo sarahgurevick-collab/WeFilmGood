@@ -500,27 +500,9 @@ export default async function ProjetPage({
             ? { fr: videopitch.videopitch_fr, en: videopitch.videopitch_en, titre: project.title }
             : undefined
         }
+        bandeAnnonce={project.bandeau === "tourne" ? lecteurBandeAnnonce(project.trailer_url) : null}
+        langueProjet={project.language}
       />
-      {/* La bande-annonce des films tournés, sous le videopitch (27/10,
-          Sarah). Sarah donne les liens à Claude : pas de case à remplir. */}
-      {(() => {
-        const lecteur = project.bandeau === "tourne" ? lecteurBandeAnnonce(project.trailer_url) : null;
-        if (!lecteur) return null;
-        return (
-          <section>
-            <h2 className={presentation.section}>Bande-annonce</h2>
-            <div className={presentation.bandeAnnonce}>
-              <iframe
-                src={lecteur}
-                title={`Bande-annonce de ${project.title}`}
-                allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                allowFullScreen
-                loading="lazy"
-              />
-            </div>
-          </section>
-        );
-      })()}
       {(isOwner || estAdmin) && <AjouterUnTalent projectId={id} resultat={talent} />}
 
       {/* Sous le cadre : les prix — puis les sélections et comédiens repris
