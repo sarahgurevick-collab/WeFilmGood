@@ -1,17 +1,21 @@
 .marche {
-  display: inline-grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 6%;
+  display: inline-block;
+  line-height: 0;
   /* La couleur du moment : celle du logo et des boutons (horloge des
      engagements, globals.css). L'escalier change de couleur en même temps
      qu'eux, pour qu'on comprenne qu'il vient du logo. */
   color: var(--engagement, #da2c25);
 }
 
+.arc {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 34;
+  stroke-linecap: round;
+}
+
 .cube {
-  background: currentColor;
-  border-radius: 6%;
+  fill: currentColor;
   /* Éteint, le carré reste un peu visible : la forme en marches du logo
      se lit en permanence, et seule la lumière la parcourt. */
   opacity: 0.22;

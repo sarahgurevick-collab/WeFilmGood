@@ -236,7 +236,7 @@ export default function Finder({
         {requete.trim() && (
           <span className={styles.emplacementResultat} aria-live="polite">
             {enCours ? (
-              <MarcheRouge taille={32} libelle="Recherche en cours" />
+              <MarcheRouge taille={26} libelle="Recherche en cours" />
             ) : (
               <span className={styles.compte}>
                 {nombreEnTete} résultat{nombreEnTete > 1 ? "s" : ""}
@@ -322,7 +322,7 @@ export default function Finder({
             </div>
           </div>
           {nuageEnCours && !nuage ? (
-            <div className={styles.indice}><MarcheRouge taille={52} /></div>
+            <div className={styles.indice}><MarcheRouge taille={40} /></div>
           ) : !nuage || nuage.length === 0 ? (
             <p className={styles.indice}>Aucun mot-clé pour l&apos;instant.</p>
           ) : nuage.length >= G_MINIMUM ? (

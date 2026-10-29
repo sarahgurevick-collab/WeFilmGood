@@ -66,7 +66,7 @@ export default function RechercheAccueil({
       {requete.trim() && (
         <div className={styles.reponse} aria-live="polite">
           {enCours && !decompte ? (
-            <div className={styles.attente}><MarcheRouge taille={40} libelle="Recherche en cours" /></div>
+            <div className={styles.attente}><MarcheRouge taille={32} libelle="Recherche en cours" /></div>
           ) : total === 0 ? (
             <p className={styles.attente}>
               Aucun résultat pour «&nbsp;{requete}&nbsp;».
