@@ -8,7 +8,7 @@ import styles from "./MarcheRouge.module.css";
  */
 const CASES: (number | null)[] = [null, null, 1, null, 2, 4, 3, 5, 6];
 
-export default function MarcheRouge({ taille = 72, libelle = "Chargement" }: { taille?: number; libelle?: string }) {
+export default function MarcheRouge({ taille = 104, libelle = "Chargement" }: { taille?: number; libelle?: string }) {
   return (
     <span className={styles.marche} style={{ width: taille, height: taille }} role="status" aria-label={libelle}>
       {CASES.map((n, i) => (

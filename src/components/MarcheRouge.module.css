@@ -2,25 +2,34 @@
   display: inline-grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
+  gap: 6%;
+  /* La couleur du moment : celle du logo et des boutons (horloge des
+     engagements, globals.css). L'escalier change de couleur en même temps
+     qu'eux, pour qu'on comprenne qu'il vient du logo. */
+  color: var(--engagement, #da2c25);
 }
 
 .cube {
-  background: #da2c25;
-  opacity: 0;
+  background: currentColor;
+  border-radius: 6%;
+  /* Éteint, le carré reste un peu visible : la forme en marches du logo
+     se lit en permanence, et seule la lumière la parcourt. */
+  opacity: 0.22;
   animation: allumer 1.85s infinite;
 }
 
 @keyframes allumer {
   0%,
-  10% {
-    opacity: 0;
+  8% {
+    opacity: 0.22;
   }
-  50% {
+  22%,
+  40% {
     opacity: 1;
   }
-  90%,
+  70%,
   100% {
-    opacity: 0;
+    opacity: 0.22;
   }
 }
 
