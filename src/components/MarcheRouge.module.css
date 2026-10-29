@@ -1,0 +1,33 @@
+.marche {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.cube {
+  background: #da2c25;
+  opacity: 0;
+  animation: allumer 1.85s infinite;
+}
+
+@keyframes allumer {
+  0%,
+  10% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  90%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Sans animation (réglage du téléphone) : l'escalier reste allumé. */
+@media (prefers-reduced-motion: reduce) {
+  .cube {
+    animation: none;
+    opacity: 1;
+  }
+}
