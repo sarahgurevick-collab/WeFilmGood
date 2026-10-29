@@ -8,13 +8,15 @@ import styles from "./MarcheRouge.module.css";
  * qui s'allument tour à tour (d'après l'animation de chargement de L'inis,
  * demandée par Sarah le 29/10 ; l'arc ajouté le même jour pour qu'on
  * reconnaisse le logo). Mêmes cotes que Logo.tsx : centre (608,5 ; 559,5),
- * rayon 531,5, marches aux abscisses 444, 643, 830 et aux ordonnées 358,
- * 590, 823. Ordre d'allumage : marche du haut à droite, la diagonale,
+ * rayon 531,5 ; les marches partent de l'angle de l'encoche (444 ; 358). Ordre d'allumage : marche du haut à droite, la diagonale,
  * puis le reste.
  */
-const X = [444, 643, 830, 1040];
-const Y = [358, 590, 823, 1060];
-const ECART = 14;
+/* Trois marches carrées, collées, qui partent de l'angle de l'encoche
+   (444 ; 358) et restent entières à l'intérieur de l'arc : rien n'est
+   découpé par le cercle (demande de Sarah, 29/10). */
+const X = [444, 617, 790, 963];
+const Y = [358, 531, 704, 877];
+const ECART = 0;
 
 /* [colonne, ligne, rang d'allumage] */
 const CASES: [number, number, number][] = [
@@ -30,17 +32,12 @@ export default function MarcheRouge({ taille = 104, libelle = "Chargement" }: { 
   return (
     <span className={styles.marche} style={{ width: taille, height: taille }} role="status" aria-label={libelle}>
       <svg viewBox="40 -10 1140 1140" width={taille} height={taille} aria-hidden="true">
-        <defs>
-          <clipPath id="marche-disque">
-            <circle cx="608.5" cy="559.5" r="486" />
-          </clipPath>
-        </defs>
         {/* L'arc du disque, de l'angle haut-droit de l'encoche à son pied. */}
         <path
           className={styles.arc}
           d="M 1100.3 358 A 531.5 531.5 0 1 0 444 1064.9"
         />
-        <g clipPath="url(#marche-disque)">
+        <g>
           {CASES.map(([c, l, n]) => (
             <rect
               key={n}
