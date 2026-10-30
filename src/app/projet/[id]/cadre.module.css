@@ -641,6 +641,25 @@ a.membreLien:hover .portrait {
     color: var(--rouge-wfg);
   }
 
+  /* Raccourcis de l'administration dans la description (30/10). */
+  .detailAdmin {
+    margin: 18px 0 0;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line, #ccc);
+    font-size: 13px;
+  }
+
+  .detailAdmin a,
+  .detailAdmin button {
+    color: var(--rouge-wfg);
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
   /* Dans la colonne, rien ne se déplie plus : le portrait choisi est
      seulement cerclé de rouge, et sa biographie s'affiche à droite. */
   .personnagesCadre li.personnageOuvert,

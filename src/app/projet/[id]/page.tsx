@@ -10,6 +10,7 @@ import PartageProjet from "./PartageProjet";
 import { choisirVisibilite, setShareLink } from "./actions";
 import labelStyles from "./label.module.css";
 import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
+import { prendreLaPlace } from "@/app/admin/profils/prise-de-place";
 import LibelleSelection, { LignePartenariats, estPartenaire } from "../LibelleSelection";
 import AccrocheProjet from "./AccrocheProjet";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
@@ -465,8 +466,28 @@ export default async function ProjetPage({
         </p>
       )}
 
+      {/* Raccourcis de l'administration (30/10, Sarah) : corriger la fiche
+          d'un membre depuis la Galaxie, sans passer par l'admin. Les blocs
+          de saisie s'ouvrent pour l'administration (chargerProjetAModifier). */}
+      {estAdmin === true && !isOwner && (
+        <div className={presentation.barreAdmin}>
+          <span>Admin :</span>
+          {BLOCS.map((b) => (
+            <Link key={b.cle} href={hrefBloc(project.id, b.cle)}>
+              {b.titre}
+            </Link>
+          ))}
+          <form action={prendreLaPlace}>
+            <input type="hidden" name="profile_id" value={project.owner_id} />
+            <input type="hidden" name="retour" value={`/projet/${project.id}`} />
+            <button type="submit">Se mettre à la place de l&apos;auteur</button>
+          </form>
+        </div>
+      )}
+
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
+        admin={estAdmin === true ? { projetId: project.id } : null}
         // La tagline et le résumé sont revenus sous le titre (14/10, Sarah).
         porteur={project.owner_id}
         retourSaisie={

@@ -80,7 +80,10 @@ export async function prendreLaPlace(formData: FormData) {
   });
   if (bascule) redirect("/admin/profils?erreur=bascule");
 
-  // Comme le membre lui-même après connexion : la Carte des étoiles.
+  // Depuis une fiche projet (30/10) : on y revient, à la place du membre.
+  // Sinon, comme le membre lui-même après connexion : les Galaxies.
+  const retourPage = formData.get("retour");
+  if (typeof retourPage === "string" && retourPage.startsWith("/") && !retourPage.startsWith("//")) redirect(retourPage);
   redirect("/pitchotheque");
 }
 

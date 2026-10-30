@@ -7,6 +7,7 @@ import ContactEnveloppe from "./ContactEnveloppe";
 import CoteFiche from "./CoteFiche";
 import EventailPersonnages from "./EventailPersonnages";
 import OrbiteEquipe from "./OrbiteEquipe";
+import { prendreLaPlace } from "@/app/admin/profils/prise-de-place";
 import MoodboardPhotos from "./MoodboardPhotos";
 import styles from "./cadre.module.css";
 
@@ -106,7 +107,12 @@ export default function CadreEquipe({
   retourSaisie,
   personnageOuvert,
   porteur,
+  admin,
 }: {
+  /** Pour l'administration seulement : l'identifiant du projet, pour les
+      raccourcis de correction dans la description (30/10, Sarah : « aller en
+      admin, trouver le profil de l'auteur et remplacer la photo prend du temps »). */
+  admin?: { projetId: string } | null;
   /** La clé du porteur du projet dans l'équipe : l'enveloppe se pose sous son portrait. */
   porteur?: string | null;
   /** Le personnage sur lequel on arrive depuis la recherche : biographie dépliée. */
@@ -418,6 +424,23 @@ export default function CadreEquipe({
                     Son site
                   </a>
                 </p>
+              )}
+              {/* Raccourcis de l'administration (30/10, Sarah) : corriger la
+                  photo, son cadrage ou le texte d'un personnage sans passer
+                  par l'admin ; se mettre à la place d'un membre de l'équipe. */}
+              {admin && personnageChoisi && (
+                <p className={styles.detailAdmin}>
+                  <Link href={`/projet/${admin.projetId}/personnages#perso-${personnageChoisi.id}`}>
+                    Modifier ce personnage (photo, cadrage, texte)
+                  </Link>
+                </p>
+              )}
+              {admin && membreChoisi?.profileId && (
+                <form action={prendreLaPlace} className={styles.detailAdmin}>
+                  <input type="hidden" name="profile_id" value={membreChoisi.profileId} />
+                  <input type="hidden" name="retour" value={`/projet/${admin.projetId}`} />
+                  <button type="submit">Se mettre à sa place</button>
+                </form>
               )}
             </>
           ) : (
