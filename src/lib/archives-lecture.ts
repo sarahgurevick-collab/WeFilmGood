@@ -46,6 +46,16 @@ export async function archivesDuProjet(projectId: string): Promise<ArchiveLectur
   return avecLiens((data ?? []) as Omit<ArchiveLecture, "lien">[]);
 }
 
+export async function compterArchives(projectId: string): Promise<number> {
+  const admin = createAdminClient();
+  if (!admin) return 0;
+  const { count } = await admin
+    .from("archives_fiches_lecture")
+    .select("id", { count: "exact", head: true })
+    .eq("project_id", projectId);
+  return count ?? 0;
+}
+
 export async function toutesLesArchives(): Promise<(ArchiveLecture & { projet: string | null })[]> {
   const admin = createAdminClient();
   if (!admin) return [];

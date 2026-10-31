@@ -25,8 +25,7 @@ import presentation from "./presentation.module.css";
 import { nomDeLangue } from "@/lib/langues";
 import { nomDuPays } from "@/lib/pays";
 import { lecteurBandeAnnonce } from "@/lib/videopitch";
-import { archivesDuProjet } from "@/lib/archives-lecture";
-import FicheArchivee from "@/components/FicheArchivee";
+import { compterArchives } from "@/lib/archives-lecture";
 
 const FORMATS_LISIBLES: Record<string, string> = {
   long_metrage: "Long métrage",
@@ -231,7 +230,7 @@ export default async function ProjetPage({
   // qu'à l'auteur et à l'administration. Un bouton y mène s'il y en a.
   const fiches = isOwner || estAdmin ? await chargerFiches(supabase, id) : [];
   // Les archives de lecture : l'administration seulement, même si elle est l'auteur.
-  const archives = estAdmin === true ? await archivesDuProjet(id) : [];
+  const nbArchives = estAdmin === true ? await compterArchives(id) : 0;
   const prochainBloc = etatBlocs ? (BLOCS.find((b) => !etatBlocs.fait[b.cle]) ?? null) : null;
 
   const { data: auteur } = await supabase
@@ -558,25 +557,15 @@ export default async function ProjetPage({
 
       {/* Le bouton vers les fiches de lecture, sous le cadre (26/09) :
           l'auteur et l'administration seulement, et seulement s'il y en a. */}
-      {fiches.length > 0 && (
+      {/* Les archives de la Maison (Cannes 2016…) comptent pour
+          l'administration seulement : elles sont dans la même page, sous
+          « ARCHIVE », jamais montrées à l'auteur (31/10, Sarah). */}
+      {fiches.length + nbArchives > 0 && (
         <p style={{ marginTop: 20 }}>
           <Link href={`/projet/${project.id}/fiches`} className={formStyles.submit} style={{ display: "inline-block" }}>
-            Fiches de lecture ({fiches.length})
+            Fiches de lecture ({fiches.length + nbArchives})
           </Link>
         </p>
-      )}
-
-      {/* Archives des fiches de lecture de la Maison (Cannes 2016…) : mémo
-          de l'administration, jamais montré à l'auteur (31/10, Sarah). */}
-      {estAdmin === true && archives.length > 0 && (
-        <section className={presentation.barreAdmin} style={{ display: "block", marginTop: 20 }}>
-          <span>
-            Admin : archives de lecture ({archives.length}) — visibles de l&apos;administration seulement
-          </span>
-          {archives.map((f) => (
-            <FicheArchivee key={f.id} f={f} />
-          ))}
-        </section>
       )}
 
       {/* Seulement du dépôt à la validation de la fiche de lecture :
