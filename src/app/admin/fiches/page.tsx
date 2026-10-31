@@ -86,7 +86,7 @@ async function toutLire<T>(
 export default async function TableauFichesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ annees?: string }>;
+  searchParams: Promise<{ annees?: string; q?: string }>;
 }) {
   const supabase = await createClient();
   const { data: isAdmin } = await supabase.rpc("is_admin");
@@ -96,7 +96,8 @@ export default async function TableauFichesPage({
   if (!admin) redirect("/admin");
 
   const anneeEnCours = new Date().getFullYear();
-  const { annees: brutes } = await searchParams;
+  const { annees: brutes, q: qBrut } = await searchParams;
+  const q = (qBrut ?? "").trim();
   const cochees = (
     brutes === undefined
       ? [anneeEnCours]
@@ -281,6 +282,32 @@ export default async function TableauFichesPage({
   }
   const connues = ((selectionsConnues ?? []) as { libelle: string }[]).map((x) => x.libelle);
 
+  // Chercher un projet sans connaître l'année (31/10, Sarah) : titre ou
+  // nom de l'auteur, dans tous les projets et dans les archives de lecture.
+  type Trouve = { id: string; title: string; created_at: string; owner: { full_name: string | null } | null };
+  let trouves: Trouve[] = [];
+  let archivesTrouvees: { id: string; titre: string; auteurs: string | null; appel: string | null; project_id: string | null }[] = [];
+  if (q.length >= 2) {
+    const motif = `%${q.replace(/[%_,()]/g, " ")}%`;
+    const COL = "id, title, created_at, owner:profiles!projects_owner_id_fkey(full_name)";
+    const { data: auteurs } = await admin.from("profiles").select("id").ilike("full_name", motif).limit(200);
+    const idsAuteurs = (auteurs ?? []).map((a) => a.id);
+    const [{ data: parTitre }, { data: parAuteur }, { data: arch }] = await Promise.all([
+      admin.from("projects").select(COL).ilike("title", motif).limit(100).returns<Trouve[]>(),
+      idsAuteurs.length
+        ? admin.from("projects").select(COL).in("owner_id", idsAuteurs).limit(100).returns<Trouve[]>()
+        : Promise.resolve({ data: [] as Trouve[] }),
+      admin
+        .from("archives_fiches_lecture")
+        .select("id, titre, auteurs, appel, project_id")
+        .or(`titre.ilike.${motif},auteurs.ilike.${motif}`)
+        .limit(100),
+    ]);
+    const vus = new Set<string>();
+    trouves = [...(parTitre ?? []), ...(parAuteur ?? [])].filter((p) => (vus.has(p.id) ? false : (vus.add(p.id), true)));
+    archivesTrouvees = arch ?? [];
+  }
+
   const annees: number[] = [];
   for (let a = Math.max(anneeEnCours, 2027); a >= PREMIERE_ANNEE; a--)
     annees.push(a);
@@ -296,6 +323,62 @@ export default async function TableauFichesPage({
         Toutes les analyses rendues par les lecteurs et les notes attribuées, de
         WFG 1 et du nouveau site.
       </p>
+
+      <form action="/admin/fiches" style={{ marginTop: 20, display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <input
+          type="search"
+          name="q"
+          defaultValue={q}
+          placeholder="Titre ou auteur, toutes années"
+          aria-label="Chercher un projet, toutes années"
+          style={{ flex: "1 1 260px", maxWidth: 420, padding: "8px 10px" }}
+        />
+        <button type="submit" className={formStyles.submit}>
+          Chercher
+        </button>
+      </form>
+
+      {q.length >= 2 && (
+        <section style={{ marginTop: 16 }}>
+          {trouves.length === 0 && archivesTrouvees.length === 0 && (
+            <p className={formStyles.hint}>Aucun projet ni archive pour « {q} ».</p>
+          )}
+          {trouves.length > 0 && (
+            <>
+              <p className={formStyles.hint} style={{ marginBottom: 4 }}>
+                Projets ({trouves.length})
+              </p>
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {trouves.map((p) => (
+                  <li key={p.id}>
+                    <Link href={`/projet/${p.id}`}>{p.title}</Link>
+                    {p.owner?.full_name ? ` — ${p.owner.full_name}` : ""}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          {archivesTrouvees.length > 0 && (
+            <>
+              <p className={formStyles.hint} style={{ marginBottom: 4, marginTop: 12 }}>
+                Archives de lecture ({archivesTrouvees.length})
+              </p>
+              <ul style={{ margin: 0, paddingLeft: 18 }}>
+                {archivesTrouvees.map((a) => (
+                  <li key={a.id}>
+                    <Link href={a.project_id ? `/projet/${a.project_id}/fiches` : `/admin/archives-lecture?q=${encodeURIComponent(a.titre)}`}>
+                      {a.titre}
+                    </Link>
+                    {a.auteurs ? ` — ${a.auteurs}` : ""}
+                    {a.appel ? ` · ${a.appel}` : ""}
+                    {a.project_id ? "" : " (projet absent de WFG 2)"}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </section>
+      )}
 
       <nav className={adminStyles.annees} aria-label="Années">
         {annees.map((a) => {
