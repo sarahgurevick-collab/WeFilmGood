@@ -25,6 +25,8 @@ import presentation from "./presentation.module.css";
 import { nomDeLangue } from "@/lib/langues";
 import { nomDuPays } from "@/lib/pays";
 import { lecteurBandeAnnonce } from "@/lib/videopitch";
+import { archivesDuProjet } from "@/lib/archives-lecture";
+import FicheArchivee from "@/components/FicheArchivee";
 
 const FORMATS_LISIBLES: Record<string, string> = {
   long_metrage: "Long métrage",
@@ -228,6 +230,8 @@ export default async function ProjetPage({
   // Les fiches de lecture (héritées et publiées) : la base ne les rend
   // qu'à l'auteur et à l'administration. Un bouton y mène s'il y en a.
   const fiches = isOwner || estAdmin ? await chargerFiches(supabase, id) : [];
+  // Les archives de lecture : l'administration seulement, même si elle est l'auteur.
+  const archives = estAdmin === true ? await archivesDuProjet(id) : [];
   const prochainBloc = etatBlocs ? (BLOCS.find((b) => !etatBlocs.fait[b.cle]) ?? null) : null;
 
   const { data: auteur } = await supabase
@@ -560,6 +564,19 @@ export default async function ProjetPage({
             Fiches de lecture ({fiches.length})
           </Link>
         </p>
+      )}
+
+      {/* Archives des fiches de lecture de la Maison (Cannes 2016…) : mémo
+          de l'administration, jamais montré à l'auteur (31/10, Sarah). */}
+      {estAdmin === true && archives.length > 0 && (
+        <section className={presentation.barreAdmin} style={{ display: "block", marginTop: 20 }}>
+          <span>
+            Admin : archives de lecture ({archives.length}) — visibles de l&apos;administration seulement
+          </span>
+          {archives.map((f) => (
+            <FicheArchivee key={f.id} f={f} />
+          ))}
+        </section>
       )}
 
       {/* Seulement du dépôt à la validation de la fiche de lecture :
