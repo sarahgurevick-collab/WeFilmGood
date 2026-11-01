@@ -66,7 +66,7 @@ export default async function StatistiquesPage({
     <PageShell nav="admin" avantTitre={<NavAdmin />} title="Statistiques" theme="clair">
       <p className={formStyles.hint}>
         Les mots-clés des projets, année par année, en part des projets de l&apos;année. 2013 à 2016 viennent des
-        archives de lecture. Visible de l&apos;administration seulement.
+        archives de lecture, 2017 en partie. Visible de l&apos;administration seulement.
       </p>
 
       <nav className={adminStyles.annees} aria-label="Format">
