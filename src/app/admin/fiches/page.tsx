@@ -7,6 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../admin.module.css";
 import TableauFiches, { type LigneFiche } from "./TableauFiches";
+import LienScenario from "../LienScenario";
 
 /**
  * Le tableau de toutes les fiches de lecture — celles de WFG 1 et celles
@@ -286,6 +287,7 @@ export default async function TableauFichesPage({
   // nom de l'auteur, dans tous les projets et dans les archives de lecture.
   type Trouve = { id: string; title: string; created_at: string; owner: { full_name: string | null } | null };
   let trouves: Trouve[] = [];
+  const scenarioTrouve = new Map<string, string>();
   let archivesTrouvees: { id: string; titre: string; auteurs: string | null; appel: string | null; project_id: string | null }[] = [];
   if (q.length >= 2) {
     const motif = `%${q.replace(/[%_,()]/g, " ")}%`;
@@ -306,6 +308,25 @@ export default async function TableauFichesPage({
     const vus = new Set<string>();
     trouves = [...(parTitre ?? []), ...(parAuteur ?? [])].filter((p) => (vus.has(p.id) ? false : (vus.add(p.id), true)));
     archivesTrouvees = arch ?? [];
+    // Le scénario à côté de chaque projet trouvé (01/11, Sarah) : plus besoin
+    // de passer par l'écran des membres.
+    if (trouves.length) {
+      const { data: pdfs } = await admin
+        .from("project_files")
+        .select("project_id, storage_path")
+        .eq("kind", "scenario")
+        .in("project_id", trouves.map((t) => t.id))
+        .order("uploaded_at", { ascending: true });
+      const chemins = new Map((pdfs ?? []).map((f) => [f.project_id as string, f.storage_path as string]));
+      if (chemins.size) {
+        const { data: signes } = await admin.storage.from("scenarios").createSignedUrls([...chemins.values()], 60 * 60);
+        const parChemin = new Map((signes ?? []).map((x) => [x.path, x.signedUrl]));
+        for (const [projet, chemin] of chemins) {
+          const url = parChemin.get(chemin);
+          if (url) scenarioTrouve.set(projet, url);
+        }
+      }
+    }
   }
 
   const annees: number[] = [];
@@ -353,6 +374,12 @@ export default async function TableauFichesPage({
                   <li key={p.id}>
                     <Link href={`/projet/${p.id}`}>{p.title}</Link>
                     {p.owner?.full_name ? ` — ${p.owner.full_name}` : ""}
+                    {scenarioTrouve.has(p.id) && (
+                      <>
+                        {" "}
+                        <LienScenario href={scenarioTrouve.get(p.id)!} petit />
+                      </>
+                    )}
                   </li>
                 ))}
               </ul>
