@@ -293,7 +293,7 @@ export default async function TableauFichesPage({
     const { data: auteurs } = await admin.from("profiles").select("id").ilike("full_name", motif).limit(200);
     const idsAuteurs = (auteurs ?? []).map((a) => a.id);
     const [{ data: parTitre }, { data: parAuteur }, { data: arch }] = await Promise.all([
-      admin.from("projects").select(COL).ilike("title", motif).limit(100).returns<Trouve[]>(),
+      admin.from("projects").select(COL).or(`title.ilike.${motif},ancien_titre.ilike.${motif}`).limit(100).returns<Trouve[]>(),
       idsAuteurs.length
         ? admin.from("projects").select(COL).in("owner_id", idsAuteurs).limit(100).returns<Trouve[]>()
         : Promise.resolve({ data: [] as Trouve[] }),

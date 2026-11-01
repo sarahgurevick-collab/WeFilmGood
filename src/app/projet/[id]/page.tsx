@@ -37,6 +37,7 @@ const FORMATS_LISIBLES: Record<string, string> = {
 type Project = {
   id: string;
   title: string;
+  ancien_titre: string | null;
   tagline: string | null;
   logline: string | null;
   synopsis: string | null;
@@ -101,7 +102,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, tagline, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, trailer_url, visible_pour, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
+      "id, title, ancien_titre, tagline, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, trailer_url, visible_pour, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -458,6 +459,8 @@ export default async function ProjetPage({
           return [...reperes, ...mots].join(" · ");
         })()}
       </p>
+      {/* Un projet renommé garde son titre d'origine (01/11, Sarah). */}
+      {project.ancien_titre && <p className={formStyles.hint}>Ancien titre : {project.ancien_titre}</p>}
       {/* La tagline sous le titre, le résumé sur demande (14/10, Sarah). */}
       <AccrocheProjet tagline={project.tagline} logline={project.logline} plus={project.synopsis} />
       {/* Les partenariats (Muse Awards…) sous le titre, en rouge, pour qu'on
