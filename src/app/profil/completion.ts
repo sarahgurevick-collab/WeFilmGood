@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-export type Bloc = "identite" | "parcours" | "gouts";
+export type Bloc = "identite" | "parcours" | "cinematch";
 
 export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; duree: string }[] = [
   {
@@ -19,7 +19,7 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
     duree: "3 minutes · Racontez-nous votre parcours",
   },
   {
-    cle: "gouts",
+    cle: "cinematch",
     numero: 3,
     titre: "CinéMatch",
     resume: "Votre portrait chinois : vingt questions « si j'étais… ».",
@@ -148,12 +148,12 @@ export async function calculerCompletion(
     pourcentBloc: {
       identite: arrondi(criteresIdentite.filter(Boolean).length, criteresIdentite.length),
       parcours: arrondi(criteresParcours.filter(Boolean).length, criteresParcours.length),
-      gouts: arrondi(portrait, totalQuestions),
+      cinematch: arrondi(portrait, totalQuestions),
     },
     fait: {
       identite: !!profil?.category,
       parcours: !!profil?.biofilmo || !!profil?.website || metierRenseigne || genreRenseigne,
-      gouts: portrait > 0,
+      cinematch: portrait > 0,
     },
     profil: profil
       ? {

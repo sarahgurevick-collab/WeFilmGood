@@ -37,6 +37,8 @@ const nextConfig: NextConfig = {
       { source: "/deposer/:path*", destination: "/projet/:path*", permanent: true },
       // Le bloc 2 de la fiche s'appelait « illustrations » pendant une journée.
       { source: "/projet/:id/illustrations", destination: "/projet/:id/documents", permanent: true },
+      // Le bloc 3 du profil s'appelait « gouts » (renommé le 01/11, Sarah).
+      { source: "/profil/gouts", destination: "/profil/cinematch", permanent: true },
     ];
   },
 };

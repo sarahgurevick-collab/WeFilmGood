@@ -222,7 +222,7 @@ export async function saveParcours(formData: FormData) {
  * reprises de WFG 1 — c'est ce qui permet de rapprocher deux membres.
  */
 export async function saveGouts(formData: FormData) {
-  const { supabase, user } = await requireUser("/profil/gouts");
+  const { supabase, user } = await requireUser("/profil/cinematch");
 
   const [{ data: questions }, { data: fiche }] = await Promise.all([
     supabase.from("personality_questions").select("key"),

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
-import QuestionnaireCineMatch from "@/app/profil/gouts/QuestionnaireCineMatch";
+import QuestionnaireCineMatch from "@/app/profil/cinematch/QuestionnaireCineMatch";
 import { MIN_REPONSES, lireBrouillon, resultatCineMatch, type Reponses } from "@/lib/cinematch";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -13,7 +13,7 @@ import { TEXTES } from "./textes";
 
 /**
  * CinéMatch (ex-CinéFusion, 08/10) : la page du Menu donne les mêmes
- * vingt questions que le bloc « CinéMatch » du profil (/profil/gouts), et
+ * vingt questions que le bloc « CinéMatch » du profil (/profil/cinematch), et
  * le meilleur match de la personne.
  *
  * Elle est ouverte à tout compte connecté, même un profil réduit à une

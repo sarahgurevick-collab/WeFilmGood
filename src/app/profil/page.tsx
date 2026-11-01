@@ -183,7 +183,7 @@ export default async function ProfilPage({
               {replique.question} <em>{replique.reponse}</em>
             </p>
           ) : (
-            <Link href="/profil/gouts" className={`${styles.replique} ${styles.manque}`}>
+            <Link href="/profil/cinematch" className={`${styles.replique} ${styles.manque}`}>
               « Si j&apos;étais un film… » à compléter
             </Link>
           )}

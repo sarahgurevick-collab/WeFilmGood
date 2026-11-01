@@ -15,14 +15,14 @@ export default async function GoutsPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/connexion?next=/profil/gouts");
+  if (!user) redirect("/connexion?next=/profil/cinematch");
 
   // Le même résultat que sur la page CinéMatch du Menu (21/10, Sarah) :
   // le match et, en couleur, les réponses communes.
   const { assez, match, adherent, nom, photo, questionsMatchees } = await resultatCineMatch(supabase, user.id);
 
   return (
-    <BlocProfil actif="gouts">
+    <BlocProfil actif="cinematch">
       {assez && <ResultatMatch match={match} adherent={adherent} nom={nom} photo={photo} connecte />}
       <QuestionnaireCineMatch userId={user.id} questionsMatchees={questionsMatchees} />
     </BlocProfil>

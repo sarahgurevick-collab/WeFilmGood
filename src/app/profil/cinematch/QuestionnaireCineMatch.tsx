@@ -18,7 +18,7 @@ type Option = { question_key: string; option_slug: string; label_fr: string; pos
  * WFG 1). Chaque question propose une liste, et un champ libre pour répondre
  * autre chose (enregistré « autre:… », comme les réponses reprises de WFG 1).
  *
- * Le même formulaire sert au bloc 3 du profil (/profil/gouts) et à la page
+ * Le même formulaire sert au bloc 3 du profil (/profil/cinematch) et à la page
  * CinéMatch du Menu (/cinematch), ouverte à tout compte connecté, même
  * réduit à une adresse email. `retour` dit où revenir après l'envoi.
  *
