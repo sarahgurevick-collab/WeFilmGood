@@ -129,8 +129,7 @@ export default async function QuestionnaireCineMatch({
       </div>
 
       <div className={styles.pied}>
-        {/* « Enregistrer » sous 12 réponses, « Enregistrer et terminer » à partir
-            de 12 (21/10, Sarah) : le bouton compte au fil de la saisie. */}
+        {/* « Enregistrer », à droite (01/11, Sarah). */}
         <BoutonEnregistrer reponsesInitiales={Object.keys(reponses).length} />
       </div>
     </form>
