@@ -39,7 +39,7 @@ export default function BoutonEnregistrer({ reponsesInitiales }: { reponsesIniti
 
   return (
     <button ref={bouton} type="submit" className={formStyles.submit}>
-      {nombre >= MIN_REPONSES ? "Enregistrer et terminer →" : "Enregistrer"}
+      {nombre >= MIN_REPONSES ? "Enregistrer et terminer" : "Enregistrer"}
     </button>
   );
 }

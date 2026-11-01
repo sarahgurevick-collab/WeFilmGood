@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BandeauEnregistre from "@/components/BandeauEnregistre";
 import { redirect } from "next/navigation";
 import AvatarMembre from "@/components/AvatarMembre";
 import PageShell from "@/components/PageShell";
@@ -125,7 +126,7 @@ export default async function ProfilPage({
 
   return (
     <PageShell nav="profil" connecte>
-      {enregistre && <p className={styles.ok}>Modifications enregistrées.</p>}
+      {enregistre && <BandeauEnregistre />}
 
       {bienvenue && <p className={styles.surtitre}>Étape 2 sur 2</p>}
       <h1 className={styles.titre}>

@@ -196,7 +196,7 @@ export default async function IdentitePage({
 
         <div className={styles.pied} style={{ justifyContent: "flex-end" }}>
           <button type="submit" className={formStyles.submit}>
-            Enregistrer et continuer →
+            Enregistrer et continuer
           </button>
         </div>
       </form>

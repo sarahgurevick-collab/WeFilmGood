@@ -1,4 +1,5 @@
 import AjouterUnTalent from "./AjouterUnTalent";
+import BandeauEnregistre from "@/components/BandeauEnregistre";
 import { ordonnerPersonnages } from "./ordre-personnages";
 import Link from "next/link";
 import { headers } from "next/headers";
@@ -431,7 +432,7 @@ export default async function ProjetPage({
         ) : undefined
       }
     >
-      {enregistre && <p className={profilStyles.ok}>Modifications enregistrées.</p>}
+      {enregistre && <BandeauEnregistre />}
       {message === "envoye" && <p className={profilStyles.ok}>Message envoyé.</p>}
 
       {/* Sous le titre, sur une seule ligne : genre, format, langue, budget,

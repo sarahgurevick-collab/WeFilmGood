@@ -173,7 +173,7 @@ export default async function ParcoursPage({
             Passer ce bloc
           </Link>
           <button type="submit" className={formStyles.submit}>
-            Enregistrer et continuer →
+            Enregistrer et continuer
           </button>
         </div>
       </form>
