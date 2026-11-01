@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
+import ChampsManquantsVisibles from "@/components/ChampsManquantsVisibles";
 import ContactOuAssistant from "@/components/ContactOuAssistant";
 import EnregistrerServiceWorker from "@/components/EnregistrerServiceWorker";
 import HorsAdmin from "@/components/HorsAdmin";
@@ -38,6 +39,7 @@ export default function RootLayout({
         <HorsAdmin>
           <ContactOuAssistant />
         </HorsAdmin>
+        <ChampsManquantsVisibles />
         <EnregistrerServiceWorker />
         <InviterInstallation />
       </body>
