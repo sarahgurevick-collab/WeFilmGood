@@ -358,33 +358,102 @@
   color: #fff;
 }
 
-.avanceePanneau {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px 24px;
+/* Les tags (02/11, choix de Sarah) : une ligne par famille, une couleur
+   par famille. Pas choisi : contour et point de la couleur, texte normal
+   (lisible sur fond noir comme sur fond blanc). Choisi : rempli. */
+.avanceeTags {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   margin-top: 18px;
 }
 
-.avanceeActions {
-  grid-column: 1 / -1;
+.ligneTags {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.avanceeActions a {
+.tagBleu {
+  --tag: #3b82f6;
+  --tag-texte: #ffffff;
+}
+.tagRouge {
+  --tag: var(--rouge-wfg);
+  --tag-texte: #ffffff;
+}
+.tagJaune {
+  --tag: #f5c518;
+  --tag-texte: #111111;
+}
+.tagVert {
+  --tag: #22a35a;
+  --tag-texte: #ffffff;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1px solid var(--tag);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tag:not(.tagChoisi)::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--tag);
+}
+
+.tag:not(.tagChoisi):hover,
+.tag:not(.tagChoisi):focus-visible {
+  background: color-mix(in srgb, var(--tag) 22%, transparent);
+}
+
+.tagChoisi {
+  background: var(--tag);
+  color: var(--tag-texte);
+  font-weight: 600;
+}
+
+.tagCroix {
+  font-size: 17px;
+  line-height: 1;
+}
+
+/* Dans la barre de recherche, devant le champ. */
+.tagsChoisis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.avanceeActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.toutEffacer {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
   font-size: 14px;
   font-weight: 600;
   color: var(--dim);
   text-decoration: underline;
   text-underline-offset: 3px;
-}
-
-@media (max-width: 640px) {
-  .avanceePanneau {
-    grid-template-columns: 1fr;
-  }
+  cursor: pointer;
 }
 
 /* « l'ancienne Pitchothèque », sous le titre de la Carte des étoiles. */

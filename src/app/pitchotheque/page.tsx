@@ -20,6 +20,8 @@ import RechercheAvancee from "./RechercheAvancee";
 import MarqueDejaOuvert from "@/components/MarqueDejaOuvert";
 import { projetsDejaOuverts } from "@/lib/vues";
 import { adresse, lireFiltres, nombreDeFiltres, parametresRpc } from "./filtres";
+import { AUDIENCES, BUDGETS, FORMATS } from "@/app/projet/ChampsFiche";
+import type { Tag } from "./tags";
 
 /**
  * Effet au survol des vignettes. « eau » : l'image ondule comme un reflet
@@ -132,6 +134,13 @@ export default async function ProjetsPage({
   }
 
   const { data: genres } = await supabase.from("genres").select("slug, label_fr").order("position");
+  // Les tags de la recherche avancée, dans l'ordre des lignes (02/11).
+  const tags: Tag[] = [
+    ...FORMATS.map((f) => ({ famille: "format" as const, valeur: f.value, libelle: f.label })),
+    ...(genres ?? []).map((g) => ({ famille: "genre" as const, valeur: g.slug, libelle: g.label_fr })),
+    ...AUDIENCES.map((a) => ({ famille: "audience" as const, valeur: a.value, libelle: a.label })),
+    ...BUDGETS.map((b) => ({ famille: "budget" as const, valeur: b.value, libelle: b.label })),
+  ];
 
   // L'ordre vient de la base (fonction « pitchotheque ») : labellisés
   // d'abord, puis par tranche de remplissage, tirés au sort chaque nuit.
@@ -214,7 +223,8 @@ export default async function ProjetsPage({
         filtres={filtres}
         premiere={premiere}
         requeteInitiale={typeof params.q === "string" ? params.q : ""}
-        avance={<RechercheAvancee filtres={filtres} genres={genres ?? []} />}
+        tags={tags}
+        avance={<RechercheAvancee />}
       >
       {!projects || projects.length === 0 ? (
         <p className={formStyles.hint}>

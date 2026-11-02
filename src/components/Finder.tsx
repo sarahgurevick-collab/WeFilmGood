@@ -12,7 +12,8 @@ import {
   type ProjetTrouve,
   type TalentTrouve,
 } from "@/app/pitchotheque/actions";
-import { AUCUN, adresse, type Filtres } from "@/app/pitchotheque/filtres";
+import { AUCUN, CLES, adresse, type Filtres } from "@/app/pitchotheque/filtres";
+import { FiltresContexte, TagsChoisis, type Famille, type Tag } from "@/app/pitchotheque/tags";
 import Bandeau from "./Bandeau";
 import LogoComplet from "./LogoComplet";
 import MarqueDejaOuvert from "./MarqueDejaOuvert";
@@ -44,10 +45,11 @@ const CATEGORIES: { cle: Categorie; pastille: string; titre: string }[] = [
 
 export default function Finder({
   adherent = false,
-  filtres = AUCUN,
+  filtres: filtresDeLaPage = AUCUN,
   premiere = "projets",
   requeteInitiale = "",
   avance,
+  tags = [],
   children,
 }: {
   adherent?: boolean;
@@ -59,10 +61,33 @@ export default function Finder({
   requeteInitiale?: string;
   /** La recherche avancée : toujours affichée sous les résultats. */
   avance?: ReactNode;
+  /** Les tags de la recherche avancée ; les choisis s'affichent dans la barre. */
+  tags?: Tag[];
   /** La liste qui suit : masquée dès qu'un mot est cherché. */
   children?: ReactNode;
 }) {
   const router = useRouter();
+  // Les filtres changent ici tout de suite (le tag monte aussitôt dans la
+  // barre), puis l'adresse suit et la page se recharge avec la liste filtrée.
+  const [filtres, setFiltres] = useState<Filtres>(filtresDeLaPage);
+  const cleDeLaPage = CLES.map((c) => filtresDeLaPage[c] ?? "").join("|");
+  const [cleVue, setCleVue] = useState(cleDeLaPage);
+  if (cleVue !== cleDeLaPage) {
+    // La page est revenue avec d'autres filtres (lien, retour arrière) : on les reprend.
+    setCleVue(cleDeLaPage);
+    setFiltres(filtresDeLaPage);
+  }
+  const appliquer = (nouveaux: Filtres) => {
+    setFiltres(nouveaux);
+    setPageRecherche(1);
+    router.push(adresse(nouveaux), { scroll: false });
+  };
+  const contexte = {
+    filtres,
+    tags,
+    choisir: (famille: Famille, valeur: string | null) => appliquer({ ...filtres, [famille]: valeur }),
+    effacer: () => appliquer(AUCUN),
+  };
   const [requete, setRequete] = useState(requeteInitiale);
   // Un seul champ pour trois catégories (29/09) : celle choisie passe en
   // tête, en grand ; les deux autres suivent en aperçu.
@@ -216,9 +241,10 @@ export default function Finder({
   };
 
   return (
-    <>
+    <FiltresContexte.Provider value={contexte}>
     <div className={styles.zone}>
       <div className={styles.barre}>
+        <TagsChoisis />
         <span className={`${formStyles.recherche} ${styles.champZone}`}>
           <input
             type="search"
@@ -455,7 +481,7 @@ export default function Finder({
     </div>
     {avance}
     {!requete.trim() && children}
-    </>
+    </FiltresContexte.Provider>
   );
 }
 
