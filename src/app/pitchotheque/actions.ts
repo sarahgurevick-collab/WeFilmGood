@@ -382,9 +382,32 @@ export async function rechercherTalents(
   if (!q) return { talents: [], total: 0 };
 
   const supabase = await createClient();
-  const { data: trouves } = await supabase.rpc("rechercher_talents", { q, p_limite: LIMITE * page });
+  // Toute la liste par les lettres (jusqu'à LETTRES_MAX), pour y ajouter
+  // ensuite sans répéter personne.
+  const { data: trouves } = await supabase.rpc("rechercher_talents", { q, p_limite: Math.max(LIMITE * page, LETTRES_MAX) });
   const lignes = (trouves ?? []) as { id: string; total: number; metiers: string[] }[];
-  return fichesTalents(supabase, lignes.slice((page - 1) * LIMITE, page * LIMITE));
+  let total = Number(lignes[0]?.total ?? 0);
+
+  // Les auteurs et l'équipe des projets trouvés par le sens, à la suite
+  // (02/11, Sarah) : « Moulin Rouge » trouvait « Le cheval rouge » par le
+  // sens, mais pas sa porteuse. La recherche en base ne suit que les
+  // projets trouvés par les lettres.
+  if (total <= lignes.length) {
+    const sens = await projetsParLeSens(q, AUCUN, new Set(), SENS_MAX);
+    if (sens.ids.length) {
+      const { data: ajout } = await supabase.rpc("talents_des_projets", { p_projets: sens.ids });
+      const deja = new Set(lignes.map((l) => l.id));
+      for (const t of (ajout ?? []) as { id: string; metiers: string[] }[]) {
+        if (deja.has(t.id)) continue;
+        deja.add(t.id);
+        lignes.push({ id: t.id, total: 0, metiers: t.metiers });
+      }
+      total = lignes.length;
+    }
+  }
+  const page_ = lignes.slice((page - 1) * LIMITE, page * LIMITE);
+  const fiches = await fichesTalents(supabase, page_);
+  return { talents: fiches.talents, total };
 }
 
 /**
