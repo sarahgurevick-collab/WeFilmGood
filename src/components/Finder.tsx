@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Pagination from "./Pagination";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import {
   motsClesProches,
   type Categorie,
@@ -14,7 +14,6 @@ import {
 } from "@/app/pitchotheque/actions";
 import { AUCUN, CLES, adresse, type Filtres } from "@/app/pitchotheque/filtres";
 import { FiltresContexte, TagsChoisis, type Famille, type Tag } from "@/app/pitchotheque/tags";
-import { decouper, motsDeRecherche } from "@/app/pitchotheque/mot-trouve";
 import Bandeau from "./Bandeau";
 import LogoComplet from "./LogoComplet";
 import MarqueDejaOuvert from "./MarqueDejaOuvert";
@@ -101,6 +100,9 @@ export default function Finder({
   const [personnages, setPersonnages] = useState<{ liste: PersonnageTrouve[]; total: number } | null>(null);
   const [resultats, setResultats] = useState<ProjetTrouve[] | null>(null);
   const [total, setTotal] = useState(0);
+  // Les premiers résultats portent le mot tapé, les suivants sont rapprochés
+  // par le sens : la grille marque la césure (02/11, Sarah).
+  const [nbParLesLettres, setNbParLesLettres] = useState(0);
   const [enCours, setEnCours] = useState(false);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -167,7 +169,7 @@ export default function Finder({
         const r = (await reponse.json()) as {
           projets: ProjetTrouve[];
           total: number;
-          parLeSens: string[];
+          nbParLesLettres: number;
           talents: TalentTrouve[];
           totalTalents: number;
           personnages: PersonnageTrouve[];
@@ -175,6 +177,7 @@ export default function Finder({
         };
         setResultats(r.projets);
         setTotal(r.total);
+        setNbParLesLettres(r.nbParLesLettres ?? r.total);
         setTalents({ liste: r.talents, total: r.totalTalents });
         setPersonnages({ liste: r.personnages, total: r.totalPersonnages });
         setEnCours(false);
@@ -434,11 +437,22 @@ export default function Finder({
                     </p>
                   ) : cle === "projets" ? (
                     <ul className={`${projetsStyles.grille} ${enTete ? "" : styles.apercu}`}>
-                      {(enTete ? resultats ?? [] : (resultats ?? []).slice(0, APERCU)).map((p) => (
-                        <li key={p.id}>
-                          <CarteProjet p={p} mots={motsDeRecherche(requete).map((m) => m.norme)} />
-                        </li>
-                      ))}
+                      {(enTete ? resultats ?? [] : (resultats ?? []).slice(0, APERCU)).map((p, i) => {
+                        // Le rang dans toute la liste, pages comprises.
+                        const rang = (enTete ? (pageRecherche - 1) * PAR_PAGE : 0) + i;
+                        return (
+                          <Fragment key={p.id}>
+                            {rang === nbParLesLettres && nbParLesLettres > 0 && (
+                              <li className={projetsStyles.cesure} aria-label="Projets rapprochés par le sens">
+                                Rapprochés par le sens
+                              </li>
+                            )}
+                            <li>
+                              <CarteProjet p={p} requete={requete} />
+                            </li>
+                          </Fragment>
+                        );
+                      })}
                     </ul>
                   ) : cle === "talents" ? (
                     <ul className={`${styles.grilleTalents} ${enTete ? "" : styles.apercu}`}>
@@ -480,25 +494,12 @@ export default function Finder({
   );
 }
 
-/** Le texte, les mots cherchés en rouge (02/11, Sarah). */
-function Surligne({ texte, mots }: { texte: string; mots: string[] }) {
+/** La carte emporte le mot cherché : la fiche ouverte le montre en rouge (02/11, Sarah). */
+function CarteProjet({ p, requete }: { p: ProjetTrouve; requete: string }) {
+  const q = requete.trim();
   return (
     <>
-      {decouper(texte, mots).map((m, i) =>
-        m.trouve ? (
-          <mark key={i} className={projetsStyles.motTrouve}>{m.texte}</mark>
-        ) : (
-          <span key={i}>{m.texte}</span>
-        ),
-      )}
-    </>
-  );
-}
-
-function CarteProjet({ p, mots }: { p: ProjetTrouve; mots: string[] }) {
-  return (
-    <>
-    <Link href={`/projet/${p.id}`} className={projetsStyles.carte}>
+    <Link href={q ? `/projet/${p.id}?q=${encodeURIComponent(q)}` : `/projet/${p.id}`} className={projetsStyles.carte}>
       <div className={projetsStyles.vignette}>
         <Bandeau valeur={p.bandeau} />
         {p.vu && <MarqueDejaOuvert />}
@@ -513,7 +514,7 @@ function CarteProjet({ p, mots }: { p: ProjetTrouve; mots: string[] }) {
       </div>
       <div className={projetsStyles.legende}>
         <strong>
-          <Surligne texte={p.title} mots={mots} />
+          {p.title}
           {p.status === "labellise" && (
             <span className={projetsStyles.label} title="Projet labellisé WeFilmGood">
               <LogoComplet hauteur={22} />
@@ -521,24 +522,7 @@ function CarteProjet({ p, mots }: { p: ProjetTrouve; mots: string[] }) {
           )}
         </strong>
         {p.genre?.label_fr && <span className={projetsStyles.genre}>{p.genre.label_fr}</span>}
-        {p.tagline && (
-          <p className={projetsStyles.logline}>
-            <Surligne texte={p.tagline} mots={mots} />
-          </p>
-        )}
-        {/* Le mot qui a fait sortir le projet, quand il n'est ni dans le
-            titre ni dans la tagline : mot-clé, ou mot tapé enfoui (02/11). */}
-        {p.motTrouve && (
-          <p className={projetsStyles.motQuiFaitSortir}>
-            {p.motDansFicheDeLecture ? (
-              // Le mot n'est que dans une fiche de lecture, invisible des
-              // producteurs : on le dit (texte de Sarah, 02/11).
-              <>“{p.motTrouve}” présent dans la fiche de lecture</>
-            ) : (
-              p.motTrouve
-            )}
-          </p>
-        )}
+        {p.tagline && <p className={projetsStyles.logline}>{p.tagline}</p>}
       </div>
     </Link>
     <EquipeCarte projetId={p.id} equipe={p.equipe} />

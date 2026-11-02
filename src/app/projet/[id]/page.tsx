@@ -14,6 +14,8 @@ import CadreEquipe, { type MembreEquipe } from "./CadreEquipe";
 import { prendreLaPlace } from "@/app/admin/profils/prise-de-place";
 import LibelleSelection, { LignePartenariats, estPartenaire } from "../LibelleSelection";
 import AccrocheProjet from "./AccrocheProjet";
+import Surligne from "@/components/Surligne";
+import { motsDeRecherche } from "@/app/pitchotheque/mot-trouve";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";
@@ -81,10 +83,13 @@ export default async function ProjetPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ message?: string; enregistre?: string; depuis?: string; personnage?: string; talent?: string }>;
+  searchParams: Promise<{ message?: string; enregistre?: string; depuis?: string; personnage?: string; talent?: string; q?: string }>;
 }) {
   const { id } = await params;
-  const { enregistre, depuis, personnage, message, talent } = await searchParams;
+  const { enregistre, depuis, personnage, message, talent, q } = await searchParams;
+  // Venu d'une recherche des Galaxies : les mots cherchés sont en rouge
+  // sur la fiche, titre, tagline et résumé (02/11, Sarah).
+  const motsCherches = motsDeRecherche(q ?? "").map((m) => m.norme);
 
   const supabase = await createClient();
   const {
@@ -430,7 +435,7 @@ export default async function ProjetPage({
 
   return (
     <PageShell
-      title={project.title}
+      title={<Surligne texte={project.title} mots={motsCherches} />}
       apresTitre={
         project.status === "labellise" ? (
           // Comme le © d'un copyright : le label, en exposant du titre.
@@ -471,7 +476,7 @@ export default async function ProjetPage({
       {/* Un projet renommé garde son titre d'origine (01/11, Sarah). */}
       {project.ancien_titre && <p className={formStyles.hint}>Ancien titre : {project.ancien_titre}</p>}
       {/* La tagline sous le titre, le résumé sur demande (14/10, Sarah). */}
-      <AccrocheProjet tagline={project.tagline} logline={project.logline} plus={project.synopsis} />
+      <AccrocheProjet tagline={project.tagline} logline={project.logline} plus={project.synopsis} mots={motsCherches} />
       {/* Les partenariats (Muse Awards…) sous le titre, en rouge, pour qu'on
           les voie avant tout le reste (14/10, Sarah). */}
       <LignePartenariats libelles={(selections ?? []).map((x) => x.libelle)} />

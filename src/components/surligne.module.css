@@ -1,0 +1,7 @@
+/* Le mot cherché dans les Galaxies, en rouge sur la fiche ouverte
+   (02/11/2026, Sarah) : le producteur retrouve d'un coup d'œil ce qu'il
+   cherchait. Dans les Galaxies elles-mêmes, rien : trop chargé. */
+.mot {
+  background: none;
+  color: var(--rouge-wfg);
+}

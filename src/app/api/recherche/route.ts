@@ -41,7 +41,7 @@ export async function GET(request: Request) {
   return Response.json({
     projets: p.projets.map((x) => ({ ...x, vu: dejaOuverts.has(x.id) })),
     total: p.total,
-    parLeSens: p.parLeSens ?? [],
+    nbParLesLettres: p.nbParLesLettres,
     talents: t.talents,
     totalTalents: t.total,
     personnages: c.personnages,
