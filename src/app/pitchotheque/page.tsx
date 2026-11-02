@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Pagination from "@/components/Pagination";
 import Link from "next/link";
 import Bandeau from "@/components/Bandeau";
 import { redirect } from "next/navigation";
@@ -88,7 +89,6 @@ export default async function ProjetsPage({
     const totalGalaxie = voir === "personnages" ? totalPersonnages : totalTalents;
     const affiches = voir === "personnages" ? personnages.length : talents.length;
     const pagesGalaxie = Math.max(1, Math.ceil(totalGalaxie / GALAXIE_PAR_PAGE));
-    const lien = (n: number) => `/pitchotheque?voir=${voir}${n > 1 ? `&page=${n}` : ""}`;
     return (
       <PageShell
         title="Galaxies"
@@ -118,15 +118,14 @@ export default async function ProjetsPage({
             ))}
           </ul>
         )}
-        {pagesGalaxie > 1 && (
-          <nav className={styles.pagination} aria-label="Pages des Galaxies">
-            {page > 1 ? <Link href={lien(page - 1)}>← Précédents</Link> : <span />}
-            <span>
-              Page {page} sur {pagesGalaxie}
-            </span>
-            {page < pagesGalaxie ? <Link href={lien(page + 1)}>Suivants →</Link> : <span />}
-          </nav>
-        )}
+        <Pagination
+          page={page}
+          pages={pagesGalaxie}
+          total={totalGalaxie}
+          parPage={GALAXIE_PAR_PAGE}
+          base={`/pitchotheque?voir=${voir}`}
+          libelle="Pages des Galaxies"
+        />
         </Finder>
       </PageShell>
     );
@@ -287,23 +286,14 @@ export default async function ProjetsPage({
             })}
           </ul>
 
-          {pages > 1 && (
-            <nav className={styles.pagination} aria-label="Pages des Galaxies">
-              {page > 1 ? (
-                <Link href={adresse(filtres, page - 1)}>← Précédents</Link>
-              ) : (
-                <span />
-              )}
-              <span>
-                Page {page} sur {pages}
-              </span>
-              {page < pages ? (
-                <Link href={adresse(filtres, page + 1)}>Suivants →</Link>
-              ) : (
-                <span />
-              )}
-            </nav>
-          )}
+          <Pagination
+            page={page}
+            pages={pages}
+            total={total}
+            parPage={PAR_PAGE}
+            base={adresse(filtres)}
+            libelle="Pages des Galaxies"
+          />
         </>
       )}
       </Finder>

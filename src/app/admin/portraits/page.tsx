@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Pagination from "@/components/Pagination";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -415,15 +416,14 @@ export default async function PortraitsAdminPage({
         </>
       )}
 
-      {nbPages > 1 && (
-        <div className={styles.pages}>
-          {page > 1 && <Link href={lien(onglet, page - 1)}>← Précédente</Link>}
-          <span className={formStyles.hint}>
-            Page {page} sur {nbPages}
-          </span>
-          {page < nbPages && <Link href={lien(onglet, page + 1)}>Suivante →</Link>}
-        </div>
-      )}
+      <Pagination
+        page={page}
+        pages={nbPages}
+        total={total}
+        parPage={parPage}
+        base={`/admin/portraits?avis=${onglet}`}
+        libelle="Pages des portraits"
+      />
     </PageShell>
   );
 }

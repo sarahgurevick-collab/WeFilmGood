@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Pagination from "./Pagination";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
@@ -435,26 +436,15 @@ export default function Finder({
                       ))}
                     </ul>
                   )}
-                  {enTete && nombre > PAR_PAGE && (
-                    <nav className={`${projetsStyles.pagination} ${styles.pagesRecherche}`} aria-label="Pages des résultats">
-                      {pageRecherche > 1 ? (
-                        <button type="button" onClick={() => changerDePage(pageRecherche - 1)}>
-                          ← Précédents
-                        </button>
-                      ) : (
-                        <span />
-                      )}
-                      <span>
-                        Page {pageRecherche} sur {Math.ceil(nombre / PAR_PAGE)}
-                      </span>
-                      {pageRecherche < Math.ceil(nombre / PAR_PAGE) ? (
-                        <button type="button" onClick={() => changerDePage(pageRecherche + 1)}>
-                          Suivants →
-                        </button>
-                      ) : (
-                        <span />
-                      )}
-                    </nav>
+                  {enTete && (
+                    <Pagination
+                      page={pageRecherche}
+                      pages={Math.ceil(nombre / PAR_PAGE)}
+                      total={nombre}
+                      parPage={PAR_PAGE}
+                      surChangement={changerDePage}
+                      libelle="Pages des résultats"
+                    />
                   )}
                 </section>
               );

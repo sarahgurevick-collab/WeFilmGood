@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Pagination from "@/components/Pagination";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import NavAdmin from "../NavAdmin";
@@ -346,13 +347,10 @@ export default async function MembresPage({
     return url ? <LienScenario href={url} petit /> : null;
   };
 
-  // L'adresse d'une autre page, les mêmes filtres.
-  const lienPage = (n: number) => {
-    const params = new URLSearchParams();
-    for (const [k, v] of Object.entries(sp)) if (v && k !== "page") params.set(k, v);
-    params.set("page", String(n));
-    return `/admin/membres?${params.toString()}`;
-  };
+  // L'adresse de l'écran avec ses filtres, sans le numéro de page (la pagination l'ajoute).
+  const params = new URLSearchParams();
+  for (const [k, v] of Object.entries(sp)) if (v && k !== "page") params.set(k, v);
+  const baseMembres = `/admin/membres${params.size ? `?${params.toString()}` : ""}`;
 
   return (
     <PageShell nav="admin" avantTitre={<NavAdmin />} title="Membres" theme="clair">
@@ -634,15 +632,14 @@ export default async function MembresPage({
         </table>
       </div>
 
-      {nbPages > 1 && (
-        <p className={styles.pages}>
-          {pageCourante > 1 && <Link href={lienPage(pageCourante - 1)}>← Précédente</Link>}
-          <span>
-            Page {pageCourante} / {nbPages}
-          </span>
-          {pageCourante < nbPages && <Link href={lienPage(pageCourante + 1)}>Suivante →</Link>}
-        </p>
-      )}
+      <Pagination
+        page={pageCourante}
+        pages={nbPages}
+        total={filtres.length}
+        parPage={PAR_PAGE}
+        base={baseMembres}
+        libelle="Pages des membres"
+      />
     </PageShell>
   );
 }

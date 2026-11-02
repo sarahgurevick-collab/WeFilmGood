@@ -1,0 +1,92 @@
+/* Pagination commune à tout le site (02/11) : couleurs héritées de l'écran
+   (fond noir des Galaxies, fond clair de l'administration). */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+  font-size: 14px;
+  color: var(--dim, inherit);
+}
+
+.lien {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg, inherit);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lien:hover {
+  text-decoration: underline;
+}
+
+.vide {
+  min-width: 90px;
+}
+
+.milieu {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.choix {
+  font: inherit;
+  font-weight: 700;
+  color: var(--fg, inherit);
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+/* La liste déroulante elle-même garde un fond lisible sur fond noir. */
+.choix option {
+  color: #111;
+  background: #fff;
+}
+
+.compteur {
+  flex-basis: 100%;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.remonter {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 50;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--rouge-wfg, #da2c25);
+  color: #fff;
+  font-size: 20px;
+  line-height: 44px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 600px) {
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .vide {
+    display: none;
+  }
+}
