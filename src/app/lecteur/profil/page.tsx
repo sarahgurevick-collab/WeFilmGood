@@ -4,6 +4,7 @@ import formStyles from "@/components/form.module.css";
 import { LANGUES_LECTURE, nomDeLangue } from "@/lib/langues";
 import { createClient } from "@/lib/supabase/server";
 import ChampPhoto from "@/app/profil/identite/ChampPhoto";
+import { urlOriginal } from "@/app/profil/identite/original";
 import profilStyles from "@/app/profil/profil.module.css";
 import { choisirLanguesLues } from "../actions";
 import styles from "../lecteur.module.css";
@@ -15,9 +16,9 @@ import styles from "../lecteur.module.css";
 export default async function ProfilLecteurPage({
   searchParams,
 }: {
-  searchParams: Promise<{ enregistre?: string; photo?: string; erreur?: string }>;
+  searchParams: Promise<{ enregistre?: string; photo?: string; cadrage?: string; erreur?: string }>;
 }) {
-  const { enregistre, photo, erreur } = await searchParams;
+  const { enregistre, photo, cadrage, erreur } = await searchParams;
 
   const supabase = await createClient();
   const {
@@ -27,7 +28,7 @@ export default async function ProfilLecteurPage({
 
   const { data: profil } = await supabase
     .from("profiles")
-    .select("avatar_url, first_name, full_name")
+    .select("avatar_url, avatar_original_path, photo_x, photo_y, first_name, full_name")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -44,8 +45,12 @@ export default async function ProfilLecteurPage({
       {/* La photo a son propre envoi : elle part dès qu'on la choisit. */}
       {erreur && <p className={formStyles.error}>{erreur}</p>}
       {photo && <p className={profilStyles.ok}>Photo enregistrée.</p>}
+      {cadrage && <p className={profilStyles.ok}>Cadrage enregistré.</p>}
       <ChampPhoto
         photo={profil?.avatar_url ?? null}
+        original={urlOriginal(supabase, profil?.avatar_original_path)}
+        x={profil?.photo_x ?? 50}
+        y={profil?.photo_y ?? 20}
         initiale={(profil?.first_name ?? profil?.full_name ?? "?").trim().charAt(0).toUpperCase()}
         retour="/lecteur/profil"
       />

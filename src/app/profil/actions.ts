@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { MIN_REPONSES, reponsesDuFormulaire } from "@/lib/cinematch";
 import { createClient } from "@/lib/supabase/server";
 import sharp from "sharp";
+import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import { metiersPourCategorie } from "./metiers";
 
 const RESEAUX = ["vimeo", "linkedin", "viadeo", "instagram"];
@@ -309,23 +310,51 @@ function pageDeRetourPhoto(formData: FormData) {
   return formData.get("retour") === "/lecteur/profil" ? "/lecteur/profil" : "/profil/identite";
 }
 
-/** Retire les anciennes photos du dossier du membre, sauf celle qu'on garde. */
+/** Retire les anciennes photos du dossier du membre, sauf celles qu'on garde. */
 async function nettoyerPhotos(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
-  garder?: string,
+  garder: string[] = [],
 ) {
   const { data: fichiers } = await supabase.storage.from(BUCKET_PHOTOS).list(userId);
   const anciens = (fichiers ?? [])
     .map((f) => `${userId}/${f.name}`)
-    .filter((chemin) => chemin !== garder);
+    .filter((chemin) => !garder.includes(chemin));
   if (anciens.length) await supabase.storage.from(BUCKET_PHOTOS).remove(anciens);
 }
 
+/** Le carré affiché partout sur le site, en pixels. */
+const COTE_AVATAR = 600;
+/** La photo entière gardée pour le cadrage : au plus 1600 pixels de côté. */
+const COTE_ORIGINAL_MAX = 1600;
+
 /**
- * La photo du profil : recadrée en carré (sharp repère le visage ou le
- * sujet), 600 pixels, en JPEG. Une photo de téléphone de plusieurs Mo
- * finit vers 60 Ko, et s'affiche ronde partout sur le site.
+ * Le carré de la photo, pris dans l'original là où le cadrage le dit :
+ * x et y en % (0 à 100), comme object-position. Une photo plus large que
+ * haute ne bouge qu'en largeur ; plus haute que large, qu'en hauteur.
+ */
+async function carreDePhoto(original: Buffer, x: number, y: number): Promise<Buffer> {
+  const image = sharp(original, { failOn: "none" });
+  const { width = 0, height = 0 } = await image.metadata();
+  const cote = Math.min(width, height);
+  if (!cote) throw new Error("photo sans dimensions");
+  const left = Math.round(((width - cote) * Math.min(100, Math.max(0, x))) / 100);
+  const top = Math.round(((height - cote) * Math.min(100, Math.max(0, y))) / 100);
+  return image
+    .extract({ left, top, width: cote, height: cote })
+    .resize(COTE_AVATAR, COTE_AVATAR)
+    .jpeg({ quality: 84, mozjpeg: true })
+    .toBuffer();
+}
+
+/**
+ * La photo du profil (refaite le 02/11/2026, demande de Sarah) : la photo
+ * entière est gardée, allégée à 1600 pixels, et le carré de 600 pixels
+ * affiché rond partout sur le site en est tiré. Le premier cadrage est
+ * celui que sharp propose (le visage ou le sujet) ; le membre peut ensuite
+ * faire glisser le cadre sous « Qui êtes-vous ? » (cadrerPhoto). Jusqu'ici
+ * seul le carré était conservé, et quand le programme se trompait de
+ * sujet, il n'y avait aucun recours.
  */
 export async function savePhoto(formData: FormData) {
   const page = pageDeRetourPhoto(formData);
@@ -340,21 +369,44 @@ export async function savePhoto(formData: FormData) {
     retour("Cette photo n'est pas dans un format accepté (JPEG, PNG ou WebP).");
   }
 
-  let donnees: Buffer;
+  let original: Buffer;
+  let carre: Buffer;
+  let x = 50;
+  let y = PORTRAIT_Y_DEFAUT;
   try {
-    donnees = await sharp(Buffer.from(await photo.arrayBuffer()), { failOn: "none" })
+    original = await sharp(Buffer.from(await photo.arrayBuffer()), { failOn: "none" })
       .rotate()
-      .resize(600, 600, { fit: "cover", position: sharp.strategy.attention })
-      .jpeg({ quality: 84, mozjpeg: true })
+      .resize({ width: COTE_ORIGINAL_MAX, height: COTE_ORIGINAL_MAX, fit: "inside", withoutEnlargement: true })
+      .jpeg({ quality: 82, mozjpeg: true })
       .toBuffer();
+    // Le point d'intérêt que sharp repère (visage, sujet) donne le cadrage de
+    // départ : le carré est centré dessus, puis ramené dans la photo.
+    const { info, data } = await sharp(original)
+      .resize(COTE_AVATAR, COTE_AVATAR, { fit: "cover", position: sharp.strategy.attention })
+      .jpeg({ quality: 84, mozjpeg: true })
+      .toBuffer({ resolveWithObject: true });
+    carre = data;
+    const { width = 0, height = 0 } = await sharp(original).metadata();
+    const cote = Math.min(width, height);
+    const centre = (point: number | undefined, taille: number) =>
+      point === undefined || taille <= cote
+        ? null
+        : Math.round(Math.min(100, Math.max(0, ((point - cote / 2) / (taille - cote)) * 100)));
+    x = centre(info.attentionX, width) ?? 50;
+    y = centre(info.attentionY, height) ?? PORTRAIT_Y_DEFAUT;
   } catch {
     return retour("Cette photo n'a pas pu être lue. Essayez avec une autre image.");
   }
 
-  const chemin = `${user.id}/avatar-${Date.now()}.jpg`;
-  const { error } = await supabase.storage
+  const horodatage = Date.now();
+  const cheminOriginal = `${user.id}/original-${horodatage}.jpg`;
+  const chemin = `${user.id}/avatar-${horodatage}.jpg`;
+  const depotOriginal = await supabase.storage
     .from(BUCKET_PHOTOS)
-    .upload(chemin, donnees, { contentType: "image/jpeg" });
+    .upload(cheminOriginal, original, { contentType: "image/jpeg" });
+  const { error } = depotOriginal.error
+    ? depotOriginal
+    : await supabase.storage.from(BUCKET_PHOTOS).upload(chemin, carre, { contentType: "image/jpeg" });
   if (error) {
     console.error("Dépôt de photo refusé :", error.message);
     retour("La photo n'a pas pu être enregistrée. Réessayez dans un instant.");
@@ -363,17 +415,75 @@ export async function savePhoto(formData: FormData) {
   const {
     data: { publicUrl },
   } = supabase.storage.from(BUCKET_PHOTOS).getPublicUrl(chemin);
-  await supabase.from("profiles").update({ avatar_url: publicUrl }).eq("id", user.id);
-  await nettoyerPhotos(supabase, user.id, chemin);
+  await supabase
+    .from("profiles")
+    .update({ avatar_url: publicUrl, avatar_original_path: cheminOriginal, photo_x: x, photo_y: y })
+    .eq("id", user.id);
+  await nettoyerPhotos(supabase, user.id, [chemin, cheminOriginal]);
 
   revalidatePath("/profil");
   redirect(`${page}?photo=1`);
 }
 
+/**
+ * Le cadrage choisi à la main (02/11/2026) : le carré affiché est refait à
+ * partir de la photo entière, sous un nouveau nom pour que les navigateurs
+ * ne gardent pas l'ancien.
+ */
+export async function cadrerPhoto(formData: FormData) {
+  const page = pageDeRetourPhoto(formData);
+  const { supabase, user } = await requireUser(page);
+  const retour = (message: string) =>
+    redirect(`${page}?erreur=` + encodeURIComponent(message));
+
+  const x = Number(formData.get("photo_x"));
+  const y = Number(formData.get("photo_y"));
+  if (!Number.isFinite(x) || !Number.isFinite(y)) retour("Le cadrage n'a pas été compris.");
+
+  const { data: profil } = await supabase
+    .from("profiles")
+    .select("avatar_original_path")
+    .eq("id", user.id)
+    .maybeSingle<{ avatar_original_path: string | null }>();
+  if (!profil?.avatar_original_path) retour("Cette photo ne peut pas être recadrée : renvoyez-la.");
+  const cheminOriginal = profil!.avatar_original_path!;
+
+  const telechargement = await supabase.storage.from(BUCKET_PHOTOS).download(cheminOriginal);
+  if (telechargement.error || !telechargement.data) retour("La photo entière n'a pas été retrouvée : renvoyez-la.");
+
+  let carre: Buffer;
+  try {
+    carre = await carreDePhoto(Buffer.from(await telechargement.data!.arrayBuffer()), x, y);
+  } catch {
+    return retour("Cette photo n'a pas pu être recadrée. Essayez de la renvoyer.");
+  }
+
+  const chemin = `${user.id}/avatar-${Date.now()}.jpg`;
+  const { error } = await supabase.storage
+    .from(BUCKET_PHOTOS)
+    .upload(chemin, carre, { contentType: "image/jpeg" });
+  if (error) {
+    console.error("Dépôt du cadrage refusé :", error.message);
+    retour("Le cadrage n'a pas pu être enregistré. Réessayez dans un instant.");
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(BUCKET_PHOTOS).getPublicUrl(chemin);
+  await supabase
+    .from("profiles")
+    .update({ avatar_url: publicUrl, photo_x: Math.round(x), photo_y: Math.round(y) })
+    .eq("id", user.id);
+  await nettoyerPhotos(supabase, user.id, [chemin, cheminOriginal]);
+
+  revalidatePath("/profil");
+  redirect(`${page}?cadrage=1`);
+}
+
 export async function retirerPhoto(formData: FormData) {
   const page = pageDeRetourPhoto(formData);
   const { supabase, user } = await requireUser(page);
-  await supabase.from("profiles").update({ avatar_url: null }).eq("id", user.id);
+  await supabase.from("profiles").update({ avatar_url: null, avatar_original_path: null }).eq("id", user.id);
   await nettoyerPhotos(supabase, user.id);
   revalidatePath("/profil");
   redirect(page);
