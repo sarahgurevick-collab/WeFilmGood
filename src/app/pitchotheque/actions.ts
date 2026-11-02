@@ -35,8 +35,10 @@ export type ResultatRecherche = {
   parLeSens?: string[];
 };
 
-// En dessous, la recherche par les lettres est complétée par le sens.
-const PEU_DE_RESULTATS = 8;
+// La recherche par les lettres est demandée entière, jusque-là, avant
+// d'être complétée par le sens (02/11) ; le sens en ajoute au plus SENS_MAX.
+const LETTRES_MAX = 1000;
+const SENS_MAX = 300;
 // Un mot-clé compte comme voisin de sens à partir de cette proximité (0 à 1) — pour le nuage.
 const PROXIMITE_MINIMALE = 0.45;
 // Une fiche (titre, tagline, logline) compte comme proche par le sens à
@@ -145,10 +147,12 @@ export async function rechercherProjets(
 
   const supabase = await createClient();
 
-  // Les filtres de la recherche avancée s'ajoutent au mot cherché.
+  // Les filtres de la recherche avancée s'ajoutent au mot cherché. On
+  // demande toute la liste par les lettres (jusqu'à LETTRES_MAX) : il faut
+  // la connaître entière pour que le sens n'y répète rien.
   const { data: trouves } = await supabase.rpc("rechercher_projets", {
     q,
-    p_limite: LIMITE * page,
+    p_limite: Math.max(LIMITE * page, LETTRES_MAX),
     ...parametresRpc(filtres),
   });
 
@@ -156,12 +160,17 @@ export async function rechercherProjets(
   let ids: string[] = lignes.map((t) => t.id);
   let total = lignes[0]?.total ?? 0;
 
-  // Peu de résultats par les lettres : on complète par le sens.
+  // Le sens complète toujours les lettres (02/11, Sarah) : il faut faire
+  // sortir le plus de projets possible, un producteur ne cherche pas deux
+  // fois et réduit par les filtres. Jusqu'ici, seulement sous huit
+  // résultats par les lettres. Les projets par les lettres d'abord, ceux
+  // par le sens à la suite. (Au-delà de LETTRES_MAX par les lettres, la
+  // liste n'est pas entière : on s'en tient aux lettres.)
   let parLeSens: string[] | undefined;
   const trouvesParLeSens = new Set<string>();
   let proches = new Map<string, number>();
-  if (ids.length < PEU_DE_RESULTATS) {
-    const sens = await projetsParLeSens(q, filtres, new Set(ids), LIMITE - ids.length);
+  if (total <= ids.length) {
+    const sens = await projetsParLeSens(q, filtres, new Set(ids), SENS_MAX);
     proches = sens.proches;
     if (sens.ids.length) {
       ids.push(...sens.ids);
