@@ -167,3 +167,11 @@ body {
   font-size: 0.95rem;
   margin: 6px 0 0;
 }
+
+/* Le mot cherché dans les Galaxies, en rouge dans une fiche de lecture
+   (administration seulement, 02/11, Sarah) : posé dans du HTML nettoyé,
+   d'où une classe globale plutôt qu'un module. */
+.mot-cherche {
+  background: none;
+  color: var(--rouge-wfg);
+}

@@ -470,7 +470,14 @@ export default async function ProjetPage({
           const mots = (motsCles ?? [])
             .map((m) => m.keyword?.label_fr)
             .filter((label): label is string => Boolean(label) && !deja.has(label!.toLowerCase()));
-          return [...reperes, ...mots].join(" · ");
+          // Venue d'une recherche, l'admin voit en rouge le mot-clé qui a
+          // fait sortir le projet (02/11, Sarah).
+          return [...reperes, ...mots].map((x, i) => (
+            <span key={i}>
+              {i > 0 && " · "}
+              <Surligne texte={x} mots={motsCherches} />
+            </span>
+          ));
         })()}
       </p>
       {/* Un projet renommé garde son titre d'origine (01/11, Sarah). */}
@@ -590,7 +597,7 @@ export default async function ProjetPage({
           « ARCHIVE », jamais montrées à l'auteur (31/10, Sarah). */}
       {fiches.length + nbArchives > 0 && (
         <p style={{ marginTop: 20 }}>
-          <Link href={`/projet/${project.id}/fiches`} className={formStyles.submit} style={{ display: "inline-block" }}>
+          <Link href={`/projet/${project.id}/fiches${q ? `?q=${encodeURIComponent(q)}` : ""}`} className={formStyles.submit} style={{ display: "inline-block" }}>
             Fiches de lecture ({fiches.length + nbArchives})
           </Link>
         </p>

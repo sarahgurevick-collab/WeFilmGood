@@ -81,3 +81,29 @@ export function contientUnMot(texte: string | null | undefined, mots: string[]):
   const t = sansAccent(texte);
   return mots.some((m) => m && t.includes(m));
 }
+
+/**
+ * Un HTML déjà nettoyé, les mots cherchés enveloppés de
+ * <mark class="mot-cherche"> (fiches de lecture, pour l'administration,
+ * 02/11). Seul le texte entre les balises est touché ; les entités
+ * (&amp;…) restent entières.
+ */
+export function surlignerHtml(html: string, mots: string[]): string {
+  if (!html || !mots.length) return html;
+  return html
+    .split(/(<[^>]*>)/)
+    .map((part) => {
+      if (part.startsWith("<")) return part;
+      return part
+        .split(/(&[^;\s]{1,10};)/)
+        .map((morceau) =>
+          morceau.startsWith("&") && morceau.endsWith(";")
+            ? morceau
+            : decouper(morceau, mots)
+                .map((m) => (m.trouve ? `<mark class="mot-cherche">${m.texte}</mark>` : m.texte))
+                .join(""),
+        )
+        .join("");
+    })
+    .join("");
+}

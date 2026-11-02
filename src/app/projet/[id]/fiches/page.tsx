@@ -7,6 +7,8 @@ import { createClient } from "@/lib/supabase/server";
 import { chargerFiches } from "../fiches-donnees";
 import { archivesDuProjet } from "@/lib/archives-lecture";
 import styles from "../fiches.module.css";
+import Surligne from "@/components/Surligne";
+import { contientUnMot, motsDeRecherche } from "@/app/pitchotheque/mot-trouve";
 
 /**
  * Les fiches de lecture d'un projet, sur une page à part — ouverte dans
@@ -15,10 +17,16 @@ import styles from "../fiches.module.css";
  */
 export default async function FichesDuProjetPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ q?: string }>;
 }) {
   const { id } = await params;
+  // Venue d'une recherche des Galaxies : les mots cherchés en rouge dans
+  // les fiches, et la fiche qui les contient ouverte (02/11, Sarah).
+  const { q } = await searchParams;
+  const mots = motsDeRecherche(q ?? "").map((m) => m.norme);
   const supabase = await createClient();
   const {
     data: { user },
@@ -61,7 +69,7 @@ export default async function FichesDuProjetPage({
           </p>
           )}
           {fiches.map((f, i) => (
-            <details key={f.cle} open={i === 0} className={styles.fiche}>
+            <details key={f.cle} open={i === 0 || contientUnMot(f.contenu, mots) || contientUnMot(f.avis, mots)} className={styles.fiche}>
               <summary>
                 {f.date
                   ? new Date(f.date).toLocaleDateString("fr-FR", {
@@ -79,22 +87,22 @@ export default async function FichesDuProjetPage({
                 )}
               </summary>
               {f.html ? (
-                <FicheContent html={f.contenu} />
+                <FicheContent html={f.contenu} mots={mots} />
               ) : (
-                f.contenu && <p style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>{f.contenu}</p>
+                f.contenu && <p style={{ whiteSpace: "pre-wrap", marginTop: 12 }}><Surligne texte={f.contenu} mots={mots} /></p>
               )}
               {f.avis && (
                 <>
                   <p className={formStyles.hint} style={{ marginTop: 16, marginBottom: 4 }}>
                     Avis WeFilmGood
                   </p>
-                  <p style={{ whiteSpace: "pre-wrap", margin: 0 }}>{f.avis}</p>
+                  <p style={{ whiteSpace: "pre-wrap", margin: 0 }}><Surligne texte={f.avis} mots={mots} /></p>
                 </>
               )}
             </details>
           ))}
           {archives.map((a, i) => (
-            <details key={a.id} open={fiches.length === 0 && i === 0} className={styles.fiche}>
+            <details key={a.id} open={(fiches.length === 0 && i === 0) || contientUnMot(a.texte, mots)} className={styles.fiche}>
               <summary>
                 {dateFr(a.recue_le)}
                 <span style={{ fontWeight: 400 }}>
@@ -106,7 +114,7 @@ export default async function FichesDuProjetPage({
               </p>
               {a.texte && (
                 <p style={{ whiteSpace: "pre-wrap", marginTop: 12 }}>
-                  {a.texte.replace(/^\s*Fiche de lecture\s*\n/i, "").trim()}
+                  <Surligne texte={a.texte.replace(/^\s*Fiche de lecture\s*\n/i, "").trim()} mots={mots} />
                 </p>
               )}
               {a.message_lecteur && (
