@@ -25,6 +25,9 @@ export type ProjetTrouve = {
   /** Le mot qui a fait sortir le projet, à écrire en rouge sous la carte
       quand il n'est ni dans le titre ni dans la tagline (02/11). */
   motTrouve?: string | null;
+  /** Le mot n'est écrit nulle part sur la fiche projet, mais dans une
+      fiche de lecture : la carte le dit (02/11, Sarah). */
+  motDansFicheDeLecture?: boolean;
 };
 
 export type ResultatRecherche = {
@@ -220,7 +223,7 @@ export async function rechercherProjets(
   const { data: { user } } = await supabase.auth.getUser();
   const equipes = await equipesDesCartes(supabase, ids, await lectureRestreinte(supabase, user?.id));
 
-  const projets = (projects ?? [])
+  const projets: ProjetTrouve[] = (projects ?? [])
     .map((p) => {
       const chemin = (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path;
       return {
@@ -246,6 +249,23 @@ export async function rechercherProjets(
       };
     })
     .sort((a, b) => (ordreDe.get(a.id) ?? 0) - (ordreDe.get(b.id) ?? 0));
+
+  // « “cabaret” présent dans la fiche de lecture » (02/11, Sarah) : le mot
+  // en rouge n'est écrit nulle part sur la fiche projet, mais l'est dans
+  // une fiche de lecture, que les producteurs ne voient pas.
+  const aVerifier = projets.filter((p) => p.motTrouve);
+  if (aVerifier.length) {
+    const { data: dansFiche } = await supabase.rpc("mots_presents_dans_la_fiche_de_lecture", {
+      p_projets: aVerifier.map((p) => p.id),
+      p_mots: aVerifier.map((p) => p.motTrouve as string),
+    });
+    const oui = new Set(
+      ((dansFiche ?? []) as { project_id: string; mot: string }[]).map((l) => `${l.project_id}|${l.mot}`),
+    );
+    for (const p of projets) {
+      if (p.motTrouve && oui.has(`${p.id}|${p.motTrouve}`)) p.motDansFicheDeLecture = true;
+    }
+  }
 
   return { projets, total, parLeSens };
 }

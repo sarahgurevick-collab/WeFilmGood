@@ -534,7 +534,17 @@ function CarteProjet({ p, mots }: { p: ProjetTrouve; mots: string[] }) {
         )}
         {/* Le mot qui a fait sortir le projet, quand il n'est ni dans le
             titre ni dans la tagline : mot-clé, ou mot tapé enfoui (02/11). */}
-        {p.motTrouve && <p className={projetsStyles.motQuiFaitSortir}>{p.motTrouve}</p>}
+        {p.motTrouve && (
+          <p className={projetsStyles.motQuiFaitSortir}>
+            {p.motDansFicheDeLecture ? (
+              // Le mot n'est que dans une fiche de lecture, invisible des
+              // producteurs : on le dit (texte de Sarah, 02/11).
+              <>“{p.motTrouve}” présent dans la fiche de lecture</>
+            ) : (
+              p.motTrouve
+            )}
+          </p>
+        )}
       </div>
     </Link>
     <EquipeCarte projetId={p.id} equipe={p.equipe} />
