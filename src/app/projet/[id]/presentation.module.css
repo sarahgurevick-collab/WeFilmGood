@@ -164,3 +164,10 @@
 .barreAdmin form {
   margin: 0;
 }
+
+/* Le téléchargement du scénario, avec l'icône de fichier de l'administration. */
+.telechargerScenario {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}

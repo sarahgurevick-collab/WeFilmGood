@@ -228,6 +228,20 @@ export default async function ProjetPage({
   const taux = tauxDeRemplissage(etatFiche);
   const aFaire = prochaineAction(etatFiche);
   const etatBlocs = isOwner || estAdmin ? await etatDesBlocs(supabase, id) : null;
+  // Le scénario à télécharger depuis la barre Admin (02/11, Sarah : « tellement
+  // plus rapide » que de passer par l'écran des membres) : lien signé une heure,
+  // qui enregistre le PDF sous le titre du projet.
+  const scenario = (fichiers ?? []).filter((f) => f.kind === "scenario").at(-1) ?? null;
+  const urlScenario =
+    estAdmin === true && scenario
+      ? (
+          await supabase.storage
+            .from("scenarios")
+            .createSignedUrl(scenario.storage_path, 60 * 60, {
+              download: `${project.title.replace(/[\\/:*?"<>|]+/g, " ").trim() || "scenario"}.pdf`,
+            })
+        ).data?.signedUrl ?? null
+      : null;
   // Les fiches de lecture (héritées et publiées) : la base ne les rend
   // qu'à l'auteur et à l'administration. Un bouton y mène s'il y en a.
   const fiches = isOwner || estAdmin ? await chargerFiches(supabase, id) : [];
@@ -489,6 +503,17 @@ export default async function ProjetPage({
             <input type="hidden" name="retour" value={`/projet/${project.id}`} />
             <button type="submit">Se mettre à la place de l&apos;auteur</button>
           </form>
+          {urlScenario && (
+            <a href={urlScenario} className={presentation.telechargerScenario}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
+                <path d="M14 2v6h6" />
+                <path d="M12 18v-6" />
+                <path d="m9 15 3 3 3-3" />
+              </svg>
+              Télécharger le scénario
+            </a>
+          )}
         </div>
       )}
 
