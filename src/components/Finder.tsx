@@ -100,9 +100,10 @@ export default function Finder({
   const [personnages, setPersonnages] = useState<{ liste: PersonnageTrouve[]; total: number } | null>(null);
   const [resultats, setResultats] = useState<ProjetTrouve[] | null>(null);
   const [total, setTotal] = useState(0);
-  // Les premiers résultats portent le mot tapé, les suivants sont rapprochés
-  // par le sens : la grille marque la césure (02/11, Sarah).
-  const [nbParLesLettres, setNbParLesLettres] = useState(0);
+  // Les premiers résultats montrent le mot tapé sur leur fiche, les suivants
+  // ne l'ont qu'en mot-clé ou par le sens : la grille marque la césure
+  // d'un trait (02/11, Sarah).
+  const [nbAvantLeTrait, setNbAvantLeTrait] = useState(0);
   const [enCours, setEnCours] = useState(false);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -169,7 +170,7 @@ export default function Finder({
         const r = (await reponse.json()) as {
           projets: ProjetTrouve[];
           total: number;
-          nbParLesLettres: number;
+          nbAvantLeTrait: number;
           talents: TalentTrouve[];
           totalTalents: number;
           personnages: PersonnageTrouve[];
@@ -177,7 +178,7 @@ export default function Finder({
         };
         setResultats(r.projets);
         setTotal(r.total);
-        setNbParLesLettres(r.nbParLesLettres ?? r.total);
+        setNbAvantLeTrait(r.nbAvantLeTrait ?? r.total);
         setTalents({ liste: r.talents, total: r.totalTalents });
         setPersonnages({ liste: r.personnages, total: r.totalPersonnages });
         setEnCours(false);
@@ -442,7 +443,7 @@ export default function Finder({
                         const rang = (enTete ? (pageRecherche - 1) * PAR_PAGE : 0) + i;
                         return (
                           <Fragment key={p.id}>
-                            {rang === nbParLesLettres && nbParLesLettres > 0 && (
+                            {rang === nbAvantLeTrait && nbAvantLeTrait > 0 && (
                               <li className={projetsStyles.cesure} aria-label="Projets rapprochés par le sens">
                                 Rapprochés par le sens
                               </li>

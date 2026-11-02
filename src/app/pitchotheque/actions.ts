@@ -26,10 +26,11 @@ export type ProjetTrouve = {
 export type ResultatRecherche = {
   projets: ProjetTrouve[];
   total: number;
-  /** Combien de projets, en tête de liste, portent le mot tapé ; les
-      suivants sont rapprochés par le sens, et les Galaxies marquent la
-      césure (02/11, Sarah). */
-  nbParLesLettres: number;
+  /** Combien de projets, en tête de liste, montrent le mot tapé sur leur
+      fiche ; les suivants ne l'ont qu'en mot-clé (invisible du producteur)
+      ou par le voisinage de sens, et les Galaxies marquent la césure d'un
+      trait (02/11, Sarah). */
+  nbAvantLeTrait: number;
 };
 
 // La recherche par les lettres est demandée entière, jusque-là, avant
@@ -95,7 +96,7 @@ export async function rechercherProjets(
   page = 1,
 ): Promise<ResultatRecherche> {
   const q = requete.trim();
-  if (!q) return { projets: [], total: 0, nbParLesLettres: 0 };
+  if (!q) return { projets: [], total: 0, nbAvantLeTrait: 0 };
 
   const supabase = await createClient();
 
@@ -118,7 +119,17 @@ export async function rechercherProjets(
   // résultats par les lettres. Les projets par les lettres d'abord, ceux
   // par le sens à la suite. (Au-delà de LETTRES_MAX par les lettres, la
   // liste n'est pas entière : on s'en tient aux lettres.)
-  const nbParLesLettres = total;
+  // Le trait (02/11, Sarah) : d'abord les projets où le mot est visible
+  // sur la fiche, puis ceux qui ne l'ont qu'en mot-clé, puis le sens.
+  let nbAvantLeTrait = ids.length;
+  if (ids.length) {
+    const { data: visibles } = await supabase.rpc("projets_mot_visible", { q, p_projets: ids });
+    const visible = new Set((visibles ?? []) as string[]);
+    const devant = ids.filter((id) => visible.has(id));
+    const derriere = ids.filter((id) => !visible.has(id));
+    ids = [...devant, ...derriere];
+    nbAvantLeTrait = devant.length;
+  }
   if (total <= ids.length) {
     const sens = await projetsParLeSens(q, filtres, new Set(ids), SENS_MAX);
     if (sens.ids.length) {
@@ -126,9 +137,9 @@ export async function rechercherProjets(
       total += sens.ids.length;
     }
   }
-  if (ids.length === 0) return { projets: [], total: 0, nbParLesLettres: 0 };
+  if (ids.length === 0) return { projets: [], total: 0, nbAvantLeTrait: 0 };
   ids = ids.slice((page - 1) * LIMITE, page * LIMITE);
-  if (ids.length === 0) return { projets: [], total, nbParLesLettres };
+  if (ids.length === 0) return { projets: [], total, nbAvantLeTrait };
 
   const { data: projects } = await supabase
     .from("projects")
@@ -182,7 +193,7 @@ export async function rechercherProjets(
     })
     .sort((a, b) => (ordreDe.get(a.id) ?? 0) - (ordreDe.get(b.id) ?? 0));
 
-  return { projets, total, nbParLesLettres };
+  return { projets, total, nbAvantLeTrait };
 }
 
 export type MotCle = { label: string; effectif: number };
