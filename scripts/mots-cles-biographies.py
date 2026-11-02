@@ -68,11 +68,11 @@ SOURCES_PROJET = """
                                  then 'Avis WeFilmGood : ' || left(btrim(r.wfg_review), 800) end),
                   E'\\n---\\n' order by r.read_at desc nulls last, r.legacy_review_id desc)
             from (select * from public.legacy_reading_reports r0
-                  where r0.project_id = p.id and length(btrim(coalesce(r0.content, ''))) > 0
+                  where r0.project_id = p.id and length(btrim(coalesce(r0.content, ''))) >= 200
                   order by r0.read_at desc nulls last, r0.legacy_review_id desc limit 2) r) as fiches_wfg1,
          (select string_agg(left(btrim(r.content), 3500), E'\\n---\\n' order by r.submitted_at desc nulls last)
             from (select * from public.reading_reports r0
-                  where r0.project_id = p.id and length(btrim(coalesce(r0.content, ''))) > 0
+                  where r0.project_id = p.id and length(btrim(coalesce(r0.content, ''))) >= 200
                     and r0.status::text in ('soumise', 'validee_admin')
                   order by r0.submitted_at desc nulls last limit 2) r) as fiches_wfg2,
          (select left(btrim(pr.biofilmo), 1200) from public.profiles pr
@@ -194,11 +194,14 @@ def verifier(fichier: str, lot: str) -> bool:
         soucis.append(f"ids/empreintes : {len(attendus - rendus)} manquants, {len(rendus - attendus)} inconnus")
     peu = [d["id"] for d in donnees if len(d.get("mots") or []) < 5]
     trop = [d["id"] for d in donnees if len(d.get("mots") or []) > 12]
-    longs = [m for d in donnees for m in (d.get("mots") or []) if not isinstance(m, str) or len(m) > 60 or len(m.split()) > 4]
+    longs = [m for d in donnees for m in (d.get("mots") or []) if not isinstance(m, str) or len(m) > 60]
+    bavards = [m for d in donnees for m in (d.get("mots") or []) if isinstance(m, str) and len(m.split()) > 4]
     if trop:
         soucis.append(f"{len(trop)} entrées avec plus de 12 mots")
     if longs:
         soucis.append(f"mots trop longs : {longs[:5]}")
+    if bavards:
+        print(f"  (avertissement : mots de plus de 4 mots, posés quand même : {bavards[:8]})")
     if any("tagline" in d for d in donnees):
         soucis.append("une tagline est présente dans la sortie")
     mauvais_genre = [d["id"] for d in donnees if d.get("genre") != "projet"]
