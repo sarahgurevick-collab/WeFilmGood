@@ -464,3 +464,19 @@
   font-size: 13px;
   color: var(--dim);
 }
+
+/* Le mot cherché en rouge dans le titre ou la tagline (02/11, Sarah) :
+   on voit d'un coup d'œil pourquoi le projet sort. */
+.motTrouve {
+  background: none;
+  color: var(--rouge-wfg);
+}
+
+/* Le mot qui a fait sortir le projet quand il n'est ni dans le titre ni
+   dans la tagline : son mot-clé (le même mot, ou de sens proche), ou le
+   mot tapé enfoui dans le résumé, un personnage, un comédien. */
+.motQuiFaitSortir {
+  font-size: 13px;
+  color: var(--rouge-wfg);
+  margin: 6px 0 0;
+}

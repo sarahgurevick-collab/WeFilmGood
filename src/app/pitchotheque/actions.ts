@@ -6,6 +6,7 @@ import { AUCUN, parametresRpc, type Filtres } from "./filtres";
 import { enTexte, vecteur } from "@/lib/vecteurs";
 import { equipesDesCartes, lectureRestreinte, type EquipeCarte } from "./equipe-carte";
 import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut, type PersonnagesCarte } from "./personnages-carte";
+import { contientUnMot, motsDeRecherche, sansAccent } from "./mot-trouve";
 
 export type ProjetTrouve = {
   id: string;
@@ -21,6 +22,9 @@ export type ProjetTrouve = {
   personnages?: PersonnagesCarte | null;
   /** Les talents déjà rattachés (19/10). */
   equipe?: EquipeCarte | null;
+  /** Le mot qui a fait sortir le projet, à écrire en rouge sous la carte
+      quand il n'est ni dans le titre ni dans la tagline (02/11). */
+  motTrouve?: string | null;
 };
 
 export type ResultatRecherche = {
@@ -51,12 +55,20 @@ async function projetsParLeSens(
   filtres: Filtres,
   dejaTrouves: Set<string>,
   limite: number,
-): Promise<{ ids: string[]; mots: string[] }> {
+): Promise<{ ids: string[]; mots: string[]; proches: Map<string, number> }> {
+  const proches = new Map<string, number>();
   const v = await vecteur(q);
-  if (!v) return { ids: [], mots: [] };
+  if (!v) return { ids: [], mots: [], proches };
   const supabase = await createClient();
   const ids: string[] = [];
   const mots: string[] = [];
+  // Les mots-clés de sens proche (« cabaret » → music-hall, danseuse…) :
+  // pour écrire sur la carte lequel a fait sortir un projet trouvé par le
+  // sens (02/11). Pas pour compléter les résultats (voir ci-dessous).
+  const { data: voisins } = await supabase.rpc("mots_cles_par_sens", { p_vecteur: enTexte(v), p_limite: 80 });
+  for (const m of (voisins ?? []) as { label_fr: string; proximite: number }[]) {
+    if (m.proximite >= PROXIMITE_MINIMALE) proches.set(m.label_fr, m.proximite);
+  }
   // Les mots-clés voisins par le sens ne complètent plus la recherche
   // (30/09/2026) : sur un mot rare, le modèle rapproche par les lettres
   // (« tricot » → trilingue, triade, péniche…), et Sarah a trouvé le
@@ -79,7 +91,44 @@ async function projetsParLeSens(
     }
     if (ajoutes > 0) mots.push("le texte des fiches");
   }
-  return { ids, mots };
+  return { ids, mots, proches };
+}
+
+/**
+ * Le mot à écrire en rouge sous la carte (02/11, Sarah) : rien si un mot
+ * tapé est déjà dans le titre ou la tagline (la carte le colore) ; sinon
+ * le mot-clé du projet qui porte le mot tapé ; sinon, pour un projet
+ * trouvé par les lettres, le mot tapé (il est dans le résumé, un
+ * personnage, un comédien…) ; pour un projet trouvé par le sens, son
+ * mot-clé le plus proche du mot tapé.
+ */
+function motQuiFaitSortir(
+  p: { title: string; tagline: string | null; motsCles: string[] },
+  mots: { tape: string; norme: string }[],
+  parLeSens: boolean,
+  proches: Map<string, number>,
+): string | null {
+  const normes = mots.map((m) => m.norme);
+  if (contientUnMot(p.title, normes) || contientUnMot(p.tagline, normes)) return null;
+  const phrase = normes.join(" ");
+  const motCle =
+    p.motsCles.find((l) => sansAccent(l) === phrase) ??
+    p.motsCles.find((l) => sansAccent(l).includes(phrase)) ??
+    p.motsCles.find((l) => contientUnMot(l, normes)) ??
+    // « cabarets » tapé, « cabaret » posé : le mot tapé contient le mot-clé.
+    p.motsCles.find((l) => {
+      const n = sansAccent(l);
+      return n.length >= 4 && normes.some((m) => m.includes(n));
+    });
+  if (motCle) return motCle;
+  if (!parLeSens) return mots.map((m) => m.tape).join(" ") || null;
+  let meilleur: string | null = null;
+  let proximite = 0;
+  for (const l of p.motsCles) {
+    const px = proches.get(l) ?? 0;
+    if (px > proximite) { proximite = px; meilleur = l; }
+  }
+  return meilleur;
 }
 
 // Résultats par page ; la base ne connaît que la limite : pour la page n, on
@@ -109,12 +158,16 @@ export async function rechercherProjets(
 
   // Peu de résultats par les lettres : on complète par le sens.
   let parLeSens: string[] | undefined;
+  const trouvesParLeSens = new Set<string>();
+  let proches = new Map<string, number>();
   if (ids.length < PEU_DE_RESULTATS) {
     const sens = await projetsParLeSens(q, filtres, new Set(ids), LIMITE - ids.length);
+    proches = sens.proches;
     if (sens.ids.length) {
       ids.push(...sens.ids);
       total += sens.ids.length;
       parLeSens = sens.mots;
+      for (const id of sens.ids) trouvesParLeSens.add(id);
     }
   }
   if (ids.length === 0) return { projets: [], total: 0 };
@@ -124,7 +177,7 @@ export async function rechercherProjets(
   const { data: projects } = await supabase
     .from("projects")
     .select(
-      `id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind), ${SELECTION_PERSONNAGES}`,
+      `id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind), motsCles:project_keywords(keyword:keywords(label_fr)), ${SELECTION_PERSONNAGES}`,
     )
     .in("id", ids)
     .returns<
@@ -136,9 +189,11 @@ export async function rechercherProjets(
         bandeau: string | null;
         genre: { label_fr: string } | null;
         files: { storage_path: string; kind: string }[];
+        motsCles: { keyword: { label_fr: string } | null }[] | null;
         characters: PersonnageBrut[] | null;
       }[]
     >();
+  const mots = motsDeRecherche(q);
 
   const chemins = (projects ?? [])
     .flatMap((p) => [
@@ -169,6 +224,16 @@ export async function rechercherProjets(
         vignette: chemin ? (urlDe.get(chemin) ?? null) : null,
         personnages: personnagesDeLaCarte(p.characters, urlDe),
         equipe: equipes.get(p.id) ?? null,
+        motTrouve: motQuiFaitSortir(
+          {
+            title: p.title,
+            tagline: p.tagline,
+            motsCles: (p.motsCles ?? []).map((m) => m.keyword?.label_fr ?? "").filter(Boolean),
+          },
+          mots,
+          trouvesParLeSens.has(p.id),
+          proches,
+        ),
       };
     })
     .sort((a, b) => (ordreDe.get(a.id) ?? 0) - (ordreDe.get(b.id) ?? 0));

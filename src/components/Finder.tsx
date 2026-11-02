@@ -14,6 +14,7 @@ import {
 } from "@/app/pitchotheque/actions";
 import { AUCUN, CLES, adresse, type Filtres } from "@/app/pitchotheque/filtres";
 import { FiltresContexte, TagsChoisis, type Famille, type Tag } from "@/app/pitchotheque/tags";
+import { decouper, motsDeRecherche } from "@/app/pitchotheque/mot-trouve";
 import Bandeau from "./Bandeau";
 import LogoComplet from "./LogoComplet";
 import MarqueDejaOuvert from "./MarqueDejaOuvert";
@@ -441,7 +442,7 @@ export default function Finder({
                     <ul className={`${projetsStyles.grille} ${enTete ? "" : styles.apercu}`}>
                       {(enTete ? resultats ?? [] : (resultats ?? []).slice(0, APERCU)).map((p) => (
                         <li key={p.id}>
-                          <CarteProjet p={p} />
+                          <CarteProjet p={p} mots={motsDeRecherche(requete).map((m) => m.norme)} />
                         </li>
                       ))}
                     </ul>
@@ -485,7 +486,22 @@ export default function Finder({
   );
 }
 
-function CarteProjet({ p }: { p: ProjetTrouve }) {
+/** Le texte, les mots cherchés en rouge (02/11, Sarah). */
+function Surligne({ texte, mots }: { texte: string; mots: string[] }) {
+  return (
+    <>
+      {decouper(texte, mots).map((m, i) =>
+        m.trouve ? (
+          <mark key={i} className={projetsStyles.motTrouve}>{m.texte}</mark>
+        ) : (
+          <span key={i}>{m.texte}</span>
+        ),
+      )}
+    </>
+  );
+}
+
+function CarteProjet({ p, mots }: { p: ProjetTrouve; mots: string[] }) {
   return (
     <>
     <Link href={`/projet/${p.id}`} className={projetsStyles.carte}>
@@ -503,7 +519,7 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
       </div>
       <div className={projetsStyles.legende}>
         <strong>
-          {p.title}
+          <Surligne texte={p.title} mots={mots} />
           {p.status === "labellise" && (
             <span className={projetsStyles.label} title="Projet labellisé WeFilmGood">
               <LogoComplet hauteur={22} />
@@ -511,7 +527,14 @@ function CarteProjet({ p }: { p: ProjetTrouve }) {
           )}
         </strong>
         {p.genre?.label_fr && <span className={projetsStyles.genre}>{p.genre.label_fr}</span>}
-        {p.tagline && <p className={projetsStyles.logline}>{p.tagline}</p>}
+        {p.tagline && (
+          <p className={projetsStyles.logline}>
+            <Surligne texte={p.tagline} mots={mots} />
+          </p>
+        )}
+        {/* Le mot qui a fait sortir le projet, quand il n'est ni dans le
+            titre ni dans la tagline : mot-clé, ou mot tapé enfoui (02/11). */}
+        {p.motTrouve && <p className={projetsStyles.motQuiFaitSortir}>{p.motTrouve}</p>}
       </div>
     </Link>
     <EquipeCarte projetId={p.id} equipe={p.equipe} />
