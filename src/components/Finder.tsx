@@ -100,8 +100,6 @@ export default function Finder({
   const [talents, setTalents] = useState<{ liste: TalentTrouve[]; total: number } | null>(null);
   const [personnages, setPersonnages] = useState<{ liste: PersonnageTrouve[]; total: number } | null>(null);
   const [resultats, setResultats] = useState<ProjetTrouve[] | null>(null);
-  // Les mots-clés voisins par le sens qui ont complété la recherche.
-  const [parLeSens, setParLeSens] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
   const [enCours, setEnCours] = useState(false);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -177,7 +175,6 @@ export default function Finder({
         };
         setResultats(r.projets);
         setTotal(r.total);
-        setParLeSens(r.parLeSens);
         setTalents({ liste: r.talents, total: r.totalTalents });
         setPersonnages({ liste: r.personnages, total: r.totalPersonnages });
         setEnCours(false);
@@ -415,9 +412,6 @@ export default function Finder({
                   {enTete && nombre > 0 && (
                     <p className={styles.indice}>
                       {`${titre} ${((pageRecherche - 1) * PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((pageRecherche - 1) * PAR_PAGE + nombreAffiche(cle)).toLocaleString("fr-FR")} sur ${nombre.toLocaleString("fr-FR")}.`}
-                      {cle === "projets" && parLeSens.length > 0 && (
-                        <> Dont des projets proches par le sens&nbsp;: {parLeSens.join(", ")}.</>
-                      )}
                     </p>
                   )}
                   {nombre === 0 ? (
