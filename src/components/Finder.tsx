@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Pagination from "./Pagination";
 import { useRouter } from "next/navigation";
-import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   motsClesProches,
   type Categorie,
@@ -437,24 +437,36 @@ export default function Finder({
                       )}
                     </p>
                   ) : cle === "projets" ? (
-                    <ul className={`${projetsStyles.grille} ${enTete ? "" : styles.apercu}`}>
-                      {(enTete ? resultats ?? [] : (resultats ?? []).slice(0, APERCU)).map((p, i) => {
-                        // Le rang dans toute la liste, pages comprises.
-                        const rang = (enTete ? (pageRecherche - 1) * PAR_PAGE : 0) + i;
-                        return (
-                          <Fragment key={p.id}>
-                            {rang === nbAvantLeTrait && nbAvantLeTrait > 0 && (
-                              <li className={projetsStyles.cesure} aria-label="Projets rapprochés par le sens">
-                                Rapprochés par le sens
-                              </li>
-                            )}
-                            <li>
+                    (() => {
+                      // Les projets où le mot est visible sur la fiche, puis,
+                      // dans une zone à part (choix de Sarah, 02/11), ceux
+                      // rapprochés par un mot-clé ou par le sens. Le rang
+                      // compte toute la liste, pages comprises.
+                      const liste = enTete ? resultats ?? [] : (resultats ?? []).slice(0, APERCU);
+                      const premier = enTete ? (pageRecherche - 1) * PAR_PAGE : 0;
+                      const devant = nbAvantLeTrait > 0 ? liste.filter((_, i) => premier + i < nbAvantLeTrait) : liste;
+                      const derriere = nbAvantLeTrait > 0 ? liste.filter((_, i) => premier + i >= nbAvantLeTrait) : [];
+                      const grille = (projets: ProjetTrouve[]) => (
+                        <ul className={`${projetsStyles.grille} ${enTete ? "" : styles.apercu}`}>
+                          {projets.map((p) => (
+                            <li key={p.id}>
                               <CarteProjet p={p} requete={requete} />
                             </li>
-                          </Fragment>
-                        );
-                      })}
-                    </ul>
+                          ))}
+                        </ul>
+                      );
+                      return (
+                        <>
+                          {devant.length > 0 && grille(devant)}
+                          {derriere.length > 0 && (
+                            <section className={projetsStyles.zoneSens} aria-label="Projets rapprochés par le sens">
+                              <p className={projetsStyles.zoneSensTitre}>Rapprochés par le sens</p>
+                              {grille(derriere)}
+                            </section>
+                          )}
+                        </>
+                      );
+                    })()
                   ) : cle === "talents" ? (
                     <ul className={`${styles.grilleTalents} ${enTete ? "" : styles.apercu}`}>
                       {(enTete ? talents?.liste ?? [] : (talents?.liste ?? []).slice(0, APERCU)).map((t) => (

@@ -465,20 +465,23 @@
   color: var(--dim);
 }
 
-/* La césure entre les projets qui portent le mot et ceux rapprochés par
-   le sens (02/11, Sarah) : un trait sur toute la largeur de la grille. */
-.cesure {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  color: var(--dim);
-  font-size: 13px;
-  margin: 8px 0 -8px;
+/* La zone à part des projets rapprochés par le sens (choix de Sarah,
+   02/11) : un cadre gris sombre, titre en haut, après les projets qui
+   montrent le mot sur leur fiche. */
+.zoneSens {
+  margin-top: 28px;
+  padding: 14px 18px 20px;
+  background: #141414;
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
 }
-.cesure::before,
-.cesure::after {
-  content: "";
-  flex: 1;
-  border-top: 1px solid var(--bordure, rgba(255, 255, 255, 0.18));
+.zoneSensTitre {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.zoneSens .grille {
+  margin-top: 14px;
 }
