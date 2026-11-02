@@ -473,6 +473,10 @@
   padding: 14px 18px 20px;
   background: #141414;
   border: 1px solid var(--bordure);
+  /* Le bord haut en rouge (02/11, Sarah) : personne n'avait vu la zone
+     grise ; le rouge est réservé sur le site à ce qu'on veut faire
+     remarquer, et ici c'est l'exception, pas la règle. */
+  border-top: 2px solid var(--rouge-wfg);
   border-radius: 12px;
 }
 .zoneSensTitre {
@@ -480,7 +484,7 @@
   font-size: 12px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--dim);
+  color: var(--rouge-wfg);
 }
 .zoneSens .grille {
   margin-top: 14px;
