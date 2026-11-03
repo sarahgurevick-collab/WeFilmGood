@@ -56,9 +56,9 @@ type Personnage = {
 };
 
 /**
- * Bloc 3 : les personnages. Chacun a son cadre, qui s'enregistre seul ;
- * un cadre en pointillé, en bas, pour en ajouter un ; et « Tout enregistrer »
- * tout en bas, pour tous les cadres d'un coup (03/11).
+ * Bloc 3 : les personnages. Chacun a son cadre ; un cadre en pointillé, en
+ * bas, pour en ajouter un ; un seul bouton, « Tout enregistrer », fixé en bas
+ * de l'écran (03/11).
  */
 export default async function PersonnagesPage({
   params,
@@ -150,10 +150,8 @@ function FormulairePersonnage({
           <span>{photo ? "Remplacer le portrait" : "Portrait (JPG ou PNG)"}</span>
           <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" />
         </label>
-        {/* « Enregistrer » sous le portrait (15/10, Sarah) : en bas du cadre,
-            après la biographie, on le confondait avec celui du cadre suivant.
-            « Retirer ce personnage » reste en bas, loin de lui. */}
-        <ZoneEnregistrer libelle={personnage ? "Enregistrer" : "Ajouter"} enregistre={enregistre} />
+        {/* Plus de bouton par cadre (03/11, Sarah) : « Tout enregistrer », en bas de l'écran. */}
+        <ZoneEnregistrer enregistre={enregistre} />
       </CasePortrait>
 
       <div className={styles.personnageChamps}>
