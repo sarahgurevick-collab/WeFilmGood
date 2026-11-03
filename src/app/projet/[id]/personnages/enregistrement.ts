@@ -43,3 +43,16 @@ export async function enregistrerLesModifies(exclure?: HTMLFormElement): Promise
   }
   return null;
 }
+
+/**
+ * Tout est passé : la page se recharge (les fiches vides ouvertes avec « + »
+ * disparaissent) et chaque cadre affiche « Enregistré. ». L'ancre ramène au
+ * cadre dont on a cliqué le bouton.
+ */
+export function recharger(projectId: string, ancre?: string) {
+  const adresse = `/projet/${projectId}/personnages?enregistre=tous${ancre ? `#${ancre}` : ""}`;
+  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+  window.location.assign(adresse);
+  // Même adresse avec une ancre : le navigateur ne recharge pas tout seul.
+  if (ancre && window.location.search === "?enregistre=tous") window.location.reload();
+}

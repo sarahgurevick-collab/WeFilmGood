@@ -2,16 +2,21 @@
 
 import { useEffect, useRef, useState } from "react";
 import styles from "../../blocs.module.css";
+import BoutonEnregistrer from "./BoutonEnregistrer";
 import { contenu } from "./contenu";
 
 /**
- * Sous le portrait : « Enregistré. » quand le cadre vient d'être enregistré,
- * jusqu'au moindre nouveau changement dans le cadre (16/10, Sarah). Le bouton
- * qui était là a laissé la place à « Tout enregistrer », en bas de l'écran (03/11).
+ * « Enregistrer » sous le portrait. Une fois le cadre enregistré, il ne
+ * reste que le mot « Enregistré. » ; au moindre nouveau changement dans le
+ * cadre, le bouton revient (16/10, Sarah).
  */
 export default function ZoneEnregistrer({
+  libelle,
+  projectId,
   enregistre,
 }: {
+  libelle: string;
+  projectId: string;
   /** Ce cadre vient d'être enregistré. */
   enregistre: boolean;
 }) {
@@ -44,6 +49,7 @@ export default function ZoneEnregistrer({
 
   return (
     <div ref={zone} className={styles.enregistrerSousPortrait}>
+      {(!enregistre || modifie) && <BoutonEnregistrer libelle={libelle} projectId={projectId} />}
       {enregistre && !modifie && <span className={styles.dejaEnregistre}>Enregistré.</span>}
     </div>
   );
