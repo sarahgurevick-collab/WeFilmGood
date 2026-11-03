@@ -471,8 +471,11 @@
 .zoneSens {
   margin-top: 28px;
   padding: 14px 18px 20px;
-  background: #141414;
-  border: 1px solid var(--bordure);
+  /* Pas de remplissage gris : posées sur un gris plus clair que la page,
+     les cartes noires paraissaient voilées, « comme de la brume »
+     (Sarah, 03/11). Le cadre seul délimite la zone. */
+  background: transparent;
+  border: 1px solid var(--bordure-forte);
   /* Le bord haut en rouge (02/11, Sarah) : personne n'avait vu la zone
      grise ; le rouge est réservé sur le site à ce qu'on veut faire
      remarquer, et ici c'est l'exception, pas la règle. */
