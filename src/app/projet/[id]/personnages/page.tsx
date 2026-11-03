@@ -6,6 +6,7 @@ import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import ZoneEnregistrer from "./ZoneEnregistrer";
+import ToutEnregistrer from "./ToutEnregistrer";
 import AjouterPersonnage from "./AjouterPersonnage";
 import BoutonRetirerPersonnage from "./BoutonRetirerPersonnage";
 import CasePortrait from "./CasePortrait";
@@ -56,7 +57,8 @@ type Personnage = {
 
 /**
  * Bloc 3 : les personnages. Chacun a son cadre, qui s'enregistre seul ;
- * un cadre en pointillé, en bas, pour en ajouter un.
+ * un cadre en pointillé, en bas, pour en ajouter un ; et « Tout enregistrer »
+ * tout en bas, pour tous les cadres d'un coup (03/11).
  */
 export default async function PersonnagesPage({
   params,
@@ -94,7 +96,7 @@ export default async function PersonnagesPage({
               key={p.id}
               projectId={id}
               personnage={p}
-              enregistre={enregistre === p.id}
+              enregistre={enregistre === p.id || enregistre === "tous"}
               photo={p.photo_path ? (urls.get(p.photo_path) ?? null) : null}
             />
           ))}
@@ -109,6 +111,8 @@ export default async function PersonnagesPage({
       <AjouterPersonnage ouvertDemblee={personnagesOrdonnes.length === 0}>
         <FormulairePersonnage projectId={id} personnage={null} photo={null} />
       </AjouterPersonnage>
+
+      <ToutEnregistrer projectId={id} />
     </BlocProjet>
   );
 }
@@ -128,6 +132,7 @@ function FormulairePersonnage({
   return (
     <form
       id={personnage ? `perso-${personnage.id}` : undefined}
+      data-personnage=""
       className={`${styles.personnage} ${personnage ? "" : styles.nouveau}`}
       action={enregistrerPersonnage}
       encType="multipart/form-data"

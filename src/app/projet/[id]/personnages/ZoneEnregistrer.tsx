@@ -3,15 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "../../blocs.module.css";
 import BoutonEnregistrer from "./BoutonEnregistrer";
-
-/** Ce que contient le cadre à cet instant, pour savoir s'il a bougé depuis. */
-function contenu(form: HTMLFormElement): string {
-  return JSON.stringify(
-    Array.from(new FormData(form)).map(([nom, v]) =>
-      v instanceof File ? [nom, v.name, v.size, v.lastModified] : [nom, v],
-    ),
-  );
-}
+import { contenu } from "./contenu";
 
 /**
  * « Enregistrer » sous le portrait. Une fois le cadre enregistré, il ne

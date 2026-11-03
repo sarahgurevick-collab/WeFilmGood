@@ -25,14 +25,46 @@ const parmi = (liste: { value: string }[], valeur: FormDataEntryValue | null) =>
   return liste.some((o) => o.value === v) ? v : null;
 };
 
-/** Bloc 3 — ajoute un personnage, ou enregistre celui dont l'identifiant est fourni. */
+/** Un enregistrement qui n'a pas abouti : le message à montrer à l'auteur. */
+class Echec extends Error {}
+
+/** Bloc 3, le bouton d'un cadre : enregistre ce personnage seul, puis recharge la page. */
 export async function enregistrerPersonnage(formData: FormData) {
+  const id = formData.get("project_id") as string;
+  const characterId = (formData.get("character_id") as string | null) || null;
+  const { erreur } = await enregistrerUnPersonnage(formData);
+  if (erreur) redirect(`/projet/${id}/personnages?erreur=${encodeURIComponent(erreur)}`);
+  // On revient sur le cadre qu'on vient d'enregistrer, qui le confirme à côté de son bouton.
+  redirect(
+    characterId
+      ? `/projet/${id}/personnages?enregistre=${characterId}#perso-${characterId}`
+      : `/projet/${id}/personnages?enregistre=1`,
+  );
+}
+
+/**
+ * Le bouton « Tout enregistrer » (03/11, Sarah) envoie les cadres un par un
+ * ici : rien ne recharge la page tant que tous ne sont pas passés.
+ */
+export async function enregistrerUnPersonnage(formData: FormData): Promise<{ erreur?: string }> {
+  try {
+    await enregistrer(formData);
+    return {};
+  } catch (e) {
+    if (e instanceof Echec) return { erreur: e.message };
+    throw e;
+  }
+}
+
+/** Ajoute un personnage, ou enregistre celui dont l'identifiant est fourni. */
+async function enregistrer(formData: FormData) {
   const id = formData.get("project_id") as string;
   const characterId = (formData.get("character_id") as string | null) || null;
   const { supabase, projet } = await chargerProjetAModifier(id, "personnages");
 
-  const echec: (message: string) => never = (message) =>
-    redirect(`/projet/${id}/personnages?erreur=${encodeURIComponent(message)}`);
+  const echec: (message: string) => never = (message) => {
+    throw new Echec(message);
+  };
 
   const name = (formData.get("name") as string)?.trim();
   if (!name) echec("Le nom du personnage est obligatoire.");
@@ -144,12 +176,6 @@ export async function enregistrerPersonnage(formData: FormData) {
   }
 
   revalidatePath(`/projet/${id}`);
-  // On revient sur le cadre qu'on vient d'enregistrer, qui le confirme à côté de son bouton.
-  redirect(
-    characterId
-      ? `/projet/${id}/personnages?enregistre=${characterId}#perso-${characterId}`
-      : `/projet/${id}/personnages?enregistre=1`,
-  );
 }
 
 /** Retire un personnage, et son portrait avec lui. */
