@@ -30,6 +30,20 @@
 //   PASSE=2 node scripts/portraits-personnages.mjs lot 100 50 <dossier>
 //   PASSE=2 node scripts/portraits-personnages.mjs chercher <dossier> <N>
 //   PASSE=2 node scripts/portraits-personnages.mjs poser <dossier> <N>
+//
+// Troisième passe (03/11/2026, Sarah : « Passe 3 Pixabay ») : PASSE=3. Elle
+// reprend les « rien » de la seconde passe. Les deux premières cherchaient
+// d'abord le sexe et l'âge (« woman 40 smiling outdoors ») : Pixabay ne
+// rendait que des poses de mode. Cette fois la recherche part de ce que FAIT
+// le personnage — son métier, son activité, son milieu (« nurse woman
+// portrait », « woman yoga meditation ») — avec deux recherches Pixabay par
+// personnage (consignes : scripts/portraits-consignes-passe3.md). Pixabay
+// seul : Openverse bloque le serveur depuis le 17/10. AVANT=<id>,<id> met ces
+// personnages en tête du lot (Sarah veut voir Agnès d'ELODIE en premier).
+//   PASSE=3 node scripts/portraits-personnages.mjs reste
+//   PASSE=3 node scripts/portraits-personnages.mjs lot 100 50 <dossier>
+//   PASSE=3 node scripts/portraits-personnages.mjs chercher <dossier> <N>
+//   PASSE=3 node scripts/portraits-personnages.mjs poser <dossier> <N>
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
 import { basename, join } from "node:path";
 import sharp from "sharp";
@@ -57,10 +71,11 @@ async function tout(table, colonnes, filtre = (q) => q) {
   }
 }
 
-const PASSE = process.env.PASSE === "2" ? 2 : 1;
+const PASSE = ["2", "3"].includes(process.env.PASSE) ? Number(process.env.PASSE) : 1;
 
 async function aTraiter() {
   if (PASSE === 2) return aReprendre();
+  if (PASSE === 3) return aReprendre3();
   const deja = new Set((await tout("portraits_suivi", "character_id")).map((l) => l.character_id));
   const persos = await tout(
     "characters",
@@ -76,6 +91,23 @@ async function aReprendre() {
   const rien = await tout("portraits_suivi", "character_id, requete, note", (q) =>
     q.eq("avis", "rien").eq("passe", 1).neq("requete", "").not("requete", "like", "WIKI:%"),
   );
+  const parId = new Map(rien.map((l) => [l.character_id, l]));
+  const persos = await tout(
+    "characters",
+    "id, name, gender, age_range, character_type, biography, project:projects!inner(id, title, genre_slug, is_public)",
+    (q) => q.is("photo_path", null).order("id"),
+  );
+  return persos
+    .filter((p) => parId.has(p.id))
+    .map((p) => ({ ...p, ancienne_recherche: parId.get(p.id).requete, ancienne_note: parId.get(p.id).note }));
+}
+
+// Troisième passe : les « rien » de la seconde, encore sans photo. Les
+// recherches et notes des deux premières passes sont jointes pour que la
+// nouvelle recherche parte d'ailleurs (le suivi ne garde qu'une ligne par
+// personnage : celle de la passe 2 porte la recherche de la passe 2).
+async function aReprendre3() {
+  const rien = await tout("portraits_suivi", "character_id, requete, note", (q) => q.eq("avis", "rien").eq("passe", 2));
   const parId = new Map(rien.map((l) => [l.character_id, l]));
   const persos = await tout(
     "characters",
@@ -213,8 +245,10 @@ if (commande === "reste") {
   }
   mkdirSync(dossier, { recursive: true });
   // Les projets visibles des membres d'abord, et les personnages décrits avant les autres.
+  const avant = new Set((process.env.AVANT ?? "").split(",").filter(Boolean));
   const reste = (await aTraiter()).sort(
     (a, b) =>
+      Number(avant.has(b.id)) - Number(avant.has(a.id)) ||
       Number(b.project.is_public) - Number(a.project.is_public) ||
       Number((b.biography ?? "").length > 80) - Number((a.biography ?? "").length > 80),
   );
@@ -229,7 +263,7 @@ if (commande === "reste") {
     projet: p.project.title,
     genre_du_film: p.project.genre_slug,
     description: (p.biography ?? "").replace(/\s+/g, " ").slice(0, 700),
-    ...(PASSE === 2 ? { ancienne_recherche: p.ancienne_recherche, ancienne_note: p.ancienne_note } : {}),
+    ...(PASSE >= 2 ? { ancienne_recherche: p.ancienne_recherche, ancienne_note: p.ancienne_note } : {}),
   }));
   for (let n = 0; n * parPart < lot.length; n++) {
     writeFileSync(join(dossier, `part-${n + 1}.json`), JSON.stringify(lot.slice(n * parPart, (n + 1) * parPart), null, 1));
@@ -251,7 +285,22 @@ if (commande === "reste") {
   const melange = (liste) => [...liste.slice(0, 2), ...liste.slice(2).sort(() => Math.random() - 0.5)];
   for (const p of part) {
     let c = [];
-    if (PASSE === 2) {
+    if (PASSE === 3) {
+      // Troisième passe : { p1: métier ou activité, p2: autre angle }, Pixabay
+      // seul. Six photos de chaque recherche ; si l'une en a moins, l'autre
+      // complète ; la recherche générique bouche les trous.
+      const r = requetes[p.k] ?? {};
+      try {
+        const sansDoublon = (l) => l.filter((x, i) => l.findIndex((y) => y.source_id === x.source_id) === i);
+        const a = String(r.p1 ?? "").trim() ? melange(await pixabay(String(r.p1), pris)) : [];
+        const b = sansDoublon(String(r.p2 ?? "").trim() ? melange(await pixabay(String(r.p2), pris)) : []).filter((x) => !a.some((y) => y.source_id === x.source_id));
+        const nb = Math.min(b.length, Math.max(6, 12 - a.length));
+        c = [...a.slice(0, 12 - nb), ...b.slice(0, nb)];
+        if (c.length < 6) c = [...c, ...(await pixabay(generique(p), pris))];
+      } catch (e) {
+        console.log(p.k, "ERREUR", e.message);
+      }
+    } else if (PASSE === 2) {
       // Seconde passe : { p: recherche Pixabay, o: recherche Openverse }.
       const r = requetes[p.k] ?? {};
       try {
@@ -399,7 +448,7 @@ if (commande === "reste") {
       note,
       // La recherche Pixabay reste dans le suivi : l'écran Portraits s'en sert
       // pour ses boutons Unsplash, Google et Adobe Stock.
-      requete: PASSE === 2 ? String(requetes[p.k]?.p ?? "") : String(requetes[p.k] ?? ""),
+      requete: PASSE === 3 ? String(requetes[p.k]?.p1 ?? "") : PASSE === 2 ? String(requetes[p.k]?.p ?? "") : String(requetes[p.k] ?? ""),
       source: image?.source ?? null,
       source_id: image?.source_id ?? null,
       ia: Boolean(image?.ia),
