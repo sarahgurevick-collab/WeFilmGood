@@ -128,10 +128,14 @@ export default async function FicheAnciennePage({
               <span>Texte publié à l&apos;auteur</span>
               <textarea name="content" rows={28} required defaultValue={fiche.content ?? ""} />
             </label>
-            <ScoreSlider defaultValue={fiche.final_mark ?? 100} />
-            <button type="submit" className={formStyles.submit}>
-              Valider
-            </button>
+            <ScoreSlider
+              defaultValue={fiche.final_mark ?? 100}
+              bouton={
+                <button type="submit" className={formStyles.submit}>
+                  Valider
+                </button>
+              }
+            />
           </form>
         </>
       ) : (

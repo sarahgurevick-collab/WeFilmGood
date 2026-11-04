@@ -326,3 +326,96 @@
   height: 18px;
   accent-color: var(--fg);
 }
+
+/* La barre de note fine (04/11, Sarah) : le bouton du formulaire à côté. */
+.noteLigne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.noteBarre {
+  position: relative;
+  flex: 1 1 260px;
+  max-width: 420px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--surface-actif);
+  border: 1px solid var(--bordure);
+  overflow: hidden;
+  --zone: #d14b43;
+}
+
+.noteBarre_rouge { --zone: #d14b43; }
+.noteBarre_orange { --zone: #c07a12; }
+.noteBarre_vert { --zone: #2f7d4f; }
+
+.noteRemplissage {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: color-mix(in srgb, var(--zone) 28%, transparent);
+  pointer-events: none;
+}
+
+.notePoignee {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  border-radius: 4px;
+  background: var(--zone);
+  pointer-events: none;
+}
+
+.noteEtiquette,
+.noteValeur {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  pointer-events: none;
+  color: var(--fg);
+}
+
+.noteEtiquette {
+  left: 16px;
+  font-weight: 600;
+}
+
+.noteValeur {
+  right: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.noteValeur .noteMax {
+  font-weight: 400;
+  font-size: 12px;
+}
+
+/* Le vrai curseur, invisible, sur toute la barre. */
+.noteCurseur {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: grab;
+}
+
+.noteCurseur:active {
+  cursor: grabbing;
+}
+
+.noteBarre:focus-within {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+.noteLigne + .zone {
+  align-self: flex-start;
+  margin: 8px 0 0;
+}
