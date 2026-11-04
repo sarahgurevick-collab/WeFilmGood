@@ -469,9 +469,9 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
   {
     "titre": "Au nom de la fraise et du chocolat et du St Esprit",
     "format": "CM",
-    "statut": null,
-    "projetId": null,
-    "image": null
+    "statut": "tourne",
+    "projetId": "0a23cb03-ab41-4601-b6fd-067efbc04611",
+    "image": "/success-stories/66.jpg"
   },
   {
     "titre": "Qui vive",
