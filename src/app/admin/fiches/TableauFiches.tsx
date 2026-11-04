@@ -1,5 +1,6 @@
 "use client";
 
+import { emojiSatisfaction } from "@/lib/satisfaction";
 import { useMemo, useState } from "react";
 import adminStyles from "../admin.module.css";
 import styles from "./fiches.module.css";
@@ -297,18 +298,7 @@ export default function TableauFiches({
                       l.satisfaction ? `${l.satisfaction} sur 5` : "Pas de note"
                     }
                   >
-                    {[1, 2, 3, 4, 5].map((n) => (
-                      <span
-                        key={n}
-                        className={
-                          l.satisfaction && n <= l.satisfaction
-                            ? styles.pleine
-                            : styles.vide
-                        }
-                      >
-                        ★
-                      </span>
-                    ))}
+                    {emojiSatisfaction(l.satisfaction)}
                   </td>
                   )}
                   {colonne === "bandeau" && (

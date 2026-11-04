@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { emojiSatisfaction } from "@/lib/satisfaction";
 import { notFound, redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
+import { nomDeLangue } from "@/lib/langues";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../../admin.module.css";
@@ -21,6 +23,13 @@ const VOYANTS: Record<string, string> = {
   orange: "Peu disponible",
   rouge: "Indisponible",
 };
+
+const FORMATS_LECTEUR: [string, string][] = [
+  ["long_metrage", "LM"],
+  ["court_metrage", "CM"],
+  ["serie", "Séries"],
+  ["immersif_360_vr", "360/VR"],
+];
 
 const STATUTS: Record<string, string> = {
   soumise: "À valider",
@@ -47,10 +56,11 @@ export default async function FicheLecteurPage({
     { data: role },
     { data: lecteur },
     { data: compte },
+    { data: contact },
   ] = await Promise.all([
     admin
       .from("profiles")
-      .select("full_name, legacy_user_id")
+      .select("full_name, legacy_user_id, avatar_url, country, city")
       .eq("id", id)
       .maybeSingle(),
     admin
@@ -61,10 +71,11 @@ export default async function FicheLecteurPage({
       .maybeSingle(),
     admin
       .from("reader_profiles")
-      .select("availability_status, tarif_cents")
+      .select("availability_status, tarif_cents, formats, langues")
       .eq("profile_id", id)
       .maybeSingle(),
     admin.auth.admin.getUserById(id),
+    admin.from("profile_contact_info").select("phone").eq("profile_id", id).maybeSingle(),
   ]);
   if (!profil || !role) notFound();
 
@@ -124,8 +135,37 @@ export default async function FicheLecteurPage({
       title={profil.full_name ?? "Lecteur"}
       theme="clair"
     >
+      {/* Ses informations, comme sur l'écran de WFG 1 (04/11, Sarah), sans le genre. */}
+      <div className={adminStyles.lecteurInfos}>
+        {profil.avatar_url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={profil.avatar_url} alt="" className={adminStyles.lecteurPhoto} />
+        ) : (
+          <span className={adminStyles.lecteurPhotoVide}>
+            {(profil.full_name ?? "?").trim().charAt(0).toUpperCase()}
+          </span>
+        )}
+        <dl className={adminStyles.lecteurListe}>
+          <dt>Email</dt>
+          <dd>{compte.user?.email ?? "—"}</dd>
+          <dt>Tél</dt>
+          <dd>{contact?.phone ?? "—"}</dd>
+          <dt>Pays</dt>
+          <dd>{[profil.country, profil.city].filter(Boolean).join(" · ") || "—"}</dd>
+          <dt>Langues</dt>
+          <dd>{(lecteur?.langues ?? []).map((c: string) => nomDeLangue(c) ?? c).join(", ") || "—"}</dd>
+          <dt>Formats</dt>
+          <dd>
+            {lecteur?.formats == null
+              ? "Tous"
+              : FORMATS_LECTEUR.filter(([v]) => lecteur.formats!.includes(v))
+                  .map(([, l]) => l)
+                  .join(", ") || "Aucun"}
+          </dd>
+        </dl>
+      </div>
       <p className={formStyles.hint}>
-        {compte.user?.email} · {VOYANTS[lecteur?.availability_status ?? "vert"]}{" "}
+        {VOYANTS[lecteur?.availability_status ?? "vert"]}{" "}
         · {tarif} € par fiche ·{" "}
         {(nouvelles ?? []).length + (anciennes ?? []).length} fiches au total
       </p>
@@ -239,7 +279,7 @@ export default async function FicheLecteurPage({
                     )}
                   </td>
                   <td>{f.final_mark ?? "—"}</td>
-                  <td>{f.author_rating ? "★".repeat(f.author_rating) : "—"}</td>
+                  <td title={f.author_rating ? `${f.author_rating} sur 5` : undefined}>{emojiSatisfaction(f.author_rating)}</td>
                   <td>
                     <Link
                       href={`/admin/fiches/ancienne/${f.legacy_review_id}`}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { emojiSatisfaction } from "@/lib/satisfaction";
 import formStyles from "@/components/form.module.css";
 import styles from "./lecteur.module.css";
 import { etablirFacture } from "./mes-fiches/actions";
@@ -128,7 +129,7 @@ export default async function FichesDuLecteur({
                   </td>
                   <td>{r.score ?? "—"} / 200</td>
                   <td>{STATUTS[r.status] ?? r.status}</td>
-                  <td>{r.rating?.stars ? "★".repeat(r.rating.stars) : "—"}</td>
+                  <td>{emojiSatisfaction(r.rating?.stars)}</td>
                   <td>{r.payment_status === "payee" ? "Payée" : "Due"}</td>
                 </tr>
               ))}
@@ -177,7 +178,7 @@ export default async function FichesDuLecteur({
                       : "—"}
                   </td>
                   <td>{f.final_mark ?? "—"}</td>
-                  <td>{f.author_rating ? "★".repeat(f.author_rating) : "—"}</td>
+                  <td>{emojiSatisfaction(f.author_rating)}</td>
                 </tr>
               ))}
             </tbody>

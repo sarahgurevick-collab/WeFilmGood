@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EMOJIS_SATISFACTION, emojiSatisfaction } from "@/lib/satisfaction";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -15,9 +16,6 @@ type Report = {
   reader_first_name: string | null;
   submitted_at: string;
 };
-
-// De 1 (déçu) à 5 (ravi), dans l'ordre de la note.
-const EMOJIS = [{ emoji: "😡" }, { emoji: "😕" }, { emoji: "😐" }, { emoji: "😊" }, { emoji: "😍" }];
 
 export default async function FicheLecturePage({
   params,
@@ -79,7 +77,7 @@ export default async function FicheLecturePage({
         <p className={formStyles.hint}>
           Vous avez attribué{" "}
           <span className={styles.emojiDonne} role="img" aria-label={`${rating.stars} sur 5`}>
-            {EMOJIS[rating.stars - 1]?.emoji ?? "★".repeat(rating.stars)}
+            {emojiSatisfaction(rating.stars)}
           </span>{" "}
           à cette fiche de lecture.
         </p>
@@ -92,10 +90,10 @@ export default async function FicheLecturePage({
             {/* Cinq emojis à la place des étoiles (04/11, Sarah, modèle « emoji radio
                 group » de 21st.dev) ; la note reste de 1 à 5. */}
             <div className={styles.emojis} role="radiogroup" aria-label="Notez cette analyse">
-              {EMOJIS.map((e, i) => (
-                <label key={e.emoji} className={styles.emoji}>
+              {EMOJIS_SATISFACTION.map((emoji, i) => (
+                <label key={emoji} className={styles.emoji}>
                   <input type="radio" name="stars" value={i + 1} required aria-label={`${i + 1} sur 5`} />
-                  <span aria-hidden="true">{e.emoji}</span>
+                  <span aria-hidden="true">{emoji}</span>
                 </label>
               ))}
             </div>

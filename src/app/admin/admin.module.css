@@ -327,3 +327,47 @@
 .boutonAssigner:hover {
   background: #325f99;
 }
+
+/* Les informations d'un lecteur (04/11, comme l'écran de WFG 1). */
+.lecteurInfos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 24px;
+  margin: 8px 0 16px;
+}
+
+.lecteurPhoto,
+.lecteurPhotoVide {
+  width: 140px;
+  height: 140px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex: none;
+}
+
+.lecteurPhotoVide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-actif);
+  color: var(--rouge-wfg);
+  font-size: 48px;
+  font-weight: 800;
+}
+
+.lecteurListe {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 16px;
+  margin: 0;
+  font-size: 15px;
+}
+
+.lecteurListe dt {
+  font-weight: 700;
+}
+
+.lecteurListe dd {
+  margin: 0;
+}

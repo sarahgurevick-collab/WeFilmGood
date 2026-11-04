@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { emojiSatisfaction } from "@/lib/satisfaction";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -144,7 +145,7 @@ export default async function AncienLecteurPage({
                   )}
                 </td>
                 <td>{f.final_mark ?? "—"}</td>
-                <td>{f.author_rating ? "★".repeat(f.author_rating) : "—"}</td>
+                <td title={f.author_rating ? `${f.author_rating} sur 5` : undefined}>{emojiSatisfaction(f.author_rating)}</td>
                 <td>
                   <Link
                     href={`/admin/fiches/ancienne/${f.legacy_review_id}`}
