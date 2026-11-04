@@ -1,6 +1,6 @@
 import Link from "next/link";
 import BarreNav from "@/components/BarreNav";
-import CarrouselSucces from "@/components/CarrouselSucces";
+import CarrouselVerre from "@/components/CarrouselVerre";
 import CielEtoile from "@/components/CielEtoile";
 import DefilementEngagements from "@/components/DefilementEngagements";
 import EnTeteAnime from "@/components/EnTeteAnime";
@@ -9,11 +9,20 @@ import GalaxieAccueil from "@/components/GalaxieAccueil";
 import HashSession from "@/components/HashSession";
 import NuageAccueil from "@/components/NuageAccueil";
 import SpherePhotos, { type PhotoSphereItem } from "@/components/SpherePhotos";
-import { SUCCESS_STORIES } from "@/data/successStories";
+import { SUCCESS_STORIES_BLOG } from "@/data/successStoriesBlog";
 import { chargerProjetOrbite } from "@/lib/orbite";
 import { createClient } from "@/lib/supabase/server";
 import formStyles from "@/components/form.module.css";
 import styles from "./page.module.css";
+
+const STATUT = { signe: "Signé", tourne: "Tourné" } as const;
+const DIAPOS_SUCCES = SUCCESS_STORIES_BLOG.map((s) => ({
+  titre: s.titre,
+  sousTitre: [s.format === "LM" ? "Long métrage" : "Court métrage", s.statut ? STATUT[s.statut] : null]
+    .filter(Boolean)
+    .join(" · "),
+  image: s.image,
+}));
 
 export default async function Home() {
   const supabase = await createClient();
@@ -87,7 +96,10 @@ export default async function Home() {
             Success stories
           </Link>
         </h2>
-        <CarrouselSucces diapos={SUCCESS_STORIES} />
+        {/* Essai du 04/11 (Sarah) : le carrousel « glass » avec les films du blog
+            de la Maison, longs puis courts. Avant : CarrouselSucces (étiquette
+            accueil-avant-carrousel-verre). */}
+        <CarrouselVerre diapos={DIAPOS_SUCCES} />
       </section>
 
       <section className={`${styles.bande} clair`}>
