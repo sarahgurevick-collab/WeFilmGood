@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../../admin.module.css";
 import NavAdmin from "../../NavAdmin";
 import { prendreLaPlace } from "../../profils/prise-de-place";
+import RecapSatisfaction from "../RecapSatisfaction";
 import Factures, { SELECTION_FACTURES, versFactures } from "../Factures";
 
 /**
@@ -84,7 +85,7 @@ export default async function FicheLecteurPage({
       admin
         .from("reading_reports")
         .select(
-          "id, score, status, payment_status, submitted_at, facture:reader_invoices(numero), project:projects(id, title)",
+          "id, score, status, payment_status, submitted_at, facture:reader_invoices(numero), project:projects(id, title), rating:reading_report_ratings(stars)",
         )
         .eq("reader_id", id)
         .order("submitted_at", { ascending: false })
@@ -97,6 +98,7 @@ export default async function FicheLecteurPage({
             submitted_at: string;
             facture: { numero: string } | null;
             project: { id: string; title: string } | null;
+            rating: { stars: number } | null;
           }[]
         >(),
       profil.legacy_user_id != null
@@ -176,6 +178,11 @@ export default async function FicheLecteurPage({
         </button>
       </form>
 
+      <h2 className={adminStyles.subhead}>Satisfaction des auteurs</h2>
+      <RecapSatisfaction
+        notes={[...(nouvelles ?? []).map((f) => f.rating?.stars), ...(anciennes ?? []).map((f) => f.author_rating)]}
+      />
+
       <h2 className={adminStyles.subhead}>Fiches du nouveau site</h2>
       {(nouvelles ?? []).length === 0 ? (
         <p className={formStyles.hint}>
@@ -184,13 +191,14 @@ export default async function FicheLecteurPage({
           payée.
         </p>
       ) : (
-        <table className={adminStyles.table}>
+        <table className={`${adminStyles.table} ${adminStyles.tableLecteur}`}>
           <thead>
             <tr>
               <th>Rémunération</th>
               <th>Projet</th>
               <th>Rendue le</th>
               <th>Note</th>
+              <th>Satisfaction auteur</th>
               <th>Statut</th>
               <th>Facture</th>
             </tr>
@@ -216,6 +224,9 @@ export default async function FicheLecteurPage({
                 </td>
                 <td>{new Date(f.submitted_at).toLocaleDateString("fr-FR")}</td>
                 <td>{f.score ?? "—"}</td>
+                <td className={adminStyles.emojiCellule} title={f.rating ? `${f.rating.stars} sur 5` : undefined}>
+                  {emojiSatisfaction(f.rating?.stars)}
+                </td>
                 <td>
                   <Link href={`/admin/fiches/${f.id}`}>
                     {STATUTS[f.status] ?? f.status}
@@ -251,7 +262,7 @@ export default async function FicheLecteurPage({
             {(anciennes ?? []).length} fiches, réglées sur l&apos;ancien site :
             pour mémoire, sans paiement à suivre ici.
           </p>
-          <table className={adminStyles.table}>
+          <table className={`${adminStyles.table} ${adminStyles.tableLecteur}`}>
             <thead>
               <tr>
                 <th>Date</th>
@@ -279,7 +290,7 @@ export default async function FicheLecteurPage({
                     )}
                   </td>
                   <td>{f.final_mark ?? "—"}</td>
-                  <td title={f.author_rating ? `${f.author_rating} sur 5` : undefined}>{emojiSatisfaction(f.author_rating)}</td>
+                  <td className={adminStyles.emojiCellule} title={f.author_rating ? `${f.author_rating} sur 5` : undefined}>{emojiSatisfaction(f.author_rating)}</td>
                   <td>
                     <Link
                       href={`/admin/fiches/ancienne/${f.legacy_review_id}`}

@@ -371,3 +371,19 @@
 .lecteurListe dd {
   margin: 0;
 }
+
+/* Les fiches d'un lecteur, en plus grand (04/11, Sarah). */
+.tableLecteur {
+  font-size: 15px;
+}
+
+.tableLecteur td,
+.tableLecteur th {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.emojiCellule {
+  font-size: 26px;
+  line-height: 1;
+}

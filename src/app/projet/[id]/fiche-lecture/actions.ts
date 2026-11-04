@@ -28,4 +28,10 @@ export async function rateReport(formData: FormData) {
   });
 
   revalidatePath(`/projet/${projectId}/fiche-lecture`);
+  // Depuis le bandeau « Notez votre fiche de lecture » (04/11) : retour à la page d'où l'on vient.
+  const retour = formData.get("retour");
+  if (typeof retour === "string" && retour.startsWith("/") && !retour.startsWith("//")) {
+    revalidatePath(retour);
+    redirect(retour);
+  }
 }

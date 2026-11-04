@@ -1,4 +1,5 @@
 import Link from "next/link";
+import BandeauFichesANoter from "@/components/BandeauFichesANoter";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import Bandeau from "@/components/Bandeau";
@@ -102,6 +103,7 @@ export default async function MesProjetsPage({
   return (
     <PageShell nav="deposer" connecte>
       <h1 className={profilStyles.titre}>Mes projets</h1>
+      <BandeauFichesANoter retour="/mes-projets" />
       <p className={profilStyles.chapeau}>
         Une nouvelle version de votre scénario se dépose depuis l&apos;étape n°2 « Documents ». Créer
         une nouvelle fiche projet avec le même titre seulement si vous l&apos;adaptez dans un autre

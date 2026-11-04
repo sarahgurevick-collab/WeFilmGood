@@ -1,0 +1,59 @@
+/* Le récapitulatif de satisfaction d'un lecteur (04/11/2026). */
+.recap {
+  margin: 16px 0 24px;
+  max-width: 520px;
+}
+
+.barres {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  height: 200px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--bordure);
+  position: relative;
+}
+
+.colonne {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  position: relative;
+}
+
+.nombre {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.barre {
+  width: 100%;
+  max-width: 56px;
+  border-radius: 4px 4px 0 0;
+}
+
+/* Du rouge (déçu) au vert (ravi), le gris au milieu. */
+.n1 { background: #b8322a; }
+.n2 { background: #e08a7c; }
+.n3 { background: #a3a3a3; }
+.n4 { background: #7fbf8f; }
+.n5 { background: #2f7d4f; }
+
+.emoji {
+  position: absolute;
+  bottom: -38px;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.legende {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--dim);
+}
