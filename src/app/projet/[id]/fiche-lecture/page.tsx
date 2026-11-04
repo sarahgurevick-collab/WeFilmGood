@@ -16,6 +16,9 @@ type Report = {
   submitted_at: string;
 };
 
+// De 1 (déçu) à 5 (ravi), dans l'ordre de la note.
+const EMOJIS = [{ emoji: "😡" }, { emoji: "😕" }, { emoji: "😐" }, { emoji: "😊" }, { emoji: "😍" }];
+
 export default async function FicheLecturePage({
   params,
 }: {
@@ -74,7 +77,11 @@ export default async function FicheLecturePage({
 
       {rating ? (
         <p className={formStyles.hint}>
-          Vous avez attribué {"★".repeat(rating.stars)} à cette fiche de lecture.
+          Vous avez attribué{" "}
+          <span className={styles.emojiDonne} role="img" aria-label={`${rating.stars} sur 5`}>
+            {EMOJIS[rating.stars - 1]?.emoji ?? "★".repeat(rating.stars)}
+          </span>{" "}
+          à cette fiche de lecture.
         </p>
       ) : (
         <form className={formStyles.form} action={rateReport}>
@@ -82,11 +89,13 @@ export default async function FicheLecturePage({
           <input type="hidden" name="project_id" value={id} />
           <div className={formStyles.field}>
             <span>Notez cette analyse</span>
-            <div className={formStyles.roles}>
-              {[1, 2, 3, 4, 5].map((n) => (
-                <label key={n} className={formStyles.role}>
-                  <input type="radio" name="stars" value={n} required />
-                  {"★".repeat(n)}
+            {/* Cinq emojis à la place des étoiles (04/11, Sarah, modèle « emoji radio
+                group » de 21st.dev) ; la note reste de 1 à 5. */}
+            <div className={styles.emojis} role="radiogroup" aria-label="Notez cette analyse">
+              {EMOJIS.map((e, i) => (
+                <label key={e.emoji} className={styles.emoji}>
+                  <input type="radio" name="stars" value={i + 1} required aria-label={`${i + 1} sur 5`} />
+                  <span aria-hidden="true">{e.emoji}</span>
                 </label>
               ))}
             </div>
