@@ -137,8 +137,9 @@ export async function enregistrerCoordonneesLecteur(formData: FormData) {
   const city = champ("city");
   const country = champ("country").toUpperCase();
 
-  if (!prenom || !nom || !phone || !address || !postal || !city || !country) {
-    redirect("/lecteur/profil?erreur=" + encodeURIComponent("Tous les champs de vos coordonnées sont obligatoires.") + "#coordonnees");
+  // Le téléphone reste facultatif, comme pour les membres (04/11, Sarah).
+  if (!prenom || !nom || !address || !postal || !city || !country) {
+    redirect("/lecteur/profil?erreur=" + encodeURIComponent("Tous les champs de vos coordonnées sont obligatoires, sauf le téléphone.") + "#coordonnees");
   }
 
   const { error } = await supabase
@@ -147,7 +148,7 @@ export async function enregistrerCoordonneesLecteur(formData: FormData) {
     .eq("id", user.id);
   const { error: erreurPrive } = await supabase
     .from("profile_private_details")
-    .upsert({ profile_id: user.id, phone, address, postal_code: postal, updated_at: new Date().toISOString() });
+    .upsert({ profile_id: user.id, phone: phone || null, address, postal_code: postal, updated_at: new Date().toISOString() });
   if (error || erreurPrive) {
     console.error("Coordonnées du lecteur refusées :", error?.message ?? erreurPrive?.message);
     redirect("/lecteur/profil?erreur=" + encodeURIComponent("Vos coordonnées n'ont pas pu être enregistrées. Réessayez dans un instant.") + "#coordonnees");

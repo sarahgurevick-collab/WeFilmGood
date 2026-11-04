@@ -48,7 +48,8 @@ export default async function LecteurPage() {
     .select("phone, address, postal_code")
     .eq("profile_id", user.id)
     .maybeSingle<{ phone: string | null; address: string | null; postal_code: string | null }>();
-  const coordonneesIncompletes = !prive?.phone || !prive?.address || !prive?.postal_code;
+  // Le téléphone est facultatif : seul ce qui manque de l'adresse déclenche le rappel.
+  const coordonneesIncompletes = !prive?.address || !prive?.postal_code;
 
   const { data: assignments } = await supabase
     .from("reading_assignments")
@@ -67,7 +68,7 @@ export default async function LecteurPage() {
       {coordonneesIncompletes && (
         <p className={styles.rappelCoordonnees}>
           <Link href="/lecteur/profil#coordonnees">Complétez vos coordonnées dans Mon profil</Link>{" "}
-          (téléphone, adresse).
+          (adresse).
         </p>
       )}
       {/* La phrase de WFG 1, avec son interrupteur OUI / NON (16/10). L'orange

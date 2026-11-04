@@ -82,7 +82,7 @@ export default async function ProfilLecteurPage({
             </label>
             <label className={formStyles.field}>
               <span>Téléphone (avec indicatif)</span>
-              <input type="tel" name="phone" required autoComplete="tel" placeholder="+33 6 12 34 56 78" defaultValue={prive?.phone ?? ""} />
+              <input type="tel" name="phone" autoComplete="tel" placeholder="+33 6 12 34 56 78" defaultValue={prive?.phone ?? ""} />
             </label>
             <label className={formStyles.field}>
               <span>Adresse</span>
