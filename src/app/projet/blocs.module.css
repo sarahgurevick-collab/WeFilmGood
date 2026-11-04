@@ -448,12 +448,28 @@
 }
 
 /* « Tout enregistrer », tout en bas de la page des personnages (03/11). */
+/* « + Ajouter un personnage » à gauche, « Tout enregistrer » à droite (04/11). */
+.ligneAjouter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.ligneAjouter .boutonPlus {
+  margin-top: 0;
+}
+
 .toutEnregistrer {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: flex-end;
   gap: 10px;
-  margin-top: 48px;
-  padding-top: 24px;
-  border-top: 1px solid var(--bordure-douce);
+  margin-left: auto;
+}
+
+.toutEnregistrer > button {
+  align-self: flex-end;
 }

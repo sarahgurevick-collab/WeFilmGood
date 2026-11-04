@@ -7,7 +7,7 @@ import styles from "../../blocs.module.css";
 import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import ZoneEnregistrer from "./ZoneEnregistrer";
 import ToutEnregistrer from "./ToutEnregistrer";
-import AjouterPersonnage from "./AjouterPersonnage";
+import AjouterPersonnage, { RetirerFicheVide } from "./AjouterPersonnage";
 import BoutonRetirerPersonnage from "./BoutonRetirerPersonnage";
 import CasePortrait from "./CasePortrait";
 import ChercheurPortrait from "./ChercheurPortrait";
@@ -108,11 +108,12 @@ export default async function PersonnagesPage({
           Votre premier personnage
         </h2>
       )}
-      <AjouterPersonnage ouvertDemblee={personnagesOrdonnes.length === 0}>
+      <AjouterPersonnage
+        ouvertDemblee={personnagesOrdonnes.length === 0}
+        aDroite={<ToutEnregistrer projectId={id} />}
+      >
         <FormulairePersonnage projectId={id} personnage={null} photo={null} />
       </AjouterPersonnage>
-
-      <ToutEnregistrer projectId={id} />
     </BlocProjet>
   );
 }
@@ -333,11 +334,9 @@ function FormulairePersonnage({
           />
         </label>
 
-        {personnage && (
-          <div className={styles.piedPersonnage}>
-            <BoutonRetirerPersonnage />
-          </div>
-        )}
+        <div className={styles.piedPersonnage}>
+          {personnage ? <BoutonRetirerPersonnage /> : <RetirerFicheVide />}
+        </div>
       </div>
     </form>
   );

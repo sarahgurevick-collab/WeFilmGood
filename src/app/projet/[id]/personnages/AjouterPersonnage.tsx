@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState, type ReactNode } from "react";
+import { createContext, useContext, useRef, useState, type ReactNode } from "react";
 import styles from "../../blocs.module.css";
 
 /**
@@ -9,25 +9,59 @@ import styles from "../../blocs.module.css";
  * est ouverte d'emblée.
  *
  * Chaque clic ouvre une fiche vide de plus (03/11, Sarah : créer plusieurs
- * personnages, puis « Tout enregistrer » à la fin).
+ * personnages, puis « Tout enregistrer » à la fin). Une fiche ouverte par
+ * erreur se referme avec « Retirer ce personnage » (04/11), et « Tout
+ * enregistrer » est sur la même ligne que le « + », à droite (04/11, Sarah).
  */
-export default function AjouterPersonnage({ ouvertDemblee, children }: { ouvertDemblee: boolean; children: ReactNode }) {
-  const [nombre, setNombre] = useState(ouvertDemblee ? 1 : 0);
+const RetirerFiche = createContext<(() => void) | null>(null);
+
+export default function AjouterPersonnage({
+  ouvertDemblee,
+  children,
+  aDroite,
+}: {
+  ouvertDemblee: boolean;
+  children: ReactNode;
+  /** Posé sur la ligne du « + », à droite : « Tout enregistrer ». */
+  aDroite?: ReactNode;
+}) {
+  const suivant = useRef(1);
+  const [fiches, setFiches] = useState<number[]>(ouvertDemblee ? [0] : []);
   return (
     <>
-      {nombre > 0 && (
+      {fiches.length > 0 && (
         <div className={styles.liste}>
-          {Array.from({ length: nombre }, (_, i) => (
-            <Fragment key={i}>{children}</Fragment>
+          {fiches.map((cle) => (
+            <RetirerFiche.Provider key={cle} value={() => setFiches((f) => f.filter((c) => c !== cle))}>
+              {children}
+            </RetirerFiche.Provider>
           ))}
         </div>
       )}
-      <button type="button" className={styles.boutonPlus} onClick={() => setNombre((n) => n + 1)}>
-        <span className={styles.plus} aria-hidden="true">
-          +
-        </span>
-        Ajouter un personnage
-      </button>
+      <div className={styles.ligneAjouter}>
+        <button
+          type="button"
+          className={styles.boutonPlus}
+          onClick={() => setFiches((f) => [...f, suivant.current++])}
+        >
+          <span className={styles.plus} aria-hidden="true">
+            +
+          </span>
+          Ajouter un personnage
+        </button>
+        {aDroite}
+      </div>
     </>
+  );
+}
+
+/** Sur une fiche pas encore enregistrée : la referme, sans rien enregistrer. */
+export function RetirerFicheVide() {
+  const retirer = useContext(RetirerFiche);
+  if (!retirer) return null;
+  return (
+    <button type="button" className={styles.lienDanger} onClick={retirer}>
+      Retirer ce personnage
+    </button>
   );
 }
