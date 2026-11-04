@@ -8,7 +8,8 @@ export type SuccessStoryBlog = {
   statut: "signe" | "tourne" | null;
   projetId: string | null;
   image: string | null;
-  /** L'affiche du film (portrait), pour les films tournés : à trouver (04/11). */
+  /** L'affiche du film (portrait, 400 × 600), pour les films tournés : 32 trouvées en ligne le 04/11
+   *  (TMDB, Allociné, Unifrance, Cineuropa, distributeurs). */
   affiche: string | null;
   auteur: string | null;
 };
@@ -21,7 +22,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "11b4d384-3038-4a8e-8ed3-d948d59eb294",
     "image": "/success-stories/1.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/0.jpg"
   },
   {
     "titre": "L'autre Maison",
@@ -30,7 +31,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "ffdd36b0-d372-4ef0-8d3c-c2fce8a68c3b",
     "image": null,
-    "affiche": null
+    "affiche": "/success-stories/affiches/1.jpg"
   },
   {
     "titre": "New Territories",
@@ -39,7 +40,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "70a545d2-2396-4b1f-ba58-af46e965787a",
     "image": "/success-stories/3.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/2.jpg"
   },
   {
     "titre": "Les bienheureux",
@@ -48,7 +49,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "775cdb98-0712-47fe-a5f2-e179785c2788",
     "image": "/success-stories/4.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/3.jpg"
   },
   {
     "titre": "Ava",
@@ -57,7 +58,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "68d261e2-9125-4905-95ad-017df4c0079f",
     "image": "/success-stories/5.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/4.jpg"
   },
   {
     "titre": "Walter",
@@ -93,7 +94,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "79f52711-cc61-47b2-b690-7fce9b72905a",
     "image": null,
-    "affiche": null
+    "affiche": "/success-stories/affiches/8.jpg"
   },
   {
     "titre": "African Arvest",
@@ -111,7 +112,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "caedfde2-eebb-4314-b41a-f2e498e8b226",
     "image": "/success-stories/11.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/10.jpg"
   },
   {
     "titre": "Little bullet",
@@ -138,7 +139,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "66bba31a-39a8-4c3d-89aa-ebc2e6586f19",
     "image": null,
-    "affiche": null
+    "affiche": "/success-stories/affiches/13.jpg"
   },
   {
     "titre": "Satan Soldiers",
@@ -156,7 +157,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "46d99677-00f6-481b-8e3c-7de607836bf9",
     "image": "/success-stories/16.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/15.jpg"
   },
   {
     "titre": "Presque heureuse",
@@ -165,7 +166,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "72770f98-4491-4f23-b3eb-d9acf44f5a1e",
     "image": null,
-    "affiche": null
+    "affiche": "/success-stories/affiches/16.jpg"
   },
   {
     "titre": "Suprême authority",
@@ -228,7 +229,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "d2c1ade0-48bf-4ba1-ac54-c7e210de94a8",
     "image": "/success-stories/24.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/23.jpg"
   },
   {
     "titre": "My little one",
@@ -237,7 +238,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "cde33390-a2d3-449a-a4a6-f4ce9af581b2",
     "image": "/success-stories/25.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/24.jpg"
   },
   {
     "titre": "Le géant dans l'oursin",
@@ -264,7 +265,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "3a108ba5-5815-457e-b048-128512340265",
     "image": "/success-stories/28.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/27.jpg"
   },
   {
     "titre": "Haut les cœurs",
@@ -273,7 +274,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "1c315ba0-8063-498a-9927-a683307ebd25",
     "image": "/success-stories/29.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/28.jpg"
   },
   {
     "titre": "Negative Space",
@@ -282,7 +283,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "2a0afedd-3f12-4ed7-a930-f7581153bba7",
     "image": "/success-stories/30.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/29.jpg"
   },
   {
     "titre": "Echo",
@@ -291,7 +292,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "3cfb3d51-a993-4881-bb04-e4ff3eb68437",
     "image": "/success-stories/31.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/30.jpg"
   },
   {
     "titre": "Johnny Johnny",
@@ -336,7 +337,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "a0284e5d-9012-405e-9022-23def9b7ec03",
     "image": null,
-    "affiche": null
+    "affiche": "/success-stories/affiches/35.jpg"
   },
   {
     "titre": "Contumace",
@@ -345,7 +346,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "697c215c-870a-4763-bb28-056bf91805e4",
     "image": "/success-stories/37.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/36.jpg"
   },
   {
     "titre": "Nos univers",
@@ -354,7 +355,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "e94db1f0-6694-4a19-ae24-8463cc508f39",
     "image": "/success-stories/38.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/37.jpg"
   },
   {
     "titre": "Fondations",
@@ -381,7 +382,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "316fa766-2c14-48c3-841f-3f6794040dee",
     "image": null,
-    "affiche": null
+    "affiche": "/success-stories/affiches/40.jpg"
   },
   {
     "titre": "L'anamorphose des souvenirs",
@@ -399,7 +400,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "57fceb92-de03-4f31-b5aa-17788e2af5bf",
     "image": null,
-    "affiche": null
+    "affiche": "/success-stories/affiches/42.jpg"
   },
   {
     "titre": "À manger pour les pauvres",
@@ -435,7 +436,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "566540e9-d090-459f-84dd-4fc45acb431f",
     "image": "/success-stories/47.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/46.jpg"
   },
   {
     "titre": "3 pissenlits dans un verre d'eau",
@@ -570,7 +571,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "425f1cb1-65e0-497f-a2f7-f236fb94dad9",
     "image": "/success-stories/62.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/61.jpg"
   },
   {
     "titre": "Bad people",
@@ -579,7 +580,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "0ea3469e-d6d8-43e7-9511-19b618c1ed74",
     "image": "/success-stories/63.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/62.jpg"
   },
   {
     "titre": "Résonance",
@@ -588,7 +589,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "dbc7dce7-2cd2-4fe7-87d0-5cd9130376e0",
     "image": "/success-stories/64.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/63.jpg"
   },
   {
     "titre": "Le sillon",
@@ -606,7 +607,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "0a23cb03-ab41-4601-b6fd-067efbc04611",
     "image": "/success-stories/66.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/65.jpg"
   },
   {
     "titre": "Qui vive",
@@ -615,7 +616,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "491ce2f6-b245-4d5e-b16d-02ff4a3dadbe",
     "image": "/success-stories/67.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/66.jpg"
   },
   {
     "titre": "Inshallah Khair",
@@ -624,7 +625,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "664aac84-dfbd-4cd0-b61c-d7de109090b5",
     "image": "/success-stories/68.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/67.jpg"
   },
   {
     "titre": "The New lake",
@@ -732,7 +733,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "dda8471d-0664-4cfe-8b97-bf256be37a30",
     "image": null,
-    "affiche": null
+    "affiche": "/success-stories/affiches/79.jpg"
   },
   {
     "titre": "Luciole",
@@ -777,7 +778,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "387c836e-72db-4188-92c5-5ea6417cd7b6",
     "image": "/success-stories/85.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/84.jpg"
   },
   {
     "titre": "En piste",
@@ -786,7 +787,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "b83b2383-d3fc-459d-92cb-9167ea470eef",
     "image": "/success-stories/86.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/85.jpg"
   },
   {
     "titre": "The Ghost",
@@ -813,7 +814,7 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "statut": "tourne",
     "projetId": "ecce2e29-7290-4cee-b5e0-2b74b499f944",
     "image": "/success-stories/89.jpg",
-    "affiche": null
+    "affiche": "/success-stories/affiches/88.jpg"
   },
   {
     "titre": "Ouvre l'oeil",
