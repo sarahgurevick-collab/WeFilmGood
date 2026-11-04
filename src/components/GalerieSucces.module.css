@@ -225,6 +225,8 @@
   max-width: 1400px;
   /* Plus haute que le mur : le défilement en plus sert à le redresser. */
   height: calc(min(78vh, 760px) + 120vh);
+  /* Couché, le mur déborde sur les côtés : on le coupe sans barre de défilement. */
+  overflow-x: clip;
 }
 .epingle {
   position: sticky;

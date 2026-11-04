@@ -34,7 +34,8 @@ export type FilmGalerie = {
 const HAUTEUR_AFFICHE = 1.5;
 const HAUTEUR_169 = 9 / 16;
 // Secondes pour faire défiler une hauteur de colonne de largeur 1 : plus c'est grand, plus c'est lent.
-const SECONDES_PAR_UNITE = 7;
+// 04/11 (Sarah) : 7 était « beaucoup trop lent », il faut montrer qu'il y en a beaucoup.
+const SECONDES_PAR_UNITE = 3;
 
 function useColonnes() {
   const [n, setN] = useState(4);
@@ -73,9 +74,12 @@ export default function GalerieSucces({ films }: { films: FilmGalerie[] }) {
     // arrive tout couché et ne commence à se relever qu'une fois en place.
     offset: ["start 0.15", "end end"],
   });
-  const inclinaison = useTransform(scrollYProgress, [0, 1], [sansAnimation ? 0 : 58, 0]);
-  const taille = useTransform(scrollYProgress, [0, 1], [sansAnimation ? 1 : 0.82, 1]);
-  const descente = useTransform(scrollYProgress, [0, 1], [sansAnimation ? 0 : -60, 0]);
+  // 04/11 (Sarah : « on ne voit pas assez le mur couché », c'est l'idée de
+  // l'espace, le lien avec la planète) : plus couché, plus large que l'écran,
+  // et il reste couché le premier tiers avant de se relever.
+  const inclinaison = useTransform(scrollYProgress, [0, 0.35, 1], sansAnimation ? [0, 0, 0] : [64, 64, 0]);
+  const taille = useTransform(scrollYProgress, [0, 0.35, 1], sansAnimation ? [1, 1, 1] : [1.35, 1.35, 1]);
+  const descente = useTransform(scrollYProgress, [0, 0.35, 1], sansAnimation ? [0, 0, 0] : [-40, -40, 0]);
   const [ouvert, setOuvert] = useState<{
     cle: string;
     film: FilmGalerie;
