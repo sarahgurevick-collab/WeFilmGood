@@ -10,6 +10,7 @@ import { prendreLaPlace } from "../profils/prise-de-place";
 import { basculerValidation } from "../profils/actions";
 import styles from "./page.module.css";
 import CasesAffichage from "./CasesAffichage";
+import AnciensLecteurs from "./AnciensLecteurs";
 import { EMOJIS_SATISFACTION } from "@/lib/satisfaction";
 import FiltresAuto from "./FiltresAuto";
 import FormatsLecteur from "./FormatsLecteur";
@@ -668,6 +669,8 @@ export default async function MembresPage({
         base={baseMembres}
         libelle="Pages des membres"
       />
+      {/* Les lecteurs de WFG 1 sans compte (04/11) : certains reviennent après des années. */}
+      {metier === "Lecteur" && <AnciensLecteurs satisfaction={affichage.has("satisfaction")} />}
     </PageShell>
   );
 }
