@@ -73,6 +73,11 @@ export async function modifierProjet(formData: FormData) {
 
   if (error) echec(error.message);
 
+  // Les sous-genres (04/11) : la base ne garde que ceux de la famille, trois au plus.
+  const sousGenres = formData.getAll("sous_genres").map(String).slice(0, 3);
+  await supabase.rpc("poser_sous_genres", { p_projet: id, p_slugs: sousGenres });
+
+
   revalidatePath(`/projet/${id}`);
   redirect(`/projet/${id}?enregistre=1`);
 }

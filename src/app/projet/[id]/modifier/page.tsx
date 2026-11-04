@@ -20,6 +20,12 @@ export default async function ModifierProjetPage({
   const { supabase, projet } = await chargerProjetAModifier(id, "fiche");
 
   const { data: genres } = await supabase.from("genres").select("slug, label_fr").order("position");
+  const { data: sousGenres } = await supabase.from("sous_genres").select("slug, label_fr, familles").order("position");
+  const { data: sesSousGenres } = await supabase
+    .from("project_sous_genres")
+    .select("sous_genre_slug")
+    .eq("project_id", id)
+    .order("position");
   const { data: selections } = await supabase
     .from("project_selections")
     .select("libelle")
@@ -38,7 +44,11 @@ export default async function ModifierProjetPage({
         <input type="hidden" name="project_id" value={projet.id} />
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
-        <ChampsFiche valeurs={projet} genres={genres ?? []} selections={(selections ?? []).map((s) => s.libelle)} />
+        <ChampsFiche
+          valeurs={{ ...projet, sous_genres: (sesSousGenres ?? []).map((s) => s.sous_genre_slug) }}
+          genres={genres ?? []}
+          sousGenres={sousGenres ?? []}
+          selections={(selections ?? []).map((s) => s.libelle)} />
 
         <div className={profilStyles.pied}>
           {/* Rien n'est enregistré sans le bouton : la flèche ramène à « Mes projets » (01/10). */}

@@ -428,6 +428,13 @@ export default async function ProjetPage({
     .eq("project_id", id)
     .maybeSingle<{ videopitch_fr: string | null; videopitch_en: string | null }>();
 
+  // Les sous-genres (04/11), écrits après la famille sous le titre.
+  const { data: sousGenres } = await supabase
+    .from("project_sous_genres")
+    .select("sous_genre:sous_genres(label_fr)")
+    .eq("project_id", project.id)
+    .order("position")
+    .returns<{ sous_genre: { label_fr: string } | null }[]>();
   const { data: motsCles } = await supabase
     .from("project_keywords")
     .select("keyword:keywords(label_fr)")
@@ -459,6 +466,7 @@ export default async function ProjetPage({
         {(() => {
           const reperes = [
             project.genre?.label_fr,
+            ...(sousGenres ?? []).map((s) => s.sous_genre?.label_fr),
             FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
             nomDeLangue(project.language),
             // Pas de budget ni d'audience pour un court métrage (27/09).

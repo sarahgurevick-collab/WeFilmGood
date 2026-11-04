@@ -1,0 +1,88 @@
+/* Le genre en tags rouges, comme dans la recherche avancée des Galaxies
+   (04/11, Sarah) : la famille d'abord, puis ses sous-genres. */
+.bloc {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ligne {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ligne > legend {
+  padding: 0;
+  margin-bottom: 8px;
+  font-size: 11px;
+  color: var(--dim);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  --tag: var(--rouge-wfg);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1px solid var(--tag);
+  border-radius: 999px;
+  color: var(--fg);
+  font-size: 14px;
+  line-height: 1.2;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Les sous-genres : même rouge, trait plus discret. */
+.sousGenre {
+  --tag: color-mix(in srgb, var(--rouge-wfg) 70%, transparent);
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+.tag:not(.choisi)::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--tag);
+}
+
+.tag:not(.choisi):hover,
+.tag:has(input:focus-visible) {
+  background: color-mix(in srgb, var(--rouge-wfg) 22%, transparent);
+}
+
+.choisi {
+  background: var(--rouge-wfg);
+  border-color: var(--rouge-wfg);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.bloque {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* La vraie case reste dans la page (pour l'obligation du genre), invisible. */
+.cache {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  pointer-events: none;
+}

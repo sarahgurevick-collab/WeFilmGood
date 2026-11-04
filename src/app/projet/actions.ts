@@ -92,6 +92,10 @@ export async function createProject(formData: FormData) {
     echec(error?.message ?? "Une erreur est survenue, réessayez.");
   }
 
+  // Les sous-genres (04/11) : la base ne garde que ceux de la famille, trois au plus.
+  const sousGenres = formData.getAll("sous_genres").map(String).slice(0, 3);
+  await supabase.rpc("poser_sous_genres", { p_projet: project.id, p_slugs: sousGenres });
+
   if (aVignette) {
     const chemin = await deposerImage(supabase, user.id, project.id, vignette, "vignette");
     // La fiche existe déjà : un échec de l'image ne l'annule pas, l'auteur

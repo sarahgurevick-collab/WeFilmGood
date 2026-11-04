@@ -1,6 +1,7 @@
 import ChampAvecCompteur from "@/components/ChampAvecCompteur";
 import ChampTitre from "./ChampTitre";
 import LibelleSelection from "./LibelleSelection";
+import ChoixGenre, { type SousGenre } from "./ChoixGenre";
 import formStyles from "@/components/form.module.css";
 import styles from "./deposer.module.css";
 
@@ -42,6 +43,8 @@ export type ValeursFiche = {
   synopsis?: string | null;
   format: string | null;
   genre_slug: string | null;
+  /** Les sous-genres de la fiche (04/11), dans l'ordre. */
+  sous_genres?: string[];
   budget_range: string | null;
   target_audience: string | null;
   has_awards: boolean;
@@ -63,12 +66,14 @@ export default function ChampsFiche({
   valeurs,
   existants,
   genres,
+  sousGenres = [],
   selections = [],
 }: {
   valeurs: ValeursFiche | null;
   /** Les fiches que l'auteur a déjà (création seulement) : garde-fou sur le titre. */
   existants?: { id: string; title: string }[];
   genres: { slug: string; label_fr: string }[];
+  sousGenres?: SousGenre[];
   /** Les sélections de la Maison des Scénaristes (« Cannes 2013 »…), posées par l'administration seule. */
   selections?: string[];
 }) {
@@ -105,19 +110,6 @@ export default function ChampsFiche({
             ))}
           </select>
         </label>
-        <label className={formStyles.field}>
-          <span>Genre principal *</span>
-          <select name="genre_slug" required defaultValue={valeurs?.genre_slug ?? ""}>
-            <option value="" disabled>
-              Choisir un genre
-            </option>
-            {genres.map((g) => (
-              <option key={g.slug} value={g.slug}>
-                {g.label_fr}
-              </option>
-            ))}
-          </select>
-        </label>
         <label className={`${formStyles.field} ${styles.horsCourt}`}>
           <span>Budget estimé</span>
           <select name="budget_range" defaultValue={valeurs?.budget_range ?? ""}>
@@ -140,6 +132,13 @@ export default function ChampsFiche({
             ))}
           </select>
         </label>
+        {/* Le genre en tags, sur toute la largeur (04/11) : la famille, puis ses sous-genres. */}
+        <ChoixGenre
+          genres={genres}
+          sousGenres={sousGenres}
+          genreInitial={valeurs?.genre_slug ?? null}
+          sousGenresInitiaux={valeurs?.sous_genres ?? []}
+        />
       </div>
 
       <ChampAvecCompteur
