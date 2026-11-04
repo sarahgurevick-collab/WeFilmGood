@@ -10,6 +10,7 @@ import { prendreLaPlace } from "../profils/prise-de-place";
 import { basculerValidation } from "../profils/actions";
 import styles from "./page.module.css";
 import CasesAffichage from "./CasesAffichage";
+import { EMOJIS_SATISFACTION } from "@/lib/satisfaction";
 import FiltresAuto from "./FiltresAuto";
 import FormatsLecteur from "./FormatsLecteur";
 import AdhesionMembre from "./AdhesionMembre";
@@ -180,32 +181,39 @@ export default async function MembresPage({
 
   // Pour les lecteurs (27/09, l'ancienne page Lecteurs rejoint celle-ci) :
   // le nombre de fiches et la date de la dernière, WFG 1 et WFG 2 réunis.
-  const fichesDe = new Map<string, { n: number; derniere: string | null }>();
-  if (service && sp.metier === "Lecteur") {
+  // Et, derrière « Affichage », la satisfaction des auteurs (04/11) : combien
+  // de fiches ont reçu chaque emoji.
+  const fichesDe = new Map<string, { n: number; derniere: string | null; notes: number[] }>();
+  if (service && (sp.metier === "Lecteur" || String(sp.aff ?? "").includes("satisfaction"))) {
     const ids = lignesLecteur.map((r) => r.profile_id);
     const [{ data: nouvelles }, { data: anciensIds }] = await Promise.all([
-      service.from("reading_reports").select("reader_id, submitted_at").in("reader_id", ids),
+      service
+        .from("reading_reports")
+        .select("reader_id, submitted_at, rating:reading_report_ratings(stars)")
+        .in("reader_id", ids)
+        .returns<{ reader_id: string; submitted_at: string | null; rating: { stars: number } | null }[]>(),
       service.from("profiles").select("id, legacy_user_id").in("id", ids).not("legacy_user_id", "is", null),
     ]);
-    const ajoute = (id: string, date: string | null) => {
-      const e = fichesDe.get(id) ?? { n: 0, derniere: null };
+    const ajoute = (id: string, date: string | null, note: number | null | undefined) => {
+      const e = fichesDe.get(id) ?? { n: 0, derniere: null, notes: [] };
       e.n += 1;
+      if (note && note >= 1 && note <= 5) e.notes.push(note);
       if (date && (!e.derniere || date > e.derniere)) e.derniere = date;
       fichesDe.set(id, e);
     };
-    for (const f of nouvelles ?? []) ajoute(f.reader_id, f.submitted_at);
+    for (const f of nouvelles ?? []) ajoute(f.reader_id, f.submitted_at, f.rating?.stars);
     const parAncien = new Map((anciensIds ?? []).map((p) => [p.legacy_user_id as number, p.id as string]));
     if (parAncien.size) {
       // Plus de 1 000 fiches : l'API n'en rend que 1 000 par lecture.
       for (let debut = 0; ; debut += 1000) {
         const { data: anciennes } = await service
           .from("legacy_reading_reports")
-          .select("reader_legacy_id, read_at")
+          .select("reader_legacy_id, read_at, author_rating")
           .in("reader_legacy_id", [...parAncien.keys()])
           .neq("statut", 0)
           .order("legacy_review_id")
           .range(debut, debut + 999);
-        for (const f of anciennes ?? []) ajoute(parAncien.get(f.reader_legacy_id)!, f.read_at);
+        for (const f of anciennes ?? []) ajoute(parAncien.get(f.reader_legacy_id)!, f.read_at, f.author_rating);
         if (!anciennes || anciennes.length < 1000) break;
       }
     }
@@ -435,6 +443,7 @@ export default async function MembresPage({
             ["inscription", "Date d'inscription"],
             ["activite", "Dernière activité"],
             ["controle", "Nom sur la page du lien"],
+            ["satisfaction", "Satisfaction des auteurs"],
           ]}
           cochees={[...affichage]}
         />
@@ -473,6 +482,7 @@ export default async function MembresPage({
               {affichage.has("biofilmo") && <th>Biofilmo</th>}
               {affichage.has("inscription") && <th>Inscrit</th>}
               {affichage.has("activite") && <th>Dernière activité</th>}
+              {affichage.has("satisfaction") && <th>Satisfaction des auteurs</th>}
               <th></th>
             </tr>
           </thead>
@@ -612,6 +622,24 @@ export default async function MembresPage({
                 )}
                 {affichage.has("inscription") && <td>{dateCourte(m.inscrit_le)}</td>}
                 {affichage.has("activite") && <td>{dateCourte(m.derniere_activite)}</td>}
+                {affichage.has("satisfaction") && (
+                  <td className={styles.satisfaction}>
+                    {fichesDe.has(m.profile_id) ? (
+                      <Link href={`/admin/lecteurs/${m.profile_id}`}>
+                        {EMOJIS_SATISFACTION.map((emoji, i) => {
+                          const n = fichesDe.get(m.profile_id)!.notes.filter((x) => x === i + 1).length;
+                          return (
+                            <span key={emoji} className={n ? undefined : styles.satisfactionZero}>
+                              {emoji} {n}
+                            </span>
+                          );
+                        })}
+                      </Link>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                )}
                 <td>
                   <form action={prendreLaPlace}>
                     <input type="hidden" name="profile_id" value={m.profile_id} />
