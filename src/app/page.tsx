@@ -1,6 +1,6 @@
 import Link from "next/link";
 import BarreNav from "@/components/BarreNav";
-import CarrouselVerre from "@/components/CarrouselVerre";
+import GalerieSucces from "@/components/GalerieSucces";
 import CielEtoile from "@/components/CielEtoile";
 import DefilementEngagements from "@/components/DefilementEngagements";
 import EnTeteAnime from "@/components/EnTeteAnime";
@@ -18,6 +18,8 @@ import styles from "./page.module.css";
 const STATUT = { signe: "Signé", tourne: "Tourné" } as const;
 const DIAPOS_SUCCES = SUCCESS_STORIES_BLOG.map((s) => ({
   titre: s.titre,
+  auteur: s.auteur,
+  affiche: s.affiche,
   sousTitre: [s.format === "LM" ? "Long métrage" : "Court métrage", s.statut ? STATUT[s.statut] : null]
     .filter(Boolean)
     .join(" · "),
@@ -96,10 +98,10 @@ export default async function Home() {
             Success stories
           </Link>
         </h2>
-        {/* Essai du 04/11 (Sarah) : le carrousel « glass » avec les films du blog
-            de la Maison, longs puis courts. Avant : CarrouselSucces (étiquette
-            accueil-avant-carrousel-verre). */}
-        <CarrouselVerre diapos={DIAPOS_SUCCES} />
+        {/* Essai du 04/11 (Sarah) : la galerie qui défile, films tournés en affiche,
+            projets signés en 16/9. Avant : le carrousel « glass » (CarrouselVerre,
+            étiquette accueil-avant-galerie), et encore avant CarrouselSucces. */}
+        <GalerieSucces films={DIAPOS_SUCCES} />
       </section>
 
       <section className={`${styles.bande} clair`}>

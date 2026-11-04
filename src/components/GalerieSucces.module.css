@@ -1,0 +1,220 @@
+/* Galerie des success stories (04/11/2026). */
+.galerie {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 1400px;
+  height: min(78vh, 760px);
+  overflow: hidden;
+  /* Les images apparaissent et disparaissent en fondu en haut et en bas. */
+  mask-image: linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%);
+}
+
+.colonne {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.defile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation-name: monte;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Le défilement s'arrête sous la souris, ou pendant qu'une image est ouverte. */
+.galerie:hover .defile,
+.galerie:focus-within .defile,
+.enPause .defile {
+  animation-play-state: paused;
+}
+
+@keyframes monte {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    /* La moitié de la liste, plus la moitié d'un écart. */
+    transform: translateY(calc(-50% - 6px));
+  }
+}
+
+.carte {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #111;
+  cursor: pointer;
+  color: #fff;
+  text-align: left;
+}
+
+.carteAffiche {
+  aspect-ratio: 2 / 3;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.carte:hover .image,
+.carte:focus-visible .image {
+  transform: scale(1.04);
+}
+
+.carte:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Les informations, au survol ou au doigt. */
+.infos {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 28px 12px 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0));
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.carte:hover .infos,
+.carte:focus-visible .infos,
+.carte:active .infos {
+  opacity: 1;
+  transform: none;
+}
+
+.infosTitre {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.infosAuteur {
+  font-size: 13px;
+  color: #ddd;
+}
+
+.infosSous {
+  font-size: 11px;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sansImage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #1c1c1f, #0b0b0c);
+}
+
+.trait {
+  width: 32px;
+  height: 4px;
+  background: #da2c25;
+}
+
+.sansImageTitre {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f2efe9;
+}
+
+/* L'image ouverte. */
+.fond {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.grande {
+  position: relative;
+  width: min(92vw, 1000px, calc(82vh * 16 / 9));
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #111;
+  color: #fff;
+}
+
+.grandeAffiche {
+  width: auto;
+  height: min(86vh, 900px);
+  aspect-ratio: 2 / 3;
+}
+
+.grandeInfos {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 48px 20px 18px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0));
+  text-align: left;
+}
+
+.grandeInfos .infosTitre {
+  font-size: 22px;
+}
+
+.grandeInfos .infosAuteur {
+  font-size: 15px;
+}
+
+.fermer {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  border: none;
+  background: none;
+  color: #fff;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .galerie {
+    overflow-y: auto;
+  }
+
+  .defile {
+    animation: none;
+  }
+
+  .image,
+  .infos {
+    transition: none;
+  }
+}
