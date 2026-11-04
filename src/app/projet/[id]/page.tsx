@@ -55,6 +55,8 @@ type Project = {
   owner_id: string;
   legacy_id: string | null;
   genre_slug: string | null;
+  postures: string[] | null;
+  techniques: string[] | null;
   budget_range: string | null;
   target_audience: string | null;
   share_code: string | null;
@@ -109,7 +111,7 @@ export default async function ProjetPage({
   const { data: project } = await supabase
     .from("projects")
     .select(
-      "id, title, ancien_titre, tagline, logline, synopsis, format, genre_slug, budget_range, target_audience, language, country, status, bandeau, trailer_url, visible_pour, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
+      "id, title, ancien_titre, tagline, logline, synopsis, format, genre_slug, postures, techniques, budget_range, target_audience, language, country, status, bandeau, trailer_url, visible_pour, owner_id, share_code, legacy_id, has_awards, awards_detail, genre:genres(label_fr)",
     )
     .eq("id", id)
     .maybeSingle<Project>();
@@ -467,6 +469,10 @@ export default async function ProjetPage({
           const reperes = [
             project.genre?.label_fr,
             ...(sousGenres ?? []).map((s) => s.sous_genre?.label_fr),
+            // Fiction et prise de vues réelles vont de soi : seuls les autres choix s'écrivent.
+            project.postures?.includes("documentaire") ? "Documentaire" : null,
+            project.techniques?.includes("animation") ? "Animation" : null,
+            project.techniques?.includes("contenu_ia") ? "Contenu IA" : null,
             FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
             nomDeLangue(project.language),
             // Pas de budget ni d'audience pour un court métrage (27/09).

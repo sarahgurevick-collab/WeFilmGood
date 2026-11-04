@@ -4,10 +4,13 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { chargerProjetAModifier } from "../../blocs";
 import { AUDIENCES, BUDGETS } from "../../ChampsFiche";
+import { POSTURES, TECHNIQUES } from "../../formes";
 
 const FORMATS = ["long_metrage", "court_metrage", "serie", "immersif_360_vr"];
 const VALEURS_BUDGET = BUDGETS.map((b) => b.value);
 const VALEURS_AUDIENCE = AUDIENCES.map((a) => a.value);
+const VALEURS_POSTURE = POSTURES.map((p) => p.value);
+const VALEURS_TECHNIQUE = TECHNIQUES.map((t) => t.value);
 
 /**
  * Enregistre le bloc 1 d'une fiche projet.
@@ -32,6 +35,9 @@ export async function modifierProjet(formData: FormData) {
   const synopsis = (formData.get("synopsis") as string)?.trim();
   const format = formData.get("format") as string;
   const genreSlug = (formData.get("genre_slug") as string)?.trim();
+  // Marches 3 et 4 du genre (04/11) : au moins une case chacune.
+  const postures = formData.getAll("postures").map(String).filter((v) => VALEURS_POSTURE.includes(v));
+  const techniques = formData.getAll("techniques").map(String).filter((v) => VALEURS_TECHNIQUE.includes(v));
   const budgetRange = formData.get("budget_range") as string;
   const targetAudience = formData.get("target_audience") as string;
   // Une sélection de la Maison des Scénaristes compte comme une distinction :
@@ -47,6 +53,8 @@ export async function modifierProjet(formData: FormData) {
   if (!tagline) echec("La tagline est obligatoire.");
   if (!format) echec("Le format est obligatoire.");
   if (!genreSlug) echec("Le genre principal est obligatoire.");
+  if (postures.length === 0) echec("Indiquez s'il s'agit d'une fiction ou d'un documentaire.");
+  if (techniques.length === 0) echec("Indiquez la technique : prise de vues réelles, animation ou contenu IA.");
   if (!FORMATS.includes(format)) echec("Format de projet invalide.");
   if (budgetRange && !VALEURS_BUDGET.includes(budgetRange)) echec("Budget estimé invalide.");
   if (targetAudience && !VALEURS_AUDIENCE.includes(targetAudience)) echec("Audience ciblée invalide.");
@@ -62,6 +70,8 @@ export async function modifierProjet(formData: FormData) {
       synopsis: synopsis || null,
       format: format || null,
       genre_slug: genreSlug || null,
+      postures,
+      techniques,
       // Pas de budget ni d'audience pour un court métrage (27/09).
       budget_range: format === "court_metrage" ? null : budgetRange || null,
       target_audience: format === "court_metrage" ? null : targetAudience || null,

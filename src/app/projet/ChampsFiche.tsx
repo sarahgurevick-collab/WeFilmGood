@@ -45,6 +45,9 @@ export type ValeursFiche = {
   genre_slug: string | null;
   /** Les sous-genres de la fiche (04/11), dans l'ordre. */
   sous_genres?: string[];
+  /** Marches 3 et 4 du genre (04/11) : fiction / documentaire, technique. */
+  postures?: string[] | null;
+  techniques?: string[] | null;
   budget_range: string | null;
   target_audience: string | null;
   has_awards: boolean;
@@ -138,6 +141,8 @@ export default function ChampsFiche({
           sousGenres={sousGenres}
           genreInitial={valeurs?.genre_slug ?? null}
           sousGenresInitiaux={valeurs?.sous_genres ?? []}
+          posturesInitiales={valeurs?.postures ?? []}
+          techniquesInitiales={valeurs?.techniques ?? []}
         />
       </div>
 

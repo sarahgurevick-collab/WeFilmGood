@@ -114,6 +114,8 @@ export type ProjetAModifier = {
   synopsis: string | null;
   format: string | null;
   genre_slug: string | null;
+  postures: string[] | null;
+  techniques: string[] | null;
   budget_range: string | null;
   target_audience: string | null;
   has_awards: boolean;
@@ -138,7 +140,7 @@ export async function chargerProjetAModifier(id: string, cle: Bloc) {
     supabase
       .from("projects")
       .select(
-        "id, owner_id, title, tagline, tagline_proposee, logline, synopsis, format, genre_slug, budget_range, target_audience, has_awards, awards_detail",
+        "id, owner_id, title, tagline, tagline_proposee, logline, synopsis, format, genre_slug, postures, techniques, budget_range, target_audience, has_awards, awards_detail",
       )
       .eq("id", id)
       .maybeSingle<ProjetAModifier>(),
