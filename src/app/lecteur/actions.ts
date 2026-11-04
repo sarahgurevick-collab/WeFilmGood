@@ -118,3 +118,41 @@ export async function choisirLanguesLues(formData: FormData) {
   revalidatePath("/admin/projets-en-attente");
   redirect("/lecteur/profil?enregistre=1");
 }
+
+/**
+ * Les coordonnées du lecteur (04/11/2026, Sarah : « où les nouveaux lecteurs
+ * mettent leur téléphone ? Je dois savoir où ils habitent, nom prénom »).
+ * Nom, prénom, ville et pays vont sur le profil ; téléphone, adresse et code
+ * postal dans les coordonnées privées, que seule l'équipe voit (les mêmes que
+ * celles d'un membre, reprises sur la facture du lecteur).
+ */
+export async function enregistrerCoordonneesLecteur(formData: FormData) {
+  const { supabase, user } = await requireReader();
+  const champ = (nom: string) => String(formData.get(nom) ?? "").trim();
+  const prenom = champ("first_name");
+  const nom = champ("last_name");
+  const phone = champ("phone");
+  const address = champ("address");
+  const postal = champ("postal_code");
+  const city = champ("city");
+  const country = champ("country").toUpperCase();
+
+  if (!prenom || !nom || !phone || !address || !postal || !city || !country) {
+    redirect("/lecteur/profil?erreur=" + encodeURIComponent("Tous les champs de vos coordonnées sont obligatoires.") + "#coordonnees");
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ first_name: prenom, last_name: nom, full_name: `${prenom} ${nom}`, city, country })
+    .eq("id", user.id);
+  const { error: erreurPrive } = await supabase
+    .from("profile_private_details")
+    .upsert({ profile_id: user.id, phone, address, postal_code: postal, updated_at: new Date().toISOString() });
+  if (error || erreurPrive) {
+    console.error("Coordonnées du lecteur refusées :", error?.message ?? erreurPrive?.message);
+    redirect("/lecteur/profil?erreur=" + encodeURIComponent("Vos coordonnées n'ont pas pu être enregistrées. Réessayez dans un instant.") + "#coordonnees");
+  }
+
+  revalidatePath("/lecteur");
+  redirect("/lecteur/profil?coordonnees=1#coordonnees");
+}

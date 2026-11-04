@@ -2,7 +2,8 @@
 // (04/11/2026, Sarah : « pas de photo ni de contact tél pour Fustini ») :
 //   - la photo (~/imports/extrait/img/avatars/<user_id>.<ext>), déposée comme
 //     un envoi depuis /profil : original + carré cadré, avatar_original_path ;
-//   - le téléphone (wfg1.accounts.phone) dans profile_contact_info ;
+//   - le téléphone, l'adresse et le code postal (wfg1.accounts) dans
+//     profile_private_details, que seule l'équipe voit (comme un membre) ;
 //   - les formats lus (user_data reader_lm / reader_cm / reader_series / reader_vr)
 //     dans reader_profiles.formats.
 // Le genre n'est pas repris. Rien n'est écrasé : seuls les champs vides sont
@@ -29,6 +30,7 @@ const sql = (q) =>
   JSON.parse(execFileSync("docker", ["exec", "supabase-db", "psql", "-U", "postgres", "-At", "-c", q], { encoding: "utf8" }).trim() || "[]");
 const anciens = sql(`select coalesce(json_agg(json_build_object(
     'user_id', a.user_id, 'phone', nullif(trim(a.phone), ''),
+    'address', nullif(trim(a.address), ''), 'postal_code', nullif(trim(a.postal_code), ''),
     'formats', (select coalesce(json_agg(u.name), '[]') from wfg1.user_data u
                 where u.user_id = a.user_id and u.value = '1'
                   and u.name in ('reader_lm','reader_cm','reader_series','reader_vr'))
@@ -40,9 +42,8 @@ const { data: lecteurs, error } = await supabase
   .from("reader_profiles")
   .select("profile_id, formats, profile:profiles(full_name, legacy_user_id, avatar_url)");
 if (error) throw new Error(error.message);
-const { data: contacts } = await supabase.from("profile_contact_info").select("profile_id, phone");
-const telDe = new Map((contacts ?? []).map((c) => [c.profile_id, c.phone]));
-const aUneLigne = new Set((contacts ?? []).map((c) => c.profile_id));
+const { data: prives } = await supabase.from("profile_private_details").select("profile_id, phone, address, postal_code");
+const priveDe = new Map((prives ?? []).map((c) => [c.profile_id, c]));
 
 for (const l of lecteurs) {
   const p = l.profile;
@@ -50,13 +51,16 @@ for (const l of lecteurs) {
   if (!ancien) continue;
   const faits = [];
 
-  // Le téléphone.
-  if (ancien.phone && !telDe.get(l.profile_id)) {
-    faits.push(`tél ${ancien.phone}`);
+  // Le téléphone, l'adresse, le code postal : seulement ce qui manque.
+  const prive = priveDe.get(l.profile_id) ?? {};
+  const aPoser = {};
+  for (const champ of ["phone", "address", "postal_code"]) if (ancien[champ] && !prive[champ]) aPoser[champ] = ancien[champ];
+  if (Object.keys(aPoser).length) {
+    faits.push(Object.entries(aPoser).map(([k, v]) => `${k} ${v}`).join(", "));
     if (ECRIRE) {
-      const r = aUneLigne.has(l.profile_id)
-        ? await supabase.from("profile_contact_info").update({ phone: ancien.phone }).eq("profile_id", l.profile_id)
-        : await supabase.from("profile_contact_info").insert({ profile_id: l.profile_id, phone: ancien.phone });
+      const r = await supabase
+        .from("profile_private_details")
+        .upsert({ profile_id: l.profile_id, ...prive, ...aPoser, updated_at: new Date().toISOString() });
       if (r.error) throw new Error(r.error.message);
     }
   }

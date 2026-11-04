@@ -42,6 +42,14 @@ export default async function LecteurPage() {
     .eq("profile_id", user.id)
     .maybeSingle();
 
+  // Les coordonnées que l'équipe doit avoir (04/11, Sarah).
+  const { data: prive } = await supabase
+    .from("profile_private_details")
+    .select("phone, address, postal_code")
+    .eq("profile_id", user.id)
+    .maybeSingle<{ phone: string | null; address: string | null; postal_code: string | null }>();
+  const coordonneesIncompletes = !prive?.phone || !prive?.address || !prive?.postal_code;
+
   const { data: assignments } = await supabase
     .from("reading_assignments")
     .select("id, status, assigned_at, project:projects(id, title, format, language)")
@@ -56,6 +64,12 @@ export default async function LecteurPage() {
 
   return (
     <PageShell title="Mes lectures" nav="lectures" theme="clair">
+      {coordonneesIncompletes && (
+        <p className={styles.rappelCoordonnees}>
+          <Link href="/lecteur/profil#coordonnees">Complétez vos coordonnées dans Mon profil</Link>{" "}
+          (téléphone, adresse).
+        </p>
+      )}
       {/* La phrase de WFG 1, avec son interrupteur OUI / NON (16/10). L'orange
           ne se choisit pas : la plateforme l'allume quand une lecture est
           acceptée, et l'éteint quand la fiche est rendue. */}

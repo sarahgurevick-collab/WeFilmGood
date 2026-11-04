@@ -419,3 +419,25 @@
   align-self: flex-start;
   margin: 8px 0 0;
 }
+
+/* Les coordonnées du lecteur, sur deux colonnes (04/11). */
+.coordonnees {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px 20px;
+}
+
+/* Le rappel des coordonnées manquantes (04/11). */
+.rappelCoordonnees {
+  margin: 0 0 24px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: var(--rouge-wfg, #da2c25);
+  color: #fff;
+  font-weight: 700;
+}
+
+.rappelCoordonnees a {
+  color: #fff;
+  text-decoration: underline;
+}

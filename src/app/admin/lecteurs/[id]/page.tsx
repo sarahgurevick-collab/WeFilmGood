@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { nomDeLangue } from "@/lib/langues";
+import { nomDuPays } from "@/lib/pays";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../../admin.module.css";
@@ -76,7 +77,7 @@ export default async function FicheLecteurPage({
       .eq("profile_id", id)
       .maybeSingle(),
     admin.auth.admin.getUserById(id),
-    admin.from("profile_contact_info").select("phone").eq("profile_id", id).maybeSingle(),
+    admin.from("profile_private_details").select("phone, address, postal_code").eq("profile_id", id).maybeSingle(),
   ]);
   if (!profil || !role) notFound();
 
@@ -152,8 +153,12 @@ export default async function FicheLecteurPage({
           <dd>{compte.user?.email ?? "—"}</dd>
           <dt>Tél</dt>
           <dd>{contact?.phone ?? "—"}</dd>
+          <dt>Adresse</dt>
+          <dd>
+            {[contact?.address, [contact?.postal_code, profil.city].filter(Boolean).join(" ")].filter(Boolean).join(", ") || "—"}
+          </dd>
           <dt>Pays</dt>
-          <dd>{[profil.country, profil.city].filter(Boolean).join(" · ") || "—"}</dd>
+          <dd>{nomDuPays(profil.country) ?? profil.country ?? "—"}</dd>
           <dt>Langues</dt>
           <dd>{(lecteur?.langues ?? []).map((c: string) => nomDeLangue(c) ?? c).join(", ") || "—"}</dd>
           <dt>Formats</dt>
