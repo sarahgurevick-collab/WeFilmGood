@@ -343,8 +343,8 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
   {
     "titre": "3 pissenlits dans un verre d'eau",
     "format": "CM",
-    "statut": null,
-    "projetId": null,
+    "statut": "tourne",
+    "projetId": "77f7d269-f81c-4be9-8860-72d8c606c5fd",
     "image": null
   },
   {
@@ -546,8 +546,8 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
   {
     "titre": "Vivarium",
     "format": "CM",
-    "statut": null,
-    "projetId": null,
+    "statut": "signe",
+    "projetId": "eee3a40f-7a11-40c6-b27e-5f27e4c894f7",
     "image": null
   },
   {
