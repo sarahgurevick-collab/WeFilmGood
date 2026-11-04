@@ -4,6 +4,7 @@ import Link from "next/link";
 import Pagination from "./Pagination";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   motsClesProches,
   type Categorie,
@@ -19,7 +20,6 @@ import LogoComplet from "./LogoComplet";
 import MarqueDejaOuvert from "./MarqueDejaOuvert";
 import PersonnagesCarte from "./PersonnagesCarte";
 import EquipeCarte from "./EquipeCarte";
-import formStyles from "./form.module.css";
 import NuageCouleurs from "./NuageCouleurs";
 import NuageDisque from "./NuageDisque";
 import OrbeAttente from "./OrbeAttente";
@@ -228,6 +228,22 @@ export default function Finder({
     setChoisie(cle);
     setPageRecherche(1);
   };
+  // Un clic sur le mot passe à la galaxie suivante. Sans mot cherché, la page
+  // elle-même change (02/10) : on attend que les clics s'arrêtent pour ne
+  // recharger qu'une fois.
+  const minuteurMode = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const titreChoisi = CATEGORIES.find((c) => c.cle === choisie)?.pastille ?? "Projets";
+  const modeSuivant = () => {
+    const i = CATEGORIES.findIndex((c) => c.cle === choisie);
+    const suivante = CATEGORIES[(i + 1) % CATEGORIES.length].cle;
+    choisir(suivante);
+    if (!requete.trim()) {
+      if (minuteurMode.current) clearTimeout(minuteurMode.current);
+      minuteurMode.current = setTimeout(() => {
+        router.push(suivante === "projets" ? adresse(filtres) : `/pitchotheque?voir=${suivante}`);
+      }, 700);
+    }
+  };
   const changerDePage = (n: number) => {
     setPageRecherche(n);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -247,10 +263,41 @@ export default function Finder({
     <div className={styles.zone}>
       <div className={styles.barre}>
         <TagsChoisis />
-        <span className={`${formStyles.recherche} ${styles.champZone}`}>
+        {/* Les trois galaxies dans le champ lui-même (04/11, Sarah, modèle « morphing
+            input » de 21st.dev) : un clic sur le mot à gauche passe à la suivante. */}
+        <span className={`${styles.champZone} ${styles.champModes}`}>
+          <motion.button
+            type="button"
+            layout
+            transition={{ layout: { type: "spring", damping: 22, stiffness: 260 } }}
+            className={styles.mode}
+            onClick={modeSuivant}
+            aria-label={`J'explore mes galaxies : ${titreChoisi}. Cliquer pour changer`}
+            title="J'explore mes galaxies…"
+          >
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.span key={choisie} className={styles.modeMot}>
+                {titreChoisi.split("").map((lettre, i) => (
+                  <motion.span
+                    key={`${choisie}-${i}`}
+                    className={styles.modeLettre}
+                    initial={{ opacity: 0, rotateX: 80, y: 8, filter: "blur(3px)" }}
+                    animate={{ opacity: 1, rotateX: 0, y: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, rotateX: -80, y: -8, filter: "blur(3px)" }}
+                    transition={{ delay: 0.02 * i, type: "spring", damping: 16, stiffness: 240, mass: 1.2 }}
+                  >
+                    {lettre}
+                  </motion.span>
+                ))}
+              </motion.span>
+            </AnimatePresence>
+            <svg className={styles.modeFleches} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M7 9l5-5 5 5M7 15l5 5 5-5" />
+            </svg>
+          </motion.button>
           <input
             type="search"
-            className={styles.champ}
+            className={styles.champModesInput}
             placeholder="Chercher un projet, un thème, un mot-clé…"
             value={requete}
             onChange={(e) => {
@@ -285,28 +332,6 @@ export default function Finder({
             <NuageCouleurs className={styles.iconeDisque} />
           </button>
         )}
-      </div>
-
-      <div className={styles.pastilles} role="group" aria-label="Catégorie en tête des résultats">
-        <span className={styles.pastillesIntro}>J&apos;explore mes galaxies…</span>
-        {CATEGORIES.map((c) => (
-          <button
-            key={c.cle}
-            type="button"
-            className={`${styles.pastille} ${choisie === c.cle ? styles.pastilleChoisie : ""}`}
-            aria-pressed={choisie === c.cle}
-            onClick={() => {
-              choisir(c.cle);
-              // Sans mot cherché, la page elle-même change : les talents
-              // ou les personnages à la place des projets, et retour (02/10).
-              if (!requete.trim()) {
-                router.push(c.cle === "projets" ? adresse(filtres) : `/pitchotheque?voir=${c.cle}`);
-              }
-            }}
-          >
-            {c.pastille}
-          </button>
-        ))}
       </div>
 
       {nuageAffiche && (

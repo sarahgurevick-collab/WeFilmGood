@@ -385,3 +385,74 @@
   font-weight: 700;
   cursor: pointer;
 }
+
+/* Le champ avec les trois galaxies à gauche (04/11, Sarah). */
+.champModes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #d5d5d5;
+  border-radius: 999px;
+  padding: 5px;
+  max-width: 560px;
+}
+
+.champModes:focus-within {
+  outline: 2px solid var(--fg);
+  outline-offset: 1px;
+}
+
+.mode {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 12px 8px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+.mode:active {
+  transform: scale(0.95);
+}
+
+.modeMot {
+  display: inline-flex;
+  perspective: 400px;
+  white-space: nowrap;
+}
+
+.modeLettre {
+  display: inline-block;
+  white-space: pre;
+  will-change: transform;
+}
+
+.modeFleches {
+  width: 13px;
+  height: 13px;
+  opacity: 0.8;
+}
+
+.champModesInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #111;
+  font-size: 16px;
+  padding: 8px 10px 8px 4px;
+}
+
+.champModesInput:focus {
+  outline: none;
+}
