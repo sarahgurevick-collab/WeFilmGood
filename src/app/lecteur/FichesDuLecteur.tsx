@@ -1,4 +1,5 @@
 import Link from "next/link";
+import RecapSatisfaction from "@/app/admin/lecteurs/RecapSatisfaction";
 import { emojiSatisfaction } from "@/lib/satisfaction";
 import formStyles from "@/components/form.module.css";
 import styles from "./lecteur.module.css";
@@ -79,8 +80,17 @@ export default async function FichesDuLecteur({
       : { data: null };
   const lectures = anciennes ?? [];
 
+  const notes = [...(reports ?? []).map((r) => r.rating?.stars), ...lectures.map((f) => f.author_rating)];
+
   return (
     <>
+      {/* La satisfaction des auteurs, en barres (04/11, Sarah). */}
+      {notes.length > 0 && (
+        <>
+          <h2 className={styles.subhead}>Satisfaction des auteurs</h2>
+          <RecapSatisfaction notes={notes} />
+        </>
+      )}
       {(reports ?? []).length === 0 ? (
         <p className={formStyles.hint}>
           Aucune fiche rédigée pour l&apos;instant.{" "}
@@ -89,7 +99,7 @@ export default async function FichesDuLecteur({
       ) : (
         <form action={etablirFacture}>
           <div className={styles.defile}>
-          <table className={styles.table}>
+          <table className={`${styles.table} ${styles.tableGrand}`}>
             <thead>
               <tr>
                 <th>Facturer</th>
@@ -129,7 +139,7 @@ export default async function FichesDuLecteur({
                   </td>
                   <td>{r.score ?? "—"} / 200</td>
                   <td>{STATUTS[r.status] ?? r.status}</td>
-                  <td>{emojiSatisfaction(r.rating?.stars)}</td>
+                  <td className={styles.emojiCellule}>{emojiSatisfaction(r.rating?.stars)}</td>
                   <td>{r.payment_status === "payee" ? "Payée" : "Due"}</td>
                 </tr>
               ))}
@@ -159,7 +169,7 @@ export default async function FichesDuLecteur({
             (Ctrl+F sur PC).
           </p>
           <div className={styles.defile}>
-          <table className={styles.table}>
+          <table className={`${styles.table} ${styles.tableGrand}`}>
             <thead>
               <tr>
                 <th>Projet</th>
@@ -178,7 +188,7 @@ export default async function FichesDuLecteur({
                       : "—"}
                   </td>
                   <td>{f.final_mark ?? "—"}</td>
-                  <td>{emojiSatisfaction(f.author_rating)}</td>
+                  <td className={styles.emojiCellule}>{emojiSatisfaction(f.author_rating)}</td>
                 </tr>
               ))}
             </tbody>

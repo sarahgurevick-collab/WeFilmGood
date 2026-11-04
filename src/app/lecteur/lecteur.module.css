@@ -441,3 +441,17 @@
   color: #fff;
   text-decoration: underline;
 }
+
+/* Les fiches du lecteur, en plus grand (04/11, Sarah). */
+.tableGrand {
+  font-size: 15px;
+}
+
+.tableGrand th {
+  font-size: 12px;
+}
+
+.emojiCellule {
+  font-size: 26px;
+  line-height: 1;
+}
