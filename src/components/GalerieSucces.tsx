@@ -61,13 +61,15 @@ const hauteurDe = (f: FilmGalerie) =>
 
 export default function GalerieSucces({ films }: { films: FilmGalerie[] }) {
   const nbColonnes = useColonnes();
-  // L'entrée : de 0 (le haut du mur entre par le bas de l'écran) à 1 (le mur
-  // est au milieu de l'écran), il passe de couché à droit.
+  // L'entrée : de 0 (le haut du mur entre par le bas de l'écran) à 1, il passe
+  // de couché à droit. Plus lent (04/11, Sarah : « il se relève trop vite ») :
+  // la scène est plus haute que le mur, qui reste en place à l'écran pendant
+  // qu'il se redresse.
   const scene = useRef<HTMLDivElement>(null);
   const sansAnimation = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: scene,
-    offset: ["start end", "center center"],
+    offset: ["start end", "end end"],
   });
   const inclinaison = useTransform(scrollYProgress, [0, 1], [sansAnimation ? 0 : 58, 0]);
   const taille = useTransform(scrollYProgress, [0, 1], [sansAnimation ? 1 : 0.82, 1]);
@@ -103,7 +105,8 @@ export default function GalerieSucces({ films }: { films: FilmGalerie[] }) {
 
   return (
     <>
-      <div ref={scene} className={styles.scene}>
+      <div ref={scene} className={sansAnimation ? undefined : styles.scene}>
+      <div className={styles.epingle}>
       <motion.div
         className={`${styles.galerie} ${ouvert ? styles.enPause : ""}`}
         style={{ rotateX: inclinaison, scale: taille, y: descente }}
@@ -139,6 +142,7 @@ export default function GalerieSucces({ films }: { films: FilmGalerie[] }) {
           </div>
         ))}
       </motion.div>
+      </div>
       </div>
 
       {/* Posée sur la page entière, au-dessus de la barre du haut. */}

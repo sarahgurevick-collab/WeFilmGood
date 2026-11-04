@@ -223,6 +223,13 @@
 .scene {
   width: 100%;
   max-width: 1400px;
+  /* Plus haute que le mur : le défilement en plus sert à le redresser. */
+  height: calc(min(78vh, 760px) + 90vh);
+}
+.epingle {
+  position: sticky;
+  top: max(64px, calc((100vh - min(78vh, 760px)) / 2));
+  width: 100%;
   perspective: 1100px;
   perspective-origin: 50% 0%;
 }
