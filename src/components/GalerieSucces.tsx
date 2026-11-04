@@ -69,7 +69,9 @@ export default function GalerieSucces({ films }: { films: FilmGalerie[] }) {
   const sansAnimation = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: scene,
-    offset: ["start end", "end end"],
+        // 04/11 (Sarah : « quand l'image apparaît il est déjà debout ») : il
+    // arrive tout couché et ne commence à se relever qu'une fois en place.
+    offset: ["start 0.15", "end end"],
   });
   const inclinaison = useTransform(scrollYProgress, [0, 1], [sansAnimation ? 0 : 58, 0]);
   const taille = useTransform(scrollYProgress, [0, 1], [sansAnimation ? 1 : 0.82, 1]);
