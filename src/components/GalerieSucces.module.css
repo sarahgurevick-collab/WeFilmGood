@@ -218,3 +218,15 @@
     transition: none;
   }
 }
+
+/* L'entrée en perspective (04/11) : le mur couché se redresse au défilement. */
+.scene {
+  width: 100%;
+  max-width: 1400px;
+  perspective: 1100px;
+  perspective-origin: 50% 0%;
+}
+.scene .galerie {
+  transform-origin: 50% 100%;
+  will-change: transform;
+}

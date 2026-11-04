@@ -1,7 +1,13 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import styles from "./GalerieSucces.module.css";
 
@@ -11,6 +17,9 @@ import styles from "./GalerieSucces.module.css";
  * tout seul. Les films tournés sont montrés en affiche (portrait) quand on
  * l'a, les projets signés en 16/9. Survol ou doigt : les informations ;
  * clic : l'image s'agrandit au centre de l'écran.
+ * Entrée (essai du 04/11, d'après « Animated Scroll Gallery » de 21st.dev) :
+ * le mur arrive couché en perspective et se redresse à mesure qu'on descend.
+ * Retour : étiquette accueil-avant-galerie-inclinee.
  */
 
 export type FilmGalerie = {
@@ -52,6 +61,17 @@ const hauteurDe = (f: FilmGalerie) =>
 
 export default function GalerieSucces({ films }: { films: FilmGalerie[] }) {
   const nbColonnes = useColonnes();
+  // L'entrée : de 0 (le haut du mur entre par le bas de l'écran) à 1 (le mur
+  // est au milieu de l'écran), il passe de couché à droit.
+  const scene = useRef<HTMLDivElement>(null);
+  const sansAnimation = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: scene,
+    offset: ["start end", "center center"],
+  });
+  const inclinaison = useTransform(scrollYProgress, [0, 1], [sansAnimation ? 0 : 58, 0]);
+  const taille = useTransform(scrollYProgress, [0, 1], [sansAnimation ? 1 : 0.82, 1]);
+  const descente = useTransform(scrollYProgress, [0, 1], [sansAnimation ? 0 : -60, 0]);
   const [ouvert, setOuvert] = useState<{
     cle: string;
     film: FilmGalerie;
@@ -83,7 +103,11 @@ export default function GalerieSucces({ films }: { films: FilmGalerie[] }) {
 
   return (
     <>
-      <div className={`${styles.galerie} ${ouvert ? styles.enPause : ""}`}>
+      <div ref={scene} className={styles.scene}>
+      <motion.div
+        className={`${styles.galerie} ${ouvert ? styles.enPause : ""}`}
+        style={{ rotateX: inclinaison, scale: taille, y: descente }}
+      >
         {colonnes.map((col, ci) => (
           <div key={ci} className={styles.colonne}>
             {/* La liste est écrite deux fois : quand la première moitié est passée,
@@ -114,6 +138,7 @@ export default function GalerieSucces({ films }: { films: FilmGalerie[] }) {
             </div>
           </div>
         ))}
+      </motion.div>
       </div>
 
       {/* Posée sur la page entière, au-dessus de la barre du haut. */}
