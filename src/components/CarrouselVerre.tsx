@@ -46,8 +46,8 @@ void main(){
   float rim = smoothstep(0.58, 1.0, nd);
   float wave = sin(ang * 2.0) * 0.55 + sin(ang) * 0.25;
   float R = (uRadius.x + uRadius.y) * 0.5;
-  vec2 bent = px + td * wave * rim * R * 0.32 * uFx;
-  vec2 disp = off * 11.0 * 0.004 * smoothstep(0.55, 1.0, nd) * uFx;
+  vec2 bent = px + td * wave * rim * R * 0.1 * uFx;
+  vec2 disp = off * 4.0 * 0.004 * smoothstep(0.55, 1.0, nd) * uFx;
   vec3 col = vec3(0.0), w = vec3(0.0);
   for (int i = 0; i < 16; i++) {
     float t = float(i) / 15.0;
@@ -61,11 +61,11 @@ void main(){
   float gs = 0.12;
   col += vec3(exp(-r2 / gs) + exp(-r2 / (gs * 7.0)) * 0.18) * 0.07 * uFx;
   float dC = nd * 0.5;
-  float ring = exp(-pow((dC - 0.49) / 0.014, 2.0)) * 1.6;
-  ring *= mix(1.0, sin(ang * 12.0 + uTime * 3.5) * 0.12 + 0.88, uShimmer);
-  float aura = exp(-pow((dC - 0.49) / 0.084, 2.0)) * 0.25;
+  float ring = exp(-pow((dC - 0.49) / 0.012, 2.0)) * 0.7;
+  ring *= mix(1.0, sin(ang * 6.0 + uTime * 1.2) * 0.08 + 0.92, uShimmer);
+  float aura = exp(-pow((dC - 0.49) / 0.084, 2.0)) * 0.1;
   col += uRing * (ring + aura) * uFx;
-  col += vec3(exp(-pow((dC - 0.488) / 0.003, 2.0)) * 1.4) * uFx;
+  col += vec3(exp(-pow((dC - 0.488) / 0.003, 2.0)) * 0.5) * uFx;
   float a = smoothstep(1.0, 0.93, nd);
   gl_FragColor = vec4(mix(base, col, a), 1.0);
 }`;
@@ -271,7 +271,9 @@ export default function CarrouselVerre({
       pmx = -1,
       pmy = -1,
       inside = false;
-    const avecEntree = !reduit;
+    // Version calme (04/11, Sarah : « l'animation est atroce ») : pas d'entrée,
+    // les vignettes sont en place dès l'arrivée.
+    const avecEntree = false;
     const focus = { on: false, fx: avecEntree ? 0 : 1, scale: 1, index: -1 };
     const M = N * 7;
     const drop = new Float32Array(M);
@@ -294,7 +296,7 @@ export default function CarrouselVerre({
     const layout = () => {
       drawn = [];
       const s = slot();
-      const shrink = 1 - 0.25 * energy;
+      const shrink = 1;
       const first = Math.floor((scroll - W / 2) / s) - 1,
         last = Math.ceil((scroll + W / 2) / s) + 1;
       const kc = nearest(scroll);
@@ -353,7 +355,8 @@ export default function CarrouselVerre({
       gl.bindTexture(gl.TEXTURE_2D, atlas);
       gl.uniform1i(uq.tex, 0);
       gl.uniform2f(uq.view, W, H);
-      for (const d of drawn) {
+      const ordre = focus.on ? [...drawn.filter((d) => d.k !== focus.index), ...drawn.filter((d) => d.k === focus.index)] : drawn;
+      for (const d of ordre) {
         gl.uniform4f(uq.rect, d.x, d.y, d.w, d.h);
         gl.uniform4f(uq.tile, ...tuile(d.src));
         gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -433,34 +436,24 @@ export default function CarrouselVerre({
     }
 
     // ---------- vignette avancée ----------
-    const ranked = (fromK: number) =>
-      drawn
-        .filter((d) => d.k !== fromK)
-        .map((d) => ({ d, r: Math.abs(d.k - fromK) }))
-        .sort((a, b) => a.r - b.r);
     const open = () => {
       const c = centred();
       if (!c || focus.on) return;
       focus.on = true;
       focus.index = c.k;
       target = centreOf(c.k);
-      tween(() => focus.fx, (v) => (focus.fx = v), 0, 0.85, 0, E.out3);
-      tween(() => focus.scale, (v) => (focus.scale = v), 1.18, 0.9, 0, E.out3);
-      for (const { d, r } of ranked(c.k))
-        tween(() => drop[d.slotIdx], (v) => (drop[d.slotIdx] = v), 1, 0.7, (r - 1) * 0.06, E.out4);
+      tween(() => focus.fx, (v) => (focus.fx = v), 0, 0.6, 0, E.out3);
+      // Version calme : la vignette grandit un peu, les autres restent en place.
+      tween(() => focus.scale, (v) => (focus.scale = v), 1.12, 0.6, 0, E.out3);
       setAvance(true);
       wake();
     };
     const close = () => {
       if (!focus.on) return;
-      const list = ranked(focus.index).reverse();
-      tween(() => focus.fx, (v) => (focus.fx = v), 1, 0.68, 0, E.inOut3);
-      tween(() => focus.scale, (v) => (focus.scale = v), 1, 0.76, 0, E.out3, () => {
+      tween(() => focus.fx, (v) => (focus.fx = v), 1, 0.6, 0, E.inOut3);
+      tween(() => focus.scale, (v) => (focus.scale = v), 1, 0.6, 0, E.out3, () => {
         focus.on = false;
       });
-      const maxR = list[0]?.r ?? 0;
-      for (const { d, r } of list)
-        tween(() => drop[d.slotIdx], (v) => (drop[d.slotIdx] = v), 0, 0.6, (maxR - r) * 0.042, E.out4);
       setAvance(false);
       wake();
     };

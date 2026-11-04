@@ -37,14 +37,14 @@ export default async function Home() {
     // lisibles sans compte : la sphère des « 10 ans » sous la galaxie.
     supabase
       .from("temoignages_publics")
-      .select("id, nom, avatar_url, testimonial")
-      .returns<{ id: string; nom: string | null; avatar_url: string | null; testimonial: string | null }[]>(),
+      .select("id, avatar_url, testimonial")
+      .returns<{ id: string; avatar_url: string | null; testimonial: string | null }[]>(),
   ]);
   const photosTemoignages: PhotoSphereItem[] = (temoignages ?? []).map((t) => ({
     id: t.id,
     src: t.avatar_url,
-    alt: t.nom ?? "Membre WeFilmGood",
-    titre: t.nom ?? undefined,
+    // Témoignages anonymes (04/11, Sarah) : la photo reste, le nom ne quitte plus le serveur.
+    alt: "Membre WeFilmGood",
     description: t.testimonial ?? undefined,
   }));
   const { mots_cles: totalMotsCles = 0 } =

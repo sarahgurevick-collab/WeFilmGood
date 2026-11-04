@@ -6,7 +6,6 @@ import { createClient } from "@/lib/supabase/server";
 
 type Temoignage = {
   id: string;
-  nom: string | null;
   avatar_url: string | null;
   testimonial: string | null;
 };
@@ -23,15 +22,15 @@ export default async function TemoignagesPage() {
   // seulement » le même jour : avec la sphère refaite, les 171 passent).
   const { data } = await supabase
     .from("temoignages_publics")
-    .select("id, nom, avatar_url, testimonial");
+    .select("id, avatar_url, testimonial");
 
   const temoignages: Temoignage[] = data ?? [];
 
   const photos: PhotoSphereItem[] = temoignages.map((t) => ({
     id: t.id,
     src: t.avatar_url,
-    alt: t.nom ?? "Membre WeFilmGood",
-    titre: t.nom ?? undefined,
+    // Témoignages anonymes (04/11, Sarah) : la photo reste, le nom ne quitte plus le serveur.
+    alt: "Membre WeFilmGood",
     description: t.testimonial ?? undefined,
   }));
 
