@@ -192,7 +192,8 @@ export default function ChoixGenre({
                 value: p.value,
                 label: p.label,
                 coche: postures.includes(p.value),
-                onClick: () => basculer(postures, setPostures, p.value),
+                // Fiction ou documentaire : l'un ou l'autre (04/11, Sarah).
+                onClick: () => setPostures([p.value]),
               })),
             )}
           {genre &&

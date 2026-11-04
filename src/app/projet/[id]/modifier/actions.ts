@@ -36,7 +36,7 @@ export async function modifierProjet(formData: FormData) {
   const format = formData.get("format") as string;
   const genreSlug = (formData.get("genre_slug") as string)?.trim();
   // Marches 3 et 4 du genre (04/11) : au moins une case chacune.
-  const postures = formData.getAll("postures").map(String).filter((v) => VALEURS_POSTURE.includes(v));
+  const postures = formData.getAll("postures").map(String).filter((v) => VALEURS_POSTURE.includes(v)).slice(0, 1);
   const techniques = formData.getAll("techniques").map(String).filter((v) => VALEURS_TECHNIQUE.includes(v));
   const budgetRange = formData.get("budget_range") as string;
   const targetAudience = formData.get("target_audience") as string;

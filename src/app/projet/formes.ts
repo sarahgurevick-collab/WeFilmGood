@@ -1,5 +1,5 @@
-// Marches 3 et 4 du genre (04/11, Sarah) : au moins une case chacune,
-// plusieurs possibles. « Contenu IA » = images ou voix faites par l'IA.
+// Marches 3 et 4 du genre (04/11, Sarah) : Fiction OU Documentaire (un seul) ;
+// pour la technique, au moins une case, plusieurs possibles. « Contenu IA » = images ou voix faites par l'IA.
 export const POSTURES = [
   { value: "fiction", label: "Fiction" },
   { value: "documentaire", label: "Documentaire" },
