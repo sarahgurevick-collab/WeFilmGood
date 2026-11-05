@@ -28,10 +28,13 @@ export async function GET(request: Request) {
   // à leur première page, en aperçu.
   const page = Math.max(1, Math.floor(Number(params.page)) || 1);
   const pageDe = (cat: string) => (params.cat === cat ? page : 1);
+  // Une recherche de projets n'affiche plus ni talents ni personnages
+  // (05/11, Sarah) : on ne les calcule pas, la recherche va plus vite.
+  const projetsSeuls = (params.cat ?? "projets") === "projets";
   const [p, t, c] = await Promise.all([
     rechercherProjets(q, lireFiltres(params), pageDe("projets")),
-    rechercherTalents(q, pageDe("talents")),
-    rechercherPersonnages(q, pageDe("personnages")),
+    projetsSeuls ? Promise.resolve({ talents: [], total: 0 }) : rechercherTalents(q, pageDe("talents")),
+    projetsSeuls ? Promise.resolve({ personnages: [], total: 0 }) : rechercherPersonnages(q, pageDe("personnages")),
   ]);
   // Rien nulle part : noté dans le journal des recherches sans résultat.
   if (p.total === 0 && t.total === 0 && c.total === 0) {

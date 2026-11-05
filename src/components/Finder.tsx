@@ -414,7 +414,13 @@ export default function Finder({
       {requete.trim() && (
         <div className={styles.resultats}>
           {enCours ? null : (
-            [choisie, ...CATEGORIES.map((c) => c.cle).filter((c) => c !== choisie)].map((cle, rang) => {
+            // Sous une recherche de projets, plus de talents ni de personnages
+            // (05/11, Sarah) : l'équipe est déjà sous chaque carte, et la
+            // fiche montre personnages et talents.
+            (choisie === "projets"
+              ? (["projets"] as Categorie[])
+              : [choisie, ...CATEGORIES.map((c) => c.cle).filter((c) => c !== choisie)]
+            ).map((cle, rang) => {
               const titre = CATEGORIES.find((c) => c.cle === cle)!.titre;
               const nombre =
                 cle === "projets" ? total : cle === "talents" ? (talents?.total ?? 0) : (personnages?.total ?? 0);
