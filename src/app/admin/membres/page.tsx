@@ -234,8 +234,9 @@ export default async function MembresPage({
   const projets = sp.projets ?? "";
   // Deux tris seulement (11/10, Sarah) : les plus récents ou les plus
   // anciens, par date d'inscription. Le nom se cherche par la case de
-  // recherche, le nombre de projets a son propre filtre.
-  const tri = sp.tri === "anciens" ? "anciens" : "recents";
+  // recherche, le nombre de projets a son propre filtre. Pour les lecteurs,
+  // un troisième (05/11, Sarah) : ceux qui ont fait le plus de fiches en tête.
+  const tri = sp.tri === "anciens" ? "anciens" : sp.tri === "fiches" && metier === "Lecteur" ? "fiches" : "recents";
   const page = Math.max(1, Number(sp.page ?? "1") || 1);
   // Par défaut, rien de coché : le nom et l'email. Le profil étendu ajoute
   // la photo, le pays, le code postal, la ville et la référence.
@@ -288,8 +289,13 @@ export default async function MembresPage({
     return true;
   });
 
+  const nbFiches = (m: Membre) => fichesDe.get(m.profile_id)?.n ?? 0;
   filtres.sort((a, b) =>
-    tri === "anciens" ? a.inscrit_le.localeCompare(b.inscrit_le) : b.inscrit_le.localeCompare(a.inscrit_le),
+    tri === "fiches"
+      ? nbFiches(b) - nbFiches(a) || b.inscrit_le.localeCompare(a.inscrit_le)
+      : tri === "anciens"
+        ? a.inscrit_le.localeCompare(b.inscrit_le)
+        : b.inscrit_le.localeCompare(a.inscrit_le),
   );
 
   const nbPages = Math.max(1, Math.ceil(filtres.length / PAR_PAGE));
@@ -432,6 +438,7 @@ export default async function MembresPage({
         <select name="tri" defaultValue={tri} className={styles.menu}>
           <option value="recents">Tri : les plus récents</option>
           <option value="anciens">Tri : les plus anciens</option>
+          {metier === "Lecteur" && <option value="fiches">Tri : le plus de fiches</option>}
         </select>
 
         {/* « Affichage » : ce qu'on ajoute ou retire, comme sur WFG 1 —
