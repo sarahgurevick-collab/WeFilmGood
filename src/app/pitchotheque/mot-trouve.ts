@@ -37,6 +37,41 @@ export function motsDeRecherche(q: string): { tape: string; norme: string }[] {
   return entier ? [{ tape: entier, norme: sansAccent(entier) }] : [];
 }
 
+// Les autres formes d'un mot (05/11, Sarah) : singulier ⇄ pluriel et
+// masculin ⇄ féminin, comme formes_du_mot dans la base (migration 0235).
+// « animal » met aussi « animaux » en rouge, « acteur » « actrice ».
+const GENRE: [string, string, number][] = [
+  ["eur", "euse", 5], ["teur", "trice", 6], ["eux", "euse", 5], ["f", "ve", 4],
+  ["euse", "eur", 6], ["euse", "eux", 6], ["trice", "teur", 7], ["ive", "if", 5],
+  ["ere", "er", 6], ["ienne", "ien", 7], ["onne", "on", 6], ["elle", "el", 6],
+  ["ette", "et", 6], ["ante", "ant", 7], ["ente", "ent", 7], ["ate", "at", 7], ["ine", "in", 6],
+];
+
+export function formesDuMot(w: string): string[] {
+  if (!/^[a-z0-9]+$/.test(w)) return [];
+  const bases = new Set([w]);
+  if (/^[a-z0-9]{3,}[sx]$/.test(w)) bases.add(w.slice(0, -1));
+  if (/^[a-z0-9]{2,}aux$/.test(w)) {
+    bases.add(w.slice(0, -3) + "al");
+    bases.add(w.slice(0, -3) + "ail");
+  }
+  if (/^[a-z0-9]{2,}(al|ail)$/.test(w)) bases.add(w.replace(/(al|ail)$/, "aux"));
+  const formes = new Set(bases);
+  for (const b of bases) {
+    for (const [suf, rep, mini] of GENRE) {
+      if (b.length >= mini && b.endsWith(suf)) formes.add(b.slice(0, -suf.length) + rep);
+    }
+  }
+  formes.delete(w);
+  return [...formes];
+}
+
+/** Les autres formes du mot, en mot entier (pluriel compris), ou null. */
+function motifDesFormes(w: string): RegExp | null {
+  const formes = formesDuMot(w);
+  return formes.length ? new RegExp(`(?<![a-z0-9])(${formes.join("|")})[sx]?(?![a-z0-9])`, "g") : null;
+}
+
 /**
  * Le texte découpé en morceaux, ceux qui portent un mot cherché marqués :
  * « En face du Moulin Rouge » pour [moulin, rouge] → En face du · Moulin ·
@@ -63,6 +98,8 @@ export function decouper(texte: string, mots: string[]): { texte: string; trouve
       marques.fill(true, i, i + mot.length);
       depuis = i + mot.length;
     }
+    const motif = motifDesFormes(mot);
+    if (motif) for (const m of norme.matchAll(motif)) marques.fill(true, m.index, m.index + m[0].length);
   }
   const morceaux: { texte: string; trouve: boolean }[] = [];
   let debut = 0;
@@ -79,7 +116,12 @@ export function decouper(texte: string, mots: string[]): { texte: string; trouve
 export function contientUnMot(texte: string | null | undefined, mots: string[]): boolean {
   if (!texte) return false;
   const t = sansAccent(texte);
-  return mots.some((m) => m && t.includes(m));
+  return mots.some((m) => {
+    if (!m) return false;
+    if (t.includes(m)) return true;
+    const motif = motifDesFormes(m);
+    return motif ? motif.test(t) : false;
+  });
 }
 
 /**
