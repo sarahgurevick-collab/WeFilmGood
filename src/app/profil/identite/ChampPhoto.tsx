@@ -25,6 +25,7 @@ export default function ChampPhoto({
   y = 20,
   initiale,
   retour,
+  membre,
 }: {
   photo: string | null;
   /** La photo entière, à faire glisser ; nulle pour une photo d'avant le 02/11/2026. */
@@ -34,6 +35,8 @@ export default function ChampPhoto({
   initiale: string;
   /** La page où revenir après l'envoi (le profil du lecteur) ; par défaut l'identité. */
   retour?: "/lecteur/profil";
+  /** Pour l'administration, sur le profil d'un talent (05/11) : la photo de ce talent. */
+  membre?: string;
 }) {
   const [apercu, setApercu] = useState<string | null>(null);
   const formulaire = useRef<HTMLFormElement>(null);
@@ -44,6 +47,7 @@ export default function ChampPhoto({
       {photo && original ? (
         <form action={cadrerPhoto} className={styles.cadrePhoto}>
           {retour && <input type="hidden" name="retour" value={retour} />}
+          {membre && <input type="hidden" name="membre" value={membre} />}
           <CadreGlissant
             src={original}
             x={x}
@@ -67,6 +71,7 @@ export default function ChampPhoto({
         {!photo && (
           <form ref={formulaire} action={savePhoto}>
             {retour && <input type="hidden" name="retour" value={retour} />}
+          {membre && <input type="hidden" name="membre" value={membre} />}
             <label className={`${formStyles.submit} ${styles.boutonPhoto}`}>
               <input
                 type="file"
@@ -89,11 +94,14 @@ export default function ChampPhoto({
         {photo && (
           <form action={retirerPhoto} onSubmit={() => setApercu(null)}>
             {retour && <input type="hidden" name="retour" value={retour} />}
+          {membre && <input type="hidden" name="membre" value={membre} />}
             <button type="submit" className={styles.lienPhoto}>
               Retirer la photo
             </button>
           </form>
         )}
+        {/* « Une photo de vous » ne vaut pas pour l'administration. */}
+        {!(membre && !photo) && (
         <p className={styles.champPhotoAide}>
           {photo && original
             ? "Glissez la photo dans le rond pour choisir ce qui s'affiche, puis enregistrez le cadrage."
@@ -101,6 +109,7 @@ export default function ChampPhoto({
               ? "Pour déplacer le cadre, retirez la photo et renvoyez-la."
               : "Une photo de vous, bien éclairée. Elle sera recadrée en rond."}
         </p>
+        )}
       </div>
     </div>
   );

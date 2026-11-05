@@ -13,6 +13,9 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import presentation from "@/app/projet/[id]/presentation.module.css";
 import { prendreLaPlace } from "@/app/admin/profils/prise-de-place";
+import ChampPhoto from "@/app/profil/identite/ChampPhoto";
+import { urlOriginal } from "@/app/profil/identite/original";
+import profilStyles from "@/app/profil/profil.module.css";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./membre.module.css";
 
@@ -25,6 +28,9 @@ type Membre = {
   country: string | null;
   website: string | null;
   avatar_url: string | null;
+  avatar_original_path: string | null;
+  photo_x: number | null;
+  photo_y: number | null;
 };
 
 /**
@@ -44,10 +50,10 @@ export default async function ProfilMembrePage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ message?: string }>;
+  searchParams: Promise<{ message?: string; erreur?: string; photo?: string; cadrage?: string }>;
 }) {
   const { id } = await params;
-  const { message } = await searchParams;
+  const { message, erreur, photo, cadrage } = await searchParams;
   const supabase = await createClient();
 
   const {
@@ -57,7 +63,7 @@ export default async function ProfilMembrePage({
 
   const { data: membre } = await supabase
     .from("profiles")
-    .select("id, full_name, display_name, biofilmo, website, avatar_url")
+    .select("id, full_name, display_name, biofilmo, website, avatar_url, avatar_original_path, photo_x, photo_y")
     .eq("id", id)
     .maybeSingle<Membre>();
 
@@ -149,15 +155,32 @@ export default async function ProfilMembrePage({
 
   return (
     <PageShell eyebrow="Membre" title={nom}>
-      {/* La photo, ronde comme le logo. Sans photo, l'initiale. */}
-      <div className={styles.photo} aria-hidden="true">
-        {membre.avatar_url ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={masque ? `/api/talents/photo?id=${membre.id}` : membre.avatar_url} alt="" />
-        ) : (
-          !masque && <span>{nom.trim().charAt(0).toUpperCase()}</span>
-        )}
-      </div>
+      {/* La photo, ronde comme le logo. Sans photo, l'initiale. L'administration
+          la pose, la recadre ou la retire ici même (05/11, Sarah). */}
+      {estAdmin ? (
+        <>
+          {photo && <p className={profilStyles.ok}>Photo enregistrée.</p>}
+          {cadrage && <p className={profilStyles.ok}>Cadrage enregistré.</p>}
+          {erreur && <p className={formStyles.error}>{erreur}</p>}
+          <ChampPhoto
+            membre={membre.id}
+            photo={membre.avatar_url}
+            original={urlOriginal(supabase, membre.avatar_original_path)}
+            x={membre.photo_x ?? 50}
+            y={membre.photo_y ?? 20}
+            initiale={nom.trim().charAt(0).toUpperCase()}
+          />
+        </>
+      ) : (
+        <div className={styles.photo} aria-hidden="true">
+          {membre.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={masque ? `/api/talents/photo?id=${membre.id}` : membre.avatar_url} alt="" />
+          ) : (
+            !masque && <span>{nom.trim().charAt(0).toUpperCase()}</span>
+          )}
+        </div>
+      )}
 
       {/* Accès rapide de l'administration (05/11, Sarah) : se mettre à la
           place du talent sans passer par l'écran des membres, long à

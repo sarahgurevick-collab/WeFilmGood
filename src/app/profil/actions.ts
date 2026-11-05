@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { MIN_REPONSES, reponsesDuFormulaire } from "@/lib/cinematch";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import sharp from "sharp";
 import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import { metiersPourCategorie } from "./metiers";
@@ -310,6 +311,28 @@ function pageDeRetourPhoto(formData: FormData) {
   return formData.get("retour") === "/lecteur/profil" ? "/lecteur/profil" : "/profil/identite";
 }
 
+/**
+ * À qui est la photo : au membre connecté, ou, pour l'administration, au
+ * talent dont elle ouvre le profil (05/11, Sarah : recadrer ou poser une
+ * photo en direct, sans se mettre à sa place). L'administration écrit alors
+ * avec la clé de service, et revient sur le profil du talent.
+ */
+async function cibleDeLaPhoto(formData: FormData) {
+  const membre = formData.get("membre");
+  if (typeof membre !== "string" || !membre) {
+    const page = pageDeRetourPhoto(formData);
+    const { supabase, user } = await requireUser(page);
+    return { supabase, id: user.id, page };
+  }
+  const page = `/membres/${membre}`;
+  const { supabase } = await requireUser(page);
+  const { data: admin } = await supabase.rpc("is_admin");
+  if (admin !== true) redirect("/");
+  const service = createAdminClient();
+  if (!service) redirect(`${page}?erreur=` + encodeURIComponent("La clé de service manque sur le serveur."));
+  return { supabase: service as unknown as Awaited<ReturnType<typeof createClient>>, id: membre, page };
+}
+
 /** Retire les anciennes photos du dossier du membre, sauf celles qu'on garde. */
 async function nettoyerPhotos(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -357,8 +380,7 @@ async function carreDePhoto(original: Buffer, x: number, y: number): Promise<Buf
  * sujet, il n'y avait aucun recours.
  */
 export async function savePhoto(formData: FormData) {
-  const page = pageDeRetourPhoto(formData);
-  const { supabase, user } = await requireUser(page);
+  const { supabase, id: cible, page } = await cibleDeLaPhoto(formData);
   const retour = (message: string) =>
     redirect(`${page}?erreur=` + encodeURIComponent(message));
 
@@ -399,8 +421,8 @@ export async function savePhoto(formData: FormData) {
   }
 
   const horodatage = Date.now();
-  const cheminOriginal = `${user.id}/original-${horodatage}.jpg`;
-  const chemin = `${user.id}/avatar-${horodatage}.jpg`;
+  const cheminOriginal = `${cible}/original-${horodatage}.jpg`;
+  const chemin = `${cible}/avatar-${horodatage}.jpg`;
   const depotOriginal = await supabase.storage
     .from(BUCKET_PHOTOS)
     .upload(cheminOriginal, original, { contentType: "image/jpeg" });
@@ -418,10 +440,11 @@ export async function savePhoto(formData: FormData) {
   await supabase
     .from("profiles")
     .update({ avatar_url: publicUrl, avatar_original_path: cheminOriginal, photo_x: x, photo_y: y })
-    .eq("id", user.id);
-  await nettoyerPhotos(supabase, user.id, [chemin, cheminOriginal]);
+    .eq("id", cible);
+  await nettoyerPhotos(supabase, cible, [chemin, cheminOriginal]);
 
   revalidatePath("/profil");
+  revalidatePath(page);
   redirect(`${page}?photo=1`);
 }
 
@@ -431,8 +454,7 @@ export async function savePhoto(formData: FormData) {
  * ne gardent pas l'ancien.
  */
 export async function cadrerPhoto(formData: FormData) {
-  const page = pageDeRetourPhoto(formData);
-  const { supabase, user } = await requireUser(page);
+  const { supabase, id: cible, page } = await cibleDeLaPhoto(formData);
   const retour = (message: string) =>
     redirect(`${page}?erreur=` + encodeURIComponent(message));
 
@@ -443,7 +465,7 @@ export async function cadrerPhoto(formData: FormData) {
   const { data: profil } = await supabase
     .from("profiles")
     .select("avatar_original_path")
-    .eq("id", user.id)
+    .eq("id", cible)
     .maybeSingle<{ avatar_original_path: string | null }>();
   if (!profil?.avatar_original_path) retour("Cette photo ne peut pas être recadrée : renvoyez-la.");
   const cheminOriginal = profil!.avatar_original_path!;
@@ -458,7 +480,7 @@ export async function cadrerPhoto(formData: FormData) {
     return retour("Cette photo n'a pas pu être recadrée. Essayez de la renvoyer.");
   }
 
-  const chemin = `${user.id}/avatar-${Date.now()}.jpg`;
+  const chemin = `${cible}/avatar-${Date.now()}.jpg`;
   const { error } = await supabase.storage
     .from(BUCKET_PHOTOS)
     .upload(chemin, carre, { contentType: "image/jpeg" });
@@ -473,19 +495,20 @@ export async function cadrerPhoto(formData: FormData) {
   await supabase
     .from("profiles")
     .update({ avatar_url: publicUrl, photo_x: Math.round(x), photo_y: Math.round(y) })
-    .eq("id", user.id);
-  await nettoyerPhotos(supabase, user.id, [chemin, cheminOriginal]);
+    .eq("id", cible);
+  await nettoyerPhotos(supabase, cible, [chemin, cheminOriginal]);
 
   revalidatePath("/profil");
+  revalidatePath(page);
   redirect(`${page}?cadrage=1`);
 }
 
 export async function retirerPhoto(formData: FormData) {
-  const page = pageDeRetourPhoto(formData);
-  const { supabase, user } = await requireUser(page);
-  await supabase.from("profiles").update({ avatar_url: null, avatar_original_path: null }).eq("id", user.id);
-  await nettoyerPhotos(supabase, user.id);
+  const { supabase, id: cible, page } = await cibleDeLaPhoto(formData);
+  await supabase.from("profiles").update({ avatar_url: null, avatar_original_path: null }).eq("id", cible);
+  await nettoyerPhotos(supabase, cible);
   revalidatePath("/profil");
+  revalidatePath(page);
   redirect(page);
 }
 
