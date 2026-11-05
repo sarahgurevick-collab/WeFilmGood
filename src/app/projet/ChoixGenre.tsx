@@ -40,6 +40,12 @@ export default function ChoixGenre({
   const [choisis, setChoisis] = useState<string[]>(sousGenresInitiaux);
   const [postures, setPostures] = useState<string[]>(posturesInitiales);
   const [techniques, setTechniques] = useState<string[]>(techniquesInitiales);
+  // Les marches s'ouvrent une après l'autre (05/11, Sarah) : la dernière
+  // marche ouverte (0 à 3). Une fiche déjà remplie les montre toutes.
+  const [atteinte, setAtteinte] = useState(() =>
+    !genreInitial ? 0 : posturesInitiales.length ? 3 : sousGenresInitiaux.length ? 2 : 1,
+  );
+  const avancer = (n: number) => setAtteinte((a) => Math.max(a, n));
   const cadre = useRef<HTMLDivElement>(null);
   const champGenre = useRef<HTMLInputElement>(null);
 
@@ -71,12 +77,15 @@ export default function ChoixGenre({
 
   const choisirGenre = (g: string) => {
     setGenre(g);
+    avancer(1);
     setChoisis((avant) => avant.filter((slug) => proposeDans(parSlug.get(slug), g)));
   };
-  const basculerSousGenre = (slug: string) =>
+  const basculerSousGenre = (slug: string) => {
+    avancer(2);
     setChoisis((avant) =>
       avant.includes(slug) ? avant.filter((x) => x !== slug) : avant.length >= MAXIMUM ? avant : [...avant, slug],
     );
+  };
   const basculer = (liste: string[], fixer: (l: string[]) => void, v: string) =>
     fixer(liste.includes(v) ? liste.filter((x) => x !== v) : [...liste, v]);
 
@@ -172,9 +181,9 @@ export default function ChoixGenre({
             })),
           )}
           {genre &&
-            marche(
-              1,
-              proposes.map((s) => {
+            atteinte >= 1 &&
+            marche(1, [
+              ...proposes.map((s) => {
                 const coche = choisis.includes(s.slug);
                 return {
                   value: s.slug,
@@ -184,8 +193,13 @@ export default function ChoixGenre({
                   onClick: () => basculerSousGenre(s.slug),
                 };
               }),
-            )}
+              // Les sous-genres sont facultatifs : de quoi passer à la marche suivante.
+              ...(atteinte < 2
+                ? [{ value: "_suivant", label: "Suivant", coche: false, suite: true, onClick: () => avancer(2) }]
+                : []),
+            ])}
           {genre &&
+            atteinte >= 2 &&
             marche(
               2,
               POSTURES.map((p) => ({
@@ -193,10 +207,14 @@ export default function ChoixGenre({
                 label: p.label,
                 coche: postures.includes(p.value),
                 // Fiction ou documentaire : l'un ou l'autre (04/11, Sarah).
-                onClick: () => setPostures([p.value]),
+                onClick: () => {
+                  setPostures([p.value]);
+                  avancer(3);
+                },
               })),
             )}
           {genre &&
+            atteinte >= 3 &&
             marche(
               3,
               TECHNIQUES.map((t) => ({
