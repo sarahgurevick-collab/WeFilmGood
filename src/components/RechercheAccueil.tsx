@@ -91,7 +91,7 @@ export default function RechercheAccueil({
               </ul>
               <p className={styles.appel}>
                 Pour les consulter,{" "}
-                <Link href="/inscription" className={styles.lien}>
+                <Link href="/connexion" className={styles.lien}>
                   créez votre profil professionnel
                 </Link>
               </p>

@@ -7,8 +7,7 @@ import styles from "./AuthCard.module.css";
 
 /**
  * Carte d'authentification commune à la connexion et à l'inscription.
- * Les deux onglets sont des liens : la bascule fonctionne sans JavaScript
- * et chaque écran garde son URL propre.
+ * Une seule entrée depuis le 05/11/2026 : plus d'onglets.
  */
 export default function AuthCard({
   active,
@@ -24,7 +23,7 @@ export default function AuthCard({
   theme?: "sombre" | "clair";
   /** true pour une carte blanche posée sur le fond noir. */
   carteClaire?: boolean;
-  /** true une fois le formulaire envoyé : basculer d'onglet n'a plus de sens. */
+  /** Sans effet depuis le 05/11/2026 (plus d'onglets). */
   sansOnglets?: boolean;
   /** true pour une carte à la hauteur de son contenu, sans hauteur fixe. */
   compacte?: boolean;
@@ -44,24 +43,8 @@ export default function AuthCard({
       <div
         className={`${styles.card} ${compacte ? styles.compacte : ""} ${logoAnime ? "engagementsRapides" : ""} ${carteClaire ? `clair ${styles.carteClaire}` : ""}`}
       >
-        {!sansOnglets && (
-          <nav className={styles.tabs}>
-            <Link
-              href="/connexion"
-              className={active === "connexion" ? styles.tabActive : styles.tab}
-            >
-              Se connecter
-            </Link>
-            <Link
-              href="/inscription"
-              className={
-                active === "inscription" ? styles.tabActive : styles.tab
-              }
-            >
-              Créer un profil
-            </Link>
-          </nav>
-        )}
+        {/* Plus d'onglets « Se connecter » / « Créer un profil » : une seule
+            entrée depuis le 05/11/2026 (comme chez Vimeo). */}
 
         <Link href="/" className={styles.brand}>
           {logoAnime ? (

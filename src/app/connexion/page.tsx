@@ -3,9 +3,9 @@ import AuthCard from "@/components/AuthCard";
 import BoutonFeuArtifice from "@/components/BoutonFeuArtifice";
 import BoutonGoogle from "@/components/BoutonGoogle";
 import formStyles from "@/components/form.module.css";
-import styles from "../inscription/inscription.module.css";
+import styles from "./inscription.module.css";
 import { continuer } from "./actions";
-import { signUp } from "../inscription/actions";
+import { signUp } from "./inscription-actions";
 import VisiteGuidee from "@/components/VisiteGuidee";
 import { VISITE_INSCRIPTION } from "@/lib/visites";
 
@@ -13,7 +13,7 @@ import { VISITE_INSCRIPTION } from "@/lib/visites";
  * Entrée unique (05/11/2026, Sarah, comme chez Vimeo) : plus d'onglets
  * « Se connecter » / « Créer un profil ». On tape son adresse ; si elle a
  * déjà un compte, le lien de connexion part ; sinon, second écran (« nouveau »)
- * qui demande le prénom et le nom. /inscription renvoie ici.
+ * qui demande le prénom et le nom. La page /inscription a été supprimée.
  */
 export default async function ConnexionPage({
   searchParams,

@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function continuerAvecGoogle(formData: FormData) {
   const next = cheminSur(formData.get("next") as string);
-  const depuis = formData.get("depuis") === "inscription" ? "/inscription" : "/connexion";
+  const depuis = "/connexion";
 
   const h = await headers();
   const hote = h.get("host") ?? "app.wefilmgood.com";

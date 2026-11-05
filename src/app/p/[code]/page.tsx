@@ -136,7 +136,7 @@ export default async function ProjetPartagePage({
               ? ` et découvrir les ${nombreProjets} projets des Galaxies.`
               : " et découvrir les Galaxies."}
           </p>
-          <Link href="/inscription" className={styles.bouton}>
+          <Link href="/connexion" className={styles.bouton}>
             Créer mon profil
           </Link>
           <span className={styles.signature}>

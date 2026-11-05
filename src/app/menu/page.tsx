@@ -39,7 +39,6 @@ export default async function MenuPage() {
         ) : (
           <>
             <Link href="/connexion">Connexion</Link>
-            <Link href="/inscription">Créer un profil</Link>
           </>
         )}
       </nav>
