@@ -1,9 +1,14 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { cheminSur, envoyerLienDeConnexion } from "@/lib/lien-magique";
+import { adresseConnue, cheminSur, envoyerLienDeConnexion, rempliParUnRobot } from "@/lib/lien-magique";
 
-export async function signIn(formData: FormData) {
+/**
+ * Entrée unique (05/11/2026, Sarah, comme chez Vimeo) : on ne demande que
+ * l'adresse email. Déjà un compte → le lien de connexion part tout de suite.
+ * Pas encore de compte → second écran, avec prénom et nom (signUp).
+ */
+export async function continuer(formData: FormData) {
   const email = (formData.get("email") as string)?.trim().toLowerCase();
   const next = cheminSur(formData.get("next") as string);
 
@@ -13,9 +18,16 @@ export async function signIn(formData: FormData) {
     );
   }
 
-  await envoyerLienDeConnexion(email, next);
+  // Robot : l'écran habituel, rien d'envoyé.
+  if (rempliParUnRobot(formData)) {
+    console.warn("Connexion : formulaire rempli par un robot, ignoré");
+    redirect(`/connexion?envoye=${encodeURIComponent(email)}`);
+  }
 
-  // Même réponse que l'adresse soit inscrite ou non : répondre autrement
-  // permettrait de deviner qui a un compte sur le site.
-  redirect(`/connexion?envoye=${encodeURIComponent(email)}`);
+  if (await adresseConnue(email)) {
+    await envoyerLienDeConnexion(email, next);
+    redirect(`/connexion?envoye=${encodeURIComponent(email)}`);
+  }
+
+  redirect(`/connexion?${new URLSearchParams({ nouveau: email, next }).toString()}`);
 }

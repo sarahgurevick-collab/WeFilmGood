@@ -94,6 +94,24 @@ export function rempliParUnRobot(formData: FormData) {
   return /\d/.test(noms);
 }
 
+/**
+ * Entrée unique (05/11/2026, Sarah, comme chez Vimeo) : l'adresse a-t-elle
+ * déjà un compte ? Oui → lien de connexion ; non → on demande prénom et nom.
+ * Compté dans le plafond des connexions par visiteur : au-delà, on répond
+ * « connue » (rien n'est envoyé, l'écran ne renseigne pas un robot).
+ */
+export async function adresseConnue(email: string): Promise<boolean> {
+  if (await visiteurTropActif(MAX_CONNEXIONS_PAR_HEURE, "vérification d'adresse")) return true;
+  const admin = createAdminClient();
+  if (!admin) return true;
+  const { data, error } = await admin.rpc("adresse_deja_utilisee", { p_email: email });
+  if (error) {
+    console.error("Lien magique : vérification d'adresse impossible", error.message);
+    return true;
+  }
+  return Boolean(data);
+}
+
 async function lienVers(tokenHash: string, type: "magiclink" | "invite", next: string) {
   const params = new URLSearchParams({ token_hash: tokenHash, type, next: cheminSur(next) });
   return `${await origineDuSite()}/auth/confirm?${params.toString()}`;

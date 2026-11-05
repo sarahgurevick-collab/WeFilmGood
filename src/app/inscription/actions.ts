@@ -13,17 +13,20 @@ export async function signUp(formData: FormData) {
   const email = (formData.get("email") as string)?.trim().toLowerCase();
   const next = cheminSur(formData.get("next") as string);
 
+  // Depuis le 05/11/2026, l'inscription est le second écran de /connexion
+  // (entrée unique) : on y revient, avec l'adresse déjà tapée.
   const params = (extra: Record<string, string>) =>
-    new URLSearchParams({ next, ...extra }).toString();
+    new URLSearchParams({ next, nouveau: email ?? "", ...extra }).toString();
+  const envoye = `/connexion?envoye=${encodeURIComponent(email)}&cree=1`;
 
   if (!firstName || !lastName || !email) {
-    redirect(`/inscription?${params({ erreur: "Tous les champs sont obligatoires." })}`);
+    redirect(`/connexion?${params({ erreur: "Tous les champs sont obligatoires." })}`);
   }
 
   // Robot : même écran que d'habitude, mais rien n'est créé ni envoyé.
   if (rempliParUnRobot(formData)) {
     console.warn("Inscription : formulaire rempli par un robot, ignoré");
-    redirect(`/inscription?envoye=${encodeURIComponent(email)}`);
+    redirect(envoye);
   }
 
   const fullName = `${firstName} ${lastName}`;
@@ -39,8 +42,8 @@ export async function signUp(formData: FormData) {
     arrivee,
   );
   if (!resultat.ok) {
-    redirect(`/inscription?${params({ erreur: resultat.erreur })}`);
+    redirect(`/connexion?${params({ erreur: resultat.erreur })}`);
   }
 
-  redirect(`/inscription?envoye=${encodeURIComponent(email)}`);
+  redirect(envoye);
 }
