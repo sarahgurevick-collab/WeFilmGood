@@ -38,3 +38,25 @@ export function ordonnerPersonnages<T extends PersonnageOrdonnable>(personnages:
     return 0;
   });
 }
+
+/**
+ * L'ordre du formulaire des personnages (05/11/2026, Sarah) : un ordre fixe,
+ * pour que rien ne bouge quand on ajoute une photo ou une description.
+ *   1. les principaux devant, les femmes d'abord ;
+ *   2. les secondaires ensuite, même mieux décrits ou avec photo ;
+ *   3. à l'intérieur, l'ordre de WFG 1, sinon l'ordre de création.
+ */
+export function ordonnerPersonnagesFixe<T extends PersonnageOrdonnable & { id?: string }>(personnages: T[]): T[] {
+  const rangFixe = (p: T): number[] => {
+    const principal = p.character_type === "principal";
+    const femmeDevant = principal && p.gender === "femme" ? 0 : 1;
+    const legacy = p.legacy_id == null ? Number.MAX_SAFE_INTEGER : Number(p.legacy_id);
+    const cree = p.created_at ? new Date(p.created_at).getTime() : Number.MAX_SAFE_INTEGER;
+    return [principal ? 0 : 1, femmeDevant, legacy, cree];
+  };
+  return [...personnages].sort((a, b) => {
+    const ra = rangFixe(a), rb = rangFixe(b);
+    for (let i = 0; i < ra.length; i++) if (ra[i] !== rb[i]) return ra[i] - rb[i];
+    return (a.id ?? "").localeCompare(b.id ?? "");
+  });
+}

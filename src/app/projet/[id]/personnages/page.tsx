@@ -1,4 +1,4 @@
-import { ordonnerPersonnages } from "../ordre-personnages";
+import { ordonnerPersonnagesFixe } from "../ordre-personnages";
 import formStyles from "@/components/form.module.css";
 import profilStyles from "@/app/profil/profil.module.css";
 import BlocProjet from "../../BlocProjet";
@@ -76,8 +76,8 @@ export default async function PersonnagesPage({
     .select("id, name, actor_name, photo_path, photo_x, photo_y, photo_proposee, character_type, gender, age_range, legacy_id, created_at, age_tranche, epoque, taille, corpulence, cheveux_couleur, cheveux_coupe, yeux, signes, signes_autre, origine, detail_caracteristique, allure, biography")
     .eq("project_id", id)
     .returns<Personnage[]>();
-  // Même ordre que sur la fiche (ordonnerPersonnages).
-  const personnagesOrdonnes = ordonnerPersonnages(personnages ?? []);
+  // Ordre fixe (05/11, Sarah) : rien ne bouge quand on ajoute une photo.
+  const personnagesOrdonnes = ordonnerPersonnagesFixe(personnages ?? []);
 
   const urls = await signerImages(
     supabase,
