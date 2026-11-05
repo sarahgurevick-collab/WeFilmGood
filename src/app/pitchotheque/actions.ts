@@ -310,7 +310,16 @@ export async function rechercherTalents(
   const supabase = await createClient();
   // Toute la liste par les lettres (jusqu'à LETTRES_MAX), pour y ajouter
   // ensuite sans répéter personne.
-  const { data: trouves } = await supabase.rpc("rechercher_talents", { q, p_limite: Math.max(LIMITE * page, LETTRES_MAX) });
+  const premier = await supabase.rpc("rechercher_talents", { q, p_limite: Math.max(LIMITE * page, LETTRES_MAX) });
+  let trouves = premier.data;
+  const error = premier.error;
+  // Trop lente (plus de 8 secondes quand plusieurs recherches tournent) :
+  // la recherche par le nom seul prend le relais, pour qu'un talent cherché
+  // par son prénom sorte toujours (« sadaf », 05/11).
+  if (error) {
+    console.error("rechercher_talents :", error.message);
+    ({ data: trouves } = await supabase.rpc("rechercher_talents_par_nom", { q, p_limite: LETTRES_MAX }));
+  }
   const lignes = (trouves ?? []) as { id: string; total: number; metiers: string[] }[];
   let total = Number(lignes[0]?.total ?? 0);
 
