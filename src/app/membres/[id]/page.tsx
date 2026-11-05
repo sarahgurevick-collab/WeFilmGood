@@ -11,6 +11,8 @@ import { equipesDesCartes, lectureRestreinte } from "@/app/pitchotheque/equipe-c
 import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut } from "@/app/pitchotheque/personnages-carte";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
+import presentation from "@/app/projet/[id]/presentation.module.css";
+import { prendreLaPlace } from "@/app/admin/profils/prise-de-place";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./membre.module.css";
 
@@ -156,6 +158,20 @@ export default async function ProfilMembrePage({
           !masque && <span>{nom.trim().charAt(0).toUpperCase()}</span>
         )}
       </div>
+
+      {/* Accès rapide de l'administration (05/11, Sarah) : se mettre à la
+          place du talent sans passer par l'écran des membres, long à
+          ouvrir ; on arrive sur sa page « Qui êtes-vous ? » (sa photo). */}
+      {estAdmin && (
+        <div className={presentation.barreAdmin}>
+          <span>Admin :</span>
+          <form action={prendreLaPlace}>
+            <input type="hidden" name="profile_id" value={membre.id} />
+            <input type="hidden" name="retour" value="/profil/identite" />
+            <button type="submit">Se mettre à sa place</button>
+          </form>
+        </div>
+      )}
 
       {enveloppe}
 
