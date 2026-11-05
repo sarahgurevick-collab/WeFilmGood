@@ -439,6 +439,21 @@
   }
 }
 
+/* Une couleur par catégorie, les tons de l'escalier des genres (05/11,
+   Sarah) : on voit mieux qu'on a changé de catégorie. */
+.mode {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.mode[data-categorie="talents"] {
+  background: #e25a54;
+}
+
+.mode[data-categorie="personnages"] {
+  background: #eb8b87;
+  color: #4a0b08;
+}
+
 .mode:active {
   transform: scale(0.95);
 }

@@ -271,6 +271,7 @@ export default function Finder({
             layout
             transition={{ layout: { type: "spring", damping: 22, stiffness: 260 } }}
             className={styles.mode}
+            data-categorie={choisie}
             onClick={modeSuivant}
             aria-label={`J'explore mes galaxies : ${titreChoisi}. Cliquer pour changer`}
             title="J'explore mes galaxies…"
