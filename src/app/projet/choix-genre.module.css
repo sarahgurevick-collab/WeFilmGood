@@ -1,6 +1,5 @@
-/* Le genre en escalier, comme les marches du logo (04/11, Sarah) :
-   fermé, les choix faits ; ouvert, quatre marches rouges, chacune un cran
-   plus bas et plus à droite. */
+/* Le genre en méga-menu (05/11, Sarah) : fermé, les choix faits en petit
+   escalier ; ouvert, un seul bloc rouge avec toutes les familles. */
 .bloc {
   grid-column: 1 / -1;
   position: relative;
@@ -65,21 +64,57 @@
   color: var(--dim);
 }
 
-.escalier {
+/* Le méga-menu : un seul bloc rouge, les familles en colonnes. */
+.mega {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  align-items: start;
-  padding-top: 4px;
-}
-
-.marche {
-  margin-top: calc(var(--marche) * 40px);
-  display: flex;
-  flex-direction: column;
-  padding: 10px 0;
   background: #9b1c22;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  padding: 14px 10px 10px;
+}
+
+.familles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 4px 6px;
+}
+
+.colonne {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0 8px;
+  border-radius: 6px;
+}
+
+.colonneActive {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.famille {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 10px;
+  margin-bottom: 4px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.famille:hover,
+.famille:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+}
+
+.colonne:not(.colonneActive) .element {
+  opacity: 0.8;
 }
 
 .element {
@@ -88,12 +123,12 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 8px 14px;
+  padding: 6px 12px;
   background: transparent;
   border: 0;
   color: #ffffff;
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.25;
   text-align: left;
   cursor: pointer;
@@ -102,6 +137,7 @@
 .element:hover:not(:disabled),
 .element:focus-visible {
   background: rgba(255, 255, 255, 0.12);
+  opacity: 1;
   outline: none;
 }
 
@@ -112,6 +148,26 @@
 .element:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* La bande du bas : posture puis technique. */
+.formes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 28px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.groupeForme {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.groupeForme .element {
+  width: auto;
+  font-size: 14px;
 }
 
 .fermer {
@@ -126,14 +182,8 @@
   cursor: pointer;
 }
 
-/* Sur un écran étroit, l'escalier descend : chaque marche sous la
-   précédente, décalée vers la droite. */
 @media (max-width: 720px) {
-  .escalier {
-    grid-template-columns: 1fr;
-  }
-  .marche {
-    margin-top: 0;
-    margin-left: calc(var(--marche) * 18px);
+  .familles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

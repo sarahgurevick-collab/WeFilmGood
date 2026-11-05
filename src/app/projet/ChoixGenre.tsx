@@ -14,11 +14,11 @@ function proposeDans(s: SousGenre | undefined, famille: string) {
 }
 
 /**
- * Le genre de la fiche en quatre marches, comme l'escalier du logo (04/11,
- * Sarah, d'après un menu en cascade) : la famille, ses sous-genres, la
- * posture (fiction / documentaire), la technique. Fermé, il ne montre que
- * les choix faits ; un clic ouvre l'escalier, chaque marche un cran plus
- * bas et plus à droite que la précédente.
+ * Le genre de la fiche en méga-menu (05/11, Sarah, après l'escalier du
+ * 04/11) : un clic ouvre un seul grand bloc horizontal avec toutes les
+ * familles côte à côte et leurs sous-genres en dessous, puis une bande pour
+ * la posture (fiction / documentaire) et la technique. Fermé, il ne montre
+ * que les choix faits. Retour à l'escalier : étiquette genres-avant-megamenu.
  */
 export default function ChoixGenre({
   genres,
@@ -88,25 +88,17 @@ export default function ChoixGenre({
     TECHNIQUES.filter((t) => techniques.includes(t.value)).map((t) => t.label).join(", "),
   ];
 
-  const marche = (
-    n: number,
-    elements: { value: string; label: string; coche: boolean; bloque?: boolean; onClick: () => void; suite?: boolean }[],
-  ) => (
-    <div className={styles.marche} style={{ "--marche": n } as React.CSSProperties}>
-      {elements.map((e) => (
-        <button
-          key={e.value}
-          type="button"
-          className={`${styles.element} ${e.coche ? styles.coche : ""}`}
-          onClick={e.onClick}
-          disabled={e.bloque}
-          aria-pressed={e.coche}
-        >
-          <span>{e.label}</span>
-          {e.suite ? <span aria-hidden="true">›</span> : e.coche ? <span aria-hidden="true">✓</span> : null}
-        </button>
-      ))}
-    </div>
+  const caseForme = (value: string, label: string, coche: boolean, onClick: () => void) => (
+    <button
+      key={value}
+      type="button"
+      className={`${styles.element} ${coche ? styles.coche : ""}`}
+      onClick={onClick}
+      aria-pressed={coche}
+    >
+      <span>{label}</span>
+      {coche ? <span aria-hidden="true">✓</span> : null}
+    </button>
   );
 
   return (
@@ -157,55 +149,67 @@ export default function ChoixGenre({
       </button>
 
       {ouvert && (
-        <div className={styles.escalier}>
+        <div className={styles.mega}>
           <button type="button" className={styles.fermer} onClick={() => setOuvert(false)} aria-label="Fermer">
             ×
           </button>
-          {marche(
-            0,
-            genres.map((g) => ({
-              value: g.slug,
-              label: g.label_fr,
-              coche: g.slug === genre,
-              suite: g.slug === genre,
-              onClick: () => choisirGenre(g.slug),
-            })),
-          )}
-          {genre &&
-            marche(
-              1,
-              proposes.map((s) => {
-                const coche = choisis.includes(s.slug);
-                return {
-                  value: s.slug,
-                  label: s.label_fr,
-                  coche,
-                  bloque: !coche && choisis.length >= MAXIMUM,
-                  onClick: () => basculerSousGenre(s.slug),
-                };
-              }),
-            )}
-          {genre &&
-            marche(
-              2,
-              POSTURES.map((p) => ({
-                value: p.value,
-                label: p.label,
-                coche: postures.includes(p.value),
-                // Fiction ou documentaire : l'un ou l'autre (04/11, Sarah).
-                onClick: () => setPostures([p.value]),
-              })),
-            )}
-          {genre &&
-            marche(
-              3,
-              TECHNIQUES.map((t) => ({
-                value: t.value,
-                label: t.label,
-                coche: techniques.includes(t.value),
-                onClick: () => basculer(techniques, setTechniques, t.value),
-              })),
-            )}
+          {/* Toutes les familles côte à côte, leurs sous-genres en dessous. */}
+          <div className={styles.familles}>
+            {genres.map((g) => {
+              const active = g.slug === genre;
+              return (
+                <div key={g.slug} className={`${styles.colonne} ${active ? styles.colonneActive : ""}`}>
+                  <button
+                    type="button"
+                    className={styles.famille}
+                    onClick={() => choisirGenre(g.slug)}
+                    aria-pressed={active}
+                  >
+                    <span>{g.label_fr}</span>
+                    {active ? <span aria-hidden="true">✓</span> : null}
+                  </button>
+                  {sousGenres
+                    .filter((s) => proposeDans(s, g.slug))
+                    .map((s) => {
+                      const coche = active && choisis.includes(s.slug);
+                      return (
+                        <button
+                          key={s.slug}
+                          type="button"
+                          className={`${styles.element} ${coche ? styles.coche : ""}`}
+                          disabled={active && !coche && choisis.length >= MAXIMUM}
+                          aria-pressed={coche}
+                          onClick={() => {
+                            // Un sous-genre d'une autre famille choisit aussi cette famille.
+                            if (!active) {
+                              choisirGenre(g.slug);
+                              setChoisis((avant) => {
+                                const gardes = avant.filter((x) => proposeDans(parSlug.get(x), g.slug));
+                                return gardes.includes(s.slug) || gardes.length >= MAXIMUM ? gardes : [...gardes, s.slug];
+                              });
+                            } else basculerSousGenre(s.slug);
+                          }}
+                        >
+                          <span>{s.label_fr}</span>
+                          {coche ? <span aria-hidden="true">✓</span> : null}
+                        </button>
+                      );
+                    })}
+                </div>
+              );
+            })}
+          </div>
+          <div className={styles.formes}>
+            <div className={styles.groupeForme}>
+              {/* Fiction ou documentaire : l'un ou l'autre (04/11, Sarah). */}
+              {POSTURES.map((p) => caseForme(p.value, p.label, postures.includes(p.value), () => setPostures([p.value])))}
+            </div>
+            <div className={styles.groupeForme}>
+              {TECHNIQUES.map((t) =>
+                caseForme(t.value, t.label, techniques.includes(t.value), () => basculer(techniques, setTechniques, t.value)),
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
