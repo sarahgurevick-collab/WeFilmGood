@@ -75,13 +75,27 @@ export async function deposerScenario(
     console.error("Dépôt de scénario refusé :", error.message);
     return false;
   }
+  // Le nouveau scénario écrase l'ancien (06/11, Sarah) : avant, il
+  // s'ajoutait à côté, et certaines pages (lecteurs, file d'attente)
+  // ouvraient encore l'ancien.
+  const { data: anciens } = await supabase
+    .from("project_files")
+    .select("id, storage_path")
+    .eq("project_id", projectId)
+    .eq("kind", "scenario")
+    .returns<{ id: string; storage_path: string }[]>();
   const { error: ligne } = await supabase.from("project_files").insert({
     project_id: projectId,
     storage_path: chemin,
     kind: "scenario",
     original_name: fichier.name,
   });
-  return !ligne;
+  if (ligne) return false;
+  if (anciens?.length) {
+    await supabase.from("project_files").delete().in("id", anciens.map((a) => a.id));
+    await supabase.storage.from("scenarios").remove(anciens.map((a) => a.storage_path));
+  }
+  return true;
 }
 
 /**
