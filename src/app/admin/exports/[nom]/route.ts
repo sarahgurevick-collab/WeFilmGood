@@ -1,4 +1,6 @@
-import { readFile } from "node:fs/promises";
+import { createReadStream } from "node:fs";
+import { stat } from "node:fs/promises";
+import { Readable } from "node:stream";
 import { basename, join } from "node:path";
 import { createClient } from "@/lib/supabase/server";
 
@@ -15,6 +17,8 @@ const TYPES: Record<string, string> = {
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   pdf: "application/pdf",
   csv: "text/csv; charset=utf-8",
+  // Les archives de photos (06/11, Sarah) : envoyées par morceaux, sans tout charger en mémoire.
+  zip: "application/zip",
 };
 
 export async function GET(_: Request, { params }: { params: Promise<{ nom: string }> }) {
@@ -28,10 +32,13 @@ export async function GET(_: Request, { params }: { params: Promise<{ nom: strin
   if (!TYPES[extension]) return new Response("Fichier introuvable.", { status: 404 });
 
   try {
-    const contenu = await readFile(join(DOSSIER, nom));
-    return new Response(new Uint8Array(contenu), {
+    const chemin = join(DOSSIER, nom);
+    const { size } = await stat(chemin);
+    const flux = Readable.toWeb(createReadStream(chemin)) as ReadableStream<Uint8Array>;
+    return new Response(flux, {
       headers: {
         "Content-Type": TYPES[extension],
+        "Content-Length": String(size),
         "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(nom)}`,
         "Cache-Control": "no-store",
       },
