@@ -16,7 +16,10 @@ import { prendreLaPlace } from "@/app/admin/profils/prise-de-place";
 import ChampPhoto from "@/app/profil/identite/ChampPhoto";
 import { urlOriginal } from "@/app/profil/identite/original";
 import profilStyles from "@/app/profil/profil.module.css";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import ChangerAdresseMembre from "@/app/admin/membres/ChangerAdresseMembre";
+import ChangerTelephoneMembre from "@/app/admin/membres/ChangerTelephoneMembre";
 import styles from "./membre.module.css";
 
 type Membre = {
@@ -84,6 +87,27 @@ export default async function ProfilMembrePage({
     if (lecteur && !isAdmin) notFound();
     masque = isAdmin !== true;
     estAdmin = isAdmin === true;
+  }
+
+  // Pour l'administration (06/11, Sarah) : l'email et le téléphone du
+  // membre, à corriger ici sans se mettre à sa place. Le téléphone est
+  // celui du formulaire « Qui êtes-vous ? », sinon celui des coordonnées
+  // de dépôt, comme dans l'écran des membres.
+  let coordonnees: { email: string | null; telephone: string | null } | null = null;
+  if (estAdmin) {
+    const service = createAdminClient();
+    if (service) {
+      const [{ data: compte }, { data: prive }, { data: contact }] = await Promise.all([
+        service.auth.admin.getUserById(membre.id),
+        service.from("profile_private_details").select("phone").eq("profile_id", membre.id).maybeSingle(),
+        service.from("profile_contact_info").select("phone").eq("profile_id", membre.id).maybeSingle(),
+      ]);
+      const email = compte.user?.email ?? null;
+      coordonnees = {
+        email: email && email.endsWith("@sans-adresse.invalid") ? null : email,
+        telephone: prive?.phone?.trim() || contact?.phone?.trim() || null,
+      };
+    }
   }
 
   // Tous les projets de l'auteur (07/10, Sarah : un producteur doit voir tout
@@ -193,6 +217,12 @@ export default async function ProfilMembrePage({
             <input type="hidden" name="retour" value="/profil/identite" />
             <button type="submit">Se mettre à sa place</button>
           </form>
+          {coordonnees && (
+            <>
+              <ChangerAdresseMembre profileId={membre.id} email={coordonnees.email} />
+              <ChangerTelephoneMembre profileId={membre.id} telephone={coordonnees.telephone} />
+            </>
+          )}
         </div>
       )}
 

@@ -35,6 +35,19 @@ const CHAMPS = new Set<keyof ValeursAffiche>([
   "has_awards",
 ]);
 
+/* Les valeurs de tous les champs des formulaires de la page, en une chaîne :
+   égale à celle de l'arrivée, rien n'a changé. Un fichier choisi compte. */
+const etatDesChamps = () =>
+  Array.from(document.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("form input, form select, form textarea"))
+    .map((c) => {
+      if (c instanceof HTMLInputElement) {
+        if (c.type === "file") return `${c.name}=${c.files?.length ?? 0}`;
+        if (c.type === "checkbox" || c.type === "radio") return `${c.name}=${c.checked ? 1 : 0}`;
+      }
+      return `${c.name}=${c.value}`;
+    })
+    .join("\n");
+
 export default function AfficheProjet({
   initial,
   libelles,
@@ -56,27 +69,23 @@ export default function AfficheProjet({
 }) {
   const router = useRouter();
   // Une saisie pas encore enregistrée : le zoom quitterait la page et la
-  // perdrait. On demande d'enregistrer d'abord (01/10).
-  const saisieEnCours = useRef(false);
+  // perdrait. On demande d'enregistrer d'abord (01/10). On compare les
+  // valeurs des champs à celles de l'arrivée, plutôt que d'écouter les
+  // frappes : un champ touché puis remis comme avant, ou un réglage
+  // automatique du navigateur, demandait d'enregistrer pour rien (06/11,
+  // Sarah : « j'ai TOUJOURS un message qui me dit d'enregistrer »).
+  const etatInitial = useRef<string | null>(null);
   const [avertir, setAvertir] = useState(false);
 
   useEffect(() => {
-    const noter = () => {
-      saisieEnCours.current = true;
-    };
-    document.addEventListener("input", noter);
-    document.addEventListener("change", noter);
-    return () => {
-      document.removeEventListener("input", noter);
-      document.removeEventListener("change", noter);
-    };
+    etatInitial.current = etatDesChamps();
   }, []);
 
   const zoomer = (cible: EventTarget | null) => {
     if (!lienComplet) return;
     // Un lien « ce qui manque » dans l'affiche garde son propre chemin.
     if (cible instanceof Element && cible.closest("a")) return;
-    if (saisieEnCours.current) {
+    if (etatInitial.current !== null && etatDesChamps() !== etatInitial.current) {
       setAvertir(true);
       return;
     }

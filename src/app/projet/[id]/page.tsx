@@ -406,7 +406,10 @@ export default async function ProjetPage({
       );
       for (const m of equipe) {
         const d = m.profileId ? parIdDetail.get(m.profileId) : null;
-        if (!m.enAttente && m.profileId) {
+        // Pour l'administration, le portrait mène tout droit au profil du
+        // membre (06/11, Sarah : y poser un téléphone sans se mettre à sa
+        // place) ; la biographie se lit là-bas.
+        if (!m.enAttente && m.profileId && estAdmin !== true) {
           m.deplie = true;
           m.bio = d?.biofilmo ?? null;
           m.site = d?.website ?? null;
@@ -526,6 +529,7 @@ export default async function ProjetPage({
             <input type="hidden" name="retour" value={`/projet/${project.id}`} />
             <button type="submit">Se mettre à la place de l&apos;auteur</button>
           </form>
+          <Link href={`/membres/${project.owner_id}`}>Profil de l&apos;auteur</Link>
           {urlScenario && (
             <a href={urlScenario} target="_blank" rel="noopener noreferrer" className={presentation.telechargerScenario}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
