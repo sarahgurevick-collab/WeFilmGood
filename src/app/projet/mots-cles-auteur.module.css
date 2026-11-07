@@ -1,8 +1,85 @@
+/* Une ligne : son titre, puis son nuage de mots (07/11/2026). */
+.ligne {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 1px solid var(--bordure);
+}
+
+.titreLigne {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.titreLigne span:last-child {
+  font-weight: 400;
+  color: var(--dim);
+}
+
+.titreLigne .plein {
+  color: #e2231a;
+  font-weight: 600;
+}
+
+.nuage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  line-height: 1.5;
+}
+
+.motNuage {
+  padding: 1px 6px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--fg);
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.motNuage:hover:not(:disabled) {
+  color: #e2231a;
+}
+
+.motNuage:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.coche {
+  background: #e2231a;
+  color: #fff;
+}
+
+.coche:hover:not(:disabled) {
+  color: #fff;
+}
+
+.plus {
+  min-width: 26px;
+  padding: 0 6px;
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  background: none;
+  color: var(--dim);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Les mots tapés, qui ne sont dans aucun nuage. */
 .mots {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 4px 0 8px;
+  margin: 4px 0 0;
   padding: 0;
   list-style: none;
 }
