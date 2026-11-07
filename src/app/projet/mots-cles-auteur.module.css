@@ -1,77 +1,129 @@
-/* Une ligne : son titre, puis son nuage de mots (07/11/2026). */
-.ligne {
+/* Le bouton des thèmes et le champ, dans une même gélule, comme le Finder (07/11/2026). */
+.champModes {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 6px;
-  padding: 10px 0;
-  border-top: 1px solid var(--bordure);
-}
-
-.titreLigne {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--fg);
-}
-
-.titreLigne span:last-child {
-  font-weight: 400;
-  color: var(--dim);
-}
-
-.titreLigne .plein {
-  color: #e2231a;
-  font-weight: 600;
-}
-
-.nuage {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
-  line-height: 1.5;
-}
-
-.motNuage {
-  padding: 1px 6px;
-  border: none;
-  border-radius: 6px;
-  background: none;
-  color: var(--fg);
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.motNuage:hover:not(:disabled) {
-  color: #e2231a;
-}
-
-.motNuage:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.coche {
-  background: #e2231a;
-  color: #fff;
-}
-
-.coche:hover:not(:disabled) {
-  color: #fff;
-}
-
-.plus {
-  min-width: 26px;
-  padding: 0 6px;
+  background: var(--surface);
   border: 1px solid var(--bordure);
   border-radius: 999px;
-  background: none;
-  color: var(--dim);
-  font-size: 14px;
+  padding: 5px;
+}
+
+.champModes:focus-within {
+  border-color: var(--fg);
+}
+
+.mode {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 12px 8px 16px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Une couleur par thème, les tons du Finder. */
+.mode[data-theme="sujets"] {
+  background: #e25a54;
+}
+
+.mode[data-theme="univers"] {
+  background: #eb8b87;
+  color: #4a0b08;
+}
+
+.mode:active {
+  transform: scale(0.95);
+}
+
+.modeMot {
+  display: inline-flex;
+  perspective: 400px;
+  white-space: nowrap;
+}
+
+.modeLettre {
+  display: inline-block;
+  white-space: pre;
+  will-change: transform;
+}
+
+.modeFleches {
+  width: 13px;
+  height: 13px;
+  opacity: 0.8;
+}
+
+/* Le champ dans la gélule : sans le cadre des autres champs du formulaire. */
+.champModes .champModesInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 8px 10px 8px 4px;
+}
+
+/* Le nuage du thème, dans le cadre du nuage du Finder. */
+.nuage {
+  padding: 14px 16px 16px;
+  border: 1px solid var(--bordure);
+  border-radius: 12px;
+}
+
+.nuageEntete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.plein {
+  color: var(--rouge-wfg);
+  font-weight: 600;
+}
+
+.reglage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.reglage button {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--bordure-forte);
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.reglage button:hover:not(:disabled) {
+  border-color: var(--fg);
+  color: var(--fg);
+}
+
+.reglage button:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 /* Les mots tapés, qui ne sont dans aucun nuage. */

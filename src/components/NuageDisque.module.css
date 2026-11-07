@@ -4,27 +4,41 @@
   max-width: 720px;
   height: auto;
   margin: 0 auto;
+  /* Le site écrit en majuscules espacées : le nuage mesure ses mots tels quels. */
+  text-transform: none;
+  letter-spacing: normal;
 }
 
+/* Au survol, le mot grossit sur place et prend la couleur du texte. */
 .mot {
   cursor: pointer;
-  transition: fill 150ms ease, opacity 150ms ease;
-}
-
-.mot:hover,
-.mot:focus-visible {
-  fill: var(--fg);
   outline: none;
-}
-
-/* Au survol, le mot grossit sur place. */
-.mot {
   transform-box: fill-box;
   transform-origin: center;
-  transition: fill 150ms ease, transform 150ms ease;
+  transition: transform 150ms ease, opacity 150ms ease;
 }
 
-.mot:hover,
-.mot:focus-visible {
+.mot text {
+  transition: fill 150ms ease;
+}
+
+.mot:not(.inactif):hover,
+.mot:not(.inactif):focus-visible {
   transform: scale(1.3);
+}
+
+.mot:not(.inactif):not(.coche):hover text,
+.mot:not(.inactif):not(.coche):focus-visible text {
+  fill: var(--fg);
+}
+
+/* Un mot choisi : sur fond rouge (champ des mots-clés de la fiche, 07/11). */
+.coche rect {
+  fill: var(--rouge-wfg);
+}
+
+/* Dix mots choisis : les autres s'effacent. */
+.inactif {
+  opacity: 0.25;
+  cursor: default;
 }

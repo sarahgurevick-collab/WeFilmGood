@@ -99,6 +99,7 @@ type Place = {
   x: number;
   y: number;
   taille: number;
+  largeur: number;
   couleur: string;
 };
 
@@ -177,7 +178,7 @@ function disposer(mots: MotCle[], unite: number, mesure: Mesure) {
         let c = Math.floor(alea() * COULEURS.length);
         if (c === derniereCouleur) c = (c + 1) % COULEURS.length;
         derniereCouleur = c;
-        places.push({ mot, x, y: y + hauteur * 0.74, taille: tm, couleur: COULEURS[c] });
+        places.push({ mot, x, y: y + hauteur * 0.74, taille: tm, largeur, couleur: COULEURS[c] });
         x += largeur + espace + entreMots;
       }
     }
@@ -221,9 +222,18 @@ function Contour() {
 export default function NuageDisque({
   mots,
   onChoisir,
+  choisis,
+  bloque = false,
+  unite = "projet",
 }: {
   mots: MotCle[];
   onChoisir?: (label: string) => void;
+  /** Les mots déjà choisis (champ des mots-clés de la fiche, 07/11) : sur fond rouge. */
+  choisis?: string[];
+  /** Plus de choix possible : les autres mots s'effacent et ne répondent plus. */
+  bloque?: boolean;
+  /** Le mot de l'infobulle : « 3 projets », « 3 fiches »… */
+  unite?: string;
 }) {
   // La police manuscrite doit être chargée avant de mesurer les mots :
   // on recalcule le nuage une fois qu'elle est là.
@@ -280,28 +290,44 @@ export default function NuageDisque({
       aria-label="Nuage de mots-clés"
     >
       <Contour />
-      {places.map((p) => (
-        <text
-          key={p.mot.label}
-          x={p.x}
-          y={p.y}
-          fontSize={p.taille}
-          fill={p.couleur}
-          className={styles.mot}
-          role="button"
-          tabIndex={0}
-          onClick={() => onChoisir?.(p.mot.label)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              onChoisir?.(p.mot.label);
-            }
-          }}
-        >
-          <title>{`${p.mot.effectif} projet${p.mot.effectif > 1 ? "s" : ""}`}</title>
-          {affiche(p.mot.label)}
-        </text>
-      ))}
+      {places.map((p) => {
+        const coche = choisis?.includes(p.mot.label) ?? false;
+        const inactif = bloque && !coche;
+        const choisir = () => {
+          if (!inactif) onChoisir?.(p.mot.label);
+        };
+        return (
+          <g
+            key={p.mot.label}
+            className={`${styles.mot} ${coche ? styles.coche : ""} ${inactif ? styles.inactif : ""}`}
+            role="button"
+            tabIndex={inactif ? -1 : 0}
+            aria-pressed={choisis ? coche : undefined}
+            aria-disabled={inactif || undefined}
+            onClick={choisir}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                choisir();
+              }
+            }}
+          >
+            <title>{`${p.mot.effectif} ${unite}${p.mot.effectif > 1 ? "s" : ""}`}</title>
+            {coche && (
+              <rect
+                x={p.x - p.taille * 0.3}
+                y={p.y - p.taille * 0.95}
+                width={p.largeur + p.taille * 0.6}
+                height={p.taille * 1.3}
+                rx={p.taille * 0.65}
+              />
+            )}
+            <text x={p.x} y={p.y} fontSize={p.taille} fill={coche ? "#fff" : p.couleur}>
+              {affiche(p.mot.label)}
+            </text>
+          </g>
+        );
+      })}
     </svg>
   );
 }
