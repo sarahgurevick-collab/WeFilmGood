@@ -33,6 +33,7 @@ export default async function ModifierProjetPage({
     .eq("project_id", id)
     .eq("source", "demande_auteur")
     .returns<{ keyword: { label_fr: string } | null }[]>();
+  const { data: nuages } = await supabase.rpc("nuages_mots_cles_fiche");
   const { data: selections } = await supabase
     .from("project_selections")
     .select("libelle")
@@ -59,7 +60,8 @@ export default async function ModifierProjetPage({
           }}
           genres={genres ?? []}
           sousGenres={sousGenres ?? []}
-          selections={(selections ?? []).map((s) => s.libelle)} />
+          selections={(selections ?? []).map((s) => s.libelle)}
+          nuages={nuages ?? {}} />
 
         <div className={profilStyles.pied}>
           {/* Rien n'est enregistré sans le bouton : la flèche ramène à « Mes projets » (01/10). */}

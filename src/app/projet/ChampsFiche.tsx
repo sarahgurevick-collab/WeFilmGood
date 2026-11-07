@@ -2,7 +2,7 @@ import ChampAvecCompteur from "@/components/ChampAvecCompteur";
 import ChampTitre from "./ChampTitre";
 import LibelleSelection from "./LibelleSelection";
 import ChoixGenre, { type SousGenre } from "./ChoixGenre";
-import MotsClesAuteur from "./MotsClesAuteur";
+import MotsClesAuteur, { type Nuages } from "./MotsClesAuteur";
 import formStyles from "@/components/form.module.css";
 import styles from "./deposer.module.css";
 
@@ -74,6 +74,7 @@ export default function ChampsFiche({
   genres,
   sousGenres = [],
   selections = [],
+  nuages = {},
 }: {
   valeurs: ValeursFiche | null;
   /** Les fiches que l'auteur a déjà (création seulement) : garde-fou sur le titre. */
@@ -82,6 +83,8 @@ export default function ChampsFiche({
   sousGenres?: SousGenre[];
   /** Les sélections de la Maison des Scénaristes (« Cannes 2013 »…), posées par l'administration seule. */
   selections?: string[];
+  /** Les trois nuages de mots-clés (07/11), lus en base. */
+  nuages?: Nuages;
 }) {
   return (
     <>
@@ -170,7 +173,7 @@ export default function ChampsFiche({
         lignes={6}
         valeurInitiale={valeurs?.logline ?? ""}
       />
-      <MotsClesAuteur initiaux={valeurs?.mots_cles_auteur ?? []} />
+      <MotsClesAuteur initiaux={valeurs?.mots_cles_auteur ?? []} nuages={nuages} />
       <ChampAvecCompteur
         nom="synopsis"
         libelle="Plus…"

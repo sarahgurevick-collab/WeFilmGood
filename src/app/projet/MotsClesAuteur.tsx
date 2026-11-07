@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import formStyles from "@/components/form.module.css";
-import { NUAGES_MOTS_CLES, type LigneNuage } from "@/data/nuagesMotsCles";
+import { createClient } from "@/lib/supabase/client";
 import styles from "./mots-cles-auteur.module.css";
 
 /** Dix mots au plus par ligne (07/11/2026, Sarah : « Limite à 10 par catégorie »). */
@@ -10,7 +10,17 @@ export const MAXIMUM_MOTS_AUTEUR = 10;
 /** Combien de mots chaque nuage montre d'abord, puis à chaque « + ». */
 const PAR_PALIER = 40;
 
-type Cle = LigneNuage["cle"] | "libres";
+type CleNuage = "styles" | "sujets" | "univers";
+type Cle = CleNuage | "libres";
+/** Les trois nuages lus en base (fonction nuages_mots_cles_fiche) : [mot, nombre de fiches sur WFG 1]. */
+export type Nuages = Partial<Record<CleNuage, [string, number][]>>;
+
+/** Les titres des lignes (07/11/2026, Sarah). */
+const LIGNES: { cle: CleNuage; titre: string }[] = [
+  { cle: "styles", titre: "Sous-genres & styles" },
+  { cle: "sujets", titre: "Sujets & personnages" },
+  { cle: "univers", titre: "Univers & Lieux" },
+];
 
 const cleDe = (mot: string) =>
   mot
@@ -22,20 +32,22 @@ const cleDe = (mot: string) =>
 
 /**
  * Les mots-clés choisis par l'auteur, sous la logline (07/11/2026, Sarah).
- * Trois nuages repris de WFG 1 (src/data/nuagesMotsCles.ts) : un clic
- * choisit un mot, un second le rend ; dix au plus par ligne. En dessous, un
- * champ pour les mots qui ne sont dans aucun nuage (dix au plus aussi) : un
- * mot s'ajoute à la touche Entrée, à la virgule ou en quittant le champ ;
- * s'il est dans un nuage, c'est ce mot du nuage qui est choisi. Le
- * formulaire envoie un champ caché par mot.
+ * Trois nuages repris de WFG 1 (table nuages_mots_cles) : un clic choisit un
+ * mot, un second clic le retire ; dix au plus par ligne. En dessous, un
+ * champ pour d'autres mots, qui ne propose QUE des mots existants (Sarah :
+ * « le site se nourrit des mots clés des nouvelles fiches ») : les mots des
+ * nuages et ceux que l'IA a posés sur des fiches. Aucun mot nouveau, donc
+ * aucune faute, contrairement à la demande de mots-clés de WFG 1. Un mot
+ * suggéré qui est dans un nuage y est coché. Le formulaire envoie un champ
+ * caché par mot ; la base ignore tout mot inconnu.
  */
-export default function MotsClesAuteur({ initiaux }: { initiaux: string[] }) {
-  // Où se trouve chaque mot des nuages, pour ranger les mots déjà choisis.
+export default function MotsClesAuteur({ initiaux, nuages }: { initiaux: string[]; nuages: Nuages }) {
+  // Où se trouve chaque mot des nuages, pour ranger les mots choisis.
   const ligneDe = useMemo(() => {
-    const m = new Map<string, { cle: LigneNuage["cle"]; mot: string }>();
-    for (const l of NUAGES_MOTS_CLES) for (const [mot] of l.mots) m.set(cleDe(mot), { cle: l.cle, mot });
+    const m = new Map<string, { cle: CleNuage; mot: string }>();
+    for (const { cle } of LIGNES) for (const [mot] of nuages[cle] ?? []) m.set(cleDe(mot), { cle, mot });
     return m;
-  }, []);
+  }, [nuages]);
 
   const [choisis, setChoisis] = useState<Record<Cle, string[]>>(() => {
     const depart: Record<Cle, string[]> = { styles: [], sujets: [], univers: [], libres: [] };
@@ -46,8 +58,32 @@ export default function MotsClesAuteur({ initiaux }: { initiaux: string[] }) {
     }
     return depart;
   });
-  const [paliers, setPaliers] = useState<Record<LigneNuage["cle"], number>>({ styles: 1, sujets: 1, univers: 1 });
+  const [paliers, setPaliers] = useState<Record<CleNuage, number>>({ styles: 1, sujets: 1, univers: 1 });
   const [saisie, setSaisie] = useState("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const tous = [...choisis.styles, ...choisis.sujets, ...choisis.univers, ...choisis.libres];
+  const dejaChoisi = (mot: string) => tous.some((x) => cleDe(x) === cleDe(mot));
+
+  // Les suggestions pendant la frappe, à partir de deux lettres.
+  useEffect(() => {
+    if (minuteur.current) clearTimeout(minuteur.current);
+    const q = saisie.trim();
+    if (q.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+    let annule = false;
+    minuteur.current = setTimeout(async () => {
+      const { data } = await createClient().rpc("suggerer_mots_cles", { q, p_limite: 8 });
+      if (!annule) setSuggestions(((data ?? []) as { label: string }[]).map((d) => d.label));
+    }, 200);
+    return () => {
+      annule = true;
+      if (minuteur.current) clearTimeout(minuteur.current);
+    };
+  }, [saisie]);
 
   const basculer = (cle: Cle, mot: string) =>
     setChoisis((avant) => {
@@ -57,28 +93,15 @@ export default function MotsClesAuteur({ initiaux }: { initiaux: string[] }) {
       return { ...avant, [cle]: [...liste, mot] };
     });
 
-  const ajouter = (brut: string) => {
-    const nouveaux = brut
-      .split(",")
-      .map((m) => m.trim().replace(/\s+/g, " ").slice(0, 60))
-      .filter(Boolean);
+  /** Un mot suggéré : coché dans son nuage s'il y est, sinon ajouté aux autres mots. */
+  const prendre = (suggere: string) => {
+    const trouve = ligneDe.get(cleDe(suggere));
+    if (!dejaChoisi(suggere)) basculer(trouve ? trouve.cle : "libres", trouve ? trouve.mot : suggere);
     setSaisie("");
-    if (!nouveaux.length) return;
-    setChoisis((avant) => {
-      const suite = { ...avant, libres: [...avant.libres] } as Record<Cle, string[]>;
-      for (const m of nouveaux) {
-        const trouve = ligneDe.get(cleDe(m));
-        const cle: Cle = trouve ? trouve.cle : "libres";
-        const mot = trouve ? trouve.mot : m;
-        const liste = (suite[cle] = [...suite[cle]]);
-        if (liste.length >= MAXIMUM_MOTS_AUTEUR) continue;
-        if (!liste.some((x) => cleDe(x) === cleDe(mot))) liste.push(mot);
-      }
-      return suite;
-    });
+    setSuggestions([]);
   };
 
-  const tous = [...choisis.styles, ...choisis.sujets, ...choisis.univers, ...choisis.libres];
+  const proposees = suggestions.filter((s) => !dejaChoisi(s));
 
   return (
     <div className={formStyles.field}>
@@ -89,18 +112,19 @@ export default function MotsClesAuteur({ initiaux }: { initiaux: string[] }) {
         <input key={m} type="hidden" name="mots_cles_auteur" value={m} />
       ))}
 
-      {NUAGES_MOTS_CLES.map((ligne) => {
-        const liste = choisis[ligne.cle];
+      {LIGNES.map(({ cle, titre }) => {
+        const mots = nuages[cle] ?? [];
+        const liste = choisis[cle];
         const plein = liste.length >= MAXIMUM_MOTS_AUTEUR;
-        const visibles = ligne.mots.slice(0, paliers[ligne.cle] * PAR_PALIER);
+        const visibles = mots.slice(0, paliers[cle] * PAR_PALIER);
         // Un mot choisi reste visible même s'il est loin dans le nuage.
         const caches = liste.filter((m) => !visibles.some(([v]) => v === m));
-        const max = Math.log(1 + (ligne.mots[0]?.[1] ?? 1));
+        const max = Math.log(1 + (mots[0]?.[1] ?? 1));
         const taille = (n: number) => 13 + Math.round((9 * Math.log(1 + n)) / max);
         return (
-          <section key={ligne.cle} className={styles.ligne} aria-label={ligne.titre}>
+          <section key={cle} className={styles.ligne} aria-label={titre}>
             <p className={styles.titreLigne}>
-              <span>{ligne.titre}</span>
+              <span>{titre}</span>
               <span className={plein ? styles.plein : undefined}>
                 {liste.length}/{MAXIMUM_MOTS_AUTEUR}
               </span>
@@ -116,28 +140,28 @@ export default function MotsClesAuteur({ initiaux }: { initiaux: string[] }) {
                     style={{ fontSize: taille(n) }}
                     aria-pressed={coche}
                     disabled={!coche && plein}
-                    onClick={() => basculer(ligne.cle, mot)}
+                    onClick={() => basculer(cle, mot)}
                   >
                     {mot}
                   </button>
                 );
               })}
-              {visibles.length < ligne.mots.length && (
+              {visibles.length < mots.length && (
                 <button
                   type="button"
                   className={styles.plus}
                   aria-label="Plus de mots"
-                  onClick={() => setPaliers((p) => ({ ...p, [ligne.cle]: p[ligne.cle] + 1 }))}
+                  onClick={() => setPaliers((p) => ({ ...p, [cle]: p[cle] + 1 }))}
                 >
                   +
                 </button>
               )}
-              {paliers[ligne.cle] > 1 && (
+              {paliers[cle] > 1 && (
                 <button
                   type="button"
                   className={styles.plus}
                   aria-label="Moins de mots"
-                  onClick={() => setPaliers((p) => ({ ...p, [ligne.cle]: 1 }))}
+                  onClick={() => setPaliers((p) => ({ ...p, [cle]: 1 }))}
                 >
                   −
                 </button>
@@ -147,7 +171,7 @@ export default function MotsClesAuteur({ initiaux }: { initiaux: string[] }) {
         );
       })}
 
-      {/* Les mots qui ne sont dans aucun nuage. */}
+      {/* Les autres mots, choisis parmi les suggestions. */}
       {choisis.libres.length > 0 && (
         <ul className={styles.mots}>
           {choisis.libres.map((m) => (
@@ -161,25 +185,35 @@ export default function MotsClesAuteur({ initiaux }: { initiaux: string[] }) {
         </ul>
       )}
       {choisis.libres.length < MAXIMUM_MOTS_AUTEUR && (
-        <input
-          type="text"
-          maxLength={200}
-          aria-labelledby="mots-cles-auteur-libelle"
-          value={saisie}
-          onChange={(e) => {
-            const v = e.target.value;
-            if (v.includes(",")) ajouter(v);
-            else setSaisie(v);
-          }}
-          onKeyDown={(e) => {
-            // Entrée ajoute le mot au lieu d'envoyer le formulaire.
-            if (e.key === "Enter") {
-              e.preventDefault();
-              ajouter(saisie);
-            }
-          }}
-          onBlur={() => ajouter(saisie)}
-        />
+        <div className={styles.zoneSaisie}>
+          <input
+            type="text"
+            maxLength={60}
+            aria-labelledby="mots-cles-auteur-libelle"
+            autoComplete="off"
+            value={saisie}
+            onChange={(e) => setSaisie(e.target.value)}
+            onKeyDown={(e) => {
+              // Entrée prend la première suggestion au lieu d'envoyer le formulaire.
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (proposees[0]) prendre(proposees[0]);
+              }
+              if (e.key === "Escape") setSuggestions([]);
+            }}
+          />
+          {proposees.length > 0 && (
+            <ul className={styles.suggestions} role="listbox">
+              {proposees.map((s) => (
+                <li key={s}>
+                  <button type="button" role="option" aria-selected={false} onClick={() => prendre(s)}>
+                    {s}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
     </div>
   );

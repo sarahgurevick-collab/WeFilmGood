@@ -103,3 +103,44 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* Le champ des autres mots et ses suggestions (mots existants seulement). */
+.zoneSaisie {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.suggestions button {
+  display: block;
+  width: 100%;
+  padding: 7px 12px;
+  border: none;
+  background: none;
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.suggestions button:hover,
+.suggestions button:focus {
+  background: rgba(226, 35, 26, 0.12);
+  outline: none;
+}
