@@ -12,9 +12,9 @@ import {
   type PersonnageTrouve,
   type ProjetTrouve,
   type TalentTrouve,
-} from "@/app/pitchotheque/actions";
-import { AUCUN, CLES, adresse, type Filtres } from "@/app/pitchotheque/filtres";
-import { FiltresContexte, TagsChoisis, type Famille, type Tag } from "@/app/pitchotheque/tags";
+} from "@/app/galaxies/actions";
+import { AUCUN, CLES, adresse, type Filtres } from "@/app/galaxies/filtres";
+import { FiltresContexte, TagsChoisis, type Famille, type Tag } from "@/app/galaxies/tags";
 import Bandeau from "./Bandeau";
 import LogoComplet from "./LogoComplet";
 import MarqueDejaOuvert from "./MarqueDejaOuvert";
@@ -24,7 +24,7 @@ import NuageCouleurs from "./NuageCouleurs";
 import NuageDisque from "./NuageDisque";
 import OrbeAttente from "./OrbeAttente";
 import styles from "./Finder.module.css";
-import projetsStyles from "@/app/pitchotheque/projets.module.css";
+import projetsStyles from "@/app/galaxies/projets.module.css";
 
 // Résultats par page de recherche (le même nombre que côté serveur).
 const PAR_PAGE = 60;
@@ -240,7 +240,7 @@ export default function Finder({
     if (!requete.trim()) {
       if (minuteurMode.current) clearTimeout(minuteurMode.current);
       minuteurMode.current = setTimeout(() => {
-        router.push(suivante === "projets" ? adresse(filtres) : `/pitchotheque?voir=${suivante}`);
+        router.push(suivante === "projets" ? adresse(filtres) : `/galaxies?voir=${suivante}`);
       }, 700);
     }
   };

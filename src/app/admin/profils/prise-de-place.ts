@@ -36,7 +36,7 @@ export async function prendreLaPlace(formData: FormData) {
   if (admin !== true) redirect("/");
 
   const cible = formData.get("profile_id") as string;
-  if (!cible) redirect("/admin/profils");
+  if (!cible) redirect("/admin/membres?metier=avalider");
 
   const { data: session } = await supabase.auth.getSession();
   const retour = session.session?.refresh_token;
@@ -84,7 +84,7 @@ export async function prendreLaPlace(formData: FormData) {
   // Sinon, comme le membre lui-même après connexion : les Galaxies.
   const retourPage = formData.get("retour");
   if (typeof retourPage === "string" && retourPage.startsWith("/") && !retourPage.startsWith("//")) redirect(retourPage);
-  redirect("/pitchotheque");
+  redirect("/galaxies");
 }
 
 export async function revenirAMonCompte() {
@@ -100,7 +100,7 @@ export async function revenirAMonCompte() {
 
   if (retour) {
     const { error } = await supabase.auth.refreshSession({ refresh_token: retour });
-    if (!error) redirect("/admin/profils");
+    if (!error) redirect("/admin/membres?metier=avalider");
   }
 
   // Sans session d'administratrice à restaurer (cookie perdu, jeton

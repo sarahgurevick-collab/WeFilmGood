@@ -87,7 +87,7 @@ export default async function RetourPaiementPage({
               )}
             </dl>
           )}
-          <Link href="/pitchotheque" className={formStyles.submit}>
+          <Link href="/galaxies" className={formStyles.submit}>
             Aller aux Galaxies
           </Link>
         </section>

@@ -8,7 +8,7 @@ import { chargerFiches } from "../fiches-donnees";
 import { archivesDuProjet } from "@/lib/archives-lecture";
 import styles from "../fiches.module.css";
 import Surligne from "@/components/Surligne";
-import { contientUnMot, motsDeRecherche } from "@/app/pitchotheque/mot-trouve";
+import { contientUnMot, motsDeRecherche } from "@/app/galaxies/mot-trouve";
 
 /**
  * Les fiches de lecture d'un projet, sur une page à part — ouverte dans

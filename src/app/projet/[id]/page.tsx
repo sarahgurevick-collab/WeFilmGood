@@ -16,7 +16,7 @@ import { prendreLaPlace } from "@/app/admin/profils/prise-de-place";
 import LibelleSelection, { LignePartenariats, estPartenaire } from "../LibelleSelection";
 import AccrocheProjet from "./AccrocheProjet";
 import Surligne from "@/components/Surligne";
-import { motsDeRecherche } from "@/app/pitchotheque/mot-trouve";
+import { motsDeRecherche } from "@/app/galaxies/mot-trouve";
 import EtatDeLecture, { type Etat } from "@/components/EtatDeLecture";
 import { prochaineAction, tauxDeRemplissage } from "@/lib/remplissage";
 import { createClient } from "@/lib/supabase/server";

@@ -1,5 +1,5 @@
-import { lireFiltres } from "@/app/pitchotheque/filtres";
-import { rechercherPersonnages, rechercherProjets, rechercherTalents } from "@/app/pitchotheque/actions";
+import { lireFiltres } from "@/app/galaxies/filtres";
+import { rechercherPersonnages, rechercherProjets, rechercherTalents } from "@/app/galaxies/actions";
 import { createClient } from "@/lib/supabase/server";
 import { projetsDejaOuverts } from "@/lib/vues";
 

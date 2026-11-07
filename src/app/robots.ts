@@ -17,13 +17,12 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       disallow: [
-        "/pitchotheque",
+        "/galaxies",
         "/projet", // fiches projet et liens de partage
         "/profil",
         "/lecteur",
         "/admin",
         "/auth",
-        "/lost-pwd",
       ],
     },
   };

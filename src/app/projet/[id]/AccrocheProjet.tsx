@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Surligne from "@/components/Surligne";
-import { contientUnMot } from "@/app/pitchotheque/mot-trouve";
+import { contientUnMot } from "@/app/galaxies/mot-trouve";
 import styles from "./accroche.module.css";
 
 /**

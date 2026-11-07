@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { EquipeCarte as Donnees } from "@/app/pitchotheque/equipe-carte";
+import type { EquipeCarte as Donnees } from "@/app/galaxies/equipe-carte";
 import styles from "./PersonnagesCarte.module.css";
 
 const METIERS_MONTRES = 3;

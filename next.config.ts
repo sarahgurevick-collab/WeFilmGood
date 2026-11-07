@@ -12,9 +12,9 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "25mb",
     },
   },
-  // Adresses : la Pitchothèque à /pitchotheque, une fiche projet à
-  // /projet/<id>, sa création à /projet. Les anciennes adresses (/projets,
-  // /projets/<id>, /deposer) y renvoient : les liens déjà partagés tiennent.
+  // Aucune redirection d'anciennes adresses (07/11/2026, Sarah) : WFG 2
+  // n'étant pas encore ouvert, les pages renommées (/pitchotheque devenue
+  // /galaxies, /projets, /deposer…) ont changé d'adresse sans renvoi.
   // Le service worker ne doit jamais être gardé en cache : chaque
   // nouvelle version du site doit pouvoir le remplacer aussitôt.
   async headers() {
@@ -27,18 +27,6 @@ const nextConfig: NextConfig = {
           { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
         ],
       },
-    ];
-  },
-  async redirects() {
-    return [
-      { source: "/projets", destination: "/pitchotheque", permanent: true },
-      { source: "/projets/:path*", destination: "/projet/:path*", permanent: true },
-      { source: "/deposer", destination: "/projet", permanent: true },
-      { source: "/deposer/:path*", destination: "/projet/:path*", permanent: true },
-      // Le bloc 2 de la fiche s'appelait « illustrations » pendant une journée.
-      { source: "/projet/:id/illustrations", destination: "/projet/:id/documents", permanent: true },
-      // Le bloc 3 du profil s'appelait « gouts » (renommé le 01/11, Sarah).
-      { source: "/profil/gouts", destination: "/profil/cinematch", permanent: true },
     ];
   },
 };

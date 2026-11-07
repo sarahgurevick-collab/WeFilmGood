@@ -1,4 +1,4 @@
-import styles from "@/app/pitchotheque/projets.module.css";
+import styles from "@/app/galaxies/projets.module.css";
 
 /** Le petit repère « déjà ouvert » (03/10), posé dans un coin de la vignette : un œil, sans texte. */
 export default function MarqueDejaOuvert() {

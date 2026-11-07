@@ -1,4 +1,4 @@
-import { decouper } from "@/app/pitchotheque/mot-trouve";
+import { decouper } from "@/app/galaxies/mot-trouve";
 import styles from "./surligne.module.css";
 
 /** Le texte, les mots cherchés en rouge (02/11, Sarah). Sans mot : le texte tel quel. */

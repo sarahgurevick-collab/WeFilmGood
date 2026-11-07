@@ -23,7 +23,7 @@ export default async function MenuPage() {
     <PageShell eyebrow="Navigation" title="Menu" enTeteAnime connecte={!!user}>
       <nav className={formStyles.form}>
         <Link href="/projet">Créer une fiche projet</Link>
-        <Link href="/pitchotheque">Galaxies</Link>
+        <Link href="/galaxies">Galaxies</Link>
 
         {user ? (
           <>

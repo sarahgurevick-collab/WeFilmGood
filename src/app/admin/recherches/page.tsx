@@ -42,7 +42,7 @@ export default async function RecherchesAdminPage() {
             {lignes.map((l) => (
               <tr key={l.requete}>
                 <td>
-                  <Link href={`/pitchotheque?q=${encodeURIComponent(l.requete)}`}>{l.requete}</Link>
+                  <Link href={`/galaxies?q=${encodeURIComponent(l.requete)}`}>{l.requete}</Link>
                 </td>
                 <td>{l.fois}</td>
                 <td>

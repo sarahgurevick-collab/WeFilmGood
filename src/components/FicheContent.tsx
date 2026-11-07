@@ -1,5 +1,5 @@
 import { sanitizeFiche } from "@/lib/sanitize";
-import { surlignerHtml } from "@/app/pitchotheque/mot-trouve";
+import { surlignerHtml } from "@/app/galaxies/mot-trouve";
 import styles from "./FicheContent.module.css";
 
 /**

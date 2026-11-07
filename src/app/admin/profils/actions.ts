@@ -37,7 +37,6 @@ export async function basculerValidation(
     return null;
   }
 
-  revalidatePath("/admin/profils");
   revalidatePath("/admin/membres");
   return vers;
 }

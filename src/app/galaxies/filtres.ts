@@ -40,7 +40,7 @@ export function adresse(f: Filtres, page?: number) {
   for (const c of CLES) if (f[c]) p.set(c, f[c] as string);
   if (page && page > 1) p.set("page", String(page));
   const s = p.toString();
-  return `/pitchotheque${s ? `?${s}` : ""}`;
+  return `/galaxies${s ? `?${s}` : ""}`;
 }
 
 /** Les mêmes filtres, sous la forme attendue par les fonctions de la base. */

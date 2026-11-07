@@ -125,7 +125,7 @@ export default async function ProjetsPage({
           pages={pagesGalaxie}
           total={totalGalaxie}
           parPage={GALAXIE_PAR_PAGE}
-          base={`/pitchotheque?voir=${voir}`}
+          base={`/galaxies?voir=${voir}`}
           libelle="Pages des Galaxies"
         />
         </Finder>

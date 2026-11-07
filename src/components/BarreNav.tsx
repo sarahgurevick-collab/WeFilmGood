@@ -49,7 +49,7 @@ export default async function BarreNav({
         { cle: "profil", href: "/lecteur/profil", label: "Mon profil" },
       ] as const)
     : [
-    { cle: "pitchotheque", href: "/pitchotheque", label: "Galaxies" },
+    { cle: "pitchotheque", href: "/galaxies", label: "Galaxies" },
     // La liste de ses fiches (ou la création s'il n'en a aucune). Un
     // visiteur non connecté n'a rien à y faire : pas d'onglet (26/09).
     ...(connecte ? [{ cle: "deposer", href: "/mes-projets", label: "Mes projets" }] as const : []),

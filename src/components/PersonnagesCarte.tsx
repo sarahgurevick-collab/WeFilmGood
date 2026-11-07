@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { PersonnagesCarte as Donnees } from "@/app/pitchotheque/personnages-carte";
+import type { PersonnagesCarte as Donnees } from "@/app/galaxies/personnages-carte";
 import styles from "./PersonnagesCarte.module.css";
 
 /**

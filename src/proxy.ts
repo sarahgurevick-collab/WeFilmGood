@@ -12,7 +12,6 @@ const CHEMINS_LECTEUR = [
   "/deconnexion",
   "/connexion",
   "/auth",
-  "/lost-pwd",
   "/cguv",
   // L'application installable (PWA) : manifeste, service worker et page
   // hors ligne, sans données. Sans cette exception, le service worker

@@ -39,7 +39,7 @@ export async function choisirBandeau(formData: FormData) {
   if (valeur && !permis.includes(valeur)) redirect(`/projet/${projectId}`);
   await supabase.from("projects").update({ bandeau: valeur }).eq("id", projectId);
   revalidatePath(`/projet/${projectId}`);
-  revalidatePath("/pitchotheque");
+  revalidatePath("/galaxies");
   revalidatePath("/admin/fiches");
   const retour = (formData.get("retour") as string) || "";
   redirect(retour.startsWith("/admin/fiches") ? retour : `/projet/${projectId}`);
@@ -77,7 +77,7 @@ export async function choisirVisibilite(formData: FormData) {
 
   await supabase.from("projects").update({ visible_pour: visible }).eq("id", projectId);
   revalidatePath(`/projet/${projectId}`);
-  revalidatePath("/pitchotheque");
+  revalidatePath("/galaxies");
   redirect(`/projet/${projectId}?enregistre=1`);
 }
 
@@ -97,7 +97,7 @@ export async function modifierSelection(formData: FormData) {
     }
   }
   revalidatePath(`/projet/${projectId}`);
-  revalidatePath("/pitchotheque");
+  revalidatePath("/galaxies");
   revalidatePath("/admin/fiches");
   const retour = (formData.get("retour") as string) || "";
   redirect(retour.startsWith("/admin/fiches") ? retour : `/projet/${projectId}`);
