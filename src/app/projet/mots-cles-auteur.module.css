@@ -1,0 +1,28 @@
+.mots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.mot {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border: 1px solid var(--bordure);
+  border-radius: 999px;
+  font-size: 14px;
+}
+
+.retirer {
+  padding: 0;
+  border: none;
+  background: none;
+  color: #e2231a;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -2,6 +2,7 @@ import ChampAvecCompteur from "@/components/ChampAvecCompteur";
 import ChampTitre from "./ChampTitre";
 import LibelleSelection from "./LibelleSelection";
 import ChoixGenre, { type SousGenre } from "./ChoixGenre";
+import MotsClesAuteur from "./MotsClesAuteur";
 import formStyles from "@/components/form.module.css";
 import styles from "./deposer.module.css";
 
@@ -48,6 +49,8 @@ export type ValeursFiche = {
   /** Marches 3 et 4 du genre (04/11) : fiction / documentaire, technique. */
   postures?: string[] | null;
   techniques?: string[] | null;
+  /** Les mots-clés choisis par l'auteur (07/11), dix au plus. */
+  mots_cles_auteur?: string[];
   budget_range: string | null;
   target_audience: string | null;
   has_awards: boolean;
@@ -167,6 +170,7 @@ export default function ChampsFiche({
         lignes={6}
         valeurInitiale={valeurs?.logline ?? ""}
       />
+      <MotsClesAuteur initiaux={valeurs?.mots_cles_auteur ?? []} />
       <ChampAvecCompteur
         nom="synopsis"
         libelle="Plus…"

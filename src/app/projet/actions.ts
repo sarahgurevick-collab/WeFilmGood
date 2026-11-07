@@ -105,6 +105,12 @@ export async function createProject(formData: FormData) {
   // Les sous-genres (04/11) : la base ne garde que ceux de la famille, trois au plus.
   const sousGenres = formData.getAll("sous_genres").map(String).slice(0, 3);
   await supabase.rpc("poser_sous_genres", { p_projet: project.id, p_slugs: sousGenres });
+  // Les mots-clés choisis par l'auteur (07/11), dix au plus.
+  const motsAuteur = formData.getAll("mots_cles_auteur").map(String).slice(0, 10);
+  if (motsAuteur.length) {
+    const { error: sansMots } = await supabase.rpc("poser_mots_cles_auteur", { p_project: project.id, p_mots: motsAuteur });
+    if (sansMots) console.error("Mots-clés de l'auteur non enregistrés :", sansMots.message);
+  }
 
   if (aVignette) {
     const chemin = await deposerImage(supabase, user.id, project.id, vignette, "vignette");

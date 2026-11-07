@@ -26,6 +26,13 @@ export default async function ModifierProjetPage({
     .select("sous_genre_slug")
     .eq("project_id", id)
     .order("position");
+  // Les mots-clés choisis par l'auteur (07/11), y compris ceux demandés sur WFG 1.
+  const { data: sesMots } = await supabase
+    .from("project_keywords")
+    .select("keyword:keywords(label_fr)")
+    .eq("project_id", id)
+    .eq("source", "demande_auteur")
+    .returns<{ keyword: { label_fr: string } | null }[]>();
   const { data: selections } = await supabase
     .from("project_selections")
     .select("libelle")
@@ -45,7 +52,11 @@ export default async function ModifierProjetPage({
         {erreur && <p className={formStyles.error}>{erreur}</p>}
 
         <ChampsFiche
-          valeurs={{ ...projet, sous_genres: (sesSousGenres ?? []).map((s) => s.sous_genre_slug) }}
+          valeurs={{
+            ...projet,
+            sous_genres: (sesSousGenres ?? []).map((s) => s.sous_genre_slug),
+            mots_cles_auteur: (sesMots ?? []).map((m) => m.keyword?.label_fr).filter((m): m is string => Boolean(m)),
+          }}
           genres={genres ?? []}
           sousGenres={sousGenres ?? []}
           selections={(selections ?? []).map((s) => s.libelle)} />

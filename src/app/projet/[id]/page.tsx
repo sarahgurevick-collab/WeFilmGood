@@ -442,9 +442,9 @@ export default async function ProjetPage({
     .returns<{ sous_genre: { label_fr: string } | null }[]>();
   const { data: motsCles } = await supabase
     .from("project_keywords")
-    .select("keyword:keywords(label_fr)")
+    .select("source, keyword:keywords(label_fr)")
     .eq("project_id", id)
-    .returns<{ keyword: { label_fr: string } | null }[]>();
+    .returns<{ source: string | null; keyword: { label_fr: string } | null }[]>();
 
   return (
     <PageShell
@@ -484,11 +484,13 @@ export default async function ProjetPage({
             project.format !== "court_metrage" && project.target_audience ? AUDIENCE_LISIBLE[project.target_audience] : null,
           ].filter((x): x is string => Boolean(x));
           // Les mots-clés servent à la recherche, en coulisse : seule
-          // l'admin les voit ici, pour comprendre pourquoi un projet sort
-          // dans une recherche (01/10).
-          if (!estAdmin) return reperes.join(" · ");
+          // l'admin les voit tous ici, pour comprendre pourquoi un projet
+          // sort dans une recherche (01/10). L'auteur voit les siens, ceux
+          // qu'il a choisis sous la logline (07/11, Sarah).
+          if (!estAdmin && !isOwner) return reperes.join(" · ");
           const deja = new Set(reperes.map((r) => r.toLowerCase()));
           const mots = (motsCles ?? [])
+            .filter((m) => estAdmin || m.source === "demande_auteur")
             .map((m) => m.keyword?.label_fr)
             .filter((label): label is string => Boolean(label) && !deja.has(label!.toLowerCase()));
           // Venue d'une recherche, l'admin voit en rouge le mot-clé qui a
