@@ -67,7 +67,7 @@
 
 /* Le champ dans la gélule : sans le cadre des autres champs du formulaire. */
 .champModes .champModesInput {
-  flex: 1 1 80px;
+  flex: 1 1 260px;
   min-width: 0;
   border: none;
   border-radius: 0;

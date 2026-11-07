@@ -212,6 +212,7 @@ export default function MotsClesAuteur({
             <input
               type="text"
               className={styles.champModesInput}
+              placeholder="Tapez un mot-clé ou piochez dans le nuage…"
               maxLength={60}
               aria-labelledby="mots-cles-auteur-libelle"
               autoComplete="off"
