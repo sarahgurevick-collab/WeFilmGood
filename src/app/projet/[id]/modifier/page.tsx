@@ -29,10 +29,10 @@ export default async function ModifierProjetPage({
   // Les mots-clés choisis par l'auteur (07/11), y compris ceux demandés sur WFG 1.
   const { data: sesMots } = await supabase
     .from("project_keywords")
-    .select("keyword:keywords(label_fr)")
+    .select("theme_auteur, keyword:keywords(label_fr)")
     .eq("project_id", id)
     .eq("source", "demande_auteur")
-    .returns<{ keyword: { label_fr: string } | null }[]>();
+    .returns<{ theme_auteur: string | null; keyword: { label_fr: string } | null }[]>();
   const { data: nuages } = await supabase.rpc("nuages_mots_cles_fiche");
   const { data: selections } = await supabase
     .from("project_selections")
@@ -56,7 +56,7 @@ export default async function ModifierProjetPage({
           valeurs={{
             ...projet,
             sous_genres: (sesSousGenres ?? []).map((s) => s.sous_genre_slug),
-            mots_cles_auteur: (sesMots ?? []).map((m) => m.keyword?.label_fr).filter((m): m is string => Boolean(m)),
+            mots_cles_auteur: (sesMots ?? []).flatMap((m) => (m.keyword ? [{ mot: m.keyword.label_fr, theme: m.theme_auteur }] : [])),
           }}
           genres={genres ?? []}
           sousGenres={sousGenres ?? []}

@@ -90,6 +90,7 @@ export async function modifierProjet(formData: FormData) {
   const { error: sansMots } = await supabase.rpc("poser_mots_cles_auteur", {
     p_project: id,
     p_mots: formData.getAll("mots_cles_auteur").map(String).slice(0, 40),
+    p_themes: formData.getAll("mots_cles_auteur_theme").map(String).slice(0, 40),
   });
   if (sansMots) console.error("Mots-clés de l'auteur non enregistrés :", sansMots.message);
 

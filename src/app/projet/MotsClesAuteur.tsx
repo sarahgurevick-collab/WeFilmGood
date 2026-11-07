@@ -16,7 +16,6 @@ const MIN = 20;
 const MAX = 200;
 
 type CleNuage = "styles" | "sujets" | "univers";
-type Cle = CleNuage | "libres";
 /** Les trois nuages lus en base (fonction nuages_mots_cles_fiche) : [mot, nombre de fiches sur WFG 1]. */
 export type Nuages = Partial<Record<CleNuage, [string, number][]>>;
 
@@ -36,21 +35,30 @@ const cleDe = (mot: string) =>
     .replace(/^_+|_+$/g, "");
 
 /**
- * Les mots-clés choisis par l'auteur, sous la logline (07/11/2026, Sarah).
- * Présentés comme le Finder : un bouton qui passe d'un thème à l'autre
- * (Sous-genres & styles, Sujets & personnages, Univers & Lieux), et le nuage
- * du Finder (NuageDisque) qui change avec lui. Les mots viennent de WFG 1
- * (table nuages_mots_cles) ; un clic choisit un mot, qui passe sur fond rouge,
- * un second le retire ; dix au plus par thème.
+ * Les mots-clés choisis par l'auteur (07/11/2026, Sarah), présentés comme le
+ * Finder. Chaque mot appartient à un des trois thèmes (Sarah : « j'ai besoin
+ * d'avoir des mots clés dans ces 3 catégories ») : le bouton passe d'un thème
+ * à l'autre, le nuage du Finder (NuageDisque) change avec lui.
  *
- * Dans le même champ, à droite du bouton, on peut taper un autre mot : seuls
- * des mots existants sont proposés (Sarah : « le site se nourrit des mots
- * clés des nouvelles fiches ») — ceux des nuages et ceux que l'IA a posés sur
- * des fiches. Aucun mot nouveau, donc aucune faute. Un mot suggéré qui est
- * dans un nuage y est coché, et le nuage s'ouvre sur son thème.
- * Le formulaire envoie un champ caché par mot ; la base ignore tout mot inconnu.
+ * Les mots choisis du thème affiché remplissent la barre, entre le bouton et
+ * le champ, comme les tags du Finder (Sarah : « que les mots clés
+ * remplissent la barre de recherche et pas une autre barre en dessous du
+ * nuage ») ; la croix les retire. Dix au plus par thème.
+ *
+ * Deux façons de choisir : un clic dans le nuage, ou taper dans le champ, qui
+ * ne propose que des mots existants (nuages + mots posés par l'IA) — aucun
+ * mot nouveau, donc aucune faute. Un mot tapé prend le thème du bouton ; s'il
+ * est dans un nuage, il va dans le thème de ce nuage, qui s'affiche.
+ * Le formulaire envoie chaque mot avec son thème ; la base ignore tout mot
+ * inconnu et range le thème (project_keywords.theme_auteur).
  */
-export default function MotsClesAuteur({ initiaux, nuages }: { initiaux: string[]; nuages: Nuages }) {
+export default function MotsClesAuteur({
+  initiaux,
+  nuages,
+}: {
+  initiaux: { mot: string; theme: string | null }[];
+  nuages: Nuages;
+}) {
   // Où se trouve chaque mot des nuages, pour ranger les mots choisis.
   const ligneDe = useMemo(() => {
     const m = new Map<string, { cle: CleNuage; mot: string }>();
@@ -58,12 +66,17 @@ export default function MotsClesAuteur({ initiaux, nuages }: { initiaux: string[
     return m;
   }, [nuages]);
 
-  const [choisis, setChoisis] = useState<Record<Cle, string[]>>(() => {
-    const depart: Record<Cle, string[]> = { styles: [], sujets: [], univers: [], libres: [] };
-    for (const brut of initiaux) {
-      const trouve = ligneDe.get(cleDe(brut));
-      const cle: Cle = trouve ? trouve.cle : "libres";
-      if (depart[cle].length < MAXIMUM_MOTS_AUTEUR) depart[cle].push(trouve ? trouve.mot : brut);
+  const [choisis, setChoisis] = useState<Record<CleNuage, string[]>>(() => {
+    const depart: Record<CleNuage, string[]> = { styles: [], sujets: [], univers: [] };
+    for (const { mot, theme: rangé } of initiaux) {
+      // Le nuage d'abord, puis le thème rangé ; un ancien mot sans thème va dans les sujets.
+      const trouve = ligneDe.get(cleDe(mot));
+      const cle: CleNuage = trouve
+        ? trouve.cle
+        : THEMES.some((t) => t.cle === rangé)
+          ? (rangé as CleNuage)
+          : "sujets";
+      if (depart[cle].length < MAXIMUM_MOTS_AUTEUR) depart[cle].push(trouve ? trouve.mot : mot);
     }
     return depart;
   });
@@ -73,7 +86,7 @@ export default function MotsClesAuteur({ initiaux, nuages }: { initiaux: string[
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const tous = [...choisis.styles, ...choisis.sujets, ...choisis.univers, ...choisis.libres];
+  const tous = [...choisis.styles, ...choisis.sujets, ...choisis.univers];
   const dejaChoisi = (mot: string) => tous.some((x) => cleDe(x) === cleDe(mot));
 
   // Les suggestions pendant la frappe, à partir de deux lettres.
@@ -95,7 +108,7 @@ export default function MotsClesAuteur({ initiaux, nuages }: { initiaux: string[
     };
   }, [saisie]);
 
-  const basculer = (cle: Cle, mot: string) =>
+  const basculer = (cle: CleNuage, mot: string) =>
     setChoisis((avant) => {
       const liste = avant[cle];
       if (liste.includes(mot)) return { ...avant, [cle]: liste.filter((x) => x !== mot) };
@@ -103,10 +116,10 @@ export default function MotsClesAuteur({ initiaux, nuages }: { initiaux: string[
       return { ...avant, [cle]: [...liste, mot] };
     });
 
-  /** Un mot suggéré : coché dans son nuage s'il y est (le nuage passe sur son thème), sinon ajouté aux autres mots. */
+  /** Un mot suggéré : dans le thème de son nuage s'il y est (le nuage passe sur ce thème), sinon dans le thème du bouton. */
   const prendre = (suggere: string) => {
     const trouve = ligneDe.get(cleDe(suggere));
-    if (!dejaChoisi(suggere)) basculer(trouve ? trouve.cle : "libres", trouve ? trouve.mot : suggere);
+    if (!dejaChoisi(suggere)) basculer(trouve ? trouve.cle : theme, trouve ? trouve.mot : suggere);
     if (trouve) setTheme(trouve.cle);
     setSaisie("");
     setSuggestions([]);
@@ -131,9 +144,14 @@ export default function MotsClesAuteur({ initiaux, nuages }: { initiaux: string[
       <span id="mots-cles-auteur-libelle">
         Optimisez la recherche avec des mots-clés adaptés à votre projet pour booster sa visibilité.
       </span>
-      {tous.map((m) => (
-        <input key={m} type="hidden" name="mots_cles_auteur" value={m} />
-      ))}
+      {THEMES.flatMap(({ cle }) =>
+        choisis[cle].map((m) => (
+          <span key={m} hidden>
+            <input type="hidden" name="mots_cles_auteur" value={m} />
+            <input type="hidden" name="mots_cles_auteur_theme" value={cle} />
+          </span>
+        )),
+      )}
 
       {/* Le bouton des thèmes dans le champ lui-même, comme le Finder : un clic passe au suivant. */}
       <div className={styles.zoneSaisie}>
@@ -167,7 +185,30 @@ export default function MotsClesAuteur({ initiaux, nuages }: { initiaux: string[
               <path d="M7 9l5-5 5 5M7 15l5 5 5-5" />
             </svg>
           </motion.button>
-          {choisis.libres.length < MAXIMUM_MOTS_AUTEUR && (
+          {/* Les mots choisis du thème, dans la barre comme les tags du Finder. */}
+          <AnimatePresence initial={false}>
+            {liste.map((m) => (
+              <motion.button
+                key={m}
+                type="button"
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                className={styles.tag}
+                data-theme={theme}
+                onClick={() => basculer(theme, m)}
+                aria-label={`Retirer ${m}`}
+              >
+                {m}
+                <span className={styles.tagCroix} aria-hidden="true">
+                  ×
+                </span>
+              </motion.button>
+            ))}
+          </AnimatePresence>
+          {!plein && (
             <input
               type="text"
               className={styles.champModesInput}
@@ -231,19 +272,6 @@ export default function MotsClesAuteur({ initiaux, nuages }: { initiaux: string[
         <NuageDisque mots={motsNuage} choisis={liste} bloque={plein} onChoisir={(mot) => basculer(theme, mot)} />
       </div>
 
-      {/* Les autres mots, choisis parmi les suggestions. */}
-      {choisis.libres.length > 0 && (
-        <ul className={styles.mots}>
-          {choisis.libres.map((m) => (
-            <li key={m} className={styles.mot}>
-              <span>{m}</span>
-              <button type="button" className={styles.retirer} onClick={() => basculer("libres", m)}>
-                Retirer
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 }

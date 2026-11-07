@@ -108,7 +108,11 @@ export async function createProject(formData: FormData) {
   // Les mots-clés choisis par l'auteur (07/11) : trois nuages et des mots libres, dix au plus chacun.
   const motsAuteur = formData.getAll("mots_cles_auteur").map(String).slice(0, 40);
   if (motsAuteur.length) {
-    const { error: sansMots } = await supabase.rpc("poser_mots_cles_auteur", { p_project: project.id, p_mots: motsAuteur });
+    const { error: sansMots } = await supabase.rpc("poser_mots_cles_auteur", {
+      p_project: project.id,
+      p_mots: motsAuteur,
+      p_themes: formData.getAll("mots_cles_auteur_theme").map(String).slice(0, 40),
+    });
     if (sansMots) console.error("Mots-clés de l'auteur non enregistrés :", sansMots.message);
   }
 

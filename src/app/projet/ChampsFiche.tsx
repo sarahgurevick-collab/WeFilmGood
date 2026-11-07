@@ -51,7 +51,8 @@ export type ValeursFiche = {
   postures?: string[] | null;
   techniques?: string[] | null;
   /** Les mots-clés choisis par l'auteur (07/11), dix au plus. */
-  mots_cles_auteur?: string[];
+  /** Les mots-clés de l'auteur et leur thème (07/11). */
+  mots_cles_auteur?: { mot: string; theme: string | null }[];
   budget_range: string | null;
   target_audience: string | null;
   has_awards: boolean;

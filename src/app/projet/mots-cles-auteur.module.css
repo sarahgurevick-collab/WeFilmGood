@@ -1,6 +1,7 @@
 /* Le bouton des thèmes et le champ, dans une même gélule, comme le Finder (07/11/2026). */
 .champModes {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
   background: var(--surface);
@@ -66,7 +67,7 @@
 
 /* Le champ dans la gélule : sans le cadre des autres champs du formulaire. */
 .champModes .champModesInput {
-  flex: 1;
+  flex: 1 1 80px;
   min-width: 0;
   border: none;
   border-radius: 0;
@@ -126,34 +127,36 @@
   cursor: default;
 }
 
-/* Les mots tapés, qui ne sont dans aucun nuage. */
-.mots {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 4px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.mot {
+/* Les mots choisis du thème, dans la barre : les tags du Finder, à la couleur du bouton. */
+.tag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 10px;
-  border: 1px solid var(--bordure);
+  padding: 7px 12px 7px 14px;
+  border: none;
   border-radius: 999px;
+  background: var(--rouge-wfg);
+  color: #fff;
+  font-family: inherit;
   font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
-.retirer {
-  padding: 0;
-  border: none;
-  background: none;
-  color: #e2231a;
-  font-size: 12px;
-  text-decoration: underline;
-  cursor: pointer;
+.tag[data-theme="sujets"] {
+  background: #e25a54;
+}
+
+.tag[data-theme="univers"] {
+  background: #eb8b87;
+  color: #4a0b08;
+}
+
+.tagCroix {
+  font-size: 17px;
+  line-height: 1;
 }
 
 /* Le champ des autres mots et ses suggestions (mots existants seulement). */
