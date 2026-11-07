@@ -41,7 +41,8 @@ export default function MotsClesAuteur({ initiaux }: { initiaux: string[] }) {
     <div className={formStyles.field}>
       <span id="mots-cles-auteur-libelle">Mots clés essentiels pour trouver votre projet</span>
       <span className={formStyles.hint}>
-        Il est inutile de mettre un mot clé déjà présent dans la tagline et la logline.
+        Le finder se limite à la logline et à la tagline pour trouver ton projet. Choisis des mots-clés précis pour
+        compléter le champ recherche.
       </span>
       {mots.map((m) => (
         <input key={m} type="hidden" name="mots_cles_auteur" value={m} />
