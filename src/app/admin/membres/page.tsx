@@ -7,7 +7,6 @@ import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../admin.module.css";
 import { prendreLaPlace } from "../profils/prise-de-place";
-import { basculerValidation } from "../profils/actions";
 import styles from "./page.module.css";
 import CasesAffichage from "./CasesAffichage";
 import AnciensLecteurs from "./AnciensLecteurs";
@@ -15,6 +14,7 @@ import { EMOJIS_SATISFACTION } from "@/lib/satisfaction";
 import FiltresAuto from "./FiltresAuto";
 import FormatsLecteur from "./FormatsLecteur";
 import AdhesionMembre from "./AdhesionMembre";
+import BoutonValidation from "./BoutonValidation";
 import CategorieMembre from "./CategorieMembre";
 import ChangerAdresseMembre from "./ChangerAdresseMembre";
 import ControleNom from "./ControleNom";
@@ -600,21 +600,7 @@ export default async function MembresPage({
                 {metier === "avalider" && (
                   <td>
                     {m.website ? (
-                      <form action={basculerValidation}>
-                        <input type="hidden" name="profile_id" value={m.profile_id} />
-                        <input type="hidden" name="vers" value={m.validation_status === "refusee" ? "validee" : "refusee"} />
-                        <button
-                          type="submit"
-                          className={m.validation_status === "refusee" ? adminStyles.voyantRouge : adminStyles.voyantVert}
-                          title={
-                            m.validation_status === "refusee"
-                              ? "Référence écartée — cliquer pour la rétablir"
-                              : "Référence acceptée — cliquer pour l'écarter"
-                          }
-                        >
-                          {m.validation_status === "refusee" ? "Non valide" : "Validé"}
-                        </button>
-                      </form>
+                      <BoutonValidation profileId={m.profile_id} statut={m.validation_status} />
                     ) : (
                       <span className={formStyles.hint}>en attente — pas de référence</span>
                     )}
