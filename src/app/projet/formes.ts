@@ -8,4 +8,6 @@ export const TECHNIQUES = [
   { value: "prises_de_vues_reelles", label: "Prise de vues réelles" },
   { value: "animation", label: "Animation" },
   { value: "contenu_ia", label: "Contenu IA" },
+  // 07/11, Sarah : pour les projets qui mêlent les techniques.
+  { value: "medias_mixtes", label: "Médias mixtes" },
 ];

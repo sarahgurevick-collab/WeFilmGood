@@ -63,7 +63,7 @@ export async function createProject(formData: FormData) {
   if (!format) echec("Le format est obligatoire.");
   if (!genreSlug) echec("Le genre principal est obligatoire.");
   if (postures.length === 0) echec("Indiquez s'il s'agit d'une fiction ou d'un documentaire.");
-  if (techniques.length === 0) echec("Indiquez la technique : prise de vues réelles, animation ou contenu IA.");
+  if (techniques.length === 0) echec("Indiquez la technique : prise de vues réelles, animation, contenu IA ou médias mixtes.");
   if (!FORMATS.includes(format)) echec("Format de projet invalide.");
   if (budgetRange && !VALEURS_BUDGET.includes(budgetRange)) echec("Budget estimé invalide.");
   if (targetAudience && !VALEURS_AUDIENCE.includes(targetAudience)) echec("Audience ciblée invalide.");

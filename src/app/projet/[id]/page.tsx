@@ -476,6 +476,7 @@ export default async function ProjetPage({
             project.postures?.includes("documentaire") ? "Documentaire" : null,
             project.techniques?.includes("animation") ? "Animation" : null,
             project.techniques?.includes("contenu_ia") ? "Contenu IA" : null,
+            project.techniques?.includes("medias_mixtes") ? "Médias mixtes" : null,
             FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
             nomDeLangue(project.language),
             // Pas de budget ni d'audience pour un court métrage (27/09).
