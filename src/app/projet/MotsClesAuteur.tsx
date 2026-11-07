@@ -18,6 +18,8 @@ const MAX = 200;
 type CleNuage = "styles" | "sujets" | "univers";
 /** Les trois nuages lus en base (fonction nuages_mots_cles_fiche) : [mot, nombre de fiches sur WFG 1]. */
 export type Nuages = Partial<Record<CleNuage, [string, number][]>>;
+/** Un mot proposé pendant la frappe, avec son thème (null s'il n'est pas encore classé). */
+type Suggestion = { label: string; theme: string | null };
 
 /** Les trois thèmes (07/11/2026, Sarah). */
 const THEMES: { cle: CleNuage; titre: string }[] = [
@@ -47,8 +49,9 @@ const cleDe = (mot: string) =>
  *
  * Deux façons de choisir : un clic dans le nuage, ou taper dans le champ, qui
  * ne propose que des mots existants (nuages + mots posés par l'IA) — aucun
- * mot nouveau, donc aucune faute. Un mot tapé prend le thème du bouton ; s'il
- * est dans un nuage, il va dans le thème de ce nuage, qui s'affiche.
+ * mot nouveau, donc aucune faute. Un mot tapé va dans son thème (celui de son
+ * nuage, ou keywords.theme, classé par Claude), qui s'affiche ; s'il n'est pas
+ * encore classé, dans le thème du bouton.
  * Le formulaire envoie chaque mot avec son thème ; la base ignore tout mot
  * inconnu et range le thème (project_keywords.theme_auteur).
  */
@@ -83,7 +86,7 @@ export default function MotsClesAuteur({
   const [theme, setTheme] = useState<CleNuage>("styles");
   const [combien, setCombien] = useState(DEFAUT);
   const [saisie, setSaisie] = useState("");
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const tous = [...choisis.styles, ...choisis.sujets, ...choisis.univers];
@@ -100,7 +103,7 @@ export default function MotsClesAuteur({
     let annule = false;
     minuteur.current = setTimeout(async () => {
       const { data } = await createClient().rpc("suggerer_mots_cles", { q, p_limite: 8 });
-      if (!annule) setSuggestions(((data ?? []) as { label: string }[]).map((d) => d.label));
+      if (!annule) setSuggestions((data ?? []) as Suggestion[]);
     }, 200);
     return () => {
       annule = true;
@@ -116,16 +119,21 @@ export default function MotsClesAuteur({
       return { ...avant, [cle]: [...liste, mot] };
     });
 
-  /** Un mot suggéré : dans le thème de son nuage s'il y est (le nuage passe sur ce thème), sinon dans le thème du bouton. */
-  const prendre = (suggere: string) => {
+  /**
+   * Un mot suggéré va dans son thème : celui de son nuage, sinon celui que
+   * Claude lui a donné (keywords.theme) ; le bouton passe sur ce thème pour
+   * qu'on voie où il est rangé. Un mot pas encore classé va dans le thème du bouton.
+   */
+  const prendre = ({ label: suggere, theme: sonTheme }: Suggestion) => {
     const trouve = ligneDe.get(cleDe(suggere));
-    if (!dejaChoisi(suggere)) basculer(trouve ? trouve.cle : theme, trouve ? trouve.mot : suggere);
-    if (trouve) setTheme(trouve.cle);
+    const cle: CleNuage = trouve ? trouve.cle : THEMES.some((t) => t.cle === sonTheme) ? (sonTheme as CleNuage) : theme;
+    if (!dejaChoisi(suggere)) basculer(cle, trouve ? trouve.mot : suggere);
+    setTheme(cle);
     setSaisie("");
     setSuggestions([]);
   };
 
-  const proposees = suggestions.filter((s) => !dejaChoisi(s));
+  const proposees = suggestions.filter((s) => !dejaChoisi(s.label));
   const titre = THEMES.find((t) => t.cle === theme)!.titre;
   const themeSuivant = () => setTheme(THEMES[(THEMES.findIndex((t) => t.cle === theme) + 1) % THEMES.length].cle);
 
@@ -208,7 +216,7 @@ export default function MotsClesAuteur({
               </motion.button>
             ))}
           </AnimatePresence>
-          {!plein && (
+          {THEMES.some(({ cle }) => choisis[cle].length < MAXIMUM_MOTS_AUTEUR) && (
             <input
               type="text"
               className={styles.champModesInput}
@@ -232,9 +240,9 @@ export default function MotsClesAuteur({
         {proposees.length > 0 && (
           <ul className={styles.suggestions} role="listbox">
             {proposees.map((s) => (
-              <li key={s}>
+              <li key={s.label}>
                 <button type="button" role="option" aria-selected={false} onClick={() => prendre(s)}>
-                  {s}
+                  {s.label}
                 </button>
               </li>
             ))}
