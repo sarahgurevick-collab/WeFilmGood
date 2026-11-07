@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import ChampAvecCompteur from "@/components/ChampAvecCompteur";
 import ChampTitre from "./ChampTitre";
 import LibelleSelection from "./LibelleSelection";
@@ -75,6 +76,7 @@ export default function ChampsFiche({
   sousGenres = [],
   selections = [],
   nuages = {},
+  avantNuage,
 }: {
   valeurs: ValeursFiche | null;
   /** Les fiches que l'auteur a déjà (création seulement) : garde-fou sur le titre. */
@@ -85,6 +87,8 @@ export default function ChampsFiche({
   selections?: string[];
   /** Les trois nuages de mots-clés (07/11), lus en base. */
   nuages?: Nuages;
+  /** Ce que la page ajoute avant le nuage, qui reste le dernier champ (l'image d'une nouvelle fiche). */
+  avantNuage?: ReactNode;
 }) {
   return (
     <>
@@ -97,6 +101,43 @@ export default function ChampsFiche({
           <input type="text" name="title" required defaultValue={valeurs?.title ?? ""} />
         </label>
       )}
+
+      {/* Les prix sous le titre (07/11, Sarah) : sous le nuage des mots-clés, on ne voyait plus la question. */}
+      <label className={styles.question}>
+        <span>Votre projet a-t-il eu des prix ou des sélections ?</span>
+        <span className={styles.interrupteur}>
+          {selections.length > 0 ? (
+            <>
+              {/* Une sélection de la Maison des Scénaristes : l'interrupteur reste sur OUI. */}
+              <input type="checkbox" name="has_awards_verrou" defaultChecked disabled />
+              <input type="hidden" name="has_awards" value="oui" />
+            </>
+          ) : (
+            <input type="checkbox" name="has_awards" value="oui" defaultChecked={valeurs?.has_awards ?? false} />
+          )}
+          <span className={styles.rond} aria-hidden="true" />
+        </span>
+      </label>
+      {selections.length > 0 && (
+        <div className={`${styles.prix} ${styles.selectionsMaison}`}>
+          {selections.map((s) => (
+            <span key={s}>
+              <LibelleSelection libelle={s} />
+            </span>
+          ))}
+        </div>
+      )}
+      <label className={`${formStyles.field} ${styles.prix}`}>
+        {/* Notre sélection est déjà inscrite au-dessus : la case ne sert qu'aux
+            autres prix (Sarah, 25/10). */}
+        <span>{selections.length > 0 ? "Autres prix (facultatif)" : "Lesquels ?"}</span>
+        <textarea
+          name="awards_detail"
+          rows={3}
+          placeholder="Festival, année, prix obtenu…"
+          defaultValue={valeurs?.awards_detail ?? ""}
+        />
+      </label>
 
       {/* Format, genre, budget et audience : une seule décision d'ensemble,
           groupée juste sous le titre plutôt que quatre champs isolés plus
@@ -173,7 +214,6 @@ export default function ChampsFiche({
         lignes={6}
         valeurInitiale={valeurs?.logline ?? ""}
       />
-      <MotsClesAuteur initiaux={valeurs?.mots_cles_auteur ?? []} nuages={nuages} />
       <ChampAvecCompteur
         nom="synopsis"
         libelle="Plus…"
@@ -183,42 +223,10 @@ export default function ChampsFiche({
         valeurInitiale={valeurs?.synopsis ?? ""}
       />
 
-      <label className={styles.question}>
-        <span>Votre projet a-t-il eu des prix ou des sélections ?</span>
-        <span className={styles.interrupteur}>
-          {selections.length > 0 ? (
-            <>
-              {/* Une sélection de la Maison des Scénaristes : l'interrupteur reste sur OUI. */}
-              <input type="checkbox" name="has_awards_verrou" defaultChecked disabled />
-              <input type="hidden" name="has_awards" value="oui" />
-            </>
-          ) : (
-            <input type="checkbox" name="has_awards" value="oui" defaultChecked={valeurs?.has_awards ?? false} />
-          )}
-          <span className={styles.rond} aria-hidden="true" />
-        </span>
-      </label>
-      {selections.length > 0 && (
-        <div className={`${styles.prix} ${styles.selectionsMaison}`}>
-          {selections.map((s) => (
-            <span key={s}>
-              <LibelleSelection libelle={s} />
-            </span>
-          ))}
-        </div>
-      )}
-      <label className={`${formStyles.field} ${styles.prix}`}>
-        {/* Notre sélection est déjà inscrite au-dessus : la case ne sert qu'aux
-            autres prix (Sarah, 25/10). */}
-        <span>{selections.length > 0 ? "Autres prix (facultatif)" : "Lesquels ?"}</span>
-        <textarea
-          name="awards_detail"
-          rows={3}
-          placeholder="Festival, année, prix obtenu…"
-          defaultValue={valeurs?.awards_detail ?? ""}
-        />
-      </label>
+      {avantNuage}
 
+      {/* Le nuage des mots-clés en dernier (07/11, Sarah) : plus rien après lui. */}
+      <MotsClesAuteur initiaux={valeurs?.mots_cles_auteur ?? []} nuages={nuages} />
     </>
   );
 }

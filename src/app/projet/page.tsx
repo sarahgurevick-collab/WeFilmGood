@@ -46,20 +46,24 @@ export default async function NouvelleFichePage({
         style={{ marginTop: 24 }}
       >
         {erreur && <p className={formStyles.error}>{erreur}</p>}
-        <ChampsFiche valeurs={null} genres={genres ?? []} sousGenres={sousGenres ?? []} existants={existants ?? []} nuages={nuages ?? {}} />
-
-        {/* Facultative ici : l'image apparaît aussitôt sur l'affiche à
-            gauche, et se change ensuite dans le bloc « Documents ». */}
-        <label className={formStyles.field}>
-          <span>L&apos;image de présentation</span>
-          <span className={formStyles.hint}>
-            C&apos;est elle qui représente votre projet dans les Galaxies, et en haut de votre
-            fiche. Format 16/9 (paysage), JPG ou PNG. N&apos;y faites figurer ni votre nom ni le
-            titre.
-          </span>
-          <input type="file" name="vignette" accept="image/jpeg,image/png,image/webp" />
-          <span className={formStyles.hint}>Inutile de la compresser : nous nous en chargeons.</span>
-        </label>
+        <ChampsFiche valeurs={null} genres={genres ?? []} sousGenres={sousGenres ?? []} existants={existants ?? []} nuages={nuages ?? {}}
+          avantNuage={
+            <>
+            {/* Facultative ici : l'image apparaît aussitôt sur l'affiche à
+                gauche, et se change ensuite dans le bloc « Documents ». */}
+            <label className={formStyles.field}>
+              <span>L&apos;image de présentation</span>
+              <span className={formStyles.hint}>
+                C&apos;est elle qui représente votre projet dans les Galaxies, et en haut de votre
+                fiche. Format 16/9 (paysage), JPG ou PNG. N&apos;y faites figurer ni votre nom ni le
+                titre.
+              </span>
+              <input type="file" name="vignette" accept="image/jpeg,image/png,image/webp" />
+              <span className={formStyles.hint}>Inutile de la compresser : nous nous en chargeons.</span>
+            </label>
+            </>
+          }
+        />
         <button type="submit" className={formStyles.submit} data-visite="creer-fiche">
           Créer ma fiche projet
         </button>
