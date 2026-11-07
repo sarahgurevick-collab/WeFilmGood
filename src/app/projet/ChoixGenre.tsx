@@ -221,7 +221,14 @@ export default function ChoixGenre({
                 value: t.value,
                 label: t.label,
                 coche: techniques.includes(t.value),
-                onClick: () => basculer(techniques, setTechniques, t.value),
+                // La dernière marche cochée, l'escalier se referme de lui-même
+                // (07/11, Sarah), le temps de voir la coche. Décocher le
+                // laisse ouvert ; une seconde technique : un clic le rouvre.
+                onClick: () => {
+                  const ajout = !techniques.includes(t.value);
+                  basculer(techniques, setTechniques, t.value);
+                  if (ajout && genre && postures.length) setTimeout(() => setOuvert(false), 350);
+                },
               })),
             )}
         </div>
