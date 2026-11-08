@@ -108,18 +108,23 @@ export default async function QuestionnaireCineMatch({
           <div key={q.key} className={`${formStyles.field} ${styles.question} ${questionsMatchees.includes(q.key) ? styles.matchee : ""}`}>
             <span>{q.label_fr}</span>
             <div className={styles.row}>
-              <select name={`q_${q.key}`} defaultValue={reponseListe(q.key)} disabled={verrouillee(q.key)}>
-                <option value="">Choisir…</option>
-                {optionsDe(q.key).map((o) => (
-                  <option key={o.option_slug} value={o.option_slug}>
-                    {o.label_fr}
-                  </option>
-                ))}
-              </select>
+              {/* Une question libre (le dîner avec l'hôte idéal) n'a aucune
+                  option : pas de menu « Choisir… » vide, le champ prend toute
+                  la largeur avec sa propre phrase (Sarah, 08/11/2026). */}
+              {q.kind !== "libre" && (
+                <select name={`q_${q.key}`} defaultValue={reponseListe(q.key)} disabled={verrouillee(q.key)}>
+                  <option value="">Choisir…</option>
+                  {optionsDe(q.key).map((o) => (
+                    <option key={o.option_slug} value={o.option_slug}>
+                      {o.label_fr}
+                    </option>
+                  ))}
+                </select>
+              )}
               <ChampLibre
                 name={`q_${q.key}_autre`}
                 defaultValue={reponseLibre(q.key)}
-                placeholder="ou autre chose…"
+                placeholder={q.kind === "libre" ? "Réel ou imaginaire, qui inviteriez-vous ?" : "ou autre chose…"}
                 suggestions={suggestionsDe(q.key)}
                 disabled={verrouillee(q.key)}
               />
