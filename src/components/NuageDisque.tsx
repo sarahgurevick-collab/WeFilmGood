@@ -104,6 +104,8 @@ type Place = {
 };
 
 type Mesure = (texte: string, taille: number) => number;
+/** Le texte dessiné pour un mot : son anglais si on le demande et qu'il existe, sinon le français. */
+type Texte = (mot: MotCle) => string;
 
 /** « comédie dramatique » s'écrit « Comédie dramatique » dans le nuage. */
 const affiche = (label: string) => label.charAt(0).toLocaleUpperCase("fr-FR") + label.slice(1);
@@ -123,7 +125,7 @@ const PALIERS = [
  * les gros mots se répartissent sur tout le disque. Chaque mot garde sa
  * forme naturelle : on joue seulement sur les espaces.
  */
-function disposer(mots: MotCle[], unite: number, mesure: Mesure) {
+function disposer(mots: MotCle[], unite: number, mesure: Mesure, texte: Texte) {
   const alea = hasard(11);
   // Les mots arrivent triés du plus au moins utilisé.
   const files = PALIERS.map(() => [] as MotCle[]);
@@ -161,10 +163,10 @@ function disposer(mots: MotCle[], unite: number, mesure: Mesure) {
         const tq = unite * PALIERS[q].taille;
         for (;;) {
           const reste = largeurSeg - occupe - (ligne.length ? espace : 0);
-          const idx = files[q].findIndex((m) => mesure(m.label, tq) <= reste);
+          const idx = files[q].findIndex((m) => mesure(texte(m), tq) <= reste);
           if (idx < 0) break;
           const [mot] = files[q].splice(idx, 1);
-          const largeur = mesure(mot.label, tq);
+          const largeur = mesure(texte(mot), tq);
           occupe += largeur + (ligne.length ? espace : 0);
           ligne.push({ mot, taille: tq, largeur });
         }
@@ -225,6 +227,7 @@ export default function NuageDisque({
   choisis,
   bloque = false,
   unite = "projet",
+  enAnglais = false,
 }: {
   mots: MotCle[];
   onChoisir?: (label: string) => void;
@@ -234,7 +237,10 @@ export default function NuageDisque({
   bloque?: boolean;
   /** Le mot de l'infobulle : « 3 projets », « 3 fiches »… */
   unite?: string;
+  /** Globe sur l'anglais (08/11) : les mots traduits s'écrivent en anglais ; le choix renvoie toujours le mot français. */
+  enAnglais?: boolean;
 }) {
+  const texte: Texte = (m) => (enAnglais && m.labelEn) || m.label;
   // La police manuscrite doit être chargée avant de mesurer les mots :
   // on recalcule le nuage une fois qu'elle est là.
   const [policePrete, setPolicePrete] = useState(0);
@@ -275,12 +281,12 @@ export default function NuageDisque({
     let haut = 140;
     for (let k = 0; k < 16; k++) {
       const milieu = (bas + haut) / 2;
-      if (disposer(tries, milieu, mesure).tousPlaces) bas = milieu;
+      if (disposer(tries, milieu, mesure, texte).tousPlaces) bas = milieu;
       else haut = milieu;
     }
-    return disposer(tries, bas, mesure).places;
+    return disposer(tries, bas, mesure, texte).places;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mots, policePrete]);
+  }, [mots, policePrete, enAnglais]);
 
   return (
     <svg
@@ -323,7 +329,7 @@ export default function NuageDisque({
               />
             )}
             <text x={p.x} y={p.y} fontSize={p.taille} fill={coche ? "#fff" : p.couleur}>
-              {affiche(p.mot.label)}
+              {affiche(texte(p.mot))}
             </text>
           </g>
         );

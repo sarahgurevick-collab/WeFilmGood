@@ -196,14 +196,15 @@ export async function rechercherProjets(
   return { projets, total, nbAvantLeTrait };
 }
 
-export type MotCle = { label: string; effectif: number };
+/** Un mot-clé du nuage : le mot français (la clé), son effectif, et son anglais s'il est traduit (08/11). */
+export type MotCle = { label: string; effectif: number; labelEn?: string | null };
 
 /** Sans recherche en cours : les mots-clés les plus utilisés, pour explorer. */
 export async function nuageMotsCles(limite = 80): Promise<MotCle[]> {
   const supabase = await createClient();
   const { data } = await supabase.rpc("nuage_mots_cles", { p_limite: limite });
-  const lignes = (data ?? []) as { label_fr: string; effectif: number }[];
-  return lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif }));
+  const lignes = (data ?? []) as { label_fr: string; effectif: number; label_en: string | null }[];
+  return lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif, labelEn: l.label_en }));
 }
 
 /** Avec une recherche en cours : les mots-clés existants les plus proches de ce qui est tapé. */
@@ -213,8 +214,8 @@ export async function motsClesProches(requete: string, limite = 80): Promise<Mot
 
   const supabase = await createClient();
   const { data } = await supabase.rpc("mots_cles_proches", { q, p_limite: limite });
-  const lignes = (data ?? []) as { label_fr: string; effectif: number; score: number }[];
-  const mots = lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif }));
+  const lignes = (data ?? []) as { label_fr: string; effectif: number; score: number; label_en: string | null }[];
+  const mots: MotCle[] = lignes.map((l) => ({ label: l.label_fr, effectif: l.effectif, labelEn: l.label_en }));
 
   // Le nuage se complète par le sens (27/09) : autour de « sardine »,
   // poisson, pêche, mer… même sans lettre commune.
@@ -223,11 +224,11 @@ export async function motsClesProches(requete: string, limite = 80): Promise<Mot
     if (v) {
       const { data: sens } = await supabase.rpc("mots_cles_par_sens", { p_vecteur: enTexte(v), p_limite: limite });
       const deja = new Set(mots.map((m) => m.label));
-      for (const m of (sens ?? []) as { label_fr: string; effectif: number; proximite: number }[]) {
+      for (const m of (sens ?? []) as { label_fr: string; effectif: number; proximite: number; label_en: string | null }[]) {
         if (mots.length >= limite) break;
         if (m.proximite < PROXIMITE_MINIMALE || m.effectif === 0 || deja.has(m.label_fr)) continue;
         deja.add(m.label_fr);
-        mots.push({ label: m.label_fr, effectif: m.effectif });
+        mots.push({ label: m.label_fr, effectif: m.effectif, labelEn: m.label_en });
       }
     }
   }

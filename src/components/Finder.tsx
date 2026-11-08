@@ -389,6 +389,7 @@ export default function Finder({
           ) : nuage.length >= G_MINIMUM ? (
             <NuageDisque
               mots={nuage}
+              enAnglais={langue === "en"}
               onChoisir={(label) => {
                 setRequete(label);
                 setPageRecherche(1);
@@ -410,7 +411,7 @@ export default function Finder({
                   }}
                   title={`${m.effectif} projet${m.effectif > 1 ? "s" : ""}`}
                 >
-                  {m.label}
+                  {(langue === "en" && m.labelEn) || m.label}
                 </button>
               ))}
             </div>

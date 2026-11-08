@@ -17,10 +17,12 @@ const MIN = 20;
 const MAX = 200;
 
 type CleNuage = "styles" | "sujets" | "univers";
-/** Les trois nuages lus en base (fonction nuages_mots_cles_fiche) : [mot, nombre de fiches sur WFG 1]. */
-export type Nuages = Partial<Record<CleNuage, [string, number][]>>;
-/** Un mot proposé pendant la frappe, avec son thème (null s'il n'est pas encore classé). */
-type Suggestion = { label: string; theme: string | null };
+/** Les trois nuages lus en base (fonction nuages_mots_cles_fiche) : [mot, nombre de fiches sur WFG 1, mot anglais]. */
+export type Nuages = Partial<Record<CleNuage, [string, number, (string | null)?][]>>;
+/** Un mot proposé pendant la frappe, avec son thème (null s'il n'est pas encore classé) et son anglais. */
+type Suggestion = { label: string; theme: string | null; label_en?: string | null };
+/** Un mot déjà choisi, tel qu'il arrive de la base : le français, son thème, son anglais. */
+export type MotInitial = { mot: string; theme: string | null; motEn?: string | null };
 
 /** Les trois thèmes (07/11/2026, Sarah) ; en anglais quand le globe l'est (08/11). */
 const THEMES: { cle: CleNuage; titre: string; titreEn: string }[] = [
@@ -60,9 +62,17 @@ export default function MotsClesAuteur({
   initiaux,
   nuages,
 }: {
-  initiaux: { mot: string; theme: string | null }[];
+  initiaux: MotInitial[];
   nuages: Nuages;
 }) {
+  // L'anglais de chaque mot connu (nuages, mots déjà choisis, suggestions prises) :
+  // le mot reste le français partout en coulisse, l'anglais n'est qu'à l'affichage (08/11).
+  const [anglais, setAnglais] = useState<Map<string, string>>(() => {
+    const m = new Map<string, string>();
+    for (const { cle } of THEMES) for (const [mot, , en] of nuages[cle] ?? []) if (en) m.set(mot, en);
+    for (const { mot, motEn } of initiaux) if (motEn) m.set(mot, motEn);
+    return m;
+  });
   // Où se trouve chaque mot des nuages, pour ranger les mots choisis.
   const ligneDe = useMemo(() => {
     const m = new Map<string, { cle: CleNuage; mot: string }>();
@@ -125,8 +135,9 @@ export default function MotsClesAuteur({
    * Claude lui a donné (keywords.theme) ; le bouton passe sur ce thème pour
    * qu'on voie où il est rangé. Un mot pas encore classé va dans le thème du bouton.
    */
-  const prendre = ({ label: suggere, theme: sonTheme }: Suggestion) => {
+  const prendre = ({ label: suggere, theme: sonTheme, label_en }: Suggestion) => {
     const trouve = ligneDe.get(cleDe(suggere));
+    if (label_en) setAnglais((avant) => new Map(avant).set(trouve ? trouve.mot : suggere, label_en));
     const cle: CleNuage = trouve ? trouve.cle : THEMES.some((t) => t.cle === sonTheme) ? (sonTheme as CleNuage) : theme;
     if (!dejaChoisi(suggere)) basculer(cle, trouve ? trouve.mot : suggere);
     setTheme(cle);
@@ -138,6 +149,8 @@ export default function MotsClesAuteur({
   const langue = useLangueDuGlobe();
   const leTheme = THEMES.find((t) => t.cle === theme)!;
   const titre = langue === "en" ? leTheme.titreEn : leTheme.titre;
+  const en = langue === "en";
+  const montre = (mot: string) => (en && anglais.get(mot)) || mot;
   const themeSuivant = () => setTheme(THEMES[(THEMES.findIndex((t) => t.cle === theme) + 1) % THEMES.length].cle);
 
   // Le nuage du thème : les mots les plus utilisés, plus ceux déjà choisis qui seraient plus loin.
@@ -147,7 +160,7 @@ export default function MotsClesAuteur({
   const motsNuage = useMemo(() => {
     const premiers = mots.slice(0, combien);
     const loin = mots.slice(combien).filter(([m]) => liste.includes(m));
-    return [...premiers, ...loin].map(([label, effectif]) => ({ label, effectif }));
+    return [...premiers, ...loin].map(([label, effectif, labelEn]) => ({ label, effectif, labelEn }));
   }, [mots, combien, liste]);
 
   return (
@@ -211,9 +224,9 @@ export default function MotsClesAuteur({
                 className={styles.tag}
                 data-theme={theme}
                 onClick={() => basculer(theme, m)}
-                aria-label={`Retirer ${m}`}
+                aria-label={`Retirer ${montre(m)}`}
               >
-                {m}
+                {montre(m)}
                 <span className={styles.tagCroix} aria-hidden="true">
                   ×
                 </span>
@@ -246,7 +259,7 @@ export default function MotsClesAuteur({
             {proposees.map((s) => (
               <li key={s.label}>
                 <button type="button" role="option" aria-selected={false} onClick={() => prendre(s)}>
-                  {s.label}
+                  {(en && s.label_en) || s.label}
                 </button>
               </li>
             ))}
@@ -257,7 +270,9 @@ export default function MotsClesAuteur({
       {/* Le nuage du thème choisi, celui du Finder. */}
       <div className={styles.nuage} data-theme={theme}>
         <div className={styles.nuageEntete}>
-          <span className={plein ? styles.plein : undefined}>
+          {/* « notranslate » : la traduction automatique fige le texte qu'elle a
+              traduit, et le compteur restait à 0 en anglais (08/11). */}
+          <span className={`${plein ? styles.plein : ""} notranslate`} translate="no">
             {liste.length}/{MAXIMUM_MOTS_AUTEUR}
           </span>
           <div className={styles.reglage}>
@@ -282,7 +297,7 @@ export default function MotsClesAuteur({
             </button>
           </div>
         </div>
-        <NuageDisque mots={motsNuage} choisis={liste} bloque={plein} onChoisir={(mot) => basculer(theme, mot)} />
+        <NuageDisque mots={motsNuage} choisis={liste} bloque={plein} enAnglais={en} onChoisir={(mot) => basculer(theme, mot)} />
       </div>
 
     </div>

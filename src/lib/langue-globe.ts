@@ -10,7 +10,9 @@ import { useSyncExternalStore } from "react";
  * propre version anglaise, choisie d'après ce cookie, et sont marqués
  * « notranslate » pour que Google n'y touche plus (08/11).
  */
-export type LangueGlobe = "fr" | "en";
+import type { LangueGlobe } from "./langue-cookie";
+
+export type { LangueGlobe };
 
 export function langueDuGlobe(): LangueGlobe {
   if (typeof document === "undefined") return "fr";

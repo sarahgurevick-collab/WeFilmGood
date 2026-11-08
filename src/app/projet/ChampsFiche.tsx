@@ -3,7 +3,7 @@ import ChampAvecCompteur from "@/components/ChampAvecCompteur";
 import ChampTitre from "./ChampTitre";
 import LibelleSelection from "./LibelleSelection";
 import ChoixGenre, { type SousGenre } from "./ChoixGenre";
-import MotsClesAuteur, { type Nuages } from "./MotsClesAuteur";
+import MotsClesAuteur, { type MotInitial, type Nuages } from "./MotsClesAuteur";
 import formStyles from "@/components/form.module.css";
 import styles from "./deposer.module.css";
 
@@ -52,7 +52,7 @@ export type ValeursFiche = {
   techniques?: string[] | null;
   /** Les mots-clés choisis par l'auteur (07/11), dix au plus. */
   /** Les mots-clés de l'auteur et leur thème (07/11). */
-  mots_cles_auteur?: { mot: string; theme: string | null }[];
+  mots_cles_auteur?: MotInitial[];
   budget_range: string | null;
   target_audience: string | null;
   has_awards: boolean;

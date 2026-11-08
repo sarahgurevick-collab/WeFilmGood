@@ -3,7 +3,8 @@ import BandeauFichesANoter from "@/components/BandeauFichesANoter";
 import BandeauEnregistre from "@/components/BandeauEnregistre";
 import { ordonnerPersonnages } from "./ordre-personnages";
 import Link from "next/link";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { langueDuCookie } from "@/lib/langue-cookie";
 import { notFound, redirect } from "next/navigation";
 import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
@@ -446,9 +447,11 @@ export default async function ProjetPage({
     .returns<{ sous_genre: { label_fr: string } | null }[]>();
   const { data: motsCles } = await supabase
     .from("project_keywords")
-    .select("source, keyword:keywords(label_fr)")
+    .select("source, keyword:keywords(label_fr, label_en)")
     .eq("project_id", id)
-    .returns<{ source: string | null; keyword: { label_fr: string } | null }[]>();
+    .returns<{ source: string | null; keyword: { label_fr: string; label_en: string | null } | null }[]>();
+  // Globe sur l'anglais : les mots-clés traduits s'écrivent en anglais (08/11).
+  const enAnglais = langueDuCookie((await cookies()).get("googtrans")?.value) === "en";
 
   return (
     <PageShell
@@ -495,8 +498,8 @@ export default async function ProjetPage({
           const deja = new Set(reperes.map((r) => r.toLowerCase()));
           const mots = (motsCles ?? [])
             .filter((m) => estAdmin || m.source === "demande_auteur")
-            .map((m) => m.keyword?.label_fr)
-            .filter((label): label is string => Boolean(label) && !deja.has(label!.toLowerCase()));
+            .filter((m) => m.keyword && !deja.has(m.keyword.label_fr.toLowerCase()))
+            .map((m) => (enAnglais && m.keyword!.label_en) || m.keyword!.label_fr);
           // Venue d'une recherche, l'admin voit en rouge le mot-clé qui a
           // fait sortir le projet (02/11, Sarah).
           return [...reperes, ...mots].map((x, i) => (
