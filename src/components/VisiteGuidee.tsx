@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /**
  * Visite guidée (ESSAI du 17/10/2026, Sarah : « des tutoriels, des mini
@@ -23,6 +23,14 @@ export default function VisiteGuidee({ etapes }: { etapes: EtapeVisite[] }) {
   const [ouverte, setOuverte] = useState(false);
   const [i, setI] = useState(0);
   const [cadre, setCadre] = useState<Cadre>(null);
+  const bulleRef = useRef<HTMLDivElement>(null);
+  const [hauteurBulle, setHauteurBulle] = useState(220);
+
+  // La hauteur réelle de la bulle, pour ne jamais la laisser sortir de l'écran
+  // (08/11 : Sarah ne voyait pas le haut du texte, la bulle dépassait en haut).
+  useLayoutEffect(() => {
+    if (bulleRef.current) setHauteurBulle(bulleRef.current.offsetHeight);
+  });
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("visite") === "1") setOuverte(true);
@@ -67,14 +75,20 @@ export default function VisiteGuidee({ etapes }: { etapes: EtapeVisite[] }) {
   const etape = etapes[i];
   const derniere = i === etapes.length - 1;
 
-  // La bulle : sous l'élément s'il reste de la place, sinon au-dessus ; au
-  // centre de l'écran si l'élément est introuvable.
+  // La bulle : sous l'élément s'il reste de la place, sinon au-dessus s'il y en
+  // a ; sinon (élément plus haut que l'écran) en haut de l'écran, par-dessus.
+  // Au centre de l'écran si l'élément est introuvable.
   const largeur = Math.min(340, typeof window !== "undefined" ? window.innerWidth - 32 : 340);
   let style: React.CSSProperties = { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
   if (cadre && typeof window !== "undefined") {
     const dessous = cadre.top + cadre.height + 12;
+    const dessus = cadre.top - 12 - hauteurBulle;
     const left = Math.max(16, Math.min(cadre.left, window.innerWidth - largeur - 16));
-    style = dessous + 200 < window.innerHeight ? { top: dessous, left } : { top: Math.max(16, cadre.top - 12), left, transform: "translateY(-100%)" };
+    let top: number;
+    if (dessous + hauteurBulle + 16 <= window.innerHeight) top = dessous;
+    else if (dessus >= 16) top = dessus;
+    else top = 16;
+    style = { top, left };
   }
 
   return (
@@ -100,6 +114,7 @@ export default function VisiteGuidee({ etapes }: { etapes: EtapeVisite[] }) {
         }
       />
       <div
+        ref={bulleRef}
         style={{
           position: "fixed",
           width: largeur,

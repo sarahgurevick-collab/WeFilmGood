@@ -148,7 +148,7 @@ export default function MotsClesAuteur({
   }, [mots, combien, liste]);
 
   return (
-    <div className={formStyles.field}>
+    <div className={formStyles.field} data-visite="mots-cles">
       <span id="mots-cles-auteur-libelle">
         Optimisez la recherche avec des mots-clés adaptés à votre projet pour booster sa visibilité.
       </span>

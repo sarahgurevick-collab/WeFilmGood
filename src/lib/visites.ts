@@ -47,8 +47,13 @@ export const VISITE_NOUVELLE_FICHE: EtapeVisite[] = [
   },
   {
     cible: 'select[name="format"]',
-    titre: "Format et genre",
-    texte: "Long métrage, court métrage, série… et le genre principal. Pour un court métrage, budget et audience disparaissent.",
+    titre: "Le format",
+    texte: "Long métrage, court métrage, série… Pour un court métrage, budget et audience disparaissent.",
+  },
+  {
+    cible: '[data-visite="genre"]',
+    titre: "Le genre, en escalier",
+    texte: "Choisissez d'abord la famille, puis jusqu'à trois sous-genres, puis fiction ou documentaire, puis la technique. Chaque marche s'ouvre après la précédente.",
   },
   {
     cible: 'textarea[name="tagline"]',
@@ -64,6 +69,11 @@ export const VISITE_NOUVELLE_FICHE: EtapeVisite[] = [
     cible: 'input[name="vignette"]',
     titre: "L'image de présentation",
     texte: "Elle représente votre projet dans les Galaxies. Format paysage, sans votre nom ni le titre. Sans image, le projet n'apparaît pas dans les Galaxies.",
+  },
+  {
+    cible: '[data-visite="mots-cles"]',
+    titre: "Vos mots-clés",
+    texte: "Trois thèmes : sous-genres et styles, sujets et personnages, univers et lieux. Tapez un mot ou piochez dans le nuage, dix par thème au plus. Ils aident les producteurs à trouver votre projet.",
   },
   {
     cible: '[data-visite="creer-fiche"]',

@@ -119,7 +119,7 @@ export default function ChoixGenre({
   );
 
   return (
-    <div className={styles.bloc} ref={cadre}>
+    <div className={styles.bloc} ref={cadre} data-visite="genre">
       <span className={styles.titre}>Genre principal *</span>
 
       {/* Ce que le formulaire envoie. */}
