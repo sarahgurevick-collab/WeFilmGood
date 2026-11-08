@@ -19,6 +19,9 @@ const TYPES: Record<string, string> = {
   csv: "text/csv; charset=utf-8",
   // Les archives de photos (06/11, Sarah) : envoyées par morceaux, sans tout charger en mémoire.
   zip: "application/zip",
+  // Les séquences filmées des tutoriels (08/11, Sarah) : assemblées sur le serveur.
+  mp4: "video/mp4",
+  gif: "image/gif",
 };
 
 export async function GET(_: Request, { params }: { params: Promise<{ nom: string }> }) {
