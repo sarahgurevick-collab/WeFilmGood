@@ -41,7 +41,12 @@ export async function GET(requete: Request, { params }: { params: Promise<{ nom:
   const entetes: Record<string, string> = {
     "Content-Type": TYPES[extension],
     "Accept-Ranges": "bytes",
-    "Cache-Control": "private, max-age=3600",
+    // Avec la date du fichier dans l'adresse (?v=, posée par la page), le
+    // navigateur peut garder le film longtemps : un film refait a une autre
+    // adresse. Sans elle, il revérifie à chaque fois.
+    "Cache-Control": new URL(requete.url).searchParams.has("v")
+      ? "private, max-age=31536000, immutable"
+      : "private, no-cache",
   };
 
   const range = requete.headers.get("range");

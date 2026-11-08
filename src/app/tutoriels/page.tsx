@@ -1,7 +1,9 @@
+import { stat } from "node:fs/promises";
+import { join } from "node:path";
 import { cookies } from "next/headers";
 import PageShell from "@/components/PageShell";
 import { createClient } from "@/lib/supabase/server";
-import { TUTORIELS, langueDuCookie, nomDeFichier } from "./tutoriels";
+import { DOSSIER_TUTORIELS, TUTORIELS, langueDuCookie, nomDeFichier } from "./tutoriels";
 import styles from "./tutoriels.module.css";
 
 /**
@@ -18,6 +20,23 @@ export default async function TutorielsPage() {
   const visibles = TUTORIELS.filter((t) => !t.membres || user);
   // Site passé en anglais par le globe : les films anglais, avec leur titre.
   const langue = langueDuCookie((await cookies()).get("googtrans")?.value);
+  // La date du fichier dans l'adresse : un film refait est repris aussitôt
+  // par le navigateur au lieu de la copie qu'il gardait (Sarah, 08/11, voyait
+  // encore l'ancien écran 8 une heure après le remplacement).
+  const versions = new Map<string, string>();
+  await Promise.all(
+    visibles.flatMap((t) => {
+      const nom = nomDeFichier(t.slug, langue);
+      return ["mp4", "jpg"].map(async (ext) => {
+        try {
+          versions.set(`${nom}.${ext}`, String(Math.round((await stat(join(DOSSIER_TUTORIELS, `${nom}.${ext}`))).mtimeMs)));
+        } catch {
+          versions.set(`${nom}.${ext}`, "0");
+        }
+      });
+    }),
+  );
+  const adresse = (nom: string) => `/tutoriels/video/${nom}?v=${versions.get(nom) ?? "0"}`;
 
   return (
     <PageShell eyebrow="WeFilmGood" title="Tutoriels" enTeteAnime connecte={!!user}>
@@ -30,8 +49,8 @@ export default async function TutorielsPage() {
               controls
               preload="metadata"
               playsInline
-              poster={`/tutoriels/video/${nomDeFichier(t.slug, langue)}.jpg`}
-              src={`/tutoriels/video/${nomDeFichier(t.slug, langue)}.mp4`}
+              poster={adresse(`${nomDeFichier(t.slug, langue)}.jpg`)}
+              src={adresse(`${nomDeFichier(t.slug, langue)}.mp4`)}
             />
           </section>
         ))}
