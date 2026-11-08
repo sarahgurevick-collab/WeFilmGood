@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import formStyles from "@/components/form.module.css";
+import ChampFichier from "@/components/ChampFichier";
 
 type Langue = "fr" | "en";
 export type DepotAffiche = {
@@ -179,9 +180,8 @@ export default function EnvoiVideopitch({
           </div>
           <label className={formStyles.field} style={{ marginTop: 10 }}>
             <span>{enLigne[langue] || depots.some((d) => d.langue === langue) ? "Remplacer la vidéo" : "Choisir la vidéo"}</span>
-            <input
+            <ChampFichier
               ref={champ}
-              type="file"
               accept={ACCEPT}
               disabled={phase === "envoi"}
               onChange={(e) => {

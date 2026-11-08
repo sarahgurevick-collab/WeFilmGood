@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import formStyles from "@/components/form.module.css";
+import ChampFichier from "@/components/ChampFichier";
 import styles from "../../blocs.module.css";
 import cadre from "./ImagePresentation.module.css";
 
@@ -93,8 +94,7 @@ export default function ImagePresentation({
       {url && axe && <p className={formStyles.hint}>Glissez l&apos;image pour choisir ce qui s&apos;affiche.</p>}
       <label className={formStyles.field}>
         <span>{aUneImage ? "Remplacer l'image" : "Choisir une image"}</span>
-        <input
-          type="file"
+        <ChampFichier
           name="vignette"
           accept={accept}
           onChange={(e) => {

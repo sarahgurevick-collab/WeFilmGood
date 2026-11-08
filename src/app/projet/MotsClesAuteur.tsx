@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import formStyles from "@/components/form.module.css";
 import NuageDisque from "@/components/NuageDisque";
 import { createClient } from "@/lib/supabase/client";
+import { useLangueDuGlobe } from "@/lib/langue-globe";
 import styles from "./mots-cles-auteur.module.css";
 
 /** Dix mots au plus par thème (07/11/2026, Sarah : « Limite à 10 par catégorie »). */
@@ -21,11 +22,11 @@ export type Nuages = Partial<Record<CleNuage, [string, number][]>>;
 /** Un mot proposé pendant la frappe, avec son thème (null s'il n'est pas encore classé). */
 type Suggestion = { label: string; theme: string | null };
 
-/** Les trois thèmes (07/11/2026, Sarah). */
-const THEMES: { cle: CleNuage; titre: string }[] = [
-  { cle: "styles", titre: "Sous-genres & styles" },
-  { cle: "sujets", titre: "Sujets & personnages" },
-  { cle: "univers", titre: "Univers & Lieux" },
+/** Les trois thèmes (07/11/2026, Sarah) ; en anglais quand le globe l'est (08/11). */
+const THEMES: { cle: CleNuage; titre: string; titreEn: string }[] = [
+  { cle: "styles", titre: "Sous-genres & styles", titreEn: "Sub-genres & styles" },
+  { cle: "sujets", titre: "Sujets & personnages", titreEn: "Subjects & characters" },
+  { cle: "univers", titre: "Univers & Lieux", titreEn: "Worlds & places" },
 ];
 
 const cleDe = (mot: string) =>
@@ -134,7 +135,9 @@ export default function MotsClesAuteur({
   };
 
   const proposees = suggestions.filter((s) => !dejaChoisi(s.label));
-  const titre = THEMES.find((t) => t.cle === theme)!.titre;
+  const langue = useLangueDuGlobe();
+  const leTheme = THEMES.find((t) => t.cle === theme)!;
+  const titre = langue === "en" ? leTheme.titreEn : leTheme.titre;
   const themeSuivant = () => setTheme(THEMES[(THEMES.findIndex((t) => t.cle === theme) + 1) % THEMES.length].cle);
 
   // Le nuage du thème : les mots les plus utilisés, plus ceux déjà choisis qui seraient plus loin.
@@ -168,10 +171,11 @@ export default function MotsClesAuteur({
             type="button"
             layout
             transition={{ layout: { type: "spring", damping: 22, stiffness: 260 } }}
-            className={styles.mode}
+            className={`${styles.mode} notranslate`}
+            translate="no"
             data-theme={theme}
             onClick={themeSuivant}
-            aria-label={`${titre}. Cliquer pour changer`}
+            aria-label={langue === "en" ? `${titre}. Click to change` : `${titre}. Cliquer pour changer`}
           >
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.span key={theme} className={styles.modeMot}>

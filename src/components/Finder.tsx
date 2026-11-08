@@ -25,6 +25,7 @@ import NuageDisque from "./NuageDisque";
 import OrbeAttente from "./OrbeAttente";
 import styles from "./Finder.module.css";
 import projetsStyles from "@/app/galaxies/projets.module.css";
+import { useLangueDuGlobe } from "@/lib/langue-globe";
 
 // Résultats par page de recherche (le même nombre que côté serveur).
 const PAR_PAGE = 60;
@@ -37,10 +38,12 @@ const G_MINIMUM = 20;
 // Les rangées 2 et 3 : un aperçu d'une ligne.
 const APERCU = 5;
 
-const CATEGORIES: { cle: Categorie; pastille: string; titre: string }[] = [
-  { cle: "projets", pastille: "Projets", titre: "Projets" },
-  { cle: "talents", pastille: "Talents", titre: "Talents" },
-  { cle: "personnages", pastille: "Personnages", titre: "Personnages" },
+// La pastille est le mot du bouton (animé lettre par lettre, hors traduction
+// automatique : il porte son anglais) ; le titre, celui des rangées (traduit par le globe).
+const CATEGORIES: { cle: Categorie; pastille: string; pastilleEn: string; titre: string }[] = [
+  { cle: "projets", pastille: "Projets", pastilleEn: "Projects", titre: "Projets" },
+  { cle: "talents", pastille: "Talents", pastilleEn: "Talents", titre: "Talents" },
+  { cle: "personnages", pastille: "Personnages", pastilleEn: "Characters", titre: "Personnages" },
 ];
 
 export default function Finder({
@@ -232,7 +235,9 @@ export default function Finder({
   // elle-même change (02/10) : on attend que les clics s'arrêtent pour ne
   // recharger qu'une fois.
   const minuteurMode = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const titreChoisi = CATEGORIES.find((c) => c.cle === choisie)?.pastille ?? "Projets";
+  const langue = useLangueDuGlobe();
+  const categorieChoisie = CATEGORIES.find((c) => c.cle === choisie) ?? CATEGORIES[0];
+  const titreChoisi = langue === "en" ? categorieChoisie.pastilleEn : categorieChoisie.pastille;
   const modeSuivant = () => {
     const i = CATEGORIES.findIndex((c) => c.cle === choisie);
     const suivante = CATEGORIES[(i + 1) % CATEGORIES.length].cle;
@@ -270,7 +275,8 @@ export default function Finder({
             type="button"
             layout
             transition={{ layout: { type: "spring", damping: 22, stiffness: 260 } }}
-            className={styles.mode}
+            className={`${styles.mode} notranslate`}
+            translate="no"
             data-categorie={choisie}
             onClick={modeSuivant}
             aria-label={`J'explore mes galaxies : ${titreChoisi}. Cliquer pour changer`}

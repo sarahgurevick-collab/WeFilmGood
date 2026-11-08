@@ -1,0 +1,63 @@
+/* Le champ « fichier » dessiné par le site.
+   Le bouton natif du navigateur écrit son texte dans la langue du
+   navigateur (« Choisir un fichier » même quand le globe est sur
+   l'anglais) et Google Traduction ne peut pas y toucher. On masque donc le
+   champ natif (toujours atteignable au clavier : la ligne entière, dans
+   son étiquette, ouvre le choix) et on écrit le bouton nous-mêmes, dans
+   la langue du globe, avec les mêmes mots que le navigateur. */
+.champ {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bouton {
+  display: inline-block;
+  padding: 7px 12px;
+  border: 1px solid var(--bordure);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--fg);
+  font-size: 13px;
+  line-height: 1.25;
+  white-space: nowrap;
+  transition: border-color 0.2s ease;
+}
+
+.champ:hover .bouton,
+.champ:focus-within .bouton {
+  border-color: var(--fg);
+}
+
+.champ:focus-within .bouton {
+  outline: 2px solid var(--rouge-wfg);
+  outline-offset: 2px;
+}
+
+.nom {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.champ:has(.cache:disabled) {
+  cursor: default;
+}
+
+.champ:has(.cache:disabled) .bouton {
+  opacity: 0.5;
+}

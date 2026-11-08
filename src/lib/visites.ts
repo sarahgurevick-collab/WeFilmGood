@@ -94,7 +94,7 @@ export const VISITE_NOUVELLE_FICHE: EtapeVisite[] = [
     texteEn: "A short summary of the story, in a few sentences.",
   },
   {
-    cible: 'input[name="vignette"]',
+    cible: '[data-visite="vignette"]',
     titre: "L'image de présentation",
     texte: "Elle représente votre projet dans les Galaxies. Format paysage, sans votre nom ni le titre. Sans image, le projet n'apparaît pas dans les Galaxies.",
     titreEn: "The presentation image",

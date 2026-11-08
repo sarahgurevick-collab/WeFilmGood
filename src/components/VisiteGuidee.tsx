@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { langueDuGlobe } from "@/lib/langue-globe";
 
 /**
  * Visite guidée (ESSAI du 17/10/2026, Sarah : « des tutoriels, des mini
@@ -16,10 +17,6 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 export type EtapeVisite = { cible: string; titre: string; texte: string; titreEn?: string; texteEn?: string };
 
 /** La langue du globe (cookie googtrans) : « en » si le site est affiché en anglais. */
-function langueDuGlobe(): "fr" | "en" {
-  const m = document.cookie.match(/(?:^|;\s*)googtrans=\/[a-z-]+\/([a-zA-Z-]+)/);
-  return m && m[1].toLowerCase().startsWith("en") ? "en" : "fr";
-}
 
 const MOTS = {
   fr: { precedent: "← Précédent", suivant: "Suivant →", terminer: "Terminer", fermer: "Fermer la visite", visite: "Visite guidée" },

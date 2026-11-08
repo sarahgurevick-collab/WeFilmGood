@@ -1,5 +1,6 @@
 import Link from "next/link";
 import formStyles from "@/components/form.module.css";
+import ChampFichier from "@/components/ChampFichier";
 import profilStyles from "@/app/profil/profil.module.css";
 import BlocProjet from "../../BlocProjet";
 import { chargerProjetAModifier } from "../../blocs";
@@ -115,14 +116,14 @@ export default async function DocumentsPage({
         {/* Plus de limite au nombre de photos (14/10, Sarah). */}
         <label className={formStyles.field}>
           <span>{moodboard.length ? "Ajouter des photos" : "Choisir des photos"}</span>
-          <input type="file" name="moodboard" accept={accept} multiple />
+          <ChampFichier name="moodboard" accept={accept} multiple />
           <span className={formStyles.hint}>Vous pouvez en choisir plusieurs à la fois.</span>
         </label>
 
         <h2 className={styles.sousTitre}>Le scénario</h2>
         <label className={formStyles.field}>
           <span>{scenario ? "Remplacer le scénario (PDF)" : "Scénario (PDF)"}</span>
-          <input type="file" name="scenario" accept="application/pdf" />
+          <ChampFichier name="scenario" accept="application/pdf" />
           <span className={formStyles.hint}>
             Confidentiel : seuls vous, les lecteurs qui en seront chargés et
             l&apos;équipe de la Maison des Scénaristes/WeFilmGood y auront accès.

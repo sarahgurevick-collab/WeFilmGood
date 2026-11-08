@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import formStyles from "@/components/form.module.css";
+import ChampFichier from "@/components/ChampFichier";
 import profilStyles from "@/app/profil/profil.module.css";
 import { createClient } from "@/lib/supabase/server";
 import BlocProjet from "./BlocProjet";
@@ -58,7 +59,7 @@ export default async function NouvelleFichePage({
                 fiche. Format 16/9 (paysage), JPG ou PNG. N&apos;y faites figurer ni votre nom ni le
                 titre.
               </span>
-              <input type="file" name="vignette" accept="image/jpeg,image/png,image/webp" />
+              <ChampFichier name="vignette" accept="image/jpeg,image/png,image/webp" data-visite="vignette" />
               <span className={formStyles.hint}>Inutile de la compresser : nous nous en chargeons.</span>
             </label>
             </>
