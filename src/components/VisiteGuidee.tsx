@@ -13,7 +13,18 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
  * [data-visite="…"]). Une cible introuvable (champ masqué, page différente)
  * est sautée, la bulle se centre alors à l'écran.
  */
-export type EtapeVisite = { cible: string; titre: string; texte: string };
+export type EtapeVisite = { cible: string; titre: string; texte: string; titreEn?: string; texteEn?: string };
+
+/** La langue du globe (cookie googtrans) : « en » si le site est affiché en anglais. */
+function langueDuGlobe(): "fr" | "en" {
+  const m = document.cookie.match(/(?:^|;\s*)googtrans=\/[a-z-]+\/([a-zA-Z-]+)/);
+  return m && m[1].toLowerCase().startsWith("en") ? "en" : "fr";
+}
+
+const MOTS = {
+  fr: { precedent: "← Précédent", suivant: "Suivant →", terminer: "Terminer", fermer: "Fermer la visite", visite: "Visite guidée" },
+  en: { precedent: "← Previous", suivant: "Next →", terminer: "Finish", fermer: "Close the tour", visite: "Guided tour" },
+};
 
 type Cadre = { top: number; left: number; width: number; height: number } | null;
 
@@ -23,6 +34,9 @@ export default function VisiteGuidee({ etapes }: { etapes: EtapeVisite[] }) {
   const [ouverte, setOuverte] = useState(false);
   const [i, setI] = useState(0);
   const [cadre, setCadre] = useState<Cadre>(null);
+  // Site en anglais (globe) : les bulles portent leur propre texte anglais,
+  // la traduction automatique ne retraduisant pas ce qui change (08/11).
+  const [langue, setLangue] = useState<"fr" | "en">("fr");
   const bulleRef = useRef<HTMLDivElement>(null);
   const [hauteurBulle, setHauteurBulle] = useState(220);
 
@@ -34,6 +48,7 @@ export default function VisiteGuidee({ etapes }: { etapes: EtapeVisite[] }) {
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("visite") === "1") setOuverte(true);
+    setLangue(langueDuGlobe());
   }, []);
 
   const mesurer = useCallback(() => {
@@ -74,25 +89,34 @@ export default function VisiteGuidee({ etapes }: { etapes: EtapeVisite[] }) {
   if (!ouverte || etapes.length === 0) return null;
   const etape = etapes[i];
   const derniere = i === etapes.length - 1;
+  const mots = MOTS[langue];
+  const titre = langue === "en" && etape.titreEn ? etape.titreEn : etape.titre;
+  const texte = langue === "en" && etape.texteEn ? etape.texteEn : etape.texte;
 
   // La bulle : sous l'élément s'il reste de la place, sinon au-dessus s'il y en
-  // a ; sinon (élément plus haut que l'écran) en haut de l'écran, par-dessus.
+  // a ; sinon (élément plus haut que l'écran) à sa droite s'il y a la place,
+  // pour ne rien cacher de lui (le bouton des thèmes des mots-clés, 08/11) ;
+  // en dernier recours en haut de l'écran, par-dessus.
   // Au centre de l'écran si l'élément est introuvable.
   const largeur = Math.min(340, typeof window !== "undefined" ? window.innerWidth - 32 : 340);
   let style: React.CSSProperties = { top: "50%", left: "50%", transform: "translate(-50%, -50%)" };
   if (cadre && typeof window !== "undefined") {
     const dessous = cadre.top + cadre.height + 12;
     const dessus = cadre.top - 12 - hauteurBulle;
-    const left = Math.max(16, Math.min(cadre.left, window.innerWidth - largeur - 16));
+    let left = Math.max(16, Math.min(cadre.left, window.innerWidth - largeur - 16));
+    const aDroite = cadre.left + cadre.width + 12;
     let top: number;
     if (dessous + hauteurBulle + 16 <= window.innerHeight) top = dessous;
     else if (dessus >= 16) top = dessus;
-    else top = 16;
+    else if (aDroite + largeur + 16 <= window.innerWidth) {
+      top = Math.max(16, cadre.top);
+      left = aDroite;
+    } else top = 16;
     style = { top, left };
   }
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="Visite guidée" style={{ position: "fixed", inset: 0, zIndex: 9999 }}>
+    <div role="dialog" aria-modal="true" aria-label={mots.visite} translate="no" className="notranslate" style={{ position: "fixed", inset: 0, zIndex: 9999 }}>
       {/* Le voile : un cadre transparent dont l'ombre assombrit tout le reste. */}
       <div
         aria-hidden="true"
@@ -113,7 +137,11 @@ export default function VisiteGuidee({ etapes }: { etapes: EtapeVisite[] }) {
             : { position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)" }
         }
       />
+      {/* key={i} : la bulle est refaite à neuf à chaque étape. Sans cela, la
+          traduction automatique (globe) remplace les textes une fois et ne
+          voit plus les suivants : bulles en français, compteur figé (08/11). */}
       <div
+        key={i}
         ref={bulleRef}
         style={{
           position: "fixed",
@@ -131,7 +159,7 @@ export default function VisiteGuidee({ etapes }: { etapes: EtapeVisite[] }) {
         <button
           type="button"
           onClick={() => setOuverte(false)}
-          aria-label="Fermer la visite"
+          aria-label={mots.fermer}
           style={{ position: "absolute", top: 6, right: 10, border: 0, background: "none", fontSize: 22, color: "#DA2C25", cursor: "pointer" }}
         >
           ×
@@ -139,8 +167,8 @@ export default function VisiteGuidee({ etapes }: { etapes: EtapeVisite[] }) {
         <p style={{ margin: 0, fontSize: 12, color: "#888" }}>
           {i + 1} / {etapes.length}
         </p>
-        <p style={{ margin: "4px 24px 6px 0", fontWeight: 700, fontSize: 16 }}>{etape.titre}</p>
-        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>{etape.texte}</p>
+        <p style={{ margin: "4px 24px 6px 0", fontWeight: 700, fontSize: 16 }}>{titre}</p>
+        <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>{texte}</p>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 14 }}>
           <button
             type="button"
@@ -148,14 +176,14 @@ export default function VisiteGuidee({ etapes }: { etapes: EtapeVisite[] }) {
             disabled={i === 0}
             style={{ border: 0, background: "none", color: i === 0 ? "#bbb" : "#555", cursor: i === 0 ? "default" : "pointer", fontSize: 14, padding: 0 }}
           >
-            ← Précédent
+            {mots.precedent}
           </button>
           <button
             type="button"
             onClick={() => (derniere ? setOuverte(false) : setI((n) => n + 1))}
             style={{ border: 0, borderRadius: 999, background: "#DA2C25", color: "#fff", padding: "8px 18px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
           >
-            {derniere ? "Terminer" : "Suivant →"}
+            {derniere ? mots.terminer : mots.suivant}
           </button>
         </div>
       </div>

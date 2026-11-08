@@ -1,0 +1,25 @@
+.liste {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 28px;
+  margin-top: 24px;
+}
+
+.carte {
+  scroll-margin-top: 96px;
+}
+
+.titre {
+  margin: 0 0 10px;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1440 / 756;
+  border-radius: 14px;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
