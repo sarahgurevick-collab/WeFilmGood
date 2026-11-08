@@ -374,8 +374,10 @@ export default function CadreEquipe({
         <section className={`${styles.cadre} ${styles.cadreEquipe} ${styles.sansBord}`}>
           <p className={styles.dessousTitre}>{titreEquipe}</p>
           {/* À partir de trois personnes, l'équipe en orbite autour du
-              porteur (14/10, Sarah) ; la rangée de portraits en dessous. */}
-          {equipe.length >= 3 ? (
+              porteur (14/10, Sarah) ; la rangée de portraits en dessous.
+              Les invitations en attente (« Pas encore inscrit ») ne comptent
+              pas : à deux talents inscrits, côte à côte (Sarah, 08/11). */}
+          {equipe.filter((m) => !m.enAttente).length >= 3 ? (
             <OrbiteEquipe equipe={equipe} porteur={porteur} ouvert={membreOuvert} setOuvert={setMembreOuvert} />
           ) : (
             portraits
