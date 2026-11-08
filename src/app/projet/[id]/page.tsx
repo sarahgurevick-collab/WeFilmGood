@@ -294,16 +294,20 @@ export default async function ProjetPage({
         (m) => ({ cle: m.profile_id, profileId: m.profile_id, nom: m.nom ?? "Membre", role: m.role, enAttente: null }),
       );
   // L'auteur et l'administration voient aussi les invitations en attente.
+  // Un talent repris de WFG 1 par son adresse (0166, 19/10) a un profil
+  // vide, sans nom : la base ne le compte pas dans l'équipe tant qu'il ne
+  // s'est pas inscrit, mais la carte des Galaxies le montre (lettre du
+  // métier). Ici, il apparaît « Pas encore inscrit » (Sarah, 08/11/2026).
   if (isOwner || estAdmin) {
     for (const t of talents ?? []) {
-      if (t.status === "accepte" && t.profile_id) continue;
+      if (t.status === "accepte" && t.profile_id && equipe.some((m) => m.profileId === t.profile_id)) continue;
       if (t.status === "refuse") continue;
       equipe.push({
         cle: t.id,
         profileId: t.profile_id,
         nom: t.invited_email,
         role: t.role?.label_fr ?? null,
-        enAttente: t.profile_id ? "Invitation envoyée" : "Pas encore inscrit",
+        enAttente: t.profile_id && t.status !== "accepte" ? "Invitation envoyée" : "Pas encore inscrit",
       });
     }
   }
