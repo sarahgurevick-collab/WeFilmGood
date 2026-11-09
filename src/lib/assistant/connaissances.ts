@@ -131,7 +131,7 @@ CinéCrush (dans le Menu)
 - Chaque semaine, l'équipe met en avant un projet et son videopitch. La semaine va du dimanche minuit au dimanche minuit ; un chrono indique le temps qui reste.
 - Ouvert à tous les membres connectés, sans adhésion.
 - Sous le videopitch, « Les avis » : on écrit dans « Votre avis sur ce videopitch », puis « Publier mon avis » (2 000 caractères au plus). L'avis est signé de son prénom et de son nom. On peut répondre à un avis, et retirer le sien.
-- Un avis peut être mis de côté pour relecture par l'équipe ; il paraît une fois relu.
+- Un avis paraît tout de suite. Il arrive seulement qu'un avis soit mis de côté pour relecture par l'équipe : il paraît alors une fois relu.
 - Quand la semaine est finie, les avis sont fermés. En bas de la page, « Les CinéCrush » : celui de la semaine, puis les précédents.
 
 CinéMatch (dans le Menu, et bloc 3 de « Mon profil »)
