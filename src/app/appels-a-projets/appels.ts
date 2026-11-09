@@ -30,7 +30,8 @@ export const APPELS: Appel[] = [
     edition: "Festival International du Court Métrage, 2027",
     format: "Court métrage",
     logo: "/festivals/clermont-ferrand.jpg",
-    dateLimite: "2026-11-08",
+    // Sarah, 09/11/2026 : « La deadline de Clermont est ce soir minuit ».
+    dateLimite: "2026-11-09",
     heureLimite: "23h59 (heure française)",
     evenement: "Rencontres auteurs-producteurs pendant le festival",
   },

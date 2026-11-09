@@ -135,6 +135,16 @@ export async function POST(request: Request) {
     contexte = "Tu parles à un visiteur qui n'a pas encore de compte sur WeFilmGood.";
   }
 
+  // La date du jour, à l'heure de Paris : Mira en a besoin pour dire si un
+  // appel à projets est encore ouvert.
+  contexte += ` Nous sommes le ${new Date().toLocaleDateString("fr-FR", {
+    timeZone: "Europe/Paris",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })}.`;
+
   const jour = new Date().toISOString().slice(0, 10);
   const c = compteurs.get(compte);
   const n = c?.jour === jour ? c.n : 0;
