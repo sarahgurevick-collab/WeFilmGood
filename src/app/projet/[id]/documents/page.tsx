@@ -6,7 +6,8 @@ import BlocProjet from "../../BlocProjet";
 import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { signerImages } from "../fichiers";
-import { enregistrerDocuments } from "./actions";
+import { modeHelloAsso } from "@/lib/helloasso";
+import { enregistrerDocuments, envoyerALaLecture } from "./actions";
 import BoutonRetirerPhoto from "./BoutonRetirerPhoto";
 import ImagePresentation from "./ImagePresentation";
 import EnvoiVideopitch, { type DepotAffiche } from "./EnvoiVideopitch";
@@ -23,10 +24,10 @@ export default async function DocumentsPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ erreur?: string; cree?: string; enregistre?: string }>;
+  searchParams: Promise<{ erreur?: string; cree?: string; enregistre?: string; paiement?: string }>;
 }) {
   const { id } = await params;
-  const { erreur, cree, enregistre } = await searchParams;
+  const { erreur, cree, enregistre, paiement } = await searchParams;
   const { supabase, projet } = await chargerProjetAModifier(id, "documents");
 
   const { data: fichiers } = await supabase
@@ -62,6 +63,30 @@ export default async function DocumentsPage({
     supabase.rpc("is_admin"),
   ]);
   const peutDeposerVideopitch = adherent === true || estAdmin === true;
+  // « Envoyer » (09/11) : la lecture se paie 50 €, adhérent ou non. Le bouton
+  // paraît quand le scénario est là, tant que le projet n'a pas déjà été
+  // envoyé ou lu. En mode test (compte HelloAsso de test), seule
+  // l'administration le voit : personne d'autre ne paie avec une fausse carte.
+  const [{ data: statutProjet }, { data: etatBrut }, { data: demandesPayees }] = await Promise.all([
+    supabase.from("projects").select("status").eq("id", id).maybeSingle<{ status: string }>(),
+    supabase.rpc("etat_de_lecture", { p_project_id: id }),
+    supabase
+      .from("lecture_demandes")
+      .select("paid_at")
+      .eq("project_id", id)
+      .eq("status", "payee")
+      .order("paid_at", { ascending: false })
+      .limit(1)
+      .returns<{ paid_at: string | null }[]>(),
+  ]);
+  const test = modeHelloAsso() === "sandbox";
+  const peutPayer = !test || estAdmin === true;
+  const envoyeLe = (demandesPayees ?? [])[0]?.paid_at ?? null;
+  const dejaEnvoye = (demandesPayees ?? []).length > 0;
+  const dejaLu =
+    ((etatBrut ?? []) as unknown[]).length > 0 ||
+    !["brouillon", "depose"].includes(statutProjet?.status ?? "");
+
   const dernierParLangue = (["fr", "en"] as const)
     .map((l) => (depots ?? []).find((d) => d.langue === l))
     .filter((d): d is DepotAffiche => Boolean(d));
@@ -140,6 +165,60 @@ export default async function DocumentsPage({
           </button>
         </div>
       </form>
+
+      {/* « Envoyer » : à part du formulaire, parce qu'il mène à la page de
+          paiement et n'enregistre rien. */}
+      {peutPayer && (dejaEnvoye || !dejaLu) && (
+        <div style={{ marginTop: 32 }}>
+          <h2 className={styles.sousTitre}>Envoyer à la lecture</h2>
+          {dejaEnvoye ? (
+            <p className={formStyles.hint}>
+              Projet envoyé à la lecture
+              {envoyeLe
+                ? ` le ${new Date(envoyeLe).toLocaleDateString("fr-FR", {
+                    timeZone: "Europe/Paris",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}`
+                : ""}
+              .
+            </p>
+          ) : (
+            <>
+              <p className={formStyles.hint}>
+                Lecture et analyse de votre scénario : 50 €. Le paiement passe par HelloAsso.
+              </p>
+              {paiement === "erreur" && (
+                <p className={formStyles.error}>
+                  Le paiement n&apos;a pas pu démarrer. Réessayez dans un instant, ou écrivez-nous.
+                </p>
+              )}
+              {scenario ? (
+                <form action={envoyerALaLecture} style={{ marginTop: 12 }}>
+                  <input type="hidden" name="project_id" value={projet.id} />
+                  <button type="submit" className={formStyles.submit}>
+                    Envoyer
+                  </button>
+                </form>
+              ) : (
+                <p className={formStyles.hint}>
+                  Enregistrez d&apos;abord votre scénario (PDF) pour l&apos;envoyer à la lecture.
+                </p>
+              )}
+              {test && (
+                <p className={formStyles.hint} style={{ marginTop: 8 }}>
+                  Mode test : paiement sur le compte HelloAsso de test, avec une fausse carte.
+                  Visible de l&apos;administration seulement.
+                </p>
+              )}
+            </>
+          )}
+        </div>
+      )}
+      {paiement === "bientot" && (
+        <p className={formStyles.hint}>Le paiement en ligne ouvre très bientôt.</p>
+      )}
 
       {/* Le videopitch s'envoie à part du formulaire : la vidéo part par
           morceaux dès le clic, sans passer par « Enregistrer ». */}

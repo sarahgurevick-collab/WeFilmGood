@@ -87,15 +87,18 @@ export default async function ProjetsEnAttentePage() {
   const { data: pendingRows } = await supabase.rpc("admin_pending_projects");
 
   // La reprise du 19/09 a mis tous les projets de WFG 1 au statut « déposé » :
-  // ~3 900 projets déjà lus ou jamais soumis à la lecture. Seuls comptent
-  // ici les projets déposés sur le nouveau site (sans numéro WFG 1). La file
-  // en cours sur l'ancien site arrivera avec la dernière copie, à la bascule.
+  // ~3 900 projets déjà lus ou jamais soumis à la lecture. Et créer une fiche
+  // sur WFG 2 ne demande pas une lecture. Seuls comptent ici les projets dont
+  // la lecture est payée (09/11, Sarah : « on envoie son scénario en payant
+  // 50 euros ») : le bouton « Envoyer » de l'onglet Documents, migration 0249.
+  // La file en cours sur l'ancien site arrivera avec la dernière copie, à la
+  // bascule.
   const { data: nouveaux } = await supabase
-    .from("projects")
-    .select("id")
-    .in("status", ["depose", "en_lecture"])
-    .is("legacy_id", null);
-  const idsNouveaux = new Set((nouveaux ?? []).map((n) => n.id));
+    .from("lecture_demandes")
+    .select("project_id")
+    .eq("status", "payee")
+    .returns<{ project_id: string }[]>();
+  const idsNouveaux = new Set((nouveaux ?? []).map((n) => n.project_id));
   const projects = ((pendingRows ?? []) as PendingProject[]).filter((p) =>
     idsNouveaux.has(p.project_id),
   );

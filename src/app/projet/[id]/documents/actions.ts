@@ -1,7 +1,11 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { creerIntention, modeHelloAsso } from "@/lib/helloasso";
+import { PRIX_LECTURE_CENTIMES } from "@/lib/lecture-paiement";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { chargerProjetAModifier } from "../../blocs";
 import { IMAGES, deposerImage, deposerScenario, recadrerEn16x9, retirerImages } from "../fichiers";
 
@@ -131,4 +135,82 @@ export async function retirerImage(formData: FormData) {
 
   revalidatePath(`/projet/${id}`);
   redirect(`/projet/${id}/documents`);
+}
+
+/**
+ * « Envoyer » (09/11/2026, Sarah : « Ce bouton envoie à la page de paiement
+ * des 50 € que l'on soit adhérent ou pas ») : crée la demande de lecture en
+ * attente, demande à HelloAsso une page de paiement de 50 € et y envoie
+ * l'auteur. Le projet n'entre dans la file des lecteurs qu'une fois le
+ * paiement relu chez HelloAsso.
+ *
+ * En mode test (compte HelloAsso de test), seule l'administration peut
+ * payer, comme pour l'adhésion.
+ */
+export async function envoyerALaLecture(formData: FormData) {
+  const id = formData.get("project_id") as string;
+  const { supabase, user, projet, estAdmin } = await chargerProjetAModifier(id, "documents");
+  const page = `/projet/${id}/documents`;
+
+  if (modeHelloAsso() === "sandbox" && !estAdmin) redirect(`${page}?paiement=bientot`);
+
+  const admin = createAdminClient();
+  if (!admin) redirect(`${page}?paiement=erreur`);
+
+  // Sans scénario, rien à lire ; et une lecture déjà payée ne se paie pas deux fois.
+  const [{ count: scenarios }, { count: dejaPayees }, { data: profil }] = await Promise.all([
+    supabase
+      .from("project_files")
+      .select("id", { count: "exact", head: true })
+      .eq("project_id", id)
+      .eq("kind", "scenario"),
+    admin
+      .from("lecture_demandes")
+      .select("id", { count: "exact", head: true })
+      .eq("project_id", id)
+      .eq("status", "payee"),
+    admin.from("profiles").select("first_name, last_name").eq("id", user.id).maybeSingle(),
+  ]);
+  if (!scenarios) redirect(`${page}?paiement=sans-scenario`);
+  if (dejaPayees) redirect(page);
+
+  const { data: demande, error } = await admin
+    .from("lecture_demandes")
+    .insert({
+      project_id: id,
+      profile_id: projet.owner_id,
+      status: "en_attente_paiement",
+      amount_cents: PRIX_LECTURE_CENTIMES,
+      payment_provider: "helloasso",
+    })
+    .select("id")
+    .single();
+  if (error || !demande) redirect(`${page}?paiement=erreur`);
+
+  const h = await headers();
+  const origine = `https://${h.get("host") ?? "app.wefilmgood.com"}`;
+  const retour = `${origine}${page}/retour?demande=${demande.id}`;
+
+  let pageDePaiement: string;
+  try {
+    const intention = await creerIntention({
+      montantCentimes: PRIX_LECTURE_CENTIMES,
+      libelle: `Lecture et analyse — ${projet.title}`,
+      retour,
+      erreur: `${retour}&erreur=1`,
+      annulation: `${origine}${page}`,
+      payeur: { email: user.email!, prenom: profil?.first_name, nom: profil?.last_name },
+      metadata: { lecture: demande.id, projet: id, profil: user.id },
+    });
+    await admin
+      .from("lecture_demandes")
+      .update({ payment_reference: String(intention.id) })
+      .eq("id", demande.id);
+    pageDePaiement = intention.redirectUrl;
+  } catch (e) {
+    console.error("HelloAsso : paiement de la lecture", e);
+    await admin.from("lecture_demandes").update({ status: "annulee" }).eq("id", demande.id);
+    redirect(`${page}?paiement=erreur`);
+  }
+  redirect(pageDePaiement);
 }
