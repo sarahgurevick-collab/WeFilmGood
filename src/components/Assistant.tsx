@@ -11,11 +11,11 @@ import { useCacheAuDefilement, useEmplacementEntete } from "./useEmplacementEnte
 type Message = { role: "user" | "assistant"; content: string };
 
 const ACCUEIL_IA =
-  "Je suis Mira. Je réponds à vos questions sur WeFilmGood : profil, fiche projet, lectures, adhésion, application… Si je ne sais pas, je transmets votre demande à l'équipe.";
+  "Je suis Mira. Je réponds à tes questions sur WeFilmGood : profil, fiche projet, lectures, adhésion, application… Si je ne sais pas, je transmets ta demande à l'équipe.";
 
 const ERREURS: Record<number, string> = {
-  429: "Vous avez atteint le nombre de questions du jour. Utilisez « Transmettre à l'équipe » : on vous répondra par email.",
-  503: "Mira n'est pas disponible pour le moment. Utilisez « Transmettre à l'équipe ».",
+  429: "Tu as atteint le nombre de questions du jour. Utilise « Transmettre à l'équipe » : on te répondra par email.",
+  503: "Mira n'est pas disponible pour le moment. Utilise « Transmettre à l'équipe ».",
 };
 
 /**
@@ -86,8 +86,8 @@ export default function Assistant({
         {
           role: "assistant",
           content: ok
-            ? "Message envoyé, merci ! On vous répond par email."
-            : "L'envoi a échoué, réessayez dans un instant.",
+            ? "Message envoyé, merci ! On te répond par email."
+            : "L'envoi a échoué, réessaie dans un instant.",
         },
       ]);
       setEnCours(false);
@@ -110,7 +110,7 @@ export default function Assistant({
         body: JSON.stringify({ messages: suite }),
       });
       if (!reponse.ok || !reponse.body) {
-        ecrire(ERREURS[reponse.status] ?? "Je n'ai pas pu répondre. Réessayez, ou utilisez « Transmettre à l'équipe ».");
+        ecrire(ERREURS[reponse.status] ?? "Je n'ai pas pu répondre. Réessaie, ou utilise « Transmettre à l'équipe ».");
         return;
       }
       const lecture = reponse.body.getReader();
@@ -122,9 +122,9 @@ export default function Assistant({
         texte += decodeur.decode(value, { stream: true });
         ecrire(texte);
       }
-      if (!texte.trim()) ecrire("Je n'ai pas de réponse à vous donner. Utilisez « Transmettre à l'équipe ».");
+      if (!texte.trim()) ecrire("Je n'ai pas de réponse à te donner. Utilise « Transmettre à l'équipe ».");
     } catch {
-      ecrire("La connexion a été coupée. Réessayez, ou utilisez « Transmettre à l'équipe ».");
+      ecrire("La connexion a été coupée. Réessaie, ou utilise « Transmettre à l'équipe ».");
     } finally {
       setEnCours(false);
     }
@@ -228,7 +228,7 @@ export default function Assistant({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Votre email"
+                placeholder="Ton email"
                 required={!ia || demandeEmail}
                 autoFocus={demandeEmail}
                 className={styles.email}
@@ -243,7 +243,7 @@ export default function Assistant({
                   void envoyer(e);
                 }
               }}
-              placeholder={ia ? "Votre question…" : "Votre message…"}
+              placeholder={ia ? "Ta question…" : "Ton message…"}
               rows={2}
               maxLength={2000}
               autoFocus={!visiteur}
@@ -256,7 +256,7 @@ export default function Assistant({
           {ia && (
             <div className={styles.equipe}>
               {transmission === "fait" ? (
-                <span>Transmis à l&apos;équipe, merci ! On vous répond par email ({email}).</span>
+                <span>Transmis à l&apos;équipe, merci ! On te répond par email ({email}).</span>
               ) : (
                 <button
                   type="button"
@@ -268,7 +268,7 @@ export default function Assistant({
                 </button>
               )}
               {transmission === "erreur" && (
-                <span className={contact.erreur}>L&apos;envoi a échoué, réessayez dans un instant.</span>
+                <span className={contact.erreur}>L&apos;envoi a échoué, réessaie dans un instant.</span>
               )}
             </div>
           )}
