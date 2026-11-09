@@ -159,13 +159,18 @@ export default async function MembresPage({
 
   // L'API ne rend que 1 000 lignes par lecture : on lit tout, page par page
   // (le premier passage ne voyait que 1 000 membres sur 3 612).
-  const tous: Membre[] = [];
-  for (let debut = 0; ; debut += 1000) {
-    const { data } = await supabase.rpc("admin_membres").range(debut, debut + 999);
-    const lot = (data ?? []) as Membre[];
-    tous.push(...lot);
-    if (lot.length < 1000) break;
-  }
+  // Les pages sont lues ensemble et non l'une après l'autre (09/11) : avec
+  // 14 641 membres, quinze lectures à la file prenaient 7 à 14 secondes, et
+  // « Revenir à mon compte », qui arrive ici, semblait ne rien faire. Le
+  // premier lot donne le total ; l'ordre fixe évite qu'un membre tombe entre
+  // deux lots.
+  const lireLot = (debut: number) =>
+    supabase.rpc("admin_membres", {}, { count: "exact" }).order("profile_id").range(debut, debut + 999);
+  const premier = await lireLot(0);
+  const tous: Membre[] = [...((premier.data ?? []) as Membre[])];
+  const debuts: number[] = [];
+  for (let debut = 1000; debut < (premier.count ?? 0); debut += 1000) debuts.push(debut);
+  for (const lot of await Promise.all(debuts.map(lireLot))) tous.push(...((lot.data ?? []) as Membre[]));
 
   // Les formats que chaque lecteur peut lire (27/09).
   const service = createAdminClient();

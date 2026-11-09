@@ -39,3 +39,14 @@
   background: #fff;
   color: #e2231a;
 }
+
+/* Clic pris en compte : le bouton pâlit jusqu'à l'arrivée sur son compte. */
+.retour:disabled {
+  opacity: 0.55;
+  cursor: progress;
+}
+
+.retour:disabled:hover {
+  background: none;
+  color: #fff;
+}

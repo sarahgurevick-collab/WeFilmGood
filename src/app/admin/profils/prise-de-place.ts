@@ -29,6 +29,9 @@ const COOKIE_CIBLE = "wfg_incarne";
 // le bandeau a disparu mais la session du membre est restée (Sarah a
 // travaillé le matin à la place de Guillaume Billy sans le voir).
 const DUREE_COOKIES = 60 * 60 * 24 * 30;
+// L'écran où l'on revient. /admin/profils n'existe plus depuis le 07/11 :
+// le 09/11, la reconnexion y menait encore et tombait sur « 404 ».
+const ECRAN_ADMIN = "/admin/membres?metier=avalider";
 
 export async function prendreLaPlace(formData: FormData) {
   const supabase = await createClient();
@@ -36,25 +39,25 @@ export async function prendreLaPlace(formData: FormData) {
   if (admin !== true) redirect("/");
 
   const cible = formData.get("profile_id") as string;
-  if (!cible) redirect("/admin/membres?metier=avalider");
+  if (!cible) redirect(ECRAN_ADMIN);
 
   const { data: session } = await supabase.auth.getSession();
   const retour = session.session?.refresh_token;
-  if (!retour) redirect("/admin/profils?erreur=session");
+  if (!retour) redirect(`${ECRAN_ADMIN}&erreur=session`);
 
   const service = createAdminClient();
-  if (!service) redirect("/admin/profils?erreur=service");
+  if (!service) redirect(`${ECRAN_ADMIN}&erreur=service`);
 
   const { data: membre } = await service.auth.admin.getUserById(cible);
   const email = membre.user?.email;
-  if (!email) redirect("/admin/profils?erreur=sans-email");
+  if (!email) redirect(`${ECRAN_ADMIN}&erreur=sans-email`);
 
   const { data: lien, error } = await service.auth.admin.generateLink({
     type: "magiclink",
     email,
   });
   const jeton = lien?.properties?.hashed_token;
-  if (error || !jeton) redirect("/admin/profils?erreur=lien");
+  if (error || !jeton) redirect(`${ECRAN_ADMIN}&erreur=lien`);
 
   await supabase.rpc("journaliser_prise_de_place", { p_target: cible });
 
@@ -78,7 +81,7 @@ export async function prendreLaPlace(formData: FormData) {
     type: "magiclink",
     token_hash: jeton,
   });
-  if (bascule) redirect("/admin/profils?erreur=bascule");
+  if (bascule) redirect(`${ECRAN_ADMIN}&erreur=bascule`);
 
   // Depuis une fiche projet (30/10) : on y revient, à la place du membre.
   // Sinon, comme le membre lui-même après connexion : les Galaxies.
@@ -92,6 +95,16 @@ export async function revenirAMonCompte() {
   const retour = boite.get(COOKIE_RETOUR)?.value;
 
   const supabase = await createClient();
+
+  // Un second clic pendant que l'écran d'arrivée se charge (09/11) : le
+  // premier a déjà rendu sa session à l'administratrice et effacé les
+  // cookies. Elle est chez elle : surtout ne pas la déconnecter (elle
+  // l'était, puis la reconnexion menait à une page disparue).
+  if (!retour && !(await incarnationEnCours())) {
+    const { data: dejaRevenue } = await supabase.rpc("is_admin");
+    if (dejaRevenue === true) redirect(ECRAN_ADMIN);
+  }
+
   // Depuis la session du membre : la prise de place est close dans le journal.
   await supabase.rpc("terminer_prise_de_place");
 
@@ -100,13 +113,13 @@ export async function revenirAMonCompte() {
 
   if (retour) {
     const { error } = await supabase.auth.refreshSession({ refresh_token: retour });
-    if (!error) redirect("/admin/membres?metier=avalider");
+    if (!error) redirect(ECRAN_ADMIN);
   }
 
   // Sans session d'administratrice à restaurer (cookie perdu, jeton
   // périmé) : on ferme la session du membre, et on se reconnecte.
   await supabase.auth.signOut({ scope: "local" });
-  redirect("/connexion?next=/admin/profils");
+  redirect(`/connexion?next=${encodeURIComponent(ECRAN_ADMIN)}`);
 }
 
 /**

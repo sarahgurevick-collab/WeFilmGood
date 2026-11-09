@@ -1,4 +1,5 @@
 import { revenirAMonCompte } from "@/app/admin/profils/prise-de-place";
+import BoutonRetourCompte from "./BoutonRetourCompte";
 import styles from "./BandeauIncarnation.module.css";
 
 /**
@@ -16,9 +17,7 @@ export default function BandeauIncarnation() {
         enregistré en son nom.
       </span>
       <form action={revenirAMonCompte}>
-        <button type="submit" className={styles.retour}>
-          Revenir à mon compte
-        </button>
+        <BoutonRetourCompte />
       </form>
     </div>
   );
