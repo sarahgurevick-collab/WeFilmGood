@@ -21,8 +21,11 @@ export async function utilisateur() {
 }
 
 /**
- * Déposer un videopitch : le porteur du projet, s'il est adhérent (le
- * videopitch fait partie de l'adhésion), ou l'administration à sa place.
+ * Déposer un videopitch : le porteur du projet, si la lecture de ce projet
+ * est payée (les 50 €) ou s'il est adhérent, ou l'administration à sa place
+ * (Sarah, 09/11 : « Quand on paye 50 euros, on a un retour de lecture et on
+ * doit mettre un vidéo pitch associé au projet. Quand on est adhérent […] on
+ * peut ajouter un vidéo pitch sans avoir à rien repayer »).
  */
 export async function peutDeposer(projectId: string) {
   const u = await utilisateur();
@@ -35,8 +38,15 @@ export async function peutDeposer(projectId: string) {
   if (!projet) return null;
   if (u.estAdmin) return { ...u, projet };
   if (projet.owner_id !== u.id) return null;
-  const { data: adherent } = await u.supabase.rpc("a_une_adhesion_active", { p_profile_id: u.id });
-  return adherent === true ? { ...u, projet } : null;
+  const [{ data: adherent }, { count: lecturesPayees }] = await Promise.all([
+    u.supabase.rpc("a_une_adhesion_active", { p_profile_id: u.id }),
+    u.supabase
+      .from("lecture_demandes")
+      .select("id", { count: "exact", head: true })
+      .eq("project_id", projectId)
+      .eq("status", "payee"),
+  ]);
+  return adherent === true || (lecturesPayees ?? 0) > 0 ? { ...u, projet } : null;
 }
 
 /** Un dépôt, si la personne connectée en est l'auteur (ou l'admin). */
