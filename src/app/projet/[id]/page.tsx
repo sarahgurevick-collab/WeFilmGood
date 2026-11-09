@@ -38,6 +38,8 @@ const FORMATS_LISIBLES: Record<string, string> = {
   serie: "Série",
   immersif_360_vr: "Format immersif (360/VR)",
 };
+// Formats sans budget ni audience : le court métrage (27/09) et le format immersif 360/VR (09/11, Sarah).
+const SANS_BUDGET_NI_AUDIENCE = ["court_metrage", "immersif_360_vr"];
 
 type Project = {
   id: string;
@@ -484,11 +486,12 @@ export default async function ProjetPage({
             project.techniques?.includes("animation") ? "Animation" : null,
             project.techniques?.includes("contenu_ia") ? "Contenu IA" : null,
             project.techniques?.includes("medias_mixtes") ? "Médias mixtes" : null,
+            project.techniques?.includes("formats_immersifs") ? "Formats immersifs (360/VR)" : null,
             FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
             nomDeLangue(project.language),
             // Pas de budget ni d'audience pour un court métrage (27/09).
-            project.format !== "court_metrage" && project.budget_range ? BUDGET_LISIBLE[project.budget_range] : null,
-            project.format !== "court_metrage" && project.target_audience ? AUDIENCE_LISIBLE[project.target_audience] : null,
+            !SANS_BUDGET_NI_AUDIENCE.includes(project.format ?? "") && project.budget_range ? BUDGET_LISIBLE[project.budget_range] : null,
+            !SANS_BUDGET_NI_AUDIENCE.includes(project.format ?? "") && project.target_audience ? AUDIENCE_LISIBLE[project.target_audience] : null,
           ].filter((x): x is string => Boolean(x));
           // Les mots-clés servent à la recherche, en coulisse : seule
           // l'admin les voit tous ici, pour comprendre pourquoi un projet

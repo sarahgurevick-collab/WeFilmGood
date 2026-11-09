@@ -95,8 +95,9 @@
   }
 }
 
-/* Budget et audience n'ont pas de sens pour un court métrage (27/09) :
-   ils disparaissent dès que ce format est choisi. */
-.groupe:has(select[name="format"] option[value="court_metrage"]:checked) .horsCourt {
+/* Budget et audience n'ont pas de sens pour un court métrage (27/09) ni pour
+   un format immersif 360/VR (09/11) : ils disparaissent dès que ce format est choisi. */
+.groupe:has(select[name="format"] option[value="court_metrage"]:checked) .horsCourt,
+.groupe:has(select[name="format"] option[value="immersif_360_vr"]:checked) .horsCourt {
   display: none;
 }

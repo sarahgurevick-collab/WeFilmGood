@@ -10,4 +10,6 @@ export const TECHNIQUES = [
   { value: "contenu_ia", label: "Contenu IA" },
   // 07/11, Sarah : pour les projets qui mêlent les techniques.
   { value: "medias_mixtes", label: "Médias mixtes" },
+  // 09/11, Sarah : « Dans la dernière marche, rajouter formats immersifs (360/VR) ».
+  { value: "formats_immersifs", label: "Formats immersifs (360/VR)" },
 ];

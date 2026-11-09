@@ -11,6 +11,8 @@ import { IMAGES, deposerImage } from "./[id]/fichiers";
 // Un documentaire ou un film d'animation n'est pas un format : selon sa
 // durée, c'est un long ou un court métrage.
 const FORMATS = ["long_metrage", "court_metrage", "serie", "immersif_360_vr"];
+// Formats sans budget ni audience : le court métrage (27/09) et le format immersif 360/VR (09/11, Sarah).
+const SANS_BUDGET_NI_AUDIENCE = ["court_metrage", "immersif_360_vr"];
 const VALEURS_BUDGET = BUDGETS.map((b) => b.value);
 const VALEURS_AUDIENCE = AUDIENCES.map((a) => a.value);
 const VALEURS_POSTURE = POSTURES.map((p) => p.value);
@@ -63,7 +65,7 @@ export async function createProject(formData: FormData) {
   if (!format) echec("Le format est obligatoire.");
   if (!genreSlug) echec("Le genre principal est obligatoire.");
   if (postures.length === 0) echec("Indiquez s'il s'agit d'une fiction ou d'un documentaire.");
-  if (techniques.length === 0) echec("Indiquez la technique : prise de vues réelles, animation, contenu IA ou médias mixtes.");
+  if (techniques.length === 0) echec("Indiquez la technique : prise de vues réelles, animation, contenu IA, médias mixtes ou formats immersifs.");
   if (!FORMATS.includes(format)) echec("Format de projet invalide.");
   if (budgetRange && !VALEURS_BUDGET.includes(budgetRange)) echec("Budget estimé invalide.");
   if (targetAudience && !VALEURS_AUDIENCE.includes(targetAudience)) echec("Audience ciblée invalide.");
@@ -88,9 +90,9 @@ export async function createProject(formData: FormData) {
       genre_slug: genreSlug || null,
       postures,
       techniques,
-      // Pas de budget ni d'audience pour un court métrage (27/09).
-      budget_range: format === "court_metrage" ? null : budgetRange || null,
-      target_audience: format === "court_metrage" ? null : targetAudience || null,
+      // Pas de budget ni d'audience pour un court métrage (27/09) ni pour un format immersif (09/11).
+      budget_range: SANS_BUDGET_NI_AUDIENCE.includes(format) ? null : budgetRange || null,
+      target_audience: SANS_BUDGET_NI_AUDIENCE.includes(format) ? null : targetAudience || null,
       has_awards: hasAwards,
       awards_detail: awardsDetail,
       status: "depose",

@@ -146,7 +146,8 @@ export default function ChampsFiche({
           ce sont les mots-clés générés qui s'en chargent, bien mieux que la
           liste manuelle de WFG 1 (décision de Sarah, 22/09/2026).
           Budget et audience disparaissent pour un court métrage (27/09) :
-          il est fait pour les festivals, sans modèle économique. */}
+          il est fait pour les festivals, sans modèle économique. Même chose
+          pour un format immersif 360/VR (09/11, Sarah). */}
       <div className={styles.groupe}>
         <label className={formStyles.field}>
           <span>Format *</span>

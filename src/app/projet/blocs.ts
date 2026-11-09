@@ -79,9 +79,9 @@ export async function etatDesBlocs(
   const aMoodboard = genresFichiers.includes("moodboard");
   const nombrePersonnages = personnages ?? 0;
 
-  // Pas de budget ni d'audience pour un court métrage (27/09) : ils ne
-  // comptent pas dans son remplissage.
-  const court = projet?.format === "court_metrage";
+  // Pas de budget ni d'audience pour un court métrage (27/09) ni pour un
+  // format immersif 360/VR (09/11) : ils ne comptent pas dans son remplissage.
+  const court = projet?.format === "court_metrage" || projet?.format === "immersif_360_vr";
   const criteresFiche = [
     !!projet?.tagline?.trim(),
     !!projet?.logline?.trim(),
