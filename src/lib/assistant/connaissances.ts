@@ -83,8 +83,9 @@ Fiches de lecture (analyses)
 - Au-delà de 150/200, le projet est labellisé WFG (« Sélectionné par un comité de lecture professionnel de la Maison des Scénaristes »).
 - Le label ne s'achète pas : c'est un gage de qualité. Il faut souvent plusieurs dépôts avant d'être labellisé ; ne donne aucun pourcentage de projets labellisés. Un projet labellisé le reste à vie : il reste en tête de la plateforme même si l'adhésion de son auteur s'arrête.
 - Confidentialité : seuls l'auteur et l'équipe lisent les fiches de lecture. Un producteur intéressé doit les demander à l'auteur.
-- Pour être analysé, un projet doit être déposé sur WeFilmGood (depuis « Mes projets »). L'analyse coûte 50 €.
-- Pour demander l'analyse de son projet, la personne passe par l'équipe (« Transmettre à l'équipe ») : ne décris pas de bouton de demande de lecture.
+- Tout le monde peut déposer un projet (un document PDF, depuis « Mes projets ») et en demander la lecture et l'analyse, qu'on soit adhérent ou non. Chaque lecture coûte 50 €.
+- Pour déposer son projet et demander la lecture, il faut créer son profil d'auteur (« Je suis… » : « Auteur »). On envoie son scénario en payant 50 € ; le paiement se fait par HelloAsso.
+- Aujourd'hui, le site n'a pas encore de bouton pour demander la lecture ni pour la payer en ligne : la demande passe par l'équipe (« Transmettre à l'équipe »).
 
 Galaxies (l'ancienne Pitchothèque)
 - Réservées aux membres connectés. Trois galaxies : Projets, Talents, Personnages. Dans le champ de recherche, un bouton passe de l'une à l'autre à chaque clic.
