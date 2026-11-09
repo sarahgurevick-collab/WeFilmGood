@@ -1,11 +1,19 @@
-// Charge un dump MySQL de WFG 1 (export phpMyAdmin, « ouifeelm_good.sql »)
-// dans un schéma de la base Postgres de WFG 2, sans MariaDB ni pgloader :
-// le fichier est lu ligne à ligne et recopié dans Postgres par COPY.
+// Charge un dump MySQL de WFG 1 (« ouifeelm_good.sql ») dans un schéma de
+// la base Postgres de WFG 2, sans MariaDB ni pgloader : le fichier est lu
+// ligne à ligne et recopié dans Postgres par COPY.
 //
 // Pourquoi : la base MariaDB temporaire a été supprimée du serveur le
-// 21/09/2026 et aucun outil de conversion n'est installé. Le dump
-// phpMyAdmin a une forme simple (une ligne par enregistrement), on la
-// lit directement.
+// 21/09/2026 et aucun outil de conversion n'est installé. Les dumps MySQL
+// ont une forme simple (CREATE TABLE puis INSERT … VALUES), on la lit
+// directement.
+//
+// Formats acceptés (08/11/2026) :
+//   - export phpMyAdmin comme en septembre (une ligne par enregistrement,
+//     liste des colonnes dans chaque INSERT) ;
+//   - sauvegarde cPanel / mysqldump (« Télécharger une sauvegarde de base
+//     de données MySQL ») : plusieurs enregistrements par ligne, INSERT
+//     sans liste de colonnes (l'ordre du CREATE TABLE fait foi) ;
+//   - fichier compressé .gz dans les deux cas (c'est ce que donne cPanel).
 //
 // Ce que fait le script :
 //   - crée le schéma demandé (refuse s'il existe déjà, sauf --remplacer) ;
@@ -25,8 +33,9 @@
 //
 // Le dump contient des données personnelles : il reste dans ~/imports,
 // jamais dans le dépôt.
-import { createReadStream, existsSync, statSync } from "node:fs";
+import { closeSync, createReadStream, existsSync, openSync, readSync, statSync } from "node:fs";
 import { spawn } from "node:child_process";
+import { createGunzip } from "node:zlib";
 
 const args = process.argv.slice(2);
 function option(nom, defaut) {
@@ -101,19 +110,37 @@ function decoder(octets) {
   }
 }
 
-// Une ligne « (v1, v2, …), » ou « (v1, v2, …); » → tableau de valeurs
+// Une ligne « (v1, v2, …), », « (v1, v2, …); » ou « (…),(…),(…); »
+// (mysqldump) → tableau d'enregistrements, chacun un tableau de valeurs
 // (null pour NULL). La ligne est donnée en latin1 (un caractère = un
 // octet) ; chaque texte est décodé à part, pour qu'une ligne mêlant du bon
 // UTF-8 et un texte abîmé ne soit pas entièrement abîmée.
-function lireLigne(l) {
-  const valeurs = [];
-  let i = 0;
+function lireLignes(l) {
+  const enregistrements = [];
   const n = l.length;
-  while (i < n && l[i] !== "(") i++;
-  i++;
+  let i = 0;
+  for (;;) {
+    while (i < n && l[i] !== "(") {
+      if (l[i] === ";") return enregistrements;
+      i++;
+    }
+    if (i >= n) return enregistrements;
+    const r = lireEnregistrement(l, i + 1);
+    enregistrements.push(r.valeurs);
+    i = r.i;
+  }
+}
+
+// Lit un enregistrement à partir de la position i (juste après sa
+// parenthèse ouvrante) ; rend les valeurs et la position après la
+// parenthèse fermante.
+function lireEnregistrement(l, i) {
+  const valeurs = [];
+  const n = l.length;
   while (i < n) {
     while (i < n && (l[i] === " " || l[i] === ",")) i++;
-    if (i >= n || l[i] === ")") break;
+    if (i >= n) break;
+    if (l[i] === ")") { i++; break; }
     if (l[i] === "'") {
       i++;
       let morceau = "";
@@ -151,7 +178,7 @@ function lireLigne(l) {
       i = j;
     }
   }
-  return valeurs;
+  return { valeurs, i };
 }
 
 // Valeur → format texte de COPY.
@@ -223,6 +250,7 @@ let enCreate = null; // { table, colonnes: [{nom, type}] }
 let tableCourante = null; // table de l'INSERT en cours
 let colonnesInsert = null;
 let tablesVues = [];
+const colonnesTables = new Map(); // table → colonnes du CREATE TABLE (pour les INSERT sans liste)
 let reste = Buffer.alloc(0);
 let octetsLus = 0;
 const taille = statSync(DUMP).size;
@@ -235,6 +263,7 @@ async function traiterLigne(octets) {
     if (l.startsWith(")")) {
       const t = enCreate;
       enCreate = null;
+      colonnesTables.set(t.table, t.colonnes.map((c) => c.nom));
       if (!TABLES || TABLES.includes(t.table)) {
         const defs = t.colonnes.map((c) => {
           const ref = typesReference.get(`${t.table}.${c.nom}`);
@@ -251,18 +280,23 @@ async function traiterLigne(octets) {
     return;
   }
 
-  if (l.startsWith("CREATE TABLE `")) {
+  if (l.startsWith("CREATE TABLE ")) {
+    const m = l.match(/^CREATE TABLE (?:IF NOT EXISTS )?`([^`]+)`/);
+    if (!m) throw new Error(`CREATE TABLE illisible : ${l.slice(0, 120)}`);
     await fermerCopie();
     tableCourante = null;
-    enCreate = { table: l.match(/^CREATE TABLE `([^`]+)`/)[1], colonnes: [] };
+    enCreate = { table: m[1], colonnes: [] };
     return;
   }
 
   if (l.startsWith("INSERT INTO `")) {
-    const m = l.match(/^INSERT INTO `([^`]+)` \(([^)]*)\) VALUES\s*(.*)$/s);
+    const m = l.match(/^INSERT INTO `([^`]+)`\s*(?:\(([^)]*)\))?\s*VALUES\s*(.*)$/s);
     if (!m) throw new Error(`INSERT illisible : ${l.slice(0, 120)}`);
     const table = m[1];
-    const colonnes = m[2].split(",").map((c) => c.trim().replace(/^`|`$/g, ""));
+    const colonnes = m[2] !== undefined
+      ? m[2].split(",").map((c) => c.trim().replace(/^`|`$/g, ""))
+      : colonnesTables.get(table);
+    if (!colonnes) throw new Error(`INSERT dans ${table} sans liste de colonnes et sans CREATE TABLE avant`);
     if (TABLES && !TABLES.includes(table)) { tableCourante = null; return; }
     if (!copie || copie.table !== table) {
       await fermerCopie();
@@ -282,17 +316,32 @@ async function traiterLigne(octets) {
 }
 
 async function traiterValeurs(l) {
-  const valeurs = lireLigne(l);
-  if (valeurs.length !== colonnesInsert.length) {
-    throw new Error(`${tableCourante} : ${valeurs.length} valeurs pour ${colonnesInsert.length} colonnes — ${l.slice(0, 200)}`);
+  for (const valeurs of lireLignes(l)) {
+    if (valeurs.length !== colonnesInsert.length) {
+      throw new Error(`${tableCourante} : ${valeurs.length} valeurs pour ${colonnesInsert.length} colonnes — ${l.slice(0, 200)}`);
+    }
+    copie.n++;
+    const attente = ecrire(valeurs.map(pourCopy).join("\t") + "\n");
+    if (attente) await attente;
   }
-  copie.n++;
-  const attente = ecrire(valeurs.map(pourCopy).join("\t") + "\n");
-  if (attente) await attente;
 }
 
-for await (const morceau of createReadStream(DUMP, { highWaterMark: 4 << 20 })) {
-  octetsLus += morceau.length;
+// Fichier brut ou compressé (.gz : les deux premiers octets valent 1f 8b).
+function ouvrirDump() {
+  const brut = createReadStream(DUMP, { highWaterMark: 4 << 20 });
+  brut.on("data", (d) => (octetsLus += d.length)); // l'avancement se mesure sur le fichier lu
+  const entete = Buffer.alloc(2);
+  const fd = openSync(DUMP, "r");
+  readSync(fd, entete, 0, 2, 0);
+  closeSync(fd);
+  if (entete[0] === 0x1f && entete[1] === 0x8b) {
+    console.log("  fichier compressé (gzip) : décompression à la volée");
+    return brut.pipe(createGunzip());
+  }
+  return brut;
+}
+
+for await (const morceau of ouvrirDump()) {
   let tampon = reste.length ? Buffer.concat([reste, morceau]) : morceau;
   let debut = 0;
   for (;;) {

@@ -25,15 +25,13 @@ export const COULEUR: Record<Famille, string> = {
 
 export type Tag = { famille: Famille; valeur: string; libelle: string };
 
-/** Les règles de Sarah : un court métrage (27/09) ou un format immersif 360/VR (09/11)
- *  n'a ni audience ni budget, et l'inverse. */
-const SANS_BUDGET_NI_AUDIENCE = ["court_metrage", "immersif_360_vr"];
+/** Les règles de Sarah : un court métrage n'a ni audience ni budget, et l'inverse. */
 export function familleCachee(famille: Famille, f: Filtres) {
-  if (famille === "audience" || famille === "budget") return SANS_BUDGET_NI_AUDIENCE.includes(f.format ?? "");
+  if (famille === "audience" || famille === "budget") return f.format === "court_metrage";
   return false;
 }
 export function tagCache(t: Tag, f: Filtres) {
-  return t.famille === "format" && SANS_BUDGET_NI_AUDIENCE.includes(t.valeur) && Boolean(f.audience || f.budget);
+  return t.famille === "format" && t.valeur === "court_metrage" && Boolean(f.audience || f.budget);
 }
 
 type Contexte = {

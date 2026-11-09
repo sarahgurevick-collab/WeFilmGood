@@ -90,7 +90,7 @@ Fiches de lecture (analyses)
 Galaxies (l'ancienne Pitchothèque)
 - Réservées aux membres connectés. Trois galaxies : Projets, Talents, Personnages. Dans le champ de recherche, un bouton passe de l'une à l'autre à chaque clic.
 - Recherche : on tape un projet, un thème ou un mot-clé. Les projets où le mot se lit sur la fiche viennent d'abord, puis ceux « Rapprochés par le sens ».
-- « Recherche avancée » : quatre lignes d'étiquettes de couleur — format (bleu), genre (rouge), audience (jaune), budget (vert) —, une seule par ligne. L'étiquette choisie monte dans la barre de recherche ; sa croix × la retire ; « Tout effacer » retire tout. Avec « Court métrage » ou « Format immersif (360/VR) », les lignes audience et budget disparaissent.
+- « Recherche avancée » : quatre lignes d'étiquettes de couleur — format (bleu), genre (rouge), audience (jaune), budget (vert) —, une seule par ligne. L'étiquette choisie monte dans la barre de recherche ; sa croix × la retire ; « Tout effacer » retire tout. Avec « Court métrage », les lignes audience et budget disparaissent.
 - Nuage de mots-clés : le petit nuage à droite du champ (« Explorer les mots-clés »). Il montre les mots-clés les plus utilisés, ou les mots proches de celui qu'on a tapé ; le « − » et le « + » en montrent moins ou plus ; un clic sur un mot lance la recherche. Il est ouvert à tous les membres connectés, adhérents ou non.
 - Ordre des projets : d'abord les projets labellisés et ceux qui portent le bandeau « Signé » ou « Tourné », puis ceux qui ont un videopitch, puis les autres selon le remplissage de leur fiche. Dans chaque groupe, l'ordre est tiré au sort chaque nuit.
 - Un projet sans image de présentation n'apparaît pas dans les Galaxies ni dans la recherche.

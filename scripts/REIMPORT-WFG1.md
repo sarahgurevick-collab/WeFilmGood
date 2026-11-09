@@ -40,6 +40,75 @@ Avant de lancer quoi que ce soit : vérifier qu'une sauvegarde de WFG 2 de la
 nuit existe (`~/sauvegarde-prete`), et que personne ne travaille dans
 l'administration pendant la dizaine de minutes de l'application.
 
+## Sans l'ami hébergeur : tout faire depuis cPanel
+
+En septembre, l'ami hébergeur a fait trois choses, toutes depuis cPanel
+(l'espace de gestion de l'hébergement o2switch) : la sauvegarde de la base
+depuis phpMyAdmin, la création des comptes FTP, et la remise des accès.
+Sarah peut les faire elle-même si elle a l'identifiant et le mot de passe
+de cPanel (ou de l'espace client o2switch, qui y mène). Rien ne presse :
+chaque étape se fait à son rythme, et aucune n'abîme WFG 1.
+
+Les noms des menus ci-dessous sont ceux du cPanel standard en français ;
+ils peuvent différer d'un mot chez o2switch. En cas de doute, une capture
+d'écran suffit pour s'y retrouver.
+
+### Le chemin le plus simple : une sauvegarde complète en un clic
+
+1. Dans cPanel, ouvrir **Sauvegarde** (section « Fichiers »).
+2. Sous **Télécharger une sauvegarde complète du site Web**, choisir
+   « Destination de sauvegarde : Répertoire d'accueil », laisser l'adresse
+   e-mail pour être prévenue, puis **Générer la sauvegarde**. cPanel fabrique
+   un fichier `backup-<date>_<identifiant>.tar.gz` à la racine de
+   l'hébergement (pas dans `public_html`). Il contient la base MySQL
+   (dossier `mysql/`), les images (`homedir/public_html/assets/img/`) et les
+   documents (`homedir/data/projects/`) : les trois choses dont on a besoin,
+   figées au même instant. Compter de quelques minutes à une heure (une
+   vingtaine de Go). L'e-mail dit quand c'est fini.
+3. Ouvrir **Comptes FTP**, créer un compte (par exemple
+   `bascule@wefilmgood.com`) avec le **répertoire `/`** (la racine, et non
+   `public_html`), un mot de passe généré, et me le transmettre avec le nom
+   du serveur (`ftp.wefilmgood.com`). Le mot de passe ne va nulle part dans
+   le code ; le compte est à **supprimer** une fois le transfert fini.
+4. Je rapatrie le fichier sur le serveur de WFG 2 par FTP, comme en
+   septembre, je l'ouvre dans `~/imports/final/`, puis j'en tire :
+   - la base : `mysql/ouifeelm_good.sql` → c'est le fichier de l'étape 1
+     ci-dessous (le chargeur lit ce format aussi) ;
+   - les images et documents nouveaux : copiés **sans rien remplacer** dans
+     `~/imports/extrait/img/` et `~/imports/docs/`, où les scripts
+     d'images et de documents les trouvent (ils ne redéposent jamais ce qui
+     est déjà sur WFG 2).
+
+La sauvegarde complète double un moment l'espace occupé chez o2switch ;
+le fichier se supprime depuis le **Gestionnaire de fichiers** quand tout
+est rapatrié. Sur le serveur de WFG 2, il y a la place (78 Go libres au
+08/11).
+
+### Sinon, pièce par pièce
+
+- **La base seule** : dans **Sauvegarde**, sous « Télécharger une
+  sauvegarde de base de données MySQL », cliquer sur `ouifeelm_good` :
+  le fichier `ouifeelm_good.sql.gz` arrive sur l'ordinateur de Sarah. Le
+  chargeur lit ce fichier compressé tel quel. Pour le mettre sur le serveur
+  de WFG 2 sans le décompresser : le déposer dans un dossier `sauvegardes/`
+  créé à la racine de l'hébergement avec le **Gestionnaire de fichiers**
+  (bouton « Charger »), et je le prends par FTP ; ou bien phpMyAdmin →
+  onglet **Exporter** → « Rapide » → Exécuter, qui donne le même fichier
+  qu'en septembre, non compressé (3 Go, long à télécharger : préférer la
+  sauvegarde cPanel).
+- **Les images et les documents** : avec le compte FTP à la racine,
+  je ne télécharge que ce qui manque dans `public_html/assets/img/` et
+  `data/projects/` par rapport à septembre.
+
+### Ce qu'il faut savoir avant de commencer
+
+- L'**heure de la sauvegarde** devient l'heure du gel : tout ce qui est
+  fait sur WFG 1 après n'est pas repris. Le mieux est de prévenir les
+  membres avant, ou de fermer les inscriptions et dépôts sur WFG 1.
+- Si Sarah n'a **pas** les accès cPanel, la seule chose à demander à l'ami
+  hébergeur est de les lui donner (ou de créer un utilisateur cPanel pour
+  elle) : cinq minutes de son temps, et le reste se fait sans lui.
+
 ## Les étapes, dans l'ordre
 
 Toutes les commandes se lancent depuis le dossier du code
@@ -51,8 +120,11 @@ Toutes les commandes se lancent depuis le dossier du code
 node scripts/charger-dump-wfg1.mjs --dump ~/imports/wfg1-final.sql --schema wfg1_final
 ```
 
-Le script affiche, table par table, le nombre de lignes chargées à côté de
-celui de la copie de septembre : les nombres doivent être égaux ou plus
+Le fichier peut être celui d'un export phpMyAdmin (comme en septembre),
+celui d'une sauvegarde cPanel (`ouifeelm_good.sql.gz`, compressé : le
+script le lit tel quel) ou le `mysql/ouifeelm_good.sql` tiré d'une
+sauvegarde complète. Le script affiche, table par table, le nombre de
+lignes chargées à côté de celui de la copie de septembre : les nombres doivent être égaux ou plus
 grands (il y a eu des inscriptions et des dépôts depuis). S'il refuse parce
 que le schéma existe déjà (un essai précédent), ajouter `--remplacer`.
 
@@ -166,7 +238,12 @@ et IMDb des profils, les mots-clés des fiches de personnages, les pages
 
 ## Test à blanc du 8 novembre 2026
 
-Le script a été testé sur la copie de septembre prise à la fois comme
+Le chargeur accepte depuis le 08/11 le format des sauvegardes cPanel
+(mysqldump : plusieurs enregistrements par ligne, sans liste de colonnes)
+et les fichiers compressés `.gz` ; testé sur un fichier fabriqué dans ce
+format à partir de la copie de septembre (4 comptes identiques à l'octet
+près, table `coupons` complète). Le script de réimportation a été testé
+sur la copie de septembre prise à la fois comme
 source et comme référence : **0 ajout, 0 complément**, comme attendu
 (tout est déjà repris). Le chargeur a été testé sur le dump de septembre
 (12 tables rechargées dans un schéma d'essai, mêmes nombres de lignes,
