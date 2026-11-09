@@ -1,5 +1,7 @@
 import "server-only";
 
+import { MODELES_OPENROUTER } from "@/lib/assistant/modele";
+
 /**
  * Le filtre IA des commentaires CinéCrush (24/10/2026, Sarah : « oui, le
  * filtre IA au début ; si tout se passe bien avec la communauté créée,
@@ -12,8 +14,6 @@ import "server-only";
  * ou si le modèle ne répond pas, le commentaire est publié : le filtre
  * ne doit jamais bloquer la conversation.
  */
-
-const MODELE = "minimax/minimax-m3";
 
 const CONSIGNE = `Tu relis un commentaire laissé par un membre de WeFilmGood, une plateforme de scénaristes et de producteurs, sous le videopitch d'un projet de film mis en avant cette semaine (le « CinéCrush »). Les commentaires sont des avis libres : enthousiastes, critiques, courts, maladroits, en français ou en anglais — tout cela est acceptable.
 Mets de côté SEULEMENT : une insulte ou une attaque personnelle ; un propos haineux ou obscène ; une publicité ou un lien sans rapport ; un numéro de téléphone, une adresse postale ou une adresse email ; un texte sans aucun rapport avec le cinéma ou le projet.
@@ -34,7 +34,7 @@ export async function filtrerCommentaire(texte: string): Promise<VerdictFiltre> 
         "X-Title": "WeFilmGood",
       },
       body: JSON.stringify({
-        model: MODELE,
+        models: MODELES_OPENROUTER,
         temperature: 0,
         max_tokens: 120,
         messages: [

@@ -1,16 +1,17 @@
 import { consignesAssistant } from "@/lib/assistant/connaissances";
+import { MODELES_OPENROUTER } from "@/lib/assistant/modele";
 import { createClient } from "@/lib/supabase/server";
 
 /**
- * L'assistant des membres : relaie la conversation à MiniMax M3 (par
- * OpenRouter) et renvoie la réponse au fil de l'eau, en texte brut.
+ * L'assistant des membres : relaie la conversation à un modèle
+ * d'OpenRouter (voir `modele.ts`) et renvoie la réponse au fil de l'eau,
+ * en texte brut.
  *
  * Ouvert aux membres connectés et aux visiteurs de l'accueil — pas aux
  * lecteurs, qui restent à part. Un plafond quotidien (par membre, ou par
  * adresse IP pour un visiteur) protège la facture.
  */
 
-const MODELE = "minimax/minimax-m3";
 const PLAFOND_JOUR = 60;
 /** Un visiteur non connecté, compté par adresse IP. */
 const PLAFOND_VISITEUR = 20;
@@ -167,13 +168,13 @@ export async function POST(request: Request) {
       "X-Title": "WeFilmGood",
     },
     body: JSON.stringify({
-      model: MODELE,
+      models: MODELES_OPENROUTER,
       stream: true,
       temperature: 0.3,
       max_tokens: 800,
       messages: [
-        { role: "system", content: consignesAssistant(informations as string | null) },
-        { role: "system", content: contexte },
+        // Une seule consigne : certains modèles (Gemma) n'en acceptent qu'une.
+        { role: "system", content: `${consignesAssistant(informations as string | null)}\n\n${contexte}` },
         ...messages,
       ],
     }),

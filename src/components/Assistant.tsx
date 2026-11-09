@@ -20,7 +20,7 @@ const ERREURS: Record<number, string> = {
 
 /**
  * L'assistant des membres connectés, à la place du bouton de contact :
- * il répond sur le fonctionnement du site (MiniMax M3, via /api/assistant)
+ * il répond sur le fonctionnement du site (un modèle d'OpenRouter, via /api/assistant)
  * et, s'il ne sait pas, transmet la conversation à l'équipe, qui répond
  * par email. Les visiteurs et les lecteurs gardent le formulaire classique.
  */
