@@ -79,7 +79,7 @@ Fiches de lecture (analyses)
 - Un lecteur professionnel rédige une analyse, relue et validée par la Maison des Scénaristes avant d'être remise à l'auteur. Sur sa fiche, le cadre « Où en est votre projet » montre les étapes : « Projet reçu », « Lecture en cours », « Relecture et validation », « Analyse disponible ».
 - Délai : une dizaine de jours en moyenne.
 - L'auteur lit ses analyses par le bouton « Fiches de lecture » sous le cadre de sa fiche : la date, la note sur 200, le texte, et parfois un « Avis WeFilmGood ». Du lecteur, il ne connaît que le prénom.
-- L'auteur dit sa satisfaction : « Notez cette analyse », cinq visages, du plus mécontent au plus ravi ; un clic suffit. Tant qu'il ne l'a pas fait, un bandeau « Notez votre fiche de lecture » reste en haut de « Mes projets ».
+- L'auteur dit sa satisfaction : « Notez cette analyse », cinq émoticônes, de la plus mécontente à la plus ravie ; un clic suffit. Tant qu'il ne l'a pas fait, un bandeau « Notez votre fiche de lecture » reste en haut de « Mes projets ».
 - Au-delà de 150/200, le projet est labellisé WFG (« Sélectionné par un comité de lecture professionnel de la Maison des Scénaristes »).
 - Le label ne s'achète pas : c'est un gage de qualité. Il faut souvent plusieurs dépôts avant d'être labellisé ; ne donne aucun pourcentage de projets labellisés. Un projet labellisé le reste à vie : il reste en tête de la plateforme même si l'adhésion de son auteur s'arrête.
 - Confidentialité : seuls l'auteur et l'équipe lisent les fiches de lecture. Un producteur intéressé doit les demander à l'auteur.
