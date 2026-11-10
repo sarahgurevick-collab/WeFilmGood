@@ -93,10 +93,10 @@ const ADHESION: Noeud[] = [
   },
   {
     id: "fiche-projet",
-    nom: "Fiche Projet (Fiche Vitrine)",
+    nom: "Fiches Projets",
     icone: "fiche",
     texte:
-      "Ne laisse aucun scénario dans ton tiroir : tes projets en développement, même anciens, sont la vitrine et la richesse de ton univers. Elle est conçue pour attirer l’œil des producteurs, inspirer les comédiens (ComedyPitch) ou les compositeurs (MusicPitch). Tu peux ajouter un StoryPitch pour chacun de tes projets.",
+      "Ne laisse aucun scénario dans ton tiroir : tes projets en développement, même anciens, sont la vitrine et la richesse de ton univers qui attise la curiosité des producteurs, inspire les comédiens (ComedyPitch) et les compositeurs (MusicPitch). Tu peux ajouter un StoryPitch pour chacun de tes projets.",
     aZero: "payant",
   },
   {
