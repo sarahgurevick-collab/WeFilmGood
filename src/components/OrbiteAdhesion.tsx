@@ -144,7 +144,7 @@ const SERVICES: Noeud[] = [
   },
   {
     id: "credits-galaxie",
-    nom: "Crédits Galaxie",
+    nom: "Crédits Gravity",
     icone: "gravity",
     texte:
       "Profitez de 25 Gravity au lieu de 20 (soit 15 € de cadeaux) pour booster vos histoires et déclencher vos premiers coups de cœur.",
