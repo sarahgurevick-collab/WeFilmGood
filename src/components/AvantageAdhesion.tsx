@@ -123,7 +123,7 @@ export const ICONES = {
       <circle cx="5.6" cy="18.4" r="1.4" />
     </svg>
   ),
-  // Une pièce : les crédits (les Gooders).
+  // Une pièce : les crédits (les Gravity).
   piece: (
     <svg
       width="20"

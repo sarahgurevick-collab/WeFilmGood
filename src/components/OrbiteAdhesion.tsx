@@ -71,7 +71,7 @@ const ADHESION: Noeud[] = [
     nom: "Les Galaxies Projets - Personnages - Talents",
     icone: "galaxie",
     texte:
-      "Ton adhésion t’ouvre les portes d’un nouvel univers par jour. Découvre le projet de ton choix : Tagline, logline, moodboard, personnages.\nL’auteur écrit l’histoire et enregistre un StoryPitch, le comédien lui donne vie et s’en amuse avec un ComedyPitch, le compositeur compose le MusicPitch (thème ou chanson phare) qui déclenchera la production du film !\nEnregistre le projet dans tes favoris et contacte les Talents le moment venu.\nChaque jour, un nouveau Gooder (crédit) t’attend pour l’une des 3 galaxies au choix.",
+      "Chaque jour tu as un nouveau Gravity (crédit) pour trouver le projet de ton choix dans la Galaxie de projets. Tu pourras écouter l’auteur raconter son histoire (StoryPitch), un comédien qui donne vie aux personnages (ComedyPitch) ou un compositeur qui propose le thème ou on l’espère une chanson phare qui déclenchera la production du film (MusicPitch)\nEnregistre le projet dans tes favoris et contacte les Talents le moment venu.",
     aZero: "reste",
     texteZero: GALAXIES_ZERO,
   },
@@ -144,7 +144,7 @@ const SERVICES: Noeud[] = [
     nom: "Crédits Galaxie",
     icone: "piece",
     texte:
-      "Profitez de 25 Gooders au lieu de 20 (soit 15 € de cadeaux) pour booster vos histoires et déclencher vos premiers coups de cœur.",
+      "Profitez de 25 Gravity au lieu de 20 (soit 15 € de cadeaux) pour booster vos histoires et déclencher vos premiers coups de cœur.",
   },
 ];
 
