@@ -61,8 +61,6 @@ type Noeud = {
   texteZero?: string;
   /** Le titre du palier 0 €, quand il diffère de celui de l'adhésion. */
   nomZero?: string;
-  /** Le dessin du palier 0 €, quand il diffère de celui de l'adhésion. */
-  iconeZero?: keyof typeof ICONES;
 };
 
 const GALAXIES_ZERO = "La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)";
@@ -74,7 +72,6 @@ const ADHESION: Noeud[] = [
     id: "galaxies",
     nom: "Crédit Gravity",
     nomZero: "Les Galaxies Projets - Personnages - Talents",
-    iconeZero: "galaxie",
     icone: "gravity",
     texte:
       "Chaque jour tu as un nouveau Gravity (crédit) pour trouver le projet de ton choix dans la Galaxie de projets. Tu pourras écouter l’auteur raconter son histoire (StoryPitch), un comédien qui donne vie aux personnages (ComedyPitch) ou un compositeur qui propose le thème ou on l’espère une chanson phare qui déclenchera la production du film (MusicPitch)\nEnregistre le projet dans tes favoris et contacte les Talents le moment venu.",
@@ -170,15 +167,6 @@ const RAYON: Record<Cercle, number> = { adhesion: RAYON_ADHESION, service: RAYON
 /** Le titre d'un rond, selon la position du soleil. */
 function titre(n: Noeud, mode: Mode): string {
   return mode === "zero" && n.nomZero ? n.nomZero : n.nom;
-}
-
-/** La couleur d'un rond : à 0 €, ce qui reste accessible passe en bleu, sans changer de cercle. */
-function couleurDe(n: Rond, mode: Mode): Cercle {
-  return mode === "zero" && n.aZero === "reste" ? "service" : cercleDe(n, mode);
-}
-
-function dessin(n: Noeud, mode: Mode) {
-  return ICONES[mode === "zero" && n.iconeZero ? n.iconeZero : n.icone];
 }
 
 /** Le cercle où se trouve un rond, selon la position du soleil. */
@@ -439,7 +427,7 @@ export default function OrbiteAdhesion() {
     setMode(vers);
   };
 
-  const couleurChoix = choix ? couleurDe(choix, mode) : "adhesion";
+  const couleurChoix = choix ? cercleDe(choix, mode) : "adhesion";
 
   return (
     <section className={styles.orbite}>
@@ -475,7 +463,7 @@ export default function OrbiteAdhesion() {
           </button>
 
           {RONDS.map((n, i) => {
-            const couleur = couleurDe(n, mode);
+            const couleur = cercleDe(n, mode);
             return (
               <div
                 key={n.id}
@@ -491,7 +479,7 @@ export default function OrbiteAdhesion() {
                   onClick={() => setChoix(n)}
                   aria-label={titre(n, mode)}
                 >
-                  {dessin(n, mode)}
+                  {ICONES[n.icone]}
                 </button>
                 <span
                   className={`${styles.nom} ${enVedette === n.id ? styles.enVedette : ""}`}
@@ -507,7 +495,7 @@ export default function OrbiteAdhesion() {
             <div className={styles.fiche} role="dialog" aria-label={titre(choix, mode)}>
               <div className={styles.ficheHaut}>
                 <span className={`${styles.ficheIcone} ${styles[couleurChoix]}`}>
-                  {dessin(choix, mode)}
+                  {ICONES[choix.icone]}
                 </span>
                 <div className={styles.ficheNoms}>
                   <span className={`${styles.ficheEtiquette} ${styles[couleurChoix]}`}>
