@@ -543,6 +543,15 @@ export default function OrbiteAdhesion() {
           )}
         </div>
 
+        <p className={styles.legende}>
+          <span className={styles.legendeAdhesion}>
+            <i aria-hidden="true" /> L’adhésion en rouge à 5 €/mois inclut de nombreux services
+          </span>
+          <span className={styles.legendeServices}>
+            <i aria-hidden="true" /> L’adhésion en bleu à 0 €/mois n’a que des services optionnels payants
+          </span>
+        </p>
+
         <div className={styles.recap}>
           <h2 className={styles.recapTitre}>Récapitulatif du pricing</h2>
           <table className={styles.recapTable}>
