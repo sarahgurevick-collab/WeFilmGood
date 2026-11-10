@@ -89,7 +89,7 @@ const ADHESION: Noeud[] = [
   {
     id: "cinematch",
     nom: "CinéMatch",
-    icone: "popcorn",
+    icone: "cercles",
     texte:
       "Découvre les talents qui vibrent sur la même longueur d’onde que toi grâce à un portrait chinois en 20 questions.",
     aZero: "payant",
