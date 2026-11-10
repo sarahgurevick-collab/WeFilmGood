@@ -59,6 +59,8 @@ type Noeud = {
   aZero?: "reste" | "payant";
   /** La phrase du palier 0 €, quand elle diffère de celle de l'adhésion. */
   texteZero?: string;
+  /** Le titre du palier 0 €, quand il diffère de celui de l'adhésion. */
+  nomZero?: string;
 };
 
 const GALAXIES_ZERO = "La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)";
@@ -68,7 +70,8 @@ const GALAXIES_ZERO = "La Galaxie WeFilmGood (accès limité pour les videopitch
 const ADHESION: Noeud[] = [
   {
     id: "galaxies",
-    nom: "Les Galaxies Projets - Personnages - Talents",
+    nom: "Crédit Gravity",
+    nomZero: "Les Galaxies Projets - Personnages - Talents",
     icone: "galaxie",
     texte:
       "Chaque jour tu as un nouveau Gravity (crédit) pour trouver le projet de ton choix dans la Galaxie de projets. Tu pourras écouter l’auteur raconter son histoire (StoryPitch), un comédien qui donne vie aux personnages (ComedyPitch) ou un compositeur qui propose le thème ou on l’espère une chanson phare qui déclenchera la production du film (MusicPitch)\nEnregistre le projet dans tes favoris et contacte les Talents le moment venu.",
@@ -156,6 +159,11 @@ const RONDS: Rond[] = [
 ];
 
 const RAYON: Record<Cercle, number> = { adhesion: RAYON_ADHESION, service: RAYON_SERVICES };
+
+/** Le titre d'un rond, selon la position du soleil. */
+function titre(n: Noeud, mode: Mode): string {
+  return mode === "zero" && n.nomZero ? n.nomZero : n.nom;
+}
 
 /** Le cercle où se trouve un rond, selon la position du soleil. */
 function cercleDe(n: Rond, mode: Mode): Cercle {
@@ -439,7 +447,7 @@ export default function OrbiteAdhesion() {
                   type="button"
                   className={`${styles.noeud} ${styles[couleur]} ${choix?.id === n.id ? styles.choisi : ""}`}
                   onClick={() => setChoix(n)}
-                  aria-label={n.nom}
+                  aria-label={titre(n, mode)}
                 >
                   {ICONES[n.icone]}
                 </button>
@@ -447,14 +455,14 @@ export default function OrbiteAdhesion() {
                   className={`${styles.nom} ${enVedette === n.id ? styles.enVedette : ""}`}
                   aria-hidden="true"
                 >
-                  {n.nom}
+                  {titre(n, mode)}
                 </span>
               </div>
             );
           })}
 
           {choix && (
-            <div className={styles.fiche} role="dialog" aria-label={choix.nom}>
+            <div className={styles.fiche} role="dialog" aria-label={titre(choix, mode)}>
               <div className={styles.ficheHaut}>
                 <span className={`${styles.ficheIcone} ${styles[couleurChoix]}`}>
                   {ICONES[choix.icone]}
@@ -463,7 +471,7 @@ export default function OrbiteAdhesion() {
                   <span className={`${styles.ficheEtiquette} ${styles[couleurChoix]}`}>
                     {devenuPayant ? "Adhésion · 5 €/mois" : ETIQUETTE[couleurChoix]}
                   </span>
-                  <span className={styles.ficheNom}>{choix.nom}</span>
+                  <span className={styles.ficheNom}>{titre(choix, mode)}</span>
                 </div>
                 <button
                   type="button"
@@ -492,7 +500,7 @@ export default function OrbiteAdhesion() {
                   onClick={() =>
                     window.dispatchEvent(
                       new CustomEvent(EVENEMENT_CONTACT, {
-                        detail: { message: `À propos de « ${choix.nom} » : ` },
+                        detail: { message: `À propos de « ${titre(choix, mode)} » : ` },
                       }),
                     )
                   }
