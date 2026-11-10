@@ -692,7 +692,11 @@ export default function OrbiteAdhesion() {
                           ))}
                         </select>
                       </th>
-                      <td>1 crédit Gravity à 5 €</td>
+                      <td>
+                        {nombreCredits}{" "}
+                        {nombreCredits > 1 ? "crédits" : "crédit"} Gravity à{" "}
+                        {nombreCredits * 5} €
+                      </td>
                       <td>
                         <strong>{prixAdherent} €</strong>
                         {nombreCredits > 1 && (
