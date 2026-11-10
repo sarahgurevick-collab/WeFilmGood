@@ -353,10 +353,10 @@ type LigneRecap = {
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
 const RECAP: LigneRecap[] = [
   {
-    nom: "Crédits Gravity quotidiens",
+    nom: "Crédit Gravity par jour",
     icone: "gravity",
-    non: "0 crédit / jour",
-    oui: "1 crédit / jour",
+    non: "✕",
+    oui: "1",
   },
   {
     nom: "CinéMatch",
@@ -692,12 +692,11 @@ export default function OrbiteAdhesion({
               <tr>
                 <th scope="col" aria-label="Fonctionnalités et avantages" />
                 <th scope="col" className={styles.recapServices}>
-                  <i aria-hidden="true" /> Non-adhérent
-                  <small>0 €</small>
+                  <i aria-hidden="true" /> Sans adhésion
                 </th>
                 <th scope="col" className={styles.recapAdhesion}>
-                  <i aria-hidden="true" /> Adhérent
-                  <small>5 €/mois</small>
+                  <i aria-hidden="true" /> Adhésion annuelle
+                  <small>60 € ou 5 €/mois</small>
                 </th>
               </tr>
             </thead>
