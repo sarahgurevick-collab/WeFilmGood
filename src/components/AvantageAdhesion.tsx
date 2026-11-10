@@ -248,7 +248,7 @@ export const ICONES = {
       <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
     </svg>
   ),
-  // Le G de Gravity en trois anneaux : le crédit.
+  // La pièce fendue avec le G de Gravity : le crédit.
   gravity: (
     <svg
       width="20"
@@ -256,15 +256,15 @@ export const ICONES = {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.8"
+      strokeWidth="1.7"
       strokeLinecap="butt"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M19.07 4.93A10 10 0 1 0 21.85 13.74" />
-      <path d="M16.95 7.05A7 7 0 1 0 18.89 13.22" />
-      <path d="M14.83 9.17A4 4 0 1 0 15.94 12.69" />
-      <path d="M12 12h4.5" />
+      <path d="M1.55 11A10.5 10.5 0 0 1 22.45 11" />
+      <path d="M1.55 13A10.5 10.5 0 0 0 22.45 13" />
+      <path d="M14.9 9.5A3.9 3.9 0 1 0 15.9 12" />
+      <path d="M15.9 12H12.8" />
     </svg>
   ),
   // La carte d'identité : la fiche personnage.
