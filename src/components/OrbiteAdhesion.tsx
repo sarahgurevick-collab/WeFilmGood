@@ -440,7 +440,7 @@ const RECAP: LigneRecap[] = [
     nom: "Fiches Personnages",
     icone: "identite",
     non: "✕",
-    oui: "talents contactables",
+    oui: "✉ talents contactables",
   },
   {
     nom: "ScénarioLab",
