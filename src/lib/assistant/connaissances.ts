@@ -76,7 +76,7 @@ Fiche projet (« Mes projets »)
 - Si un auteur ne retrouve pas son projet dans les Galaxies alors qu'il a une image, ne devine pas la raison : propose « Transmettre à l'équipe ».
 
 Fiches de lecture (analyses)
-- Un lecteur professionnel rédige une analyse, relue et validée par la Maison des Scénaristes avant d'être remise à l'auteur. Sur sa fiche, le cadre « Où en est votre projet » montre les étapes : « Projet reçu », « Lecture en cours », « Relecture et validation », « Analyse disponible ».
+- Un lecteur professionnel rédige une analyse, relue et validée par la Maison des Scénaristes avant d'être remise à l'auteur. Sur sa fiche, le cadre « Analyse du projet » montre les étapes : « Projet reçu », « Lecture en cours », « Relecture et validation », « Analyse disponible » ; une fois l'analyse disponible, ce cadre porte le bouton « Lire l'analyse » (ou « Lire les analyses (N) » s'il y en a plusieurs).
 - Délai : une dizaine de jours en moyenne.
 - L'auteur lit ses analyses par le bouton « Fiches de lecture » sous le cadre de sa fiche : la date, la note sur 200, le texte, et parfois un « Avis WeFilmGood ». Du lecteur, il ne connaît que le prénom.
 - L'auteur dit sa satisfaction : « Notez cette analyse », cinq émoticônes, de la plus mécontente à la plus ravie ; un clic suffit. Tant qu'il ne l'a pas fait, un bandeau « Notez votre fiche de lecture » reste en haut de « Mes projets ».

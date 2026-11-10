@@ -1,3 +1,4 @@
+import Link from "next/link";
 import formStyles from "./form.module.css";
 import styles from "./EtatDeLecture.module.css";
 
@@ -43,16 +44,25 @@ const ETAPES: { cle: Etat; titre: string; texte: string }[] = [
   {
     cle: "disponible",
     titre: "Analyse disponible",
-    texte: "Votre fiche de lecture est prête.",
+    texte: "Votre analyse est prête.",
   },
 ];
 
+/**
+ * La zone s'appelle « Analyse du projet » (10/11, Sarah : « cela évite
+ * d'avoir 2 fois le mot fiche ») et suit le projet du dépôt à l'analyse :
+ * une fois celle-ci disponible, le bouton vers les analyses prend la place
+ * du bouton rouge isolé qui traînait sous le cadre.
+ */
 export default function EtatDeLecture({
   etat,
   deposeLe,
+  analyses,
 }: {
   etat: Etat;
   deposeLe: string | null;
+  /** Le lien vers les analyses, et leur nombre, quand il y en a. */
+  analyses?: { href: string; nombre: number } | null;
 }) {
   const position = ETAPES.findIndex((e) => e.cle === etat);
   const jours = deposeLe
@@ -61,7 +71,7 @@ export default function EtatDeLecture({
 
   return (
     <div className={styles.bloc}>
-      <h2 className={styles.titre}>Où en est votre projet</h2>
+      <h2 className={styles.titre}>Analyse du projet</h2>
 
       <ol className={styles.etapes}>
         {ETAPES.map((e, i) => (
@@ -79,6 +89,14 @@ export default function EtatDeLecture({
           </li>
         ))}
       </ol>
+
+      {analyses && analyses.nombre > 0 && (
+        <p className={styles.lire}>
+          <Link href={analyses.href} className={formStyles.submit} style={{ display: "inline-block" }}>
+            {analyses.nombre > 1 ? `Lire les analyses (${analyses.nombre})` : "Lire l'analyse"}
+          </Link>
+        </p>
+      )}
 
       {deposeLe && (
         <p className={formStyles.hint}>

@@ -622,24 +622,31 @@ export default async function ProjetPage({
         </p>
       )}
 
-      {/* Le bouton vers les fiches de lecture, sous le cadre (26/09) :
-          l'auteur et l'administration seulement, et seulement s'il y en a. */}
+      {/* « Analyse du projet » (10/11, Sarah) : une seule zone sous le cadre
+          qui suit le projet du dépôt à l'analyse, et porte le bouton vers
+          les analyses quand elles sont là — à la place du bouton
+          « Fiches de lecture » isolé d'avant (26/09). L'auteur et
+          l'administration seulement. Une fiche héritée de WFG 1 sans suivi
+          de lecture s'affiche directement « Analyse disponible ». */}
       {/* Les archives de la Maison (Cannes 2016…) comptent pour
           l'administration seulement : elles sont dans la même page, sous
           « ARCHIVE », jamais montrées à l'auteur (31/10, Sarah). */}
-      {fiches.length + nbArchives > 0 && (
-        <p style={{ marginTop: 20 }}>
-          <Link href={`/projet/${project.id}/fiches${q ? `?q=${encodeURIComponent(q)}` : ""}`} className={formStyles.submit} style={{ display: "inline-block" }}>
-            Fiches de lecture ({fiches.length + nbArchives})
-          </Link>
-        </p>
-      )}
-
-      {/* Seulement du dépôt à la validation de la fiche de lecture :
-          une fois l'analyse disponible, le suivi n'a plus d'objet. */}
-      {(isOwner || estAdmin) && etatLecture && etatLecture.etat !== "disponible" && (
-        <EtatDeLecture etat={etatLecture.etat} deposeLe={etatLecture.depose_le} />
-      )}
+      {(isOwner || estAdmin) &&
+        (() => {
+          const nombre = fiches.length + nbArchives;
+          if (!etatLecture && nombre === 0) return null;
+          return (
+            <EtatDeLecture
+              etat={etatLecture?.etat ?? "disponible"}
+              deposeLe={etatLecture?.depose_le ?? null}
+              analyses={
+                nombre > 0
+                  ? { href: `/projet/${project.id}/fiches${q ? `?q=${encodeURIComponent(q)}` : ""}`, nombre }
+                  : null
+              }
+            />
+          );
+        })()}
 
       {(isOwner || estAdmin) && (
         <div className={formStyles.remplissage}>
