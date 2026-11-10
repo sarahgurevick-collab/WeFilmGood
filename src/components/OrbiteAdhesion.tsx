@@ -115,7 +115,7 @@ const ADHESION: Noeud[] = [
   {
     id: "scenariolab-spectateur",
     nom: "ScénarioLab (spectateur)",
-    icone: "fiole",
+    icone: "oeil",
     texte:
       "Glisse-toi dans les coulisses de la création : viens voir 5 auteurs de talent réécrire leurs histoires en direct et participe à l’évolution de leurs scénarios ! Accès prioritaire et gratuit pour les adhérents à 5 €/mois (50 places maximum)",
     aZero: "payant",
