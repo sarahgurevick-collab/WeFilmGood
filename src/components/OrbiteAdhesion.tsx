@@ -392,7 +392,6 @@ const RECAP: LigneRecap[] = [
 
 // La grille dégressive des adhérents (04/10) ; les non-adhérents paient 5 € le crédit (décision du 10/11).
 const GRILLE_CREDITS: { nombre: number; prix: number }[] = [
-  { nombre: 1, prix: 5 },
   { nombre: 5, prix: 22 },
   { nombre: 10, prix: 40 },
   { nombre: 20, prix: 70 },
