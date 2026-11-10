@@ -364,7 +364,7 @@ const RECAP: LigneRecap[] = [
     non: "✕",
     oui: "talents contactables",
   },
-  { nom: "Fiches Projets", icone: "fiche", non: "0", oui: "infini" },
+  { nom: "Fiches Projets", icone: "fiche", non: "✕", oui: "∞" },
   {
     nom: "Fiches Personnages",
     icone: "identite",
