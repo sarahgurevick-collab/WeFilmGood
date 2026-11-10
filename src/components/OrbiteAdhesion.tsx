@@ -392,6 +392,13 @@ const GRILLE_CREDITS: { nombre: number; prix: number }[] = [
   { nombre: 20, prix: 70 },
 ];
 
+// Les services au même prix pour tous, adhérent ou non (10/11, mots de Sarah).
+const PRIX_COMMUNS: { nom: string; precision?: string; prix: string }[] = [
+  { nom: "Analyse du projet", prix: "50 €" },
+  { nom: "Accompagnement personnalisé", prix: "500 €" },
+  { nom: "ScénarioLab", precision: "participant", prix: "100 € / personne" },
+];
+
 const ETIQUETTE: Record<Cercle, string> = {
   adhesion: "Adhésion",
   service: "Services",
@@ -730,6 +737,22 @@ export default function OrbiteAdhesion({
                     </tr>
                   )}
                 </Fragment>
+              ))}
+              <tr>
+                <th scope="colgroup" colSpan={3} className={styles.recapSepare}>
+                  Même prix pour tous
+                </th>
+              </tr>
+              {PRIX_COMMUNS.map((l) => (
+                <tr key={l.nom}>
+                  <th scope="row">
+                    {l.nom}
+                    {l.precision && <em> ({l.precision})</em>}
+                  </th>
+                  <td colSpan={2} className={styles.recapCommun}>
+                    <strong>{l.prix}</strong>
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>

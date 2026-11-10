@@ -530,3 +530,16 @@
   border: 1px solid #3a3a3a;
   border-radius: 8px;
 }
+
+.recapTable th.recapSepare {
+  padding-top: 18px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #b5b5b5;
+}
+
+.recapCommun {
+  text-align: center;
+}
