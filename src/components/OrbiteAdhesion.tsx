@@ -327,9 +327,9 @@ const RECAP: LigneRecap[] = [
   {
     nom: "Pack 20 Crédits Gravity",
     non: "100 €",
-    nonNote: "5 € / crédit",
-    oui: "85 €",
-    ouiNote: "au lieu de 100 € · 15 € offerts",
+    nonNote: "5 € / crédit, sans rabais",
+    oui: "70 €",
+    ouiNote: "prix dégressif : 1 = 5 € · 5 = 22 € · 10 = 40 € · 20 = 70 €",
   },
   { nom: "CinéMatch", precision: "contacts", non: "Non visibles", oui: "Contacts visibles" },
   { nom: "Fiches Projets", non: "0 fiche", oui: "Accès infini" },
