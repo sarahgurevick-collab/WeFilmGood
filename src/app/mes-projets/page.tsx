@@ -10,6 +10,9 @@ import { signerImages } from "@/app/projet/[id]/fichiers";
 import { BLOCS, etatDesBlocs, hrefBloc } from "@/app/projet/blocs";
 import styles from "./page.module.css";
 import SelecteurProjet from "./SelecteurProjet";
+import { chargerFiches } from "@/app/projet/[id]/fiches-donnees";
+import type { Etat } from "@/components/EtatDeLecture";
+import formStyles from "@/components/form.module.css";
 
 const STATUT_LISIBLE: Record<string, string> = {
   brouillon: "Brouillon",
@@ -17,6 +20,14 @@ const STATUT_LISIBLE: Record<string, string> = {
   en_lecture: "En lecture",
   labellise: "Labellisé",
   lecture_terminee_non_labellise: "Lu",
+};
+
+// L'état de la lecture, à côté du sélecteur, tant que l'analyse n'est pas
+// rendue : les mêmes mots que la zone « Analyse du projet » de la fiche.
+const ETAT_LECTURE_LISIBLE: Record<string, string> = {
+  attribution: "Projet reçu",
+  premiere_lecture: "Lecture en cours",
+  relecture: "Relecture et validation",
 };
 
 const FORMATS: Record<string, string> = {
@@ -79,6 +90,15 @@ export default async function MesProjetsPage({
     projets.map((p) => p.files.find((f) => f.kind === "vignette")?.storage_path),
   );
 
+  // L'analyse du projet courant (10/11, Sarah : « y a-t-il un moyen de
+  // mettre le bouton de la fiche de lecture ici ? ») : « Lire l'analyse »
+  // à côté du sélecteur dès qu'elle est là, sinon l'état de la lecture.
+  const [analyses, { data: etatBrut }] = await Promise.all([
+    chargerFiches(supabase, courant.id),
+    supabase.rpc("etat_de_lecture", { p_project_id: courant.id }),
+  ]);
+  const etatLecture = ((etatBrut ?? []) as { etat: Etat }[])[0]?.etat ?? null;
+
   // L'état de chaque fiche : ses trois blocs, et le remplissage global.
   const etats = await Promise.all(
     projets.map(async (p) => {
@@ -120,6 +140,13 @@ export default async function MesProjetsPage({
           d'une fiche est sa dernière ligne, plus un bouton à part (01/10). */}
       <div className={styles.entete}>
         <SelecteurProjet projets={tous.map((p) => ({ id: p.id, titre: p.title }))} courant={courant.id} />
+        {analyses.length > 0 ? (
+          <Link href={`/projet/${courant.id}/fiches`} className={formStyles.submit} style={{ display: "inline-block" }}>
+            {analyses.length > 1 ? `Lire les analyses (${analyses.length})` : "Lire l'analyse"}
+          </Link>
+        ) : etatLecture && ETAT_LECTURE_LISIBLE[etatLecture] ? (
+          <span className={styles.etatLecture}>{ETAT_LECTURE_LISIBLE[etatLecture]}</span>
+        ) : null}
       </div>
 
       {projets.map((p, i) => {

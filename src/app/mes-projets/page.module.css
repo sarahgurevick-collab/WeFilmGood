@@ -51,6 +51,12 @@
   font-weight: 700;
 }
 
+/* L'état de la lecture, à côté du sélecteur, tant que l'analyse n'est pas là. */
+.etatLecture {
+  font-size: 13px;
+  color: var(--dim);
+}
+
 .selecteur select {
   flex: 1;
   max-width: 420px;
