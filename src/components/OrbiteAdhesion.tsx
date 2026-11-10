@@ -342,6 +342,7 @@ const ICONE_MIRA = (
 
 type LigneRecap = {
   nom: string;
+  icone: keyof typeof ICONES;
   precision?: string;
   non: string;
   nonNote?: string;
@@ -353,31 +354,36 @@ type LigneRecap = {
 const RECAP: LigneRecap[] = [
   {
     nom: "Crédits Gravity quotidiens",
+    icone: "gravity",
     non: "0 crédit / jour",
     oui: "1 crédit / jour",
   },
   {
     nom: "CinéMatch",
+    icone: "cercles",
     precision: "contacts",
     non: "Non visibles",
     oui: "visibles",
   },
-  { nom: "Fiches Projets", non: "0", oui: "infini" },
+  { nom: "Fiches Projets", icone: "fiche", non: "0", oui: "infini" },
   {
     nom: "Fiches Personnages",
+    icone: "identite",
     precision: "contacts",
     non: "Non visibles",
     oui: "visibles",
   },
   {
     nom: "ScénarioLab",
+    icone: "oeil",
     precision: "Spectateur",
     non: "5 € (si place libre)",
     oui: "Accès prioritaire",
   },
-  { nom: "CinéCrush", non: "Inclus", oui: "Inclus" },
+  { nom: "CinéCrush", icone: "coeur", non: "Inclus", oui: "Inclus" },
   {
     nom: "Galaxie de Projets",
+    icone: "galaxie",
     precision: "Accès limité",
     non: "Inclus",
     oui: "Inclus",
@@ -393,10 +399,20 @@ const GRILLE_CREDITS: { nombre: number; prix: number }[] = [
 ];
 
 // Les services au même prix pour tous, adhérent ou non (10/11, mots de Sarah).
-const PRIX_COMMUNS: { nom: string; precision?: string; prix: string }[] = [
-  { nom: "Analyse du projet", prix: "50 €" },
-  { nom: "Accompagnement personnalisé", prix: "500 €" },
-  { nom: "ScénarioLab", precision: "participant", prix: "100 € / personne" },
+const PRIX_COMMUNS: {
+  nom: string;
+  icone: keyof typeof ICONES;
+  precision?: string;
+  prix: string;
+}[] = [
+  { nom: "Analyse du projet", icone: "nuage", prix: "50 €" },
+  { nom: "Accompagnement personnalisé", icone: "telephone", prix: "500 €" },
+  {
+    nom: "ScénarioLab",
+    icone: "fiole",
+    precision: "participant",
+    prix: "100 € / personne",
+  },
 ];
 
 const ETIQUETTE: Record<Cercle, string> = {
@@ -511,6 +527,7 @@ export default function OrbiteAdhesion({
       ? [
           {
             nom: "Le Finder",
+            icone: "loupe",
             precision: "recherche et nuage de mots-clés",
             non: "Inclus",
             nonNote: note,
@@ -704,7 +721,12 @@ export default function OrbiteAdhesion({
                   {index === 0 && (
                     <tr>
                       <th scope="row">
-                        <label htmlFor="recap-credits">Crédits Gravity</label>
+                        <label htmlFor="recap-credits">
+                          <span className={styles.recapIcone}>
+                            {ICONES.gravity}
+                          </span>
+                          Crédits Gravity
+                        </label>
                         <select
                           id="recap-credits"
                           className={styles.recapSelect}
@@ -746,6 +768,7 @@ export default function OrbiteAdhesion({
               {PRIX_COMMUNS.map((l) => (
                 <tr key={l.nom}>
                   <th scope="row">
+                    <span className={styles.recapIcone}>{ICONES[l.icone]}</span>
                     {l.nom}
                     {l.precision && <em> ({l.precision})</em>}
                   </th>

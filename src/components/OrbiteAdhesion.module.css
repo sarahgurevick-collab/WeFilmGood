@@ -543,3 +543,14 @@
 .recapCommun {
   text-align: center;
 }
+
+.recapIcone {
+  display: inline-flex;
+  vertical-align: -4px;
+  margin-right: 8px;
+  color: #ededed;
+}
+
+.recapTable td.recapCommun {
+  text-align: center;
+}
