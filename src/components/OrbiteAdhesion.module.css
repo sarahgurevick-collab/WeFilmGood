@@ -423,3 +423,98 @@
     animation: none !important;
   }
 }
+
+/* ---------- le récapitulatif du pricing ---------- */
+
+.recap {
+  margin: 7cqw 0 0;
+}
+
+.recapTitre {
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.recapTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.recapTable th,
+.recapTable td {
+  padding: 11px 8px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid #2a2a2a;
+}
+
+.recapTable thead th {
+  border-top: 0;
+  font-weight: 800;
+  vertical-align: bottom;
+}
+
+.recapTable tbody th {
+  font-weight: 800;
+}
+
+.recapTable tbody th em {
+  font-weight: 400;
+  font-style: italic;
+  color: #b5b5b5;
+}
+
+.recapTable small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #b5b5b5;
+}
+
+.recapTable thead small {
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.recapTable i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-radius: 50%;
+}
+
+.recapServices {
+  color: var(--bleu-texte);
+}
+
+.recapServices i {
+  background: var(--bleu);
+}
+
+.recapAdhesion {
+  color: var(--rouge-texte);
+}
+
+.recapAdhesion i {
+  background: var(--rouge);
+}
+
+.recapTable td strong {
+  font-weight: 800;
+}
+
+@media (max-width: 520px) {
+  .recapTable {
+    font-size: 13px;
+  }
+
+  .recapTable th,
+  .recapTable td {
+    padding: 9px 5px;
+  }
+}

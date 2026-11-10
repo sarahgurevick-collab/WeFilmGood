@@ -312,6 +312,33 @@ const ICONE_MIRA = (
   </svg>
 );
 
+type LigneRecap = {
+  nom: string;
+  precision?: string;
+  non: string;
+  nonNote?: string;
+  oui: string;
+  ouiNote?: string;
+};
+
+// Le récapitulatif du pricing, avec les mots de Sarah (10/11).
+const RECAP: LigneRecap[] = [
+  { nom: "Crédits Gravity quotidiens", non: "0 crédit / jour", oui: "1 crédit / jour" },
+  {
+    nom: "Pack 20 Crédits Gravity",
+    non: "100 €",
+    nonNote: "5 € / crédit",
+    oui: "85 €",
+    ouiNote: "au lieu de 100 € · 15 € offerts",
+  },
+  { nom: "CinéMatch", precision: "contacts", non: "Non visibles", oui: "Contacts visibles" },
+  { nom: "Fiches Projets", non: "0 fiche", oui: "Accès infini" },
+  { nom: "Fiches Personnages", precision: "contacts", non: "Non visibles", oui: "Contacts visibles" },
+  { nom: "ScénarioLab", precision: "Spectateur", non: "5 € (si place libre)", oui: "Accès prioritaire" },
+  { nom: "CinéCrush", non: "Inclus", oui: "Inclus" },
+  { nom: "Galaxie de Projets", precision: "Accès limité", non: "Inclus", oui: "Inclus" },
+];
+
 const ETIQUETTE: Record<Cercle, string> = { adhesion: "Adhésion", service: "Services" };
 
 export default function OrbiteAdhesion() {
@@ -516,14 +543,42 @@ export default function OrbiteAdhesion() {
           )}
         </div>
 
-        <p className={styles.legende}>
-          <span className={styles.legendeAdhesion}>
-            <i aria-hidden="true" /> L’adhésion en rouge à 5 €/mois inclut de nombreux services
-          </span>
-          <span className={styles.legendeServices}>
-            <i aria-hidden="true" /> L’adhésion en bleu à 0 €/mois n’a que des services optionnels payants
-          </span>
-        </p>
+        <div className={styles.recap}>
+          <h2 className={styles.recapTitre}>Récapitulatif du pricing</h2>
+          <table className={styles.recapTable}>
+            <thead>
+              <tr>
+                <th scope="col" aria-label="Fonctionnalités et avantages" />
+                <th scope="col" className={styles.recapServices}>
+                  <i aria-hidden="true" /> Non-adhérent
+                  <small>0 €</small>
+                </th>
+                <th scope="col" className={styles.recapAdhesion}>
+                  <i aria-hidden="true" /> Adhérent
+                  <small>5 €/mois</small>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {RECAP.map((l) => (
+                <tr key={l.nom}>
+                  <th scope="row">
+                    {l.nom}
+                    {l.precision && <em> ({l.precision})</em>}
+                  </th>
+                  <td>
+                    {l.non}
+                    {l.nonNote && <small>{l.nonNote}</small>}
+                  </td>
+                  <td>
+                    <strong>{l.oui}</strong>
+                    {l.ouiNote && <small>{l.ouiNote}</small>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   );
