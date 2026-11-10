@@ -710,7 +710,13 @@ export default function OrbiteAdhesion({
                       {l.nonNote && <small>{l.nonNote}</small>}
                     </td>
                     <td>
-                      <strong>{l.oui}</strong>
+                      <strong
+                        className={
+                          l.oui === "∞" ? styles.recapInfini : undefined
+                        }
+                      >
+                        {l.oui}
+                      </strong>
                       {l.ouiNote && <small>{l.ouiNote}</small>}
                     </td>
                   </tr>

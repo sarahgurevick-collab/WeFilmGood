@@ -554,3 +554,8 @@
 .recapTable td.recapCommun {
   text-align: center;
 }
+
+.recapInfini {
+  font-size: 30px;
+  line-height: 0.8;
+}
