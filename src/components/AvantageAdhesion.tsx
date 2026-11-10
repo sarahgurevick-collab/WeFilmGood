@@ -253,16 +253,16 @@ export const ICONES = {
     <svg
       width="20"
       height="20"
-      viewBox="0 0 24 24"
+      viewBox="1 1 22 22"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.9"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <circle cx="8.5" cy="12" r="5.5" />
-      <circle cx="15.5" cy="12" r="5.5" />
+      <circle cx="8.3" cy="12" r="6.3" />
+      <circle cx="15.7" cy="12" r="6.3" />
     </svg>
   ),
   // La pièce fendue avec le G de Gravity : le crédit.
