@@ -360,9 +360,9 @@ const RECAP: LigneRecap[] = [
     nom: "CinéMatch",
     precision: "contacts",
     non: "Non visibles",
-    oui: "Contacts visibles",
+    oui: "visibles",
   },
-  { nom: "Fiches Projets", non: "0 fiche", oui: "Accès infini" },
+  { nom: "Fiches Projets", non: "0", oui: "infini" },
   {
     nom: "Fiches Personnages",
     precision: "contacts",
