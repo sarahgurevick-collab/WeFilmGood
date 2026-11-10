@@ -147,11 +147,9 @@ export default async function ProjetPage({
         .order("position")
     : { data: null };
 
-  // Limites introduites par WeFilmGood 2 : les fiches héritées de
-  // l'ancienne plateforme gardent leurs textes, mais leur auteur est
-  // informé de la nouvelle règle.
-  const taglineTropLongue = (project.tagline?.length ?? 0) > 300;
-  const loglineTropLongue = (project.logline?.length ?? 0) > 600;
+  // Les fiches héritées de l'ancienne plateforme gardent leurs textes, même
+  // au-delà des 300/600 caractères de WFG 2 ; l'encadré qui l'expliquait à
+  // l'auteur a été retiré (Sarah, 10/11 : « l'auteur comprendra tout seul »).
 
   const entetes = await headers();
   const hote = entetes.get("host") ?? "localhost:3000";
@@ -704,32 +702,6 @@ export default async function ProjetPage({
               );
             })}
           </div>
-        </div>
-      )}
-
-      {isOwner && project.legacy_id && (
-        <div className={formStyles.avertissement}>
-          <p style={{ margin: 0 }}>
-            Cette fiche a été créée sur l&apos;ancienne plateforme, où la longueur
-            des textes n&apos;était pas limitée. Sur WeFilmGood 2, la tagline tient
-            en 300 caractères (une phrase d&apos;accroche) et la logline en 600
-            (un petit résumé).
-          </p>
-          {(taglineTropLongue || loglineTropLongue) && (
-            <p style={{ margin: "8px 0 0" }}>
-              {taglineTropLongue && (
-                <>Votre tagline en compte {project.tagline?.length}. </>
-              )}
-              {loglineTropLongue && (
-                <>Votre logline en compte {project.logline?.length}. </>
-              )}
-              {taglineTropLongue && loglineTropLongue
-                ? "Elles restent enregistrées telles quelles."
-                : "Elle reste enregistrée telle quelle."}{" "}
-              Nous vous conseillons néanmoins plus de concision pour respecter ces
-              limites.
-            </p>
-          )}
         </div>
       )}
 
