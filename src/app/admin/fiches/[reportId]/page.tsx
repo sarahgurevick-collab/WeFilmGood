@@ -37,7 +37,7 @@ export default async function FicheAdminPage({
   const { data: report } = await supabase
     .from("reading_reports")
     .select(
-      "id, reader_id, content, score, label_motivation, status, submitted_at, project:projects(id, title), reader:profiles(full_name)",
+      "id, reader_id, content, score, label_motivation, status, submitted_at, project:projects(id, title), reader:profiles!reading_reports_reader_id_fkey(full_name)",
     )
     .eq("id", reportId)
     .maybeSingle<Report>();

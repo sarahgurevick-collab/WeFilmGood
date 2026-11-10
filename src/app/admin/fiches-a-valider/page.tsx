@@ -32,7 +32,7 @@ export default async function FichesAValiderPage() {
   const { data: pendingReports } = await supabase
     .from("reading_reports")
     .select(
-      "id, score, labellise, submitted_at, project:projects(id, title), reader:profiles(full_name)",
+      "id, score, labellise, submitted_at, project:projects(id, title), reader:profiles!reading_reports_reader_id_fkey(full_name)",
     )
     .eq("status", "soumise")
     .order("submitted_at", { ascending: true })
