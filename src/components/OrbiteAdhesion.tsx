@@ -101,7 +101,7 @@ const ADHESION: Noeud[] = [
   },
   {
     id: "fiche-personnage",
-    nom: "Fiche Personnage",
+    nom: "Fiches Personnages",
     icone: "fiche",
     texte:
       "Donne vie à tes personnages avec une biographie si vibrante qu’un comédien n’aura qu’une envie… s’en emparer face caméra ! Ajoute la photo d’un inconnu ou d’une personne célèbre. Reçois une notification dès qu’un ComedyPitch est associé à ton personnage et échange avec le comédien.",
