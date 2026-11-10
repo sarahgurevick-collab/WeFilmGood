@@ -427,7 +427,7 @@ export default function OrbiteAdhesion({
 }) {
   const [mode, setMode] = useState<Mode>("adhesion");
   const [choix, setChoix] = useState<Rond | null>(null);
-  const [nombreCredits, setNombreCredits] = useState(20);
+  const [nombreCredits, setNombreCredits] = useState(5);
   const [vedette, setVedette] = useState(0);
   const enVedette = choix ? null : RONDS[vedette].id;
 
@@ -724,7 +724,7 @@ export default function OrbiteAdhesion({
                           <span className={styles.recapIcone}>
                             {ICONES.gravity}
                           </span>
-                          Crédits Gravity
+                          Pack Gravity
                         </label>
                         <select
                           id="recap-credits"
@@ -741,19 +741,9 @@ export default function OrbiteAdhesion({
                           ))}
                         </select>
                       </th>
-                      <td>
-                        {nombreCredits}{" "}
-                        {nombreCredits > 1 ? "crédits" : "crédit"} Gravity à{" "}
-                        {nombreCredits * 5} €
-                      </td>
+                      <td>{nombreCredits * 5} €</td>
                       <td>
                         <strong>{prixAdherent} €</strong>
-                        {nombreCredits > 1 && (
-                          <small>
-                            au lieu de {nombreCredits * 5} € ·{" "}
-                            {nombreCredits * 5 - prixAdherent} € offerts
-                          </small>
-                        )}
                       </td>
                     </tr>
                   )}
