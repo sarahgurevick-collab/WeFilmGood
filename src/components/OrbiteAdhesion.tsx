@@ -397,7 +397,11 @@ const ETIQUETTE: Record<Cercle, string> = {
   service: "Services",
 };
 
-export default function OrbiteAdhesion() {
+export default function OrbiteAdhesion({
+  motsCles = 0,
+}: {
+  motsCles?: number;
+}) {
   const [mode, setMode] = useState<Mode>("adhesion");
   const [choix, setChoix] = useState<Rond | null>(null);
   const [nombreCredits, setNombreCredits] = useState(20);
@@ -493,6 +497,23 @@ export default function OrbiteAdhesion() {
     setMode(vers);
   };
 
+  const note =
+    motsCles > 0 ? `${motsCles.toLocaleString("fr-FR")} thèmes` : undefined;
+  const lignes: LigneRecap[] = RECAP.flatMap((l) =>
+    l.nom === "CinéCrush"
+      ? [
+          {
+            nom: "Le Finder",
+            precision: "recherche et nuage de mots-clés",
+            non: "Inclus",
+            nonNote: note,
+            oui: "Inclus",
+            ouiNote: note,
+          },
+          l,
+        ]
+      : [l],
+  );
   const prixAdherent =
     GRILLE_CREDITS.find((g) => g.nombre === nombreCredits)?.prix ?? 0;
 
@@ -657,7 +678,7 @@ export default function OrbiteAdhesion() {
               </tr>
             </thead>
             <tbody>
-              {RECAP.map((l, index) => (
+              {lignes.map((l, index) => (
                 <Fragment key={l.nom}>
                   <tr>
                     <th scope="row">

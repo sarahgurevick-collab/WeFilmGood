@@ -176,7 +176,7 @@ export default async function AdhesionPage({
         <p className={formStyles.hint}>Le paiement en ligne ouvre très bientôt.</p>
       )}
       {/* L'adhésion en orbite, avant le détail des paliers (05/10, idée de Sarah). */}
-      <OrbiteAdhesion />
+      <OrbiteAdhesion motsCles={motsCles} />
       <SelecteurAdhesion
         achats={[null, null, bouton("palier_50", "50 €"), null, null]}
         notePaiement={
