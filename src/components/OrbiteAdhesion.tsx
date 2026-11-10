@@ -91,7 +91,9 @@ const ADHESION: Noeud[] = [
     nom: "CinéMatch",
     icone: "cercles",
     texte:
-      "Découvre les talents qui vibrent sur la même longueur d’onde que toi grâce à un portrait chinois en 20 questions.",
+      "Découvre chaque jour qui sera le talent qui vibre sur la même longueur d’onde que toi grâce à un portrait chinois en 20 questions. Contacte-le si tu le souhaites.",
+    texteZero:
+      "Chaque jour un nouveau talent vibre sur la même longueur d’onde que toi grâce à un portrait chinois en 20 questions. Le contact coûte 1 Gravity.",
     aZero: "payant",
   },
   {
@@ -469,7 +471,7 @@ export default function OrbiteAdhesion() {
                 </span>
                 <div className={styles.ficheNoms}>
                   <span className={`${styles.ficheEtiquette} ${styles[couleurChoix]}`}>
-                    {devenuPayant ? "Adhésion · 5 €/mois" : ETIQUETTE[couleurChoix]}
+                    {devenuPayant && choix.id !== "cinematch" ? "Adhésion · 5 €/mois" : ETIQUETTE[couleurChoix]}
                   </span>
                   <span className={styles.ficheNom}>{titre(choix, mode)}</span>
                 </div>
