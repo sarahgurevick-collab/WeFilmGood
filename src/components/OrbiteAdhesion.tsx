@@ -340,6 +340,77 @@ const ICONE_MIRA = (
   </svg>
 );
 
+const COCHE = (
+  <svg
+    viewBox="0 0 24 24"
+    width="20"
+    height="20"
+    className={styles.recapSymbole}
+    aria-label="oui"
+    role="img"
+  >
+    <circle cx="12" cy="12" r="10" fill="#2e9e5b" />
+    <path
+      d="M7 12.5l3.2 3.2L17 8.8"
+      fill="none"
+      stroke="#fff"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+// La même enveloppe que sur la plateforme (ContactEnveloppe, fiche projet).
+const ENVELOPPE = (
+  <svg
+    viewBox="0 0 24 24"
+    width="22"
+    height="22"
+    className={styles.recapSymbole}
+    aria-label="contact"
+    role="img"
+  >
+    <rect
+      x="2.5"
+      y="5"
+      width="19"
+      height="14"
+      rx="2.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+    />
+    <path
+      d="M3.5 7.5 12 13.5 20.5 7.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+/** Remplace ✓ et ✉ par leur dessin. */
+function Symboles({ texte }: { texte: string }) {
+  return (
+    <>
+      {texte
+        .split(/(✓|✉)/)
+        .map((morceau, i) =>
+          morceau === "✓" ? (
+            <Fragment key={i}>{COCHE}</Fragment>
+          ) : morceau === "✉" ? (
+            <Fragment key={i}>{ENVELOPPE}</Fragment>
+          ) : (
+            morceau
+          ),
+        )}
+    </>
+  );
+}
+
 type LigneRecap = {
   nom: string;
   icone: keyof typeof ICONES;
@@ -361,8 +432,8 @@ const RECAP: LigneRecap[] = [
   {
     nom: "CinéMatch",
     icone: "cercles",
-    non: "✕",
-    oui: "talents contactables",
+    non: "✓",
+    oui: "✓ ✉ talents contactables",
   },
   { nom: "Fiches Projets", icone: "fiche", non: "✕", oui: "∞" },
   {
@@ -706,7 +777,7 @@ export default function OrbiteAdhesion({
                       {l.precision && <em> ({l.precision})</em>}
                     </th>
                     <td>
-                      {l.non}
+                      <Symboles texte={l.non} />
                       {l.nonNote && <small>{l.nonNote}</small>}
                     </td>
                     <td>
@@ -715,7 +786,7 @@ export default function OrbiteAdhesion({
                           l.oui === "∞" ? styles.recapInfini : undefined
                         }
                       >
-                        {l.oui}
+                        <Symboles texte={l.oui} />
                       </strong>
                       {l.ouiNote && <small>{l.ouiNote}</small>}
                     </td>

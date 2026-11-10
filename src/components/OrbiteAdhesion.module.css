@@ -559,3 +559,10 @@
   font-size: 30px;
   line-height: 0.8;
 }
+
+.recapSymbole {
+  display: inline-block;
+  vertical-align: -5px;
+  margin-right: 6px;
+  color: #ededed;
+}
