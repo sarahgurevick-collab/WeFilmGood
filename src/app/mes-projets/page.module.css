@@ -32,18 +32,21 @@
   letter-spacing: normal;
 }
 
-/* Le sélecteur de projet, au-dessus de la scène. */
+/* Le sélecteur de projet, au-dessus de la scène. « Lire l'analyse » vient
+   juste après la liste, collé à elle, et non à l'autre bout de la ligne
+   (10/11, Sarah : « le bouton est trop loin, on ne comprend pas que c'est
+   lié »). */
 .entete {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  justify-content: flex-start;
+  gap: 12px 16px;
   margin-top: 20px;
 }
 
 .selecteur {
-  flex: 1;
+  flex: 0 1 auto;
   display: flex;
   align-items: center;
   gap: 12px;
