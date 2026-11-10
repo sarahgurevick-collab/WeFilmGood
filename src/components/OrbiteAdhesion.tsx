@@ -143,7 +143,7 @@ const SERVICES: Noeud[] = [
   },
   {
     id: "analyse",
-    nom: "Analyse de Scénario",
+    nom: "Analyse du projet",
     icone: "nuage",
     texte:
       "50 € : 1 analyse de document PDF, qui permet d’accéder à la Labellisation du projet.",
