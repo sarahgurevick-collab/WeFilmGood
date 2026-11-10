@@ -399,7 +399,6 @@ export default function OrbiteAdhesion() {
   };
 
   const couleurChoix = choix ? cercleDe(choix, mode) : "adhesion";
-  const devenuPayant = choix !== null && choix.origine === "adhesion" && couleurChoix === "service";
 
   return (
     <section className={styles.orbite}>
@@ -471,7 +470,7 @@ export default function OrbiteAdhesion() {
                 </span>
                 <div className={styles.ficheNoms}>
                   <span className={`${styles.ficheEtiquette} ${styles[couleurChoix]}`}>
-                    {devenuPayant && choix.id !== "cinematch" ? "Adhésion · 5 €/mois" : ETIQUETTE[couleurChoix]}
+                    {ETIQUETTE[couleurChoix]}
                   </span>
                   <span className={styles.ficheNom}>{titre(choix, mode)}</span>
                 </div>
