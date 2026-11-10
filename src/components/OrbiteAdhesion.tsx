@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  Fragment,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { ICONES } from "./AvantageAdhesion";
 import { EVENEMENT_CONTACT } from "./BoutonDevis";
 import styles from "./OrbiteAdhesion.module.css";
@@ -63,7 +69,8 @@ type Noeud = {
   nomZero?: string;
 };
 
-const GALAXIES_ZERO = "La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)";
+const GALAXIES_ZERO =
+  "La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)";
 
 // Les phrases sont celles de Sarah (06/10), au « tu » : « le tu rapproche, le
 // vous met de la distance ». Un retour à la ligne (\n) fait un paragraphe.
@@ -138,7 +145,8 @@ const SERVICES: Noeud[] = [
     id: "analyse",
     nom: "Analyse de Scénario",
     icone: "nuage",
-    texte: "50 € : 1 analyse de document PDF, qui permet d’accéder à la Labellisation du projet.",
+    texte:
+      "50 € : 1 analyse de document PDF, qui permet d’accéder à la Labellisation du projet.",
   },
   {
     id: "accompagnement",
@@ -162,7 +170,10 @@ const RONDS: Rond[] = [
   ...SERVICES.map((n) => ({ ...n, origine: "service" as const })),
 ];
 
-const RAYON: Record<Cercle, number> = { adhesion: RAYON_ADHESION, service: RAYON_SERVICES };
+const RAYON: Record<Cercle, number> = {
+  adhesion: RAYON_ADHESION,
+  service: RAYON_SERVICES,
+};
 
 /** Le titre d'un rond, selon la position du soleil. */
 function titre(n: Noeud, mode: Mode): string {
@@ -208,11 +219,17 @@ function repartir(angles: number[], libres: number[]): number[] {
   return meilleure;
 }
 
-const PLACES_ADHESION = ADHESION.map((_, i) => DEPART_ADHESION + (i * 2 * Math.PI) / ADHESION.length);
-const PLACES_SERVICES = SERVICES.map((_, j) => DEPART_SERVICES + (j * 2 * Math.PI) / SERVICES.length);
+const PLACES_ADHESION = ADHESION.map(
+  (_, i) => DEPART_ADHESION + (i * 2 * Math.PI) / ADHESION.length,
+);
+const PLACES_SERVICES = SERVICES.map(
+  (_, j) => DEPART_SERVICES + (j * 2 * Math.PI) / SERVICES.length,
+);
 
 const INDICES = RONDS.map((_, i) => i);
-const RESTES = INDICES.filter((i) => RONDS[i].origine === "adhesion" && RONDS[i].aZero !== "payant");
+const RESTES = INDICES.filter(
+  (i) => RONDS[i].origine === "adhesion" && RONDS[i].aZero !== "payant",
+);
 const PAYANTS = INDICES.filter((i) => RONDS[i].aZero === "payant");
 const DES_SERVICES = INDICES.filter((i) => RONDS[i].origine === "service");
 
@@ -233,7 +250,10 @@ function replacer(etats: Etat[], tours: Record<Cercle, number>, mode: Mode) {
     e.cibleRayon = RAYON[cercle];
   });
   const poser = (indices: number[], libres: number[]) => {
-    const places = repartir(indices.map((i) => etats[i].angle), libres);
+    const places = repartir(
+      indices.map((i) => etats[i].angle),
+      libres,
+    );
     indices.forEach((i, k) => {
       etats[i].cibleAngle = places[k];
     });
@@ -251,7 +271,9 @@ function replacer(etats: Etat[], tours: Record<Cercle, number>, mode: Mode) {
   // payants ; ceux qui restent se répartissent sur le premier cercle.
   const total = DES_SERVICES.length + PAYANTS.length;
   const pas = (2 * Math.PI) / total;
-  const prises = DES_SERVICES.map((_, j) => Math.round((j * total) / DES_SERVICES.length));
+  const prises = DES_SERVICES.map((_, j) =>
+    Math.round((j * total) / DES_SERVICES.length),
+  );
   DES_SERVICES.forEach((i, j) => {
     etats[i].cibleAngle = DEPART_SERVICES + prises[j] * pas;
   });
@@ -281,7 +303,13 @@ const STYLE_DEPART: CSSProperties[] = RONDS.map((n, i) => ({
   transform: deplacement(RAYON[n.origine], PLACES_DEPART[i]),
 }));
 
-type Etat = { cercle: Cercle; angle: number; rayon: number; cibleAngle: number; cibleRayon: number };
+type Etat = {
+  cercle: Cercle;
+  angle: number;
+  rayon: number;
+  cibleAngle: number;
+  cibleRayon: number;
+};
 
 const ICONE_TUTORIEL = (
   <svg
@@ -323,27 +351,56 @@ type LigneRecap = {
 
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
 const RECAP: LigneRecap[] = [
-  { nom: "Crédits Gravity quotidiens", non: "0 crédit / jour", oui: "1 crédit / jour" },
   {
-    nom: "Pack 20 Crédits Gravity",
-    non: "100 €",
-    nonNote: "5 € / crédit, sans rabais",
-    oui: "70 €",
-    ouiNote: "prix dégressif : 1 = 5 € · 5 = 22 € · 10 = 40 € · 20 = 70 €",
+    nom: "Crédits Gravity quotidiens",
+    non: "0 crédit / jour",
+    oui: "1 crédit / jour",
   },
-  { nom: "CinéMatch", precision: "contacts", non: "Non visibles", oui: "Contacts visibles" },
+  {
+    nom: "CinéMatch",
+    precision: "contacts",
+    non: "Non visibles",
+    oui: "Contacts visibles",
+  },
   { nom: "Fiches Projets", non: "0 fiche", oui: "Accès infini" },
-  { nom: "Fiches Personnages", precision: "contacts", non: "Non visibles", oui: "Contacts visibles" },
-  { nom: "ScénarioLab", precision: "Spectateur", non: "5 € (si place libre)", oui: "Accès prioritaire" },
+  {
+    nom: "Fiches Personnages",
+    precision: "contacts",
+    non: "Non visibles",
+    oui: "Contacts visibles",
+  },
+  {
+    nom: "ScénarioLab",
+    precision: "Spectateur",
+    non: "5 € (si place libre)",
+    oui: "Accès prioritaire",
+  },
   { nom: "CinéCrush", non: "Inclus", oui: "Inclus" },
-  { nom: "Galaxie de Projets", precision: "Accès limité", non: "Inclus", oui: "Inclus" },
+  {
+    nom: "Galaxie de Projets",
+    precision: "Accès limité",
+    non: "Inclus",
+    oui: "Inclus",
+  },
 ];
 
-const ETIQUETTE: Record<Cercle, string> = { adhesion: "Adhésion", service: "Services" };
+// La grille dégressive des adhérents (04/10) ; les non-adhérents paient 5 € le crédit (décision du 10/11).
+const GRILLE_CREDITS: { nombre: number; prix: number }[] = [
+  { nombre: 1, prix: 5 },
+  { nombre: 5, prix: 22 },
+  { nombre: 10, prix: 40 },
+  { nombre: 20, prix: 70 },
+];
+
+const ETIQUETTE: Record<Cercle, string> = {
+  adhesion: "Adhésion",
+  service: "Services",
+};
 
 export default function OrbiteAdhesion() {
   const [mode, setMode] = useState<Mode>("adhesion");
   const [choix, setChoix] = useState<Rond | null>(null);
+  const [nombreCredits, setNombreCredits] = useState(20);
   const [vedette, setVedette] = useState(0);
   const enVedette = choix ? null : RONDS[vedette].id;
 
@@ -370,7 +427,10 @@ export default function OrbiteAdhesion() {
   // à tour de rôle, comme sur l'accueil.
   useEffect(() => {
     if (choix) return;
-    const minuteur = setInterval(() => setVedette((v) => (v + 1) % RONDS.length), CADENCE_BULLE_MS);
+    const minuteur = setInterval(
+      () => setVedette((v) => (v + 1) % RONDS.length),
+      CADENCE_BULLE_MS,
+    );
     return () => clearInterval(minuteur);
   }, [choix]);
 
@@ -395,7 +455,9 @@ export default function OrbiteAdhesion() {
   }, [mode]);
 
   useEffect(() => {
-    const immobile = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const immobile = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     const vitesseAdhesion = immobile ? 0 : (2 * Math.PI) / TOUR_ADHESION_S;
     const vitesseServices = immobile ? 0 : (2 * Math.PI) / TOUR_SERVICES_S;
     let image = 0;
@@ -413,7 +475,11 @@ export default function OrbiteAdhesion() {
         e.angle += ecart(e.cibleAngle - e.angle) * part;
         e.rayon += (e.cibleRayon - e.rayon) * part;
         const element = elements.current[i];
-        if (element) element.style.transform = deplacement(e.rayon, tours.current[e.cercle] + e.angle);
+        if (element)
+          element.style.transform = deplacement(
+            e.rayon,
+            tours.current[e.cercle] + e.angle,
+          );
       });
       image = requestAnimationFrame(avancer);
     };
@@ -426,6 +492,9 @@ export default function OrbiteAdhesion() {
     setChoix(null);
     setMode(vers);
   };
+
+  const prixAdherent =
+    GRILLE_CREDITS.find((g) => g.nombre === nombreCredits)?.prix ?? 0;
 
   const couleurChoix = choix ? cercleDe(choix, mode) : "adhesion";
 
@@ -441,7 +510,11 @@ export default function OrbiteAdhesion() {
             survol.current = false;
           }}
         >
-          <svg className={styles.cercles} viewBox="0 0 700 700" aria-hidden="true">
+          <svg
+            className={styles.cercles}
+            viewBox="0 0 700 700"
+            aria-hidden="true"
+          >
             <circle cx="350" cy="350" r={RAYON_ADHESION} />
             <circle cx="350" cy="350" r={RAYON_SERVICES} />
           </svg>
@@ -492,13 +565,21 @@ export default function OrbiteAdhesion() {
           })}
 
           {choix && (
-            <div className={styles.fiche} role="dialog" aria-label={titre(choix, mode)}>
+            <div
+              className={styles.fiche}
+              role="dialog"
+              aria-label={titre(choix, mode)}
+            >
               <div className={styles.ficheHaut}>
-                <span className={`${styles.ficheIcone} ${styles[couleurChoix]}`}>
+                <span
+                  className={`${styles.ficheIcone} ${styles[couleurChoix]}`}
+                >
                   {ICONES[choix.icone]}
                 </span>
                 <div className={styles.ficheNoms}>
-                  <span className={`${styles.ficheEtiquette} ${styles[couleurChoix]}`}>
+                  <span
+                    className={`${styles.ficheEtiquette} ${styles[couleurChoix]}`}
+                  >
                     {ETIQUETTE[couleurChoix]}
                   </span>
                   <span className={styles.ficheNom}>{titre(choix, mode)}</span>
@@ -513,7 +594,10 @@ export default function OrbiteAdhesion() {
                 </button>
               </div>
               <div className={styles.ficheTexte}>
-                {(mode === "zero" && choix.texteZero ? choix.texteZero : choix.texte)
+                {(mode === "zero" && choix.texteZero
+                  ? choix.texteZero
+                  : choix.texte
+                )
                   .split("\n")
                   .map((ligne, i) => (
                     <p key={i}>{ligne}</p>
@@ -530,7 +614,9 @@ export default function OrbiteAdhesion() {
                   onClick={() =>
                     window.dispatchEvent(
                       new CustomEvent(EVENEMENT_CONTACT, {
-                        detail: { message: `À propos de « ${titre(choix, mode)} » : ` },
+                        detail: {
+                          message: `À propos de « ${titre(choix, mode)} » : `,
+                        },
                       }),
                     )
                   }
@@ -545,10 +631,12 @@ export default function OrbiteAdhesion() {
 
         <p className={styles.legende}>
           <span className={styles.legendeAdhesion}>
-            <i aria-hidden="true" /> L’adhésion en rouge à 5 €/mois inclut de nombreux services
+            <i aria-hidden="true" /> L’adhésion en rouge à 5 €/mois inclut de
+            nombreux services
           </span>
           <span className={styles.legendeServices}>
-            <i aria-hidden="true" /> L’adhésion en bleu à 0 €/mois n’a que des services optionnels payants
+            <i aria-hidden="true" /> L’adhésion en bleu à 0 €/mois n’a que des
+            services optionnels payants
           </span>
         </p>
 
@@ -569,21 +657,57 @@ export default function OrbiteAdhesion() {
               </tr>
             </thead>
             <tbody>
-              {RECAP.map((l) => (
-                <tr key={l.nom}>
-                  <th scope="row">
-                    {l.nom}
-                    {l.precision && <em> ({l.precision})</em>}
-                  </th>
-                  <td>
-                    {l.non}
-                    {l.nonNote && <small>{l.nonNote}</small>}
-                  </td>
-                  <td>
-                    <strong>{l.oui}</strong>
-                    {l.ouiNote && <small>{l.ouiNote}</small>}
-                  </td>
-                </tr>
+              {RECAP.map((l, index) => (
+                <Fragment key={l.nom}>
+                  <tr>
+                    <th scope="row">
+                      {l.nom}
+                      {l.precision && <em> ({l.precision})</em>}
+                    </th>
+                    <td>
+                      {l.non}
+                      {l.nonNote && <small>{l.nonNote}</small>}
+                    </td>
+                    <td>
+                      <strong>{l.oui}</strong>
+                      {l.ouiNote && <small>{l.ouiNote}</small>}
+                    </td>
+                  </tr>
+                  {index === 0 && (
+                    <tr>
+                      <th scope="row">
+                        <label htmlFor="recap-credits">Crédits Gravity</label>
+                        <select
+                          id="recap-credits"
+                          className={styles.recapSelect}
+                          value={nombreCredits}
+                          onChange={(e) =>
+                            setNombreCredits(Number(e.target.value))
+                          }
+                        >
+                          {GRILLE_CREDITS.map((g) => (
+                            <option key={g.nombre} value={g.nombre}>
+                              {g.nombre} {g.nombre > 1 ? "crédits" : "crédit"}
+                            </option>
+                          ))}
+                        </select>
+                      </th>
+                      <td>
+                        {nombreCredits * 5} €
+                        <small>5 € / crédit, sans rabais</small>
+                      </td>
+                      <td>
+                        <strong>{prixAdherent} €</strong>
+                        {nombreCredits > 1 && (
+                          <small>
+                            au lieu de {nombreCredits * 5} € ·{" "}
+                            {nombreCredits * 5 - prixAdherent} € offerts
+                          </small>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>

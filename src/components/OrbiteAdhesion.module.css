@@ -518,3 +518,15 @@
     padding: 9px 5px;
   }
 }
+
+.recapSelect {
+  display: block;
+  margin-top: 6px;
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 13px;
+  color: #ededed;
+  background: #1c1c1c;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+}
