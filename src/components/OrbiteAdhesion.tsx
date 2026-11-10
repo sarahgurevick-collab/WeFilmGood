@@ -94,7 +94,7 @@ const ADHESION: Noeud[] = [
   {
     id: "fiche-projet",
     nom: "Fiches Projets",
-    icone: "fiche",
+    icone: "identite",
     texte:
       "Ne laisse aucun scénario dans ton tiroir : tes projets en développement, même anciens, sont la vitrine et la richesse de ton univers qui attise la curiosité des producteurs, inspire les comédiens (ComedyPitch) et les compositeurs (MusicPitch). Tu peux ajouter un StoryPitch pour chacun de tes projets.",
     aZero: "payant",
