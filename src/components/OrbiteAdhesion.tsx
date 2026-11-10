@@ -72,7 +72,7 @@ const ADHESION: Noeud[] = [
     id: "galaxies",
     nom: "Crédit Gravity",
     nomZero: "Les Galaxies Projets - Personnages - Talents",
-    icone: "galaxie",
+    icone: "gravity",
     texte:
       "Chaque jour tu as un nouveau Gravity (crédit) pour trouver le projet de ton choix dans la Galaxie de projets. Tu pourras écouter l’auteur raconter son histoire (StoryPitch), un comédien qui donne vie aux personnages (ComedyPitch) ou un compositeur qui propose le thème ou on l’espère une chanson phare qui déclenchera la production du film (MusicPitch)\nEnregistre le projet dans tes favoris et contacte les Talents le moment venu.",
     aZero: "reste",
