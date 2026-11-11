@@ -12,6 +12,7 @@ import NavAdmin from "../../NavAdmin";
 import { prendreLaPlace } from "../../profils/prise-de-place";
 import RecapSatisfaction from "../RecapSatisfaction";
 import Factures, { SELECTION_FACTURES, versFactures } from "../Factures";
+import { photoNette } from "@/lib/photo";
 
 /**
  * La fiche d'un lecteur, pour l'administration : toutes ses fiches de
@@ -142,7 +143,7 @@ export default async function FicheLecteurPage({
       <div className={adminStyles.lecteurInfos}>
         {profil.avatar_url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={profil.avatar_url} alt="" className={adminStyles.lecteurPhoto} />
+          <img src={photoNette(profil.avatar_url) ?? undefined} alt="" className={adminStyles.lecteurPhoto} />
         ) : (
           <span className={adminStyles.lecteurPhotoVide}>
             {(profil.full_name ?? "?").trim().charAt(0).toUpperCase()}

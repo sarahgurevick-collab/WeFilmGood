@@ -22,6 +22,7 @@ import DeverrouillerCineMatch from "./DeverrouillerCineMatch";
 import SupprimerMembre from "./SupprimerMembre";
 import LienScenario from "../LienScenario";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { photoNette } from "@/lib/photo";
 
 type Membre = {
   profile_id: string;
@@ -508,7 +509,7 @@ export default async function MembresPage({
                       <span className={styles.photo} aria-hidden="true">
                         {m.avatar_url ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={m.avatar_url} alt="" />
+                          <img src={photoNette(m.avatar_url) ?? undefined} alt="" />
                         ) : (
                           <span>{(m.full_name ?? "?").trim().charAt(0).toUpperCase()}</span>
                         )}

@@ -1,10 +1,14 @@
+import { photoDuChemin } from "@/lib/photo";
 import type { createClient } from "@/lib/supabase/server";
 
-/** L'adresse publique de la photo entière gardée pour le cadrage (02/11/2026). */
+/**
+ * L'adresse de la photo entière gardée pour le cadrage (02/11/2026).
+ * Depuis le 11/11, une adresse signée par le serveur : le dossier des
+ * photos n'est plus public.
+ */
 export function urlOriginal(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  _supabase: Awaited<ReturnType<typeof createClient>>,
   chemin: string | null | undefined,
 ): string | null {
-  if (!chemin) return null;
-  return supabase.storage.from("avatars").getPublicUrl(chemin).data.publicUrl;
+  return photoDuChemin(chemin);
 }

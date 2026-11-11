@@ -14,6 +14,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export type Reponses = Record<string, string>;
 
 import { MIN_REPONSES } from "@/lib/cinematch-constantes";
+import { photoNette } from "@/lib/photo";
 
 export { MIN_REPONSES };
 
@@ -174,7 +175,7 @@ export async function resultatCineMatch(
     const nomVisible = adherent && complet;
     if (nomVisible) nom = leMatch?.full_name ?? leMatch?.first_name ?? null;
     if (leMatch?.avatar_url) {
-      photo = nomVisible ? leMatch.avatar_url : `/api/talents/photo?id=${match.profileId}`;
+      photo = nomVisible ? photoNette(leMatch.avatar_url) : `/api/talents/photo?id=${match.profileId}`;
     }
   }
 

@@ -21,6 +21,7 @@ import { createClient } from "@/lib/supabase/server";
 import ChangerAdresseMembre from "@/app/admin/membres/ChangerAdresseMembre";
 import ChangerTelephoneMembre from "@/app/admin/membres/ChangerTelephoneMembre";
 import styles from "./membre.module.css";
+import { photoNette } from "@/lib/photo";
 
 type Membre = {
   id: string;
@@ -188,7 +189,7 @@ export default async function ProfilMembrePage({
           {erreur && <p className={formStyles.error}>{erreur}</p>}
           <ChampPhoto
             membre={membre.id}
-            photo={membre.avatar_url}
+            photo={photoNette(membre.avatar_url)}
             original={urlOriginal(supabase, membre.avatar_original_path)}
             x={membre.photo_x ?? 50}
             y={membre.photo_y ?? 20}
@@ -199,7 +200,7 @@ export default async function ProfilMembrePage({
         <div className={styles.photo} aria-hidden="true">
           {membre.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={masque ? `/api/talents/photo?id=${membre.id}` : membre.avatar_url} alt="" />
+            <img src={masque ? `/api/talents/photo?id=${membre.id}` : (photoNette(membre.avatar_url) ?? undefined)} alt="" />
           ) : (
             !masque && <span>{nom.trim().charAt(0).toUpperCase()}</span>
           )}

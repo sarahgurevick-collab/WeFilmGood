@@ -9,6 +9,7 @@ import { lettreDuMetier } from "@/lib/lettre-metier";
 import { createClient } from "@/lib/supabase/server";
 import { BLOCS, calculerCompletion } from "./completion";
 import styles from "./profil.module.css";
+import { photoNette } from "@/lib/photo";
 
 const CATEGORIES: Record<string, string> = {
   auteur: "Auteur",
@@ -146,7 +147,7 @@ export default async function ProfilPage({
           <div className={styles.affichePhoto} aria-hidden="true">
             {fiche?.avatar_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={fiche.avatar_url} alt="" />
+              <img src={photoNette(fiche.avatar_url) ?? undefined} alt="" />
             ) : (
               <span>{nom.trim().charAt(0).toUpperCase()}</span>
             )}

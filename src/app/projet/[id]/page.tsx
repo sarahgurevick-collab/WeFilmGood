@@ -31,6 +31,7 @@ import { nomDeLangue } from "@/lib/langues";
 import { nomDuPays } from "@/lib/pays";
 import { lecteurBandeAnnonce } from "@/lib/videopitch";
 import { compterArchives } from "@/lib/archives-lecture";
+import { photoNette } from "@/lib/photo";
 
 const FORMATS_LISIBLES: Record<string, string> = {
   long_metrage: "Long métrage",
@@ -367,7 +368,7 @@ export default async function ProjetPage({
     for (const m of equipe) {
       const fiche = m.profileId ? parId.get(m.profileId) : undefined;
       const photo = fiche?.avatar_url ?? null;
-      m.photo = restreint && photo ? `/api/talents/photo?id=${m.profileId}` : photo;
+      m.photo = restreint && photo ? `/api/talents/photo?id=${m.profileId}` : photoNette(photo);
       // Où la personne vit (12/10, Sarah) : drapeau + « Afrique du Sud »,
       // pour qu'un crédit dépensé pour écrire le soit en connaissance de
       // cause. Le pays du profil est celui où l'on vit, pas l'origine. Sans

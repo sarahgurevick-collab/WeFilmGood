@@ -6,6 +6,7 @@ import { decouperLigne, separerAuteurs } from "@/app/notre-histoire/rapprochemen
 import NavAdmin from "../NavAdmin";
 import styles from "../admin.module.css";
 import CreerProfil, { type FicheProposee } from "./CreerProfil";
+import { photoNette } from "@/lib/photo";
 
 /** Avant 2016, WFG 1 n'existait pas : ces auteurs n'ont jamais eu de compte. */
 const AVANT = 2016;
@@ -110,7 +111,7 @@ export default async function AuteursSelectionnesPage() {
   // Les profils déjà créés d'ici, retrouvés par le nom (mêmes mots, tout ordre).
   const creeDe = new Map<string, { id: string; nom: string; avatar: string | null; site: string | null }>();
   for (const p of (crees ?? []) as { id: string; full_name: string | null; first_name: string | null; last_name: string | null; avatar_url: string | null; website: string | null }[]) {
-    const fiche = { id: p.id, nom: p.full_name ?? "", avatar: p.avatar_url, site: p.website };
+    const fiche = { id: p.id, nom: p.full_name ?? "", avatar: photoNette(p.avatar_url), site: p.website };
     for (const n of [p.full_name, `${p.first_name ?? ""} ${p.last_name ?? ""}`]) if (n?.trim()) creeDe.set(cle(n), fiche);
   }
   const adresseDe = new Map(((adresses ?? []) as { cle: string; email: string }[]).map((a) => [a.cle, a.email]));

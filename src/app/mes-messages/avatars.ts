@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { lettreDuMetier } from "@/lib/lettre-metier";
+import { photoNette } from "@/lib/photo";
 
 export type AvatarDe = { src: string | null; lettre: string };
 
@@ -18,7 +19,7 @@ export async function avatarsDe(supabase: SupabaseClient, ids: string[]): Promis
     if (!deja || m.role.position < deja.position) premier.set(m.profile_id, { label: m.role.label_fr, position: m.role.position });
   }
   for (const p of (profils ?? []) as { id: string; avatar_url: string | null }[]) {
-    parId.set(p.id, { src: p.avatar_url, lettre: lettreDuMetier(premier.get(p.id)?.label) || "?" });
+    parId.set(p.id, { src: photoNette(p.avatar_url), lettre: lettreDuMetier(premier.get(p.id)?.label) || "?" });
   }
   return parId;
 }

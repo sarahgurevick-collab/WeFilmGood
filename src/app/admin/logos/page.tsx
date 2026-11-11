@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import NavAdmin from "../NavAdmin";
 import styles from "../portraits/portraits.module.css";
 import { ecarterLogo, retirerLogo, validerLogo } from "./actions";
+import { photoNette } from "@/lib/photo";
 
 type Onglet = "a_valider" | "valide" | "ecarte";
 type Ligne = {
@@ -84,7 +85,7 @@ export default async function LogosPage({ searchParams }: { searchParams: Promis
                 {l.url_logo && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={l.url_logo}
+                    src={photoNette(l.url_logo) ?? undefined}
                     alt=""
                     style={{ width: 140, height: 140, borderRadius: "50%", objectFit: "cover", alignSelf: "center", border: "1px solid #ddd" }}
                   />

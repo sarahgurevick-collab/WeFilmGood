@@ -6,6 +6,7 @@ import { AUCUN, parametresRpc, type Filtres } from "./filtres";
 import { enTexte, vecteur } from "@/lib/vecteurs";
 import { equipesDesCartes, lectureRestreinte, type EquipeCarte } from "./equipe-carte";
 import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut, type PersonnagesCarte } from "./personnages-carte";
+import { photoNette } from "@/lib/photo";
 
 export type ProjetTrouve = {
   id: string;
@@ -375,7 +376,7 @@ async function fichesTalents(
       photo:
         masque && p.avatar_url
           ? `/api/talents/photo?id=${p.id}&v=${createHash("sha256").update(p.avatar_url).digest("hex").slice(0, 8)}`
-          : p.avatar_url,
+          : photoNette(p.avatar_url),
       masque,
       metiers: l.metiers ?? [],
       ville: p.city,

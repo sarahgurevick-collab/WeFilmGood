@@ -9,6 +9,7 @@ import VerifierAvantEnvoi from "./VerifierAvantEnvoi";
 import { saveIdentite } from "../actions";
 import { urlOriginal } from "./original";
 import styles from "../profil.module.css";
+import { photoNette } from "@/lib/photo";
 
 const CATEGORIES = [
   { value: "auteur", label: "Auteur", hint: "J'écris. Profil actif immédiatement." },
@@ -48,7 +49,7 @@ export default async function IdentitePage({
       {photo && <p className={styles.ok}>Photo enregistrée.</p>}
       {cadrage && <p className={styles.ok}>Cadrage enregistré.</p>}
       <ChampPhoto
-        photo={profil?.avatar_url ?? null}
+        photo={photoNette(profil?.avatar_url)}
         original={urlOriginal(supabase, profil?.avatar_original_path)}
         x={profil?.photo_x ?? 50}
         y={profil?.photo_y ?? 20}

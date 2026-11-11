@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { photoNette } from "@/lib/photo";
 
 export type NoeudOrbite = {
   id: string;
@@ -72,7 +73,7 @@ export async function chargerProjetOrbite(): Promise<ProjetOrbite | null> {
       id: m.id,
       nom: m.nom,
       etiquette: m.role,
-      image: m.avatar,
+      image: photoNette(m.avatar) ?? "",
       bio: m.bio,
       lien: `/membres/${m.id}`,
     })),

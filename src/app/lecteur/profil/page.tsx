@@ -9,6 +9,7 @@ import profilStyles from "@/app/profil/profil.module.css";
 import { PAYS } from "@/lib/pays";
 import { choisirLanguesLues, enregistrerCoordonneesLecteur } from "../actions";
 import styles from "../lecteur.module.css";
+import { photoNette } from "@/lib/photo";
 
 /**
  * Le profil d'un lecteur : les langues qu'il accepte de lire. Ce sont elles
@@ -54,7 +55,7 @@ export default async function ProfilLecteurPage({
       {photo && <p className={profilStyles.ok}>Photo enregistrée.</p>}
       {cadrage && <p className={profilStyles.ok}>Cadrage enregistré.</p>}
       <ChampPhoto
-        photo={profil?.avatar_url ?? null}
+        photo={photoNette(profil?.avatar_url)}
         original={urlOriginal(supabase, profil?.avatar_original_path)}
         x={profil?.photo_x ?? 50}
         y={profil?.photo_y ?? 20}

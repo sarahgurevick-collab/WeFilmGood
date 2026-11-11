@@ -4,6 +4,7 @@ import { homedir } from "node:os";
 import path from "node:path";
 import sharp from "sharp";
 import { createClient } from "@/lib/supabase/server";
+import { cheminDeLaPhoto, lirePhoto } from "@/lib/photo";
 
 /**
  * La photo floutée d'un talent (02/10, décision de Sarah) : dans la
@@ -45,9 +46,11 @@ export async function GET(request: Request) {
     image = await readFile(fichier);
   } catch {
     try {
-      const origine = await fetch(profil.avatar_url);
-      if (!origine.ok) return new Response(null, { status: 404 });
-      image = await sharp(Buffer.from(await origine.arrayBuffer()))
+      // Le dossier des photos est fermé (11/11) : lecture avec la clé du serveur.
+      const chemin = cheminDeLaPhoto(profil.avatar_url);
+      const origine = chemin ? await lirePhoto(chemin) : null;
+      if (!origine) return new Response(null, { status: 404 });
+      image = await sharp(origine.donnees)
         .rotate()
         .resize(COTE, COTE, { fit: "cover" })
         .blur(FLOU)

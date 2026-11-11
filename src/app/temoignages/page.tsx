@@ -3,6 +3,7 @@ import CielEtoile from "@/components/CielEtoile";
 import PageShell from "@/components/PageShell";
 import SpherePhotos, { type PhotoSphereItem } from "@/components/SpherePhotos";
 import { createClient } from "@/lib/supabase/server";
+import { photoNette } from "@/lib/photo";
 
 type Temoignage = {
   id: string;
@@ -28,7 +29,7 @@ export default async function TemoignagesPage() {
 
   const photos: PhotoSphereItem[] = temoignages.map((t) => ({
     id: t.id,
-    src: t.avatar_url,
+    src: photoNette(t.avatar_url),
     // Témoignages anonymes (04/11, Sarah) : la photo reste, le nom ne quitte plus le serveur.
     alt: "Membre WeFilmGood",
     description: t.testimonial ?? undefined,

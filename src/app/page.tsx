@@ -14,6 +14,7 @@ import { chargerProjetOrbite } from "@/lib/orbite";
 import { createClient } from "@/lib/supabase/server";
 import formStyles from "@/components/form.module.css";
 import styles from "./page.module.css";
+import { photoNette } from "@/lib/photo";
 
 const STATUT = { signe: "Signé", tourne: "Tourné" } as const;
 const DIAPOS_SUCCES = SUCCESS_STORIES_BLOG.map((s) => ({
@@ -44,7 +45,7 @@ export default async function Home() {
   ]);
   const photosTemoignages: PhotoSphereItem[] = (temoignages ?? []).map((t) => ({
     id: t.id,
-    src: t.avatar_url,
+    src: photoNette(t.avatar_url),
     // Témoignages anonymes (04/11, Sarah) : la photo reste, le nom ne quitte plus le serveur.
     alt: "Membre WeFilmGood",
     description: t.testimonial ?? undefined,

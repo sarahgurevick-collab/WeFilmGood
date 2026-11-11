@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { lettreDuMetier } from "@/lib/lettre-metier";
+import { photoNette } from "@/lib/photo";
 
 /** L'équipe déjà en place, telle que la carte d'un projet la montre (19/10/2026). */
 export type EquipeCarte = {
@@ -36,7 +37,7 @@ export async function equipesDesCartes(
     if (eq.portraits.length < NB_PORTRAITS_EQUIPE) {
       eq.portraits.push({
         id: l.profile_id ?? `sans-compte-${eq.total}`,
-        src: l.profile_id && l.avatar_url ? (restreint ? `/api/talents/photo?id=${l.profile_id}` : l.avatar_url) : null,
+        src: l.profile_id && l.avatar_url ? (restreint ? `/api/talents/photo?id=${l.profile_id}` : photoNette(l.avatar_url)) : null,
         lettre: lettreDuMetier(l.role),
       });
     }
