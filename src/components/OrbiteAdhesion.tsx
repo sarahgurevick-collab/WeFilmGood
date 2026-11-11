@@ -21,7 +21,7 @@ import styles from "./OrbiteAdhesion.module.css";
  * et ouvre l'explication du rond. Les explications sont les phrases de la
  * page Adhésion, reprises telles quelles.
  *
- * Le soleil a deux positions (05/10, mots de Sarah) : « 5 €/mois » et
+ * Le soleil a deux positions (05/10, mots de Sarah ; 7 € depuis le 11/11) : « 7 €/mois » et
  * « 0 € ». Il passe de l'une à l'autre tout seul, sans bouton (elle trouvait
  * le bouton dommage) ; un clic sur le soleil le fait aussi. À 0 €, les ronds réservés à l'adhésion payante passent en bleu
  * et rejoignent le cercle extérieur ; restent en rouge ceux qu'on garde quand
@@ -646,7 +646,7 @@ export default function OrbiteAdhesion({
               </span>
             ) : (
               <span key="adhesion" className={styles.prix}>
-                5 €<span className={styles.parMois}>/mois</span>
+                7 €<span className={styles.parMois}>/mois</span>
               </span>
             )}
           </button>
@@ -747,7 +747,7 @@ export default function OrbiteAdhesion({
 
         <p className={styles.legende}>
           <span className={styles.legendeAdhesion}>
-            <i aria-hidden="true" /> L’adhésion en rouge à 5 €/mois inclut de
+            <i aria-hidden="true" /> L’adhésion en rouge à 7 €/mois inclut de
             nombreux services
           </span>
           <span className={styles.legendeServices}>
@@ -767,7 +767,7 @@ export default function OrbiteAdhesion({
                 </th>
                 <th scope="col" className={styles.recapAdhesion}>
                   <i aria-hidden="true" /> Adhésion annuelle
-                  <small>60 € ou 5 €/mois</small>
+                  <small>84 € ou 7 €/mois</small>
                 </th>
               </tr>
             </thead>
