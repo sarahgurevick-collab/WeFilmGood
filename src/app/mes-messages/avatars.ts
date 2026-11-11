@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { lettreDuMetier } from "@/lib/lettre-metier";
 import { photoNette } from "@/lib/photo";
+import { clientProfils } from "@/lib/supabase/admin";
 
 export type AvatarDe = { src: string | null; lettre: string };
 
@@ -9,7 +10,7 @@ export async function avatarsDe(supabase: SupabaseClient, ids: string[]): Promis
   const parId = new Map<string, AvatarDe>();
   if (ids.length === 0) return parId;
   const [{ data: profils }, { data: metiers }] = await Promise.all([
-    supabase.from("profiles").select("id, avatar_url").in("id", ids),
+    clientProfils(supabase).from("profiles").select("id, avatar_url").in("id", ids),
     supabase.from("profile_roles").select("profile_id, role:roles(label_fr, position)").in("profile_id", ids),
   ]);
   const premier = new Map<string, { label: string; position: number }>();

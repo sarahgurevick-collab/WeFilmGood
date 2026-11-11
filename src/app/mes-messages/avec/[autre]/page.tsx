@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import styles from "./conversation.module.css";
 import AvatarMembre from "@/components/AvatarMembre";
 import { avatarsDe } from "../../avatars";
+import { clientProfils } from "@/lib/supabase/admin";
 
 type Message = {
   msg_id: string;
@@ -55,7 +56,7 @@ export default async function ConversationPage({
   if (fil.length === 0) notFound();
 
   const [{ data: interlocuteur }, { data: projet }] = await Promise.all([
-    supabase
+    clientProfils(supabase)
       .from("profiles")
       .select("first_name, display_name, full_name")
       .eq("id", autre)

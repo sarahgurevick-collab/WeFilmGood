@@ -4,6 +4,7 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { ecrire } from "../actions";
 import { createClient } from "@/lib/supabase/server";
+import { clientProfils } from "@/lib/supabase/admin";
 
 /**
  * Écrire à l'auteur d'un projet — dans l'onglet Messages, et non plus sur
@@ -50,7 +51,7 @@ export default async function NouveauMessagePage({
   if (destinataireId === user.id) redirect(projet ? `/projet/${projet.id}` : "/profil");
   if (adherent !== true && estAdmin !== true) redirect("/adhesion");
 
-  const { data: destinataire } = await supabase
+  const { data: destinataire } = await clientProfils(supabase)
     .from("profiles")
     .select("id, first_name, full_name")
     .eq("id", destinataireId)

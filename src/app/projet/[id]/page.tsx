@@ -32,6 +32,7 @@ import { nomDuPays } from "@/lib/pays";
 import { lecteurBandeAnnonce } from "@/lib/videopitch";
 import { compterArchives } from "@/lib/archives-lecture";
 import { photoNette } from "@/lib/photo";
+import { clientProfils } from "@/lib/supabase/admin";
 
 const FORMATS_LISIBLES: Record<string, string> = {
   long_metrage: "Long métrage",
@@ -253,7 +254,7 @@ export default async function ProjetPage({
   const nbArchives = estAdmin === true ? await compterArchives(id) : 0;
   const prochainBloc = etatBlocs ? (BLOCS.find((b) => !etatBlocs.fait[b.cle]) ?? null) : null;
 
-  const { data: auteur } = await supabase
+  const { data: auteur } = await clientProfils(supabase)
     .from("profiles")
     .select("id, full_name, display_name")
     .eq("id", project.owner_id)
@@ -333,7 +334,7 @@ export default async function ProjetPage({
     const reponses = await Promise.all(ids.map((uid) => supabase.rpc("messagerie_fermee", { uid })));
     const idsFermes = ids.filter((_, i) => reponses[i].data === true);
     if (idsFermes.length) {
-      const { data: prenoms } = await supabase.from("profiles").select("id, first_name").in("id", idsFermes);
+      const { data: prenoms } = await clientProfils(supabase).from("profiles").select("id, first_name").in("id", idsFermes);
       for (const pr of prenoms ?? []) {
         fermees.set(pr.id as string, `${(pr.first_name as string | null) ?? "Ce talent"} est indisponible momentanément, messagerie saturée.`);
       }
@@ -355,7 +356,7 @@ export default async function ProjetPage({
   // Les photos de l'équipe, pour le côté « L'auteur » du cadre.
   const idsEquipe = equipe.map((m) => m.profileId).filter((x): x is string => !!x);
   if (idsEquipe.length) {
-    const { data: photos } = await supabase
+    const { data: photos } = await clientProfils(supabase)
       .from("profiles")
       .select("id, avatar_url, country")
       .in("id", idsEquipe);
@@ -403,7 +404,7 @@ export default async function ProjetPage({
     // adhérents — jamais pour qui n'a pas d'adhésion, dont la base n'est
     // même pas interrogée.
     if (!restreint) {
-      const { data: details } = await supabase
+      const { data: details } = await clientProfils(supabase)
         .from("profiles")
         .select("id, biofilmo, website")
         .in("id", idsEquipe);

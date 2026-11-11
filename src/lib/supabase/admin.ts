@@ -34,3 +34,16 @@ export async function emailDuMembre(profileId: string): Promise<string | null> {
   if (error) return null;
   return data.user?.email ?? null;
 }
+
+/**
+ * Pour lire le profil de QUELQU'UN D'AUTRE (12/11/2026). La base ne laisse
+ * plus un membre lire que son propre profil (migration 0258) : sinon il
+ * pouvait demander tous les noms et biographies directement à la base,
+ * sans passer par les pages qui les masquent. C'est donc le serveur qui
+ * lit, avec sa clé, et la page applique ensuite les règles (adhésion,
+ * équipe, administration) avant d'envoyer quoi que ce soit au navigateur.
+ * À n'utiliser que dans du code qui applique ces règles.
+ */
+export function clientProfils<T>(repli: T): T {
+  return (createAdminClient() as unknown as T | null) ?? repli;
+}

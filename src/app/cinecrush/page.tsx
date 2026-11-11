@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import Chrono from "./Chrono";
 import Commentaires, { type Avis } from "./Commentaires";
 import styles from "./cinecrush.module.css";
+import { clientProfils } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "CinéCrush — WeFilmGood" };
 
@@ -77,6 +78,18 @@ export default async function CineCrushPage({
       .returns<Crush[]>(),
     supabase.rpc("is_admin"),
   ]);
+  // Les noms (porteurs des projets, auteurs des avis) : un membre ne lit plus
+  // le profil des autres dans la base (0258), le serveur les lit pour la page.
+  const nomsDe = async (ids: (string | null | undefined)[]) => {
+    const uniques = [...new Set(ids.filter((x): x is string => !!x))];
+    if (uniques.length === 0) return new Map<string, string | null>();
+    const { data } = await clientProfils(supabase).from("profiles").select("id, full_name").in("id", uniques);
+    return new Map(((data ?? []) as { id: string; full_name: string | null }[]).map((p) => [p.id, p.full_name]));
+  };
+  const porteurs = await nomsDe((crushs ?? []).map((c) => c.project?.owner_id));
+  for (const c of crushs ?? []) {
+    if (c.project) c.project.owner = { full_name: porteurs.get(c.project.owner_id) ?? null };
+  }
   const dimancheEnCours = dimanche as unknown as string;
   const finMs = fin ? Date.parse(fin as unknown as string) : Date.now();
   // La semaine en cours d'abord, puis du plus récent au plus ancien ;
@@ -118,6 +131,8 @@ export default async function CineCrushPage({
         .order("cree_le", { ascending: true })
         .returns<Avis[]>()
     : { data: [] };
+  const signataires = await nomsDe((avis ?? []).map((a) => a.auteur_id));
+  for (const a of avis ?? []) a.auteur = { full_name: signataires.get(a.auteur_id) ?? null };
 
   const etapes: EtapeFrise[] = liste.map((c) => {
     const passe = c.semaine < dimancheEnCours;

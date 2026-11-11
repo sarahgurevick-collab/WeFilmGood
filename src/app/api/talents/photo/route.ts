@@ -5,6 +5,7 @@ import path from "node:path";
 import sharp from "sharp";
 import { createClient } from "@/lib/supabase/server";
 import { cheminDeLaPhoto, lirePhoto } from "@/lib/photo";
+import { clientProfils } from "@/lib/supabase/admin";
 
 /**
  * La photo floutée d'un talent (02/10, décision de Sarah) : dans la
@@ -31,7 +32,7 @@ export async function GET(request: Request) {
   const id = new URL(request.url).searchParams.get("id") ?? "";
   if (!/^[0-9a-f-]{36}$/i.test(id)) return new Response(null, { status: 404 });
 
-  const { data: profil } = await supabase
+  const { data: profil } = await clientProfils(supabase)
     .from("profiles")
     .select("avatar_url")
     .eq("id", id)

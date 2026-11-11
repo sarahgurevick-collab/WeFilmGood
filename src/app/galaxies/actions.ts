@@ -7,6 +7,7 @@ import { enTexte, vecteur } from "@/lib/vecteurs";
 import { equipesDesCartes, lectureRestreinte, type EquipeCarte } from "./equipe-carte";
 import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut, type PersonnagesCarte } from "./personnages-carte";
 import { photoNette } from "@/lib/photo";
+import { clientProfils } from "@/lib/supabase/admin";
 
 export type ProjetTrouve = {
   id: string;
@@ -356,7 +357,7 @@ async function fichesTalents(
   const { data: estAdmin } = await supabase.rpc("is_admin");
   const masque = estAdmin !== true;
 
-  const { data: profils } = await supabase
+  const { data: profils } = await clientProfils(supabase)
     .from("profiles")
     .select("id, full_name, display_name, avatar_url, city")
     .in("id", lignes.map((l) => l.id))

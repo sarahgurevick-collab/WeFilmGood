@@ -22,6 +22,7 @@ import ChangerAdresseMembre from "@/app/admin/membres/ChangerAdresseMembre";
 import ChangerTelephoneMembre from "@/app/admin/membres/ChangerTelephoneMembre";
 import styles from "./membre.module.css";
 import { photoNette } from "@/lib/photo";
+import { clientProfils } from "@/lib/supabase/admin";
 
 type Membre = {
   id: string;
@@ -65,7 +66,7 @@ export default async function ProfilMembrePage({
   } = await supabase.auth.getUser();
   if (!user) redirect(`/connexion?next=/membres/${id}`);
 
-  const { data: membre } = await supabase
+  const { data: membre } = await clientProfils(supabase)
     .from("profiles")
     .select("id, full_name, display_name, biofilmo, website, avatar_url, avatar_original_path, photo_x, photo_y")
     .eq("id", id)
@@ -162,7 +163,7 @@ export default async function ProfilMembrePage({
     ]);
     adherent = a === true;
     if (fermee === true && (adherent || estAdmin)) {
-      indisponible = `${(await supabase.from("profiles").select("first_name").eq("id", membre.id).maybeSingle<{ first_name: string | null }>()).data?.first_name ?? "Ce talent"} est indisponible momentanément, messagerie saturée.`;
+      indisponible = `${(await clientProfils(supabase).from("profiles").select("first_name").eq("id", membre.id).maybeSingle<{ first_name: string | null }>()).data?.first_name ?? "Ce talent"} est indisponible momentanément, messagerie saturée.`;
     }
   }
   const enveloppe = peutEcrire ? (
