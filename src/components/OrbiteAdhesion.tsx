@@ -416,11 +416,17 @@ type LigneRecap = {
   /** Une phrase en rouge sur toute la largeur, au-dessus de la ligne, comme un chapitre. */
   accroche?: string;
   icone: keyof typeof ICONES;
+  /** L'icône se montre devant le nom (lignes « À la demande »). */
+  avecIcone?: boolean;
   precision?: string;
   non: string;
   nonNote?: string;
   oui: string;
   ouiNote?: string;
+  /** Un seul prix, le même avec ou sans adhésion, sur les deux colonnes. */
+  commun?: string;
+  /** La ligne du Pack Gravity, avec son choix du nombre de crédits. */
+  pack?: boolean;
 };
 
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
@@ -434,12 +440,13 @@ const RECAP: LigneRecap[] = [
     oui: "Inclus",
   },
   {
-    nom: "CinéMatch",
-    icone: "cercles",
-    non: "✓",
-    oui: "✓ ✉ talents contactables",
+    nom: "Créer ses fiches Projets et Personnages",
+    icone: "identite",
+    non: "✕",
+    oui: "∞",
   },
-  { nom: "CinéCrush", icone: "coeur", non: "Inclus", oui: "Inclus" },
+  // Trois chapitres en rouge (11/11, mots de Sarah) : tous les jours,
+  // chaque semaine, à la demande.
   {
     nom: "Crédit Gravity",
     accroche: "Tous les jours de nouveaux talents à contacter",
@@ -448,17 +455,53 @@ const RECAP: LigneRecap[] = [
     oui: "1 projet au choix et ses Talents ✉ /jour",
   },
   {
-    nom: "Créer ses fiches Projets et Personnages",
-    icone: "identite",
-    non: "✕",
-    oui: "∞",
+    nom: "CinéMatch",
+    icone: "cercles",
+    non: "✓",
+    oui: "✓ ✉ talents contactables",
   },
+  {
+    nom: "CinéCrush",
+    accroche: "Chaque semaine",
+    icone: "coeur",
+    non: "Inclus",
+    oui: "Inclus",
+  },
+  {
+    nom: "Analyse d’un projet",
+    accroche: "À la demande",
+    icone: "nuage",
+    avecIcone: true,
+    precision:
+      "traitement de 8 à 10 pages pour un LM, analyse du scénario pour un CM, une prébible de 15 pages pour une série",
+    non: "60 €",
+    oui: "50 €",
+  },
+  {
+    nom: "Accompagnement personnalisé",
+    icone: "telephone",
+    avecIcone: true,
+    non: "",
+    oui: "",
+    commun: "500 €",
+  },
+  { nom: "Pack Gravity", icone: "gravity", non: "", oui: "", pack: true },
   {
     nom: "ScénarioLab",
     icone: "oeil",
+    avecIcone: true,
     precision: "Spectateur",
     non: "5 € (si place libre)",
     oui: "Accès prioritaire",
+  },
+  {
+    nom: "ScénarioLab",
+    icone: "fiole",
+    avecIcone: true,
+    precision: "participant",
+    non: "",
+    oui: "",
+    commun: "100 € / personne",
   },
 ];
 
@@ -469,22 +512,6 @@ const GRILLE_CREDITS: { nombre: number; prix: number }[] = [
   { nombre: 20, prix: 70 },
 ];
 
-// Les services au même prix pour tous, adhérent ou non (10/11, mots de Sarah).
-const PRIX_COMMUNS: {
-  nom: string;
-  icone: keyof typeof ICONES;
-  precision?: string;
-  prix: string;
-}[] = [
-  { nom: "Analyse du projet", icone: "nuage", prix: "50 €" },
-  { nom: "Accompagnement personnalisé", icone: "telephone", prix: "500 €" },
-  {
-    nom: "ScénarioLab",
-    icone: "fiole",
-    precision: "participant",
-    prix: "100 € / personne",
-  },
-];
 
 const ETIQUETTE: Record<Cercle, string> = {
   adhesion: "Adhésion",
@@ -768,7 +795,7 @@ export default function OrbiteAdhesion({
             </thead>
             <tbody>
               {lignes.map((l) => (
-                <Fragment key={l.nom}>
+                <Fragment key={`${l.nom}-${l.precision ?? ""}`}>
                   {l.accroche && (
                     <tr>
                       <th
@@ -780,72 +807,71 @@ export default function OrbiteAdhesion({
                       </th>
                     </tr>
                   )}
-                  <tr>
-                    <th scope="row">
-                      {l.nom}
-                      {l.precision && <em> ({l.precision})</em>}
-                    </th>
-                    <td>
-                      <Symboles texte={l.non} />
-                      {l.nonNote && <small>{l.nonNote}</small>}
-                    </td>
-                    <td>
-                      <strong
-                        className={
-                          l.oui === "∞" ? styles.recapInfini : undefined
-                        }
-                      >
-                        <Symboles texte={l.oui} />
-                      </strong>
-                      {l.ouiNote && <small>{l.ouiNote}</small>}
-                    </td>
-                  </tr>
-              </Fragment>
-            ))}
-                <tr>
-                  <th scope="row">
-                    <label htmlFor="recap-credits">
-                      <span className={styles.recapIcone}>
-                        {ICONES.gravity}
-                      </span>
-                      Pack Gravity
-                    </label>
-                    <select
-                      id="recap-credits"
-                      className={styles.recapSelect}
-                      value={nombreCredits}
-                      onChange={(e) =>
-                        setNombreCredits(Number(e.target.value))
-                      }
-                    >
-                      {GRILLE_CREDITS.map((g) => (
-                        <option key={g.nombre} value={g.nombre}>
-                          {g.nombre} {g.nombre > 1 ? "crédits" : "crédit"}
-                        </option>
-                      ))}
-                    </select>
-                  </th>
-                  <td>{nombreCredits * 5} €</td>
-                  <td>
-                    <strong>{prixAdherent} €</strong>
-                    </td>
-                  </tr>
-              <tr>
-                <th scope="colgroup" colSpan={3} className={styles.recapSepare}>
-                  Même prix pour tous
-                </th>
-              </tr>
-              {PRIX_COMMUNS.map((l) => (
-                <tr key={l.nom}>
-                  <th scope="row">
-                    <span className={styles.recapIcone}>{ICONES[l.icone]}</span>
-                    {l.nom}
-                    {l.precision && <em> ({l.precision})</em>}
-                  </th>
-                  <td colSpan={2} className={styles.recapCommun}>
-                    <strong>{l.prix}</strong>
-                  </td>
-                </tr>
+                  {l.pack ? (
+                    <tr>
+                      <th scope="row">
+                        <label htmlFor="recap-credits">
+                          <span className={styles.recapIcone}>
+                            {ICONES.gravity}
+                          </span>
+                          {l.nom}
+                        </label>
+                        <select
+                          id="recap-credits"
+                          className={styles.recapSelect}
+                          value={nombreCredits}
+                          onChange={(e) =>
+                            setNombreCredits(Number(e.target.value))
+                          }
+                        >
+                          {GRILLE_CREDITS.map((g) => (
+                            <option key={g.nombre} value={g.nombre}>
+                              {g.nombre} {g.nombre > 1 ? "crédits" : "crédit"}
+                            </option>
+                          ))}
+                        </select>
+                      </th>
+                      <td>{nombreCredits * 5} €</td>
+                      <td>
+                        <strong>{prixAdherent} €</strong>
+                      </td>
+                    </tr>
+                  ) : (
+                    <tr>
+                      <th scope="row">
+                        {l.avecIcone && (
+                          <span className={styles.recapIcone}>
+                            {ICONES[l.icone]}
+                          </span>
+                        )}
+                        {l.nom}
+                        {l.precision && <em> ({l.precision})</em>}
+                      </th>
+                      {l.commun ? (
+                        <td colSpan={2} className={styles.recapCommun}>
+                          <strong>{l.commun}</strong>
+                        </td>
+                      ) : (
+                        <>
+                          <td>
+                            <Symboles texte={l.non} />
+                            {l.nonNote && <small>{l.nonNote}</small>}
+                          </td>
+                          <td>
+                            <strong
+                              className={
+                                l.oui === "∞" ? styles.recapInfini : undefined
+                              }
+                            >
+                              <Symboles texte={l.oui} />
+                            </strong>
+                            {l.ouiNote && <small>{l.ouiNote}</small>}
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  )}
+                </Fragment>
               ))}
             </tbody>
           </table>
