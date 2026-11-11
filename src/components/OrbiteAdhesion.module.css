@@ -441,6 +441,13 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  /* Les deux colonnes de prix de même largeur : un prix commun, centré sur
+     les deux, tombe ainsi juste au milieu (11/11, Sarah). */
+  table-layout: fixed;
+}
+
+.recapTable thead th:nth-child(n + 2) {
+  width: 24%;
 }
 
 .recapTable th,
@@ -513,6 +520,10 @@
     font-size: 13px;
   }
 
+  .recapTable thead th:nth-child(n + 2) {
+    width: 27%;
+  }
+
   .recapTable th,
   .recapTable td {
     padding: 9px 5px;
@@ -571,4 +582,61 @@
 /* La phrase en rouge qui ouvre un chapitre du récapitulatif. */
 .recapTable th.recapAccroche {
   color: #da2c25;
+}
+
+/* Le nom d'une ligne, cliquable : il ouvre la même explication que le rond
+   de l'animation (11/11, Sarah). */
+.recapBouton {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.recapBouton:hover {
+  color: #ededed;
+}
+
+.recapBouton:focus-visible {
+  outline: 2px solid var(--rouge);
+  outline-offset: 3px;
+}
+
+.recapIcone.recapRond {
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: #1c1c1c;
+  vertical-align: middle;
+}
+
+.recapIcone.recapRond svg {
+  width: 16px;
+  height: 16px;
+}
+
+.recapRond.adhesion {
+  box-shadow: 0 0 0 2px var(--rouge);
+}
+
+.recapRond.service {
+  box-shadow: 0 0 0 2px var(--bleu);
+}
+
+.recapTable td.recapBulleCase {
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* La bulle de l'animation, posée dans le tableau : à sa place dans la page. */
+.fiche.ficheTableau {
+  position: static;
+  width: 100%;
+  max-height: none;
+  margin-bottom: 8px;
 }
