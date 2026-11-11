@@ -769,7 +769,7 @@ export default function OrbiteAdhesion({
               </tr>
             </thead>
             <tbody>
-              {lignes.map((l, index) => (
+              {lignes.map((l) => (
                 <Fragment key={l.nom}>
                   <tr>
                     <th scope="row">
@@ -791,38 +791,36 @@ export default function OrbiteAdhesion({
                       {l.ouiNote && <small>{l.ouiNote}</small>}
                     </td>
                   </tr>
-                  {index === 0 && (
-                    <tr>
-                      <th scope="row">
-                        <label htmlFor="recap-credits">
-                          <span className={styles.recapIcone}>
-                            {ICONES.gravity}
-                          </span>
-                          Pack Gravity
-                        </label>
-                        <select
-                          id="recap-credits"
-                          className={styles.recapSelect}
-                          value={nombreCredits}
-                          onChange={(e) =>
-                            setNombreCredits(Number(e.target.value))
-                          }
-                        >
-                          {GRILLE_CREDITS.map((g) => (
-                            <option key={g.nombre} value={g.nombre}>
-                              {g.nombre} {g.nombre > 1 ? "crédits" : "crédit"}
-                            </option>
-                          ))}
-                        </select>
-                      </th>
-                      <td>{nombreCredits * 5} €</td>
-                      <td>
-                        <strong>{prixAdherent} €</strong>
-                      </td>
-                    </tr>
-                  )}
-                </Fragment>
-              ))}
+              </Fragment>
+            ))}
+                <tr>
+                  <th scope="row">
+                    <label htmlFor="recap-credits">
+                      <span className={styles.recapIcone}>
+                        {ICONES.gravity}
+                      </span>
+                      Pack Gravity
+                    </label>
+                    <select
+                      id="recap-credits"
+                      className={styles.recapSelect}
+                      value={nombreCredits}
+                      onChange={(e) =>
+                        setNombreCredits(Number(e.target.value))
+                      }
+                    >
+                      {GRILLE_CREDITS.map((g) => (
+                        <option key={g.nombre} value={g.nombre}>
+                          {g.nombre} {g.nombre > 1 ? "crédits" : "crédit"}
+                        </option>
+                      ))}
+                    </select>
+                  </th>
+                  <td>{nombreCredits * 5} €</td>
+                  <td>
+                    <strong>{prixAdherent} €</strong>
+                    </td>
+                  </tr>
               <tr>
                 <th scope="colgroup" colSpan={3} className={styles.recapSepare}>
                   Même prix pour tous
