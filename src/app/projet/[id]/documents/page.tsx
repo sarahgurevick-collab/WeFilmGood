@@ -78,6 +78,11 @@ export default async function DocumentsPage({
       .limit(1)
       .returns<{ paid_at: string | null }[]>(),
   ]);
+  // Une fois le projet envoyé (et les quelques minutes de vérification
+  // passées), le scénario disparaît pour l'auteur aussi (11/11, Sarah) :
+  // la base ne le laisse plus ni l'ouvrir ni le remplacer (migration 0254).
+  const { data: scenarioFerme } = await supabase.rpc("scenario_ferme", { p_project_id: id });
+  const scenarioModifiable = estAdmin === true || scenarioFerme !== true;
   const test = modeHelloAsso() === "sandbox";
   const peutPayer = !test || estAdmin === true;
   const envoyeLe = (demandesPayees ?? [])[0]?.paid_at ?? null;
@@ -151,15 +156,19 @@ export default async function DocumentsPage({
           <span className={formStyles.hint}>Vous pouvez en choisir plusieurs à la fois.</span>
         </label>
 
-        <h2 className={styles.sousTitre}>Le scénario</h2>
-        <label className={formStyles.field}>
-          <span>{scenario ? "Remplacer le scénario (PDF)" : "Scénario (PDF)"}</span>
-          <ChampFichier name="scenario" accept="application/pdf" />
-          <span className={formStyles.hint}>
-            Confidentiel : seuls vous, les lecteurs qui en seront chargés et
-            l&apos;équipe de la Maison des Scénaristes/WeFilmGood y auront accès.
-          </span>
-        </label>
+        {scenarioModifiable && (
+          <>
+            <h2 className={styles.sousTitre}>Le scénario</h2>
+            <label className={formStyles.field}>
+              <span>{scenario ? "Remplacer le scénario (PDF)" : "Scénario (PDF)"}</span>
+              <ChampFichier name="scenario" accept="application/pdf" />
+              <span className={formStyles.hint}>
+                Confidentiel : seuls vous, les lecteurs qui en seront chargés et
+                l&apos;équipe de la Maison des Scénaristes/WeFilmGood y auront accès.
+              </span>
+            </label>
+          </>
+        )}
 
         <div className={profilStyles.pied}>
           {/* Rien n'est enregistré sans le bouton : la flèche ramène à « Mes projets » (01/10). */}
