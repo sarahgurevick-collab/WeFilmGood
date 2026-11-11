@@ -22,6 +22,7 @@ import { projetsDejaOuverts } from "@/lib/vues";
 import { adresse, lireFiltres, nombreDeFiltres, parametresRpc } from "./filtres";
 import { AUDIENCES, BUDGETS, FORMATS } from "@/app/projet/ChampsFiche";
 import type { Tag } from "./tags";
+import { accesAuxFiches } from "@/lib/acces-fiches";
 
 /**
  * Effet au survol des vignettes. « eau » : l'image ondule comme un reflet
@@ -200,6 +201,10 @@ export default async function ProjetsPage({
   const dejaOuverts = await projetsDejaOuverts(supabase, (projects ?? []).map((p) => p.id));
   // Les talents déjà rattachés (19/10), sous chaque carte.
   const equipes = await equipesDesCartes(supabase, (projects ?? []).map((p) => p.id), await lectureRestreinte(supabase, user?.id));
+
+  // Sans adhésion, le titre ne part pas vers le navigateur (12/11).
+  const acces = await accesAuxFiches(supabase, user?.id);
+  for (const p of projects ?? []) if (!acces.voitLeTitre(p.id)) p.title = "";
 
   const vignetteDe = (p: Projet) => {
     const chemin = (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path;

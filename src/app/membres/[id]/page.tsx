@@ -23,6 +23,7 @@ import ChangerTelephoneMembre from "@/app/admin/membres/ChangerTelephoneMembre";
 import styles from "./membre.module.css";
 import { photoNette } from "@/lib/photo";
 import { clientProfils } from "@/lib/supabase/admin";
+import { accesAuxFiches } from "@/lib/acces-fiches";
 
 type Membre = {
   id: string;
@@ -136,6 +137,9 @@ export default async function ProfilMembrePage({
   const vignetteChemin = (p: { files: { storage_path: string; kind: string }[] }) =>
     p.files.find((f) => f.kind === "vignette")?.storage_path ?? null;
   const projets = (projetsBruts ?? []).filter((p) => vignetteChemin(p));
+  // Sans adhésion, le titre ne part pas vers le navigateur (12/11).
+  const accesFiches = await accesAuxFiches(supabase, user.id);
+  for (const p of projets) if (!accesFiches.voitLeTitre(p.id)) p.title = "";
   const { data: signes } = projets.length
     ? await supabase.storage
         .from("project-media")

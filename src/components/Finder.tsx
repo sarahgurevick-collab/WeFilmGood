@@ -628,7 +628,7 @@ export function CartePersonnage({ c }: { c: PersonnageTrouve }) {
         )}
       </span>
       <strong>{c.nom}</strong>
-      <span className={styles.detail}>{c.projet}</span>
+      {c.sexeEtAge && <span className={styles.detail}>{c.sexeEtAge}</span>}
       {c.comedien && <span className={styles.detail}>{c.comedien}</span>}
     </Link>
   );

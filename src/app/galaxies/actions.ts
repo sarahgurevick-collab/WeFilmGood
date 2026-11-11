@@ -8,6 +8,7 @@ import { equipesDesCartes, lectureRestreinte, type EquipeCarte } from "./equipe-
 import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut, type PersonnagesCarte } from "./personnages-carte";
 import { photoNette } from "@/lib/photo";
 import { clientProfils } from "@/lib/supabase/admin";
+import { accesAuxFiches, sexeEtAge } from "@/lib/acces-fiches";
 
 export type ProjetTrouve = {
   id: string;
@@ -177,13 +178,15 @@ export async function rechercherProjets(
   const ordreDe = new Map<string, number>(ids.map((id, i) => [id, i]));
   const { data: { user } } = await supabase.auth.getUser();
   const equipes = await equipesDesCartes(supabase, ids, await lectureRestreinte(supabase, user?.id));
+  // Sans adhésion, le titre ne part pas vers le navigateur (12/11).
+  const acces = await accesAuxFiches(supabase, user?.id);
 
   const projets: ProjetTrouve[] = (projects ?? [])
     .map((p) => {
       const chemin = (p.files ?? []).find((f) => f.kind === "vignette")?.storage_path;
       return {
         id: p.id,
-        title: p.title,
+        title: acces.voitLeTitre(p.id) ? p.title : "",
         tagline: p.tagline,
         status: p.status,
         bandeau: p.bandeau,
@@ -394,7 +397,8 @@ export type PersonnageTrouve = {
   cadrage: string;
   comedien: string | null;
   projetId: string;
-  projet: string;
+  /** « Femme · Adulte » (12/11, Sarah : ce dont un comédien a besoin ; le titre du projet n'est plus envoyé). */
+  sexeEtAge: string;
 };
 
 /** Les personnages des projets de la Carte des étoiles (29/09). */
@@ -436,7 +440,7 @@ async function fichesPersonnages(
 
   const { data: fiches } = await supabase
     .from("characters")
-    .select("id, name, photo_path, photo_x, photo_y, actor_name, project:projects(id, title)")
+    .select("id, name, photo_path, photo_x, photo_y, actor_name, gender, age_range, project:projects(id)")
     .in("id", lignes.map((l) => l.id))
     .returns<
       {
@@ -446,7 +450,9 @@ async function fichesPersonnages(
         photo_x: number;
         photo_y: number;
         actor_name: string | null;
-        project: { id: string; title: string } | null;
+        gender: string | null;
+        age_range: string | null;
+        project: { id: string } | null;
       }[]
     >();
 
@@ -467,7 +473,7 @@ async function fichesPersonnages(
       cadrage: `${f.photo_x}% ${f.photo_y}%`,
       comedien: f.actor_name,
       projetId: f.project.id,
-      projet: f.project.title,
+      sexeEtAge: sexeEtAge(f.gender, f.age_range),
     }];
   });
   return { personnages, total: Number(lignes[0]?.total ?? 0) };

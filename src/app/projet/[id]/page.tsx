@@ -34,6 +34,7 @@ import BarreGravity, { type EtatGravity } from "./BarreGravity";
 import { compterArchives } from "@/lib/archives-lecture";
 import { photoNette } from "@/lib/photo";
 import { clientProfils } from "@/lib/supabase/admin";
+import { GRAVITY } from "@/lib/gravity-textes";
 
 const FORMATS_LISIBLES: Record<string, string> = {
   long_metrage: "Long métrage",
@@ -337,6 +338,17 @@ export default async function ProjetPage({
     : { data: null };
   const chezSoi = isOwner || estAdmin === true || dansEquipe;
   const restreint = !chezSoi && !ouverture;
+  // Sans adhésion, la fiche ne s'ouvre pas (12/11, Sarah) : on ne voit des
+  // projets que leur carte. Rien de la fiche ne part vers le navigateur.
+  if (!chezSoi && !ouverture && adherent !== true) {
+    return (
+      <PageShell title="Galaxies" nav="pitchotheque" connecte>
+        <p className={formStyles.hint}>
+          <Link href="/adhesion">{GRAVITY.sansAdhesion}</Link>
+        </p>
+      </PageShell>
+    );
+  }
   let gravity: EtatGravity | null = null;
   let favori: boolean | null = null;
   if (user && !chezSoi) {
