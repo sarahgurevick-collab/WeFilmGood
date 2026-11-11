@@ -767,7 +767,7 @@ export default function OrbiteAdhesion({
                 </th>
                 <th scope="col" className={styles.recapAdhesion}>
                   <i aria-hidden="true" /> Adhésion annuelle
-                  <small>84 € ou 7 €/mois</small>
+                  <small>7 €/mois ou 84 €/an</small>
                 </th>
               </tr>
             </thead>
