@@ -566,3 +566,10 @@
   margin-right: 6px;
   color: #ededed;
 }
+
+/* La phrase en rouge au-dessus du nom d'une ligne du récapitulatif. */
+.recapAccroche {
+  display: block;
+  color: #da2c25;
+  font-weight: 700;
+}

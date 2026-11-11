@@ -413,6 +413,8 @@ function Symboles({ texte }: { texte: string }) {
 
 type LigneRecap = {
   nom: string;
+  /** Une phrase en rouge, au-dessus du nom. */
+  accroche?: string;
   icone: keyof typeof ICONES;
   precision?: string;
   non: string;
@@ -424,10 +426,18 @@ type LigneRecap = {
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
 const RECAP: LigneRecap[] = [
   {
-    nom: "Crédit Gravity par jour",
+    nom: "Crédit Gravity",
+    accroche: "Tous les jours de nouveaux talents à contacter",
     icone: "gravity",
     non: "✕",
     oui: "1",
+  },
+  {
+    nom: "Galaxie de Projets",
+    icone: "galaxie",
+    precision: "Accès limité",
+    non: "Inclus",
+    oui: "Inclus",
   },
   {
     nom: "CinéMatch",
@@ -435,6 +445,7 @@ const RECAP: LigneRecap[] = [
     non: "✓",
     oui: "✓ ✉ talents contactables",
   },
+  { nom: "CinéCrush", icone: "coeur", non: "Inclus", oui: "Inclus" },
   { nom: "Fiches Projets", icone: "fiche", non: "✕", oui: "∞" },
   {
     nom: "Fiches Personnages",
@@ -448,14 +459,6 @@ const RECAP: LigneRecap[] = [
     precision: "Spectateur",
     non: "5 € (si place libre)",
     oui: "Accès prioritaire",
-  },
-  { nom: "CinéCrush", icone: "coeur", non: "Inclus", oui: "Inclus" },
-  {
-    nom: "Galaxie de Projets",
-    icone: "galaxie",
-    precision: "Accès limité",
-    non: "Inclus",
-    oui: "Inclus",
   },
 ];
 
@@ -591,7 +594,7 @@ export default function OrbiteAdhesion({
   const note =
     motsCles > 0 ? `${motsCles.toLocaleString("fr-FR")} thèmes` : undefined;
   const lignes: LigneRecap[] = RECAP.flatMap((l) =>
-    l.nom === "CinéCrush"
+    l.nom === "CinéMatch"
       ? [
           {
             nom: "Le Finder",
@@ -773,6 +776,11 @@ export default function OrbiteAdhesion({
                 <Fragment key={l.nom}>
                   <tr>
                     <th scope="row">
+                      {l.accroche && (
+                        <span className={styles.recapAccroche}>
+                          {l.accroche}
+                        </span>
+                      )}
                       {l.nom}
                       {l.precision && <em> ({l.precision})</em>}
                     </th>
