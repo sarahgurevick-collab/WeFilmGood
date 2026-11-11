@@ -34,6 +34,7 @@ export function LignesMembre({ m }: { m: MembreEquipe }) {
               <ContactEnveloppe
                 href={m.contact.href}
                 adhesionRequise={m.contact.adhesionRequise}
+                gravityRequis={m.contact.gravityRequis}
                 indisponible={m.contact.indisponible}
               />
             </span>
@@ -67,7 +68,7 @@ export type MembreEquipe = {
   /** Où la personne vit (12/10, Sarah) : le drapeau, puis « Afrique du Sud ». */
   lieu?: { code: string; texte: string } | null;
   /** L'enveloppe pour lui écrire (14/10 : chaque membre a la sienne, à côté du drapeau). */
-  contact?: { href: string; adhesionRequise: boolean; indisponible?: string };
+  contact?: { href: string; adhesionRequise: boolean; gravityRequis?: boolean; indisponible?: string };
   /** Invitation pas encore acceptée — visible de l'auteur et de l'admin seulement. */
   enAttente: string | null;
   photo?: string | null;

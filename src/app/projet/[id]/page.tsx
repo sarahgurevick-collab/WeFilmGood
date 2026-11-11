@@ -30,6 +30,7 @@ import presentation from "./presentation.module.css";
 import { nomDeLangue } from "@/lib/langues";
 import { nomDuPays } from "@/lib/pays";
 import { lecteurBandeAnnonce } from "@/lib/videopitch";
+import BarreGravity, { type EtatGravity } from "./BarreGravity";
 import { compterArchives } from "@/lib/archives-lecture";
 import { photoNette } from "@/lib/photo";
 import { clientProfils } from "@/lib/supabase/admin";
@@ -323,7 +324,33 @@ export default async function ProjetPage({
   const { data: adherent } = user
     ? await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id })
     : { data: false };
-  const restreint = !isOwner && estAdmin !== true && !dansEquipe && adherent !== true;
+  // Depuis le 12/11 : ce n'est plus l'adhésion qui ouvre tout, mais le
+  // Gravity dépensé sur CE projet (règle du 11/11 : 1 projet par jour, et
+  // pour lui « tout s'ouvre »). La base applique la même règle.
+  const { data: ouverture } = user
+    ? await supabase
+        .from("gravity_ouvertures")
+        .select("ouvert_le")
+        .eq("profile_id", user.id)
+        .eq("project_id", id)
+        .maybeSingle<{ ouvert_le: string }>()
+    : { data: null };
+  const chezSoi = isOwner || estAdmin === true || dansEquipe;
+  const restreint = !chezSoi && !ouverture;
+  let gravity: EtatGravity | null = null;
+  let favori: boolean | null = null;
+  if (user && !chezSoi) {
+    if (ouverture) gravity = { etat: "ouvert", le: ouverture.ouvert_le };
+    else if (adherent !== true) gravity = { etat: "sans_adhesion" };
+    else {
+      const { data: dispo } = await supabase.rpc("gravity_du_jour_disponible");
+      gravity = dispo === true ? { etat: "disponible" } : { etat: "utilise" };
+    }
+    if (adherent === true) {
+      const { data: f } = await supabase.from("favoris").select("project_id").eq("profile_id", user.id).eq("project_id", id).maybeSingle();
+      favori = !!f;
+    }
+  }
   // Chaque membre de l'équipe a son enveloppe (14/10, Sarah : tous les
   // talents sont contactables), dans le panneau de sa biographie, à côté du
   // drapeau. Le porteur par le projet, les autres par leur profil. Pas pour
@@ -346,6 +373,8 @@ export default async function ProjetPage({
     m.contact = {
       href: user ? `/mes-messages/nouveau?${cible}` : `/connexion?next=/projet/${project.id}`,
       adhesionRequise: restreint,
+      // Adhérent qui n'a pas ouvert le projet : la bulle parle du Gravity, pas de l'adhésion.
+      gravityRequis: restreint && adherent === true,
       indisponible: fermees.get(m.profileId),
     };
   }
@@ -557,6 +586,7 @@ export default async function ProjetPage({
         </div>
       )}
 
+      {gravity && <BarreGravity projetId={project.id} gravity={gravity} favori={favori} />}
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
         admin={estAdmin === true ? { projetId: project.id } : null}

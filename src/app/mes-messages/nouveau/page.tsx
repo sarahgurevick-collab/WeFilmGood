@@ -50,6 +50,15 @@ export default async function NouveauMessagePage({
   // Soi-même : rien à s'écrire.
   if (destinataireId === user.id) redirect(projet ? `/projet/${projet.id}` : "/profil");
   if (adherent !== true && estAdmin !== true) redirect("/adhesion");
+  // Écrire au porteur d'un projet demande de l'avoir ouvert avec un Gravity
+  // (12/11) ; une conversation déjà commencée continue. La base vérifie aussi.
+  if (projet && estAdmin !== true) {
+    const [{ data: ouvert }, { count: echanges }] = await Promise.all([
+      supabase.rpc("projet_ouvert", { p_project_id: projet.id }),
+      supabase.from("project_messages").select("id", { count: "exact", head: true }).eq("project_id", projet.id),
+    ]);
+    if (ouvert !== true && !echanges) redirect(`/projet/${projet.id}`);
+  }
 
   const { data: destinataire } = await clientProfils(supabase)
     .from("profiles")

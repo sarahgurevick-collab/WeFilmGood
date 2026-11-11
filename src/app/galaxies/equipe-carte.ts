@@ -23,8 +23,9 @@ type Ligne = { project_id: string; profile_id: string | null; role: string | nul
 export async function equipesDesCartes(
   supabase: SupabaseClient,
   ids: string[],
-  restreint: boolean,
+  restreint: boolean | ((projetId: string) => boolean),
 ): Promise<Map<string, EquipeCarte>> {
+  const flou = (projetId: string) => (typeof restreint === "function" ? restreint(projetId) : restreint);
   const parProjet = new Map<string, EquipeCarte>();
   if (ids.length === 0) return parProjet;
   const { data, error } = await supabase.rpc("equipes_des_projets", { p_ids: ids });
@@ -37,7 +38,7 @@ export async function equipesDesCartes(
     if (eq.portraits.length < NB_PORTRAITS_EQUIPE) {
       eq.portraits.push({
         id: l.profile_id ?? `sans-compte-${eq.total}`,
-        src: l.profile_id && l.avatar_url ? (restreint ? `/api/talents/photo?id=${l.profile_id}` : photoNette(l.avatar_url)) : null,
+        src: l.profile_id && l.avatar_url ? (flou(l.project_id) ? `/api/talents/photo?id=${l.profile_id}` : photoNette(l.avatar_url)) : null,
         lettre: lettreDuMetier(l.role),
       });
     }
@@ -46,12 +47,21 @@ export async function equipesDesCartes(
   return parProjet;
 }
 
-/** Sans adhésion (et hors administration), les photos des autres sont floutées. */
-export async function lectureRestreinte(supabase: SupabaseClient, userId: string | null | undefined): Promise<boolean> {
-  if (!userId) return true;
-  const [{ data: admin }, { data: adherent }] = await Promise.all([
+/**
+ * Les photos de l'équipe sont floutées, sauf pour l'administration et sur
+ * les projets que le membre a ouverts avec un Gravity (12/11 ; avant :
+ * nettes pour tout adhérent).
+ */
+export async function lectureRestreinte(
+  supabase: SupabaseClient,
+  userId: string | null | undefined,
+): Promise<(projetId: string) => boolean> {
+  if (!userId) return () => true;
+  const [{ data: admin }, { data: ouverts }] = await Promise.all([
     supabase.rpc("is_admin"),
-    supabase.rpc("a_une_adhesion_active", { p_profile_id: userId }),
+    supabase.from("gravity_ouvertures").select("project_id").eq("profile_id", userId),
   ]);
-  return admin !== true && adherent !== true;
+  if (admin === true) return () => false;
+  const ids = new Set(((ouverts ?? []) as { project_id: string }[]).map((o) => o.project_id));
+  return (projetId) => !ids.has(projetId);
 }

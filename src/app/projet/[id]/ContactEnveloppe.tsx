@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { GRAVITY } from "@/lib/gravity-textes";
 import styles from "./contact.module.css";
 
 const ENVELOPPE = (
@@ -23,8 +24,11 @@ const ENVELOPPE = (
 export default function ContactEnveloppe({
   href,
   adhesionRequise = false,
+  gravityRequis = false,
   indisponible,
 }: {
+  /** Adhérent qui n'a pas ouvert le projet (12/11) : la bulle parle du Gravity. */
+  gravityRequis?: boolean;
   /** Où mène l'enveloppe : l'écran de message, le projet déjà indiqué. */
   href: string;
   /** Barrée, avec sa bulle, tant que le membre n'a pas d'adhésion. */
@@ -96,7 +100,7 @@ export default function ContactEnveloppe({
       </button>
       {/* Phrase validée par Sarah : rien d'autre, pas un mot sur la validation. */}
       <span className={`${styles.bulle} ${ouverte ? styles.bulleOuverte : ""}`} role="status">
-        <Link href="/adhesion">Pour contacter cet auteur, vous avez besoin d&apos;une adhésion.</Link>
+        {gravityRequis ? GRAVITY.enveloppe : <Link href="/adhesion">Pour contacter cet auteur, vous avez besoin d&apos;une adhésion.</Link>}
       </span>
     </span>
   );
