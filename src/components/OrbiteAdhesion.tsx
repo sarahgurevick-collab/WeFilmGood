@@ -445,7 +445,7 @@ const RECAP: LigneRecap[] = [
     accroche: "Tous les jours de nouveaux talents à contacter",
     icone: "gravity",
     non: "✕",
-    oui: "1 projet au choix et ses Talents ✉",
+    oui: "1 projet au choix et ses Talents ✉ /jour",
   },
   {
     nom: "Créer ses fiches Projets et Personnages",
