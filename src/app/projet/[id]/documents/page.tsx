@@ -62,7 +62,7 @@ export default async function DocumentsPage({
     supabase.rpc("a_une_adhesion_active", { p_profile_id: projet.owner_id }),
     supabase.rpc("is_admin"),
   ]);
-  // « Envoyer » (09/11) : la lecture se paie 50 €, adhérent ou non. Le bouton
+  // « Envoyer » (09/11) : la lecture se paie 60 €, 50 € pour un adhérent (11/11). Le bouton
   // paraît quand le scénario est là, tant que le projet n'a pas déjà été
   // envoyé ou lu. En mode test (compte HelloAsso de test), seule
   // l'administration le voit : personne d'autre ne paie avec une fausse carte.
@@ -204,7 +204,7 @@ export default async function DocumentsPage({
           ) : (
             <>
               <p className={formStyles.hint}>
-                Lecture et analyse de votre scénario : 50 €. Le paiement passe par HelloAsso.
+                Lecture et analyse de votre scénario : {adherent === true ? "50 €" : "60 €"}. Le paiement passe par HelloAsso.
               </p>
               {paiement === "erreur" && (
                 <p className={formStyles.error}>
@@ -252,7 +252,7 @@ export default async function DocumentsPage({
         />
       ) : (
         <p className={formStyles.hint}>
-          L&apos;envoi d&apos;un videopitch est compris dans les 50 € de la lecture, et dans
+          L&apos;envoi d&apos;un videopitch est compris dans les 60 € de la lecture, et dans
           l&apos;adhésion. <Link href="/adhesion">Adhérer</Link>
         </p>
       )}

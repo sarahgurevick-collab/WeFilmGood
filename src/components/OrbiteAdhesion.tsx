@@ -147,6 +147,9 @@ const SERVICES: Noeud[] = [
     icone: "nuage",
     texte:
       "50 € : 1 analyse de document PDF, qui permet d’accéder à la Labellisation du projet.",
+    // 60 € sans adhésion, 50 € adhérent (11/11, Sarah).
+    texteZero:
+      "60 € : 1 analyse de document PDF, qui permet d’accéder à la Labellisation du projet.",
   },
   {
     id: "accompagnement",
@@ -156,7 +159,7 @@ const SERVICES: Noeud[] = [
   },
   {
     id: "credits-galaxie",
-    nom: "Crédits Gravity",
+    nom: "Pack Gravity",
     icone: "gravity",
     texte:
       "Pack Gravity : 5, 10 ou 20 Gravity à utiliser quand tu veux, pour ouvrir d’autres projets et contacter leurs Talents. Prix dégressif pour les adhérents.",
@@ -953,9 +956,24 @@ export default function OrbiteAdhesion({
                                 </button>
                               </div>
                               <div className={styles.ficheTexte}>
-                                {r.texte.split("\n").map((ligne, i) => (
-                                  <p key={i}>{ligne}</p>
-                                ))}
+                                {/* Les deux textes, comme les deux colonnes
+                                    (11/11, Sarah). Le Crédit Gravity n'en a
+                                    qu'un : sans adhésion, il n'existe pas. */}
+                                {r.texteZero && r.id !== "galaxies" ? (
+                                  <>
+                                    <p>
+                                      <strong>Sans adhésion :</strong>{" "}
+                                      {r.texteZero}
+                                    </p>
+                                    <p>
+                                      <strong>Adhésion :</strong> {r.texte}
+                                    </p>
+                                  </>
+                                ) : (
+                                  r.texte.split("\n").map((ligne, i) => (
+                                    <p key={i}>{ligne}</p>
+                                  ))
+                                )}
                               </div>
                               <div className={styles.actions}>
                                 <Link

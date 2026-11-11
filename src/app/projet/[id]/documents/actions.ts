@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { creerIntention, modeHelloAsso } from "@/lib/helloasso";
-import { PRIX_LECTURE_CENTIMES } from "@/lib/lecture-paiement";
+import { prixLectureCentimes } from "@/lib/lecture-paiement";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { chargerProjetAModifier } from "../../blocs";
 import { IMAGES, deposerImage, deposerScenario, recadrerEn16x9, retirerImages } from "../fichiers";
@@ -146,8 +146,9 @@ export async function retirerImage(formData: FormData) {
 
 /**
  * « Envoyer » (09/11/2026, Sarah : « Ce bouton envoie à la page de paiement
- * des 50 € que l'on soit adhérent ou pas ») : crée la demande de lecture en
- * attente, demande à HelloAsso une page de paiement de 50 € et y envoie
+ * des 50 € que l'on soit adhérent ou pas » ; 60 €, 50 € adhérent depuis le
+ * 11/11) : crée la demande de lecture en attente, demande à HelloAsso une
+ * page de paiement et y envoie
  * l'auteur. Le projet n'entre dans la file des lecteurs qu'une fois le
  * paiement relu chez HelloAsso.
  *
@@ -181,13 +182,19 @@ export async function envoyerALaLecture(formData: FormData) {
   if (!scenarios) redirect(`${page}?paiement=sans-scenario`);
   if (dejaPayees) redirect(page);
 
+  // 60 €, ou 50 € si le porteur du projet est adhérent (11/11, Sarah).
+  const { data: adherent } = await supabase.rpc("a_une_adhesion_active", {
+    p_profile_id: projet.owner_id,
+  });
+  const montant = prixLectureCentimes(adherent === true);
+
   const { data: demande, error } = await admin
     .from("lecture_demandes")
     .insert({
       project_id: id,
       profile_id: projet.owner_id,
       status: "en_attente_paiement",
-      amount_cents: PRIX_LECTURE_CENTIMES,
+      amount_cents: montant,
       payment_provider: "helloasso",
     })
     .select("id")
@@ -201,7 +208,7 @@ export async function envoyerALaLecture(formData: FormData) {
   let pageDePaiement: string;
   try {
     const intention = await creerIntention({
-      montantCentimes: PRIX_LECTURE_CENTIMES,
+      montantCentimes: montant,
       libelle: `Lecture et analyse — ${projet.title}`,
       retour,
       erreur: `${retour}&erreur=1`,

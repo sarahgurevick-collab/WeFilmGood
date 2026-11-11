@@ -6,13 +6,21 @@ import { lireIntention, montantPaye } from "@/lib/helloasso";
 /**
  * La lecture payée (09/11/2026, Sarah : « Il y a un coût pour chaque
  * lecture de 50 euros […] on envoie son scénario en payant 50 euros. Le
- * payement se fait via Hello asso »), adhérent ou non.
+ * payement se fait via Hello asso »), adhérent ou non. Depuis le 11/11 :
+ * 60 €, et 50 € pour un adhérent.
  *
  * Même prudence que pour l'adhésion : une demande n'est tenue pour payée
  * qu'après avoir relu le paiement chez HelloAsso. La page de retour, la
  * notification et le rattrapage horaire peuvent se croiser sans risque.
  */
-export const PRIX_LECTURE_CENTIMES = 5000;
+export const PRIX_LECTURE_CENTIMES = 6000;
+/** Le prix pour un adhérent (11/11/2026, Sarah : « 60 €. 50 € adhérent »). */
+export const PRIX_LECTURE_ADHERENT_CENTIMES = 5000;
+
+/** Le prix de la lecture selon que le porteur du projet est adhérent ou non. */
+export function prixLectureCentimes(adherent: boolean): number {
+  return adherent ? PRIX_LECTURE_ADHERENT_CENTIMES : PRIX_LECTURE_CENTIMES;
+}
 
 export async function verifierDemandeLecture(
   demandeId: string,
