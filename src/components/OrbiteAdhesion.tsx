@@ -425,17 +425,11 @@ type LigneRecap = {
 
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
 const RECAP: LigneRecap[] = [
+  // Ouvert à tous (11/11, Sarah : sans adhésion on lit, avec l'adhésion on ouvre).
+  { nom: "Galaxie de Projets et Finder", icone: "galaxie", non: "Inclus", oui: "Inclus" },
   {
-    nom: "Crédit Gravity",
-    accroche: "Tous les jours de nouveaux talents à contacter",
-    icone: "gravity",
-    non: "✕",
-    oui: "1 projet au choix et ses Talents ✉",
-  },
-  {
-    nom: "Galaxie de Projets",
-    icone: "galaxie",
-    precision: "Accès limité",
+    nom: "Lire les fiches Projets et Personnages",
+    icone: "fiche",
     non: "Inclus",
     oui: "Inclus",
   },
@@ -446,12 +440,18 @@ const RECAP: LigneRecap[] = [
     oui: "✓ ✉ talents contactables",
   },
   { nom: "CinéCrush", icone: "coeur", non: "Inclus", oui: "Inclus" },
-  { nom: "Fiches Projets", icone: "fiche", non: "✕", oui: "∞" },
   {
-    nom: "Fiches Personnages",
+    nom: "Crédit Gravity",
+    accroche: "Tous les jours de nouveaux talents à contacter",
+    icone: "gravity",
+    non: "✕",
+    oui: "1 projet au choix et ses Talents ✉",
+  },
+  {
+    nom: "Créer ses fiches Projets et Personnages",
     icone: "identite",
     non: "✕",
-    oui: "✉ talents contactables",
+    oui: "∞",
   },
   {
     nom: "ScénarioLab",
@@ -591,23 +591,18 @@ export default function OrbiteAdhesion({
     setMode(vers);
   };
 
-  const note =
-    motsCles > 0 ? `${motsCles.toLocaleString("fr-FR")} thèmes` : undefined;
-  const lignes: LigneRecap[] = RECAP.flatMap((l) =>
-    l.nom === "CinéMatch"
-      ? [
-          {
-            nom: "Le Finder",
-            icone: "loupe",
-            precision: "recherche et nuage de mots-clés",
-            non: "Inclus",
-            nonNote: note,
-            oui: "Inclus",
-            ouiNote: note,
-          },
-          l,
-        ]
-      : [l],
+  // La Galaxie et le Finder sur une seule ligne (11/11), avec le nombre de
+  // thèmes du nuage quand il est connu.
+  const lignes: LigneRecap[] = RECAP.map((l) =>
+    l.icone === "galaxie"
+      ? {
+          ...l,
+          precision:
+            motsCles > 0
+              ? `recherche et nuage de ${motsCles.toLocaleString("fr-FR")} thèmes`
+              : "recherche et nuage de mots-clés",
+        }
+      : l,
   );
   const prixAdherent =
     GRILLE_CREDITS.find((g) => g.nombre === nombreCredits)?.prix ?? 0;
