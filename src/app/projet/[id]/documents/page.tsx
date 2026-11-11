@@ -78,11 +78,13 @@ export default async function DocumentsPage({
       .limit(1)
       .returns<{ paid_at: string | null }[]>(),
   ]);
-  // Une fois le projet envoyé (et les quelques minutes de vérification
-  // passées), le scénario disparaît pour l'auteur aussi (11/11, Sarah) :
-  // la base ne le laisse plus ni l'ouvrir ni le remplacer (migration 0254).
-  const { data: scenarioFerme } = await supabase.rpc("scenario_ferme", { p_project_id: id });
-  const scenarioModifiable = estAdmin === true || scenarioFerme !== true;
+  // Pendant la lecture (de l'envoi, quelques minutes de vérification
+  // passées, jusqu'à la publication de l'analyse), l'auteur ne peut plus
+  // changer son scénario (11/11, Sarah) ; ensuite il dépose sa version
+  // retravaillée, qui écrase l'ancienne. La base fait respecter la règle
+  // (migrations 0254 et 0255).
+  const { data: enLecture } = await supabase.rpc("scenario_en_lecture", { p_project_id: id });
+  const scenarioModifiable = estAdmin === true || enLecture !== true;
   const test = modeHelloAsso() === "sandbox";
   const peutPayer = !test || estAdmin === true;
   const envoyeLe = (demandesPayees ?? [])[0]?.paid_at ?? null;

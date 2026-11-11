@@ -1,3 +1,4 @@
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import sharp from "sharp";
 import { alleger } from "@/lib/image";
@@ -93,7 +94,11 @@ export async function deposerScenario(
   if (ligne) return false;
   if (anciens?.length) {
     await supabase.from("project_files").delete().in("id", anciens.map((a) => a.id));
-    await supabase.storage.from("scenarios").remove(anciens.map((a) => a.storage_path));
+    // L'auteur n'a plus la main sur le fichier d'un projet déjà envoyé
+    // (0254) : c'est le serveur qui efface l'ancienne version, pour qu'elle
+    // ne reste pas (11/11, Sarah : elle « est destinée à être écrasée »).
+    const effaceur = createAdminClient() ?? supabase;
+    await effaceur.storage.from("scenarios").remove(anciens.map((a) => a.storage_path));
   }
   return true;
 }

@@ -56,6 +56,7 @@ Profil (« Mon profil »)
 Fiche projet (« Mes projets »)
 - Créer une fiche : onglet « Mes projets ». Sans aucune fiche, on arrive directement sur le formulaire ; sinon, dans le sélecteur « Projet », la dernière ligne « + Nouvelle fiche projet ». Le bouton du formulaire est « Créer ma fiche projet ».
 - Une nouvelle version du scénario se dépose dans le bloc « Documents » de la fiche existante (elle remplace l'ancienne) : on ne crée pas une nouvelle fiche pour cela. On ne recrée une fiche avec le même titre que si on adapte le projet dans un autre format ; le site demande alors de cocher « C'est bien un autre projet ».
+- « Mon projet est-il gardé sur WeFilmGood ? » : la version du projet donnée à la lecture n'est pas gardée. C'est inutile, puisque cette version va être modifiée suite aux remarques des lecteurs : elle est destinée à être écrasée par la nouvelle version retravaillée.
 - Trois blocs, enregistrés séparément (on peut partir et revenir, mais il faut cliquer sur « Enregistrer » avant de quitter la page) : « La fiche », « Documents », « Les personnages ».
 - Bloc « La fiche », dans l'ordre : titre, prix et sélections, format, budget estimé et audience ciblée (pas pour un court métrage ni pour un format immersif 360/VR), genre principal, tagline, logline, « Plus… » (informations supplémentaires, par exemple le lien vers un teaser ; 1 000 caractères), puis les mots-clés.
 - Obligatoires : titre, format, genre principal, tagline. Tagline : 300 caractères maximum (une phrase d'accroche). Logline : 600 caractères maximum (un petit résumé).
