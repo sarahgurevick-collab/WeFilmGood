@@ -45,7 +45,11 @@ export default function BarreGravity({
           <p className={styles.texte}>{GRAVITY.ceQuiSOuvre}</p>
         </>
       )}
-      {gravity.etat === "utilise" && <p className={styles.texte}>{GRAVITY.dejaUtilise}</p>}
+      {gravity.etat === "utilise" && (
+        <p className={styles.texte}>
+          {GRAVITY.dejaUtilise} <Link href="/adhesion">{GRAVITY.packAdherent}</Link>
+        </p>
+      )}
       {gravity.etat === "sans_adhesion" && (
         <p className={styles.texte}>
           <Link href="/adhesion">{GRAVITY.sansAdhesion}</Link>

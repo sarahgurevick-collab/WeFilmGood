@@ -10,6 +10,8 @@ export const GRAVITY = {
   ceQuiSOuvre: "Le videopitch s’ouvre, vous voyez l’équipe et vous pouvez contacter ses Talents.",
   /** Adhérent, Gravity du jour déjà dépensé sur un autre projet. */
   dejaUtilise: "Vous avez déjà utilisé votre Gravity du jour. Un nouveau Gravity vous attend demain.",
+  /** À la suite, en lien vers /adhesion (Sarah, 12/11 : dire à l'adhérent qu'il peut acheter un Pack à tarif préférentiel). */
+  packAdherent: "Pour ouvrir d’autres projets dès aujourd’hui, le Pack Gravity est à tarif préférentiel pour les adhérents.",
   /** Sans adhésion (Sarah, 12/11 : ajouter le Pack Gravity, qu'un non-adhérent peut acheter). */
   sansAdhesion: "Pour ouvrir ce projet, vous avez besoin d’une adhésion ou d’un Pack Gravity.",
   /** Projet déjà ouvert : suivi de la date. */
