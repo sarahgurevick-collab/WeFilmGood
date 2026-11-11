@@ -419,6 +419,8 @@ type LigneRecap = {
   /** L'icône se montre devant le nom (lignes « À la demande »). */
   avecIcone?: boolean;
   precision?: string;
+  /** Une phrase de plus, sur sa ligne, sous le nom. */
+  suite?: string;
   non: string;
   nonNote?: string;
   oui: string;
@@ -474,6 +476,7 @@ const RECAP: LigneRecap[] = [
     avecIcone: true,
     precision:
       "traitement de 8 à 10 pages pour un LM, analyse du scénario pour un CM, une prébible de 15 pages pour une série",
+    suite: "Participation automatique aux appels à projets",
     non: "60 €",
     oui: "50 €",
   },
@@ -846,6 +849,7 @@ export default function OrbiteAdhesion({
                         )}
                         {l.nom}
                         {l.precision && <em> ({l.precision})</em>}
+                        {l.suite && <small>{l.suite}</small>}
                       </th>
                       {l.commun ? (
                         <td colSpan={2} className={styles.recapCommun}>
