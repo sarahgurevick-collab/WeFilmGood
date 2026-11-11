@@ -349,12 +349,12 @@ const COCHE = (
     aria-label="oui"
     role="img"
   >
-    <circle cx="12" cy="12" r="10" fill="#2e9e5b" />
+    {/* Verte, sans rond (11/11, Sarah). */}
     <path
-      d="M7 12.5l3.2 3.2L17 8.8"
+      d="M4.5 12.8l4.8 4.8L19.5 6.8"
       fill="none"
-      stroke="#fff"
-      strokeWidth="2.4"
+      stroke="#2e9e5b"
+      strokeWidth="3"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
@@ -432,12 +432,12 @@ type LigneRecap = {
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
 const RECAP: LigneRecap[] = [
   // Ouvert à tous (11/11, Sarah : sans adhésion on lit, avec l'adhésion on ouvre).
-  { nom: "Galaxie de Projets et Finder", icone: "galaxie", non: "Inclus", oui: "Inclus" },
+  { nom: "Galaxie de Projets et Finder", icone: "galaxie", non: "✓", oui: "✓" },
   {
     nom: "Lire les fiches Projets et Personnages",
     icone: "fiche",
-    non: "Inclus",
-    oui: "Inclus",
+    non: "✓",
+    oui: "✓",
   },
   {
     nom: "Créer ses fiches Projets et Personnages",
