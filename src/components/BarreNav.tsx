@@ -15,7 +15,7 @@ export default async function BarreNav({
   actif,
   connecte,
 }: {
-  actif?: "pitchotheque" | "deposer" | "messages" | "profil" | "lectures" | "admin";
+  actif?: "pitchotheque" | "deposer" | "favoris" | "messages" | "profil" | "lectures" | "admin";
   connecte: boolean;
 }) {
   // Le nombre de messages en attente, même pour un membre sans adhésion :
@@ -23,12 +23,15 @@ export default async function BarreNav({
   let messagesNonLus = 0;
   let estAdmin = false;
   let estLecteur = false;
+  // « Mes favoris » (12/11, Sarah) : pour les adhérents, et pour qui a déjà
+  // ouvert un projet (il doit pouvoir le retrouver même sans adhésion).
+  let aDesFavoris = false;
   if (connecte) {
     const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    const [{ data }, { data: admin }, { data: roleLecteur }] = await Promise.all([
+    const [{ data }, { data: admin }, { data: roleLecteur }, { data: adherent }, { count: ouverts }] = await Promise.all([
       supabase.rpc("compter_messages_non_lus"),
       supabase.rpc("is_admin"),
       supabase
@@ -37,7 +40,13 @@ export default async function BarreNav({
         .eq("profile_id", user?.id ?? "")
         .eq("role_slug", "lecteur")
         .maybeSingle(),
+      supabase.rpc("a_une_adhesion_active", { p_profile_id: user?.id ?? "00000000-0000-0000-0000-000000000000" }),
+      supabase
+        .from("gravity_ouvertures")
+        .select("project_id", { count: "exact", head: true })
+        .eq("profile_id", user?.id ?? "00000000-0000-0000-0000-000000000000"),
     ]);
+    aDesFavoris = adherent === true || (ouverts ?? 0) > 0;
     messagesNonLus = typeof data === "number" ? data : 0;
     estAdmin = admin === true;
     // Un lecteur n'a pas accès à la plateforme : sa barre n'a que ses deux pages.
@@ -53,6 +62,7 @@ export default async function BarreNav({
     // La liste de ses fiches (ou la création s'il n'en a aucune). Un
     // visiteur non connecté n'a rien à y faire : pas d'onglet (26/09).
     ...(connecte ? [{ cle: "deposer", href: "/mes-projets", label: "Mes projets" }] as const : []),
+    ...(aDesFavoris ? [{ cle: "favoris", href: "/favoris", label: "Mes favoris" }] as const : []),
     ...(connecte ? [{ cle: "messages", href: "/mes-messages", label: "Mes messages" }] as const : []),
     connecte
       ? { cle: "profil", href: "/profil", label: "Mon profil" }

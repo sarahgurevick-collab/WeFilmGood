@@ -120,7 +120,7 @@ export default async function FavorisPage() {
   };
 
   return (
-    <PageShell title={GRAVITY.favoris.titre} connecte nav="pitchotheque">
+    <PageShell title={GRAVITY.favoris.titre} connecte nav="favoris">
       <h2>{GRAVITY.favoris.ouverts}</h2>
       {idsOuverts.length === 0 ? (
         <p className={formStyles.hint}>{GRAVITY.favoris.aucunOuvert}</p>
