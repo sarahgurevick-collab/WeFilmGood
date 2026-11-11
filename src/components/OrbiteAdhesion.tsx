@@ -159,7 +159,7 @@ const SERVICES: Noeud[] = [
     nom: "Crédits Gravity",
     icone: "gravity",
     texte:
-      "Profitez de 25 Gravity au lieu de 20 (soit 15 € de cadeaux) pour booster vos histoires et déclencher vos premiers coups de cœur.",
+      "Pack Gravity : 5, 10 ou 20 Gravity à utiliser quand tu veux, pour ouvrir d’autres projets et contacter leurs Talents. Prix dégressif pour les adhérents.",
   },
 ];
 
