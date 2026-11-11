@@ -150,9 +150,9 @@ const SERVICES: Noeud[] = [
   },
   {
     id: "accompagnement",
-    nom: "Accompagnement Longue Durée",
+    nom: "Accompagnement personnalisé",
     icone: "telephone",
-    texte: "500 € : accompagnement longue durée sur un projet.",
+    texte: "500 € : accompagnement personnalisé sur un projet.",
   },
   {
     id: "credits-galaxie",
