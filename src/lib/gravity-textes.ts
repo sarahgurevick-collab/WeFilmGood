@@ -10,8 +10,8 @@ export const GRAVITY = {
   ceQuiSOuvre: "Le videopitch s’ouvre, vous voyez l’équipe et vous pouvez contacter ses Talents.",
   /** Adhérent, Gravity du jour déjà dépensé sur un autre projet. */
   dejaUtilise: "Vous avez déjà utilisé votre Gravity du jour. Un nouveau Gravity vous attend demain.",
-  /** Sans adhésion : calqué sur la phrase validée de l'enveloppe. */
-  sansAdhesion: "Pour ouvrir ce projet, vous avez besoin d’une adhésion.",
+  /** Sans adhésion (Sarah, 12/11 : ajouter le Pack Gravity, qu'un non-adhérent peut acheter). */
+  sansAdhesion: "Pour ouvrir ce projet, vous avez besoin d’une adhésion ou d’un Pack Gravity.",
   /** Projet déjà ouvert : suivi de la date. */
   ouvertLe: "Projet ouvert le",
   /** Bulle de l'enveloppe barrée, pour un adhérent qui n'a pas ouvert le projet. */
