@@ -464,8 +464,8 @@ const RECAP: LigneRecap[] = [
     nom: "CinéCrush",
     accroche: "Chaque semaine",
     icone: "coeur",
-    non: "Inclus",
-    oui: "Inclus",
+    non: "✓",
+    oui: "✓",
   },
   {
     nom: "Analyse d’un projet",
