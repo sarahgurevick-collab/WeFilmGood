@@ -567,9 +567,8 @@
   color: #ededed;
 }
 
-/* La phrase en rouge au-dessus du nom d'une ligne du récapitulatif. */
-.recapAccroche {
-  display: block;
+/* La phrase en rouge qui ouvre un chapitre du récapitulatif. */
+.recapTable th.recapAccroche {
+  padding-top: 6px;
   color: #da2c25;
-  font-weight: 700;
 }

@@ -413,7 +413,7 @@ function Symboles({ texte }: { texte: string }) {
 
 type LigneRecap = {
   nom: string;
-  /** Une phrase en rouge, au-dessus du nom. */
+  /** Une phrase en rouge sur toute la largeur, au-dessus de la ligne, comme un chapitre. */
   accroche?: string;
   icone: keyof typeof ICONES;
   precision?: string;
@@ -430,7 +430,7 @@ const RECAP: LigneRecap[] = [
     accroche: "Tous les jours de nouveaux talents à contacter",
     icone: "gravity",
     non: "✕",
-    oui: "1",
+    oui: "1 projet au choix et ses Talents ✉",
   },
   {
     nom: "Galaxie de Projets",
@@ -774,13 +774,19 @@ export default function OrbiteAdhesion({
             <tbody>
               {lignes.map((l) => (
                 <Fragment key={l.nom}>
+                  {l.accroche && (
+                    <tr>
+                      <th
+                        scope="colgroup"
+                        colSpan={3}
+                        className={`${styles.recapSepare} ${styles.recapAccroche}`}
+                      >
+                        {l.accroche}
+                      </th>
+                    </tr>
+                  )}
                   <tr>
                     <th scope="row">
-                      {l.accroche && (
-                        <span className={styles.recapAccroche}>
-                          {l.accroche}
-                        </span>
-                      )}
                       {l.nom}
                       {l.precision && <em> ({l.precision})</em>}
                     </th>
