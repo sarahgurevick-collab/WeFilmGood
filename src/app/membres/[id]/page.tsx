@@ -22,7 +22,7 @@ import ChangerAdresseMembre from "@/app/admin/membres/ChangerAdresseMembre";
 import ChangerTelephoneMembre from "@/app/admin/membres/ChangerTelephoneMembre";
 import styles from "./membre.module.css";
 import { photoNette } from "@/lib/photo";
-import { clientProfils } from "@/lib/supabase/admin";
+import { clientCartes, clientProfils } from "@/lib/supabase/admin";
 import { accesAuxFiches } from "@/lib/acces-fiches";
 
 type Membre = {
@@ -116,7 +116,7 @@ export default async function ProfilMembrePage({
   // Tous les projets de l'auteur (07/10, Sarah : un producteur doit voir tout
   // ce que l'auteur a en développement). Mêmes règles que les Galaxies :
   // projets visibles des membres, et pas d'image, pas de carte.
-  const { data: projetsBruts } = await supabase
+  const { data: projetsBruts } = await clientCartes(supabase)
     .from("projects")
     .select(`id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind), ${SELECTION_PERSONNAGES}`)
     .eq("owner_id", membre.id)

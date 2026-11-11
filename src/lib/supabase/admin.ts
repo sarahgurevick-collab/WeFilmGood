@@ -47,3 +47,15 @@ export async function emailDuMembre(profileId: string): Promise<string | null> {
 export function clientProfils<T>(repli: T): T {
   return (createAdminClient() as unknown as T | null) ?? repli;
 }
+
+/**
+ * Pour lire les CARTES des Galaxies (12/11/2026). La base ne donne plus un
+ * projet, ses personnages ni ses images à un membre sans adhésion (migration
+ * 0260) : c'est le serveur qui lit, et la page n'envoie au navigateur que
+ * ce qu'une carte montre — jamais le titre ni la fiche pour qui n'y a pas
+ * droit (voir src/lib/acces-fiches.ts). Toujours filtrer is_public soi-même :
+ * avec cette clé, la base ne le fait plus.
+ */
+export function clientCartes<T>(repli: T): T {
+  return (createAdminClient() as unknown as T | null) ?? repli;
+}

@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import Chrono from "./Chrono";
 import Commentaires, { type Avis } from "./Commentaires";
 import styles from "./cinecrush.module.css";
-import { clientProfils } from "@/lib/supabase/admin";
+import { clientCartes, clientProfils } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "CinéCrush — WeFilmGood" };
 
@@ -69,7 +69,7 @@ export default async function CineCrushPage({
   const [{ data: dimanche }, { data: fin }, { data: crushs }, { data: estAdmin }] = await Promise.all([
     supabase.rpc("dimanche_de_la_semaine").returns<string>(),
     supabase.rpc("cinecrush_fin_de_semaine").returns<string>(),
-    supabase
+    clientCartes(supabase)
       .from("cinecrush")
       .select(
         "id, semaine, project:projects(id, title, tagline, owner_id, owner:profiles!projects_owner_id_fkey(full_name), files:project_files(storage_path, kind))",

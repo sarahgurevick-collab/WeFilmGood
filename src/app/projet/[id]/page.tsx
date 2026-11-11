@@ -33,7 +33,7 @@ import { lecteurBandeAnnonce } from "@/lib/videopitch";
 import BarreGravity, { type EtatGravity } from "./BarreGravity";
 import { compterArchives } from "@/lib/archives-lecture";
 import { photoNette } from "@/lib/photo";
-import { clientProfils } from "@/lib/supabase/admin";
+import { clientCartes, clientProfils } from "@/lib/supabase/admin";
 import { GRAVITY } from "@/lib/gravity-textes";
 
 const FORMATS_LISIBLES: Record<string, string> = {
@@ -124,7 +124,22 @@ export default async function ProjetPage({
     .maybeSingle<Project>();
 
   if (!project) {
-    notFound();
+    // La base ne donne pas ce projet à ce membre (0260). S'il existe et
+    // qu'il est dans les Galaxies, c'est qu'il faut une adhésion pour l'ouvrir.
+    const { data: existe } = await clientCartes(supabase)
+      .from("projects")
+      .select("id")
+      .eq("id", id)
+      .eq("is_public", true)
+      .maybeSingle();
+    if (!existe) notFound();
+    return (
+      <PageShell title="Galaxies" nav="pitchotheque" connecte>
+        <p className={formStyles.hint}>
+          <Link href="/adhesion">{GRAVITY.sansAdhesion}</Link>
+        </p>
+      </PageShell>
+    );
   }
 
   const isOwner = user?.id === project.owner_id;

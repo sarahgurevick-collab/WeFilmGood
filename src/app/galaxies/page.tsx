@@ -23,6 +23,7 @@ import { adresse, lireFiltres, nombreDeFiltres, parametresRpc } from "./filtres"
 import { AUDIENCES, BUDGETS, FORMATS } from "@/app/projet/ChampsFiche";
 import type { Tag } from "./tags";
 import { accesAuxFiches } from "@/lib/acces-fiches";
+import { clientCartes } from "@/lib/supabase/admin";
 
 /**
  * Effet au survol des vignettes. « eau » : l'image ondule comme un reflet
@@ -164,14 +165,14 @@ export default async function ProjetsPage({
     const ids = lignes.map((l) => l.id);
     total = Number(lignes[0]?.total ?? 0);
     const { data } = ids.length
-      ? await supabase.from("projects").select(SELECTION).in("id", ids).returns<Projet[]>()
+      ? await clientCartes(supabase).from("projects").select(SELECTION).in("id", ids).eq("is_public", true).returns<Projet[]>()
       : { data: [] as Projet[] };
     const rang = new Map(ids.map((id, i) => [id, i]));
     projects = (data ?? []).sort((a, b) => (rang.get(a.id) ?? 0) - (rang.get(b.id) ?? 0));
   } else {
     // Tant que la fonction n'est pas installée dans la base : les plus
     // récents d'abord, comme avant.
-    const { data, count } = await supabase
+    const { data, count } = await clientCartes(supabase)
       .from("projects")
       .select(SELECTION, { count: "exact" })
       .eq("is_public", true)

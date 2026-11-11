@@ -7,7 +7,7 @@ import { enTexte, vecteur } from "@/lib/vecteurs";
 import { equipesDesCartes, lectureRestreinte, type EquipeCarte } from "./equipe-carte";
 import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut, type PersonnagesCarte } from "./personnages-carte";
 import { photoNette } from "@/lib/photo";
-import { clientProfils } from "@/lib/supabase/admin";
+import { clientCartes, clientProfils } from "@/lib/supabase/admin";
 import { accesAuxFiches, sexeEtAge } from "@/lib/acces-fiches";
 
 export type ProjetTrouve = {
@@ -144,12 +144,13 @@ export async function rechercherProjets(
   ids = ids.slice((page - 1) * LIMITE, page * LIMITE);
   if (ids.length === 0) return { projets: [], total, nbAvantLeTrait };
 
-  const { data: projects } = await supabase
+  const { data: projects } = await clientCartes(supabase)
     .from("projects")
     .select(
       `id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind), ${SELECTION_PERSONNAGES}`,
     )
     .in("id", ids)
+    .eq("is_public", true)
     .returns<
       {
         id: string;
@@ -438,9 +439,10 @@ async function fichesPersonnages(
 ): Promise<{ personnages: PersonnageTrouve[]; total: number }> {
   if (lignes.length === 0) return { personnages: [], total: 0 };
 
-  const { data: fiches } = await supabase
+  const { data: fiches } = await clientCartes(supabase)
     .from("characters")
-    .select("id, name, photo_path, photo_x, photo_y, actor_name, gender, age_range, project:projects(id)")
+    .select("id, name, photo_path, photo_x, photo_y, actor_name, gender, age_range, project:projects!inner(id, is_public)")
+    .eq("project.is_public", true)
     .in("id", lignes.map((l) => l.id))
     .returns<
       {
