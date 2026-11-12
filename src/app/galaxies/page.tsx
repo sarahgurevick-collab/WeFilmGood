@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import Finder, { CartePersonnage, CarteTalent } from "@/components/Finder";
+import Finder, { CarteTalent } from "@/components/Finder";
 import finderStyles from "@/components/Finder.module.css";
 import { categorieDeDepart, peutVoirLeNuage, personnagesDeLaGalaxie, talentsDeLaGalaxie } from "./actions";
 import PageShell from "@/components/PageShell";
@@ -10,6 +10,8 @@ import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
 import duo from "./duo.module.css";
 import Suite from "./Suite";
+import Apparition from "./Apparition";
+import CarteAJouer from "./CarteAJouer";
 import { lotDeCartes } from "./lot";
 import GrandNombre from "./GrandNombre";
 import CineCrushEnTete from "./CineCrushEnTete";
@@ -23,6 +25,8 @@ export const metadata: Metadata = { title: "Galaxies — WeFilmGood" };
 
 // Talents et personnages : six par ligne, dix lignes.
 const GALAXIE_PAR_PAGE = 60;
+// Personnages en cartes à jouer (essai du 12/11) : quatre par ligne, six lignes.
+const PERSONNAGES_PAR_PAGE = 24;
 
 
 export default async function ProjetsPage({
@@ -55,17 +59,18 @@ export default async function ProjetsPage({
   // recherche amènent ici avec ?voir=… : eux à la place des projets (02/10).
   if (params.voir === "personnages" || params.voir === "talents") {
     const voir = params.voir;
+    const parPage = voir === "personnages" ? PERSONNAGES_PAR_PAGE : GALAXIE_PAR_PAGE;
     const [{ personnages, total: totalPersonnages }, { talents, total: totalTalents }] = await Promise.all([
       voir === "personnages"
-        ? personnagesDeLaGalaxie(page, GALAXIE_PAR_PAGE)
+        ? personnagesDeLaGalaxie(page, parPage)
         : Promise.resolve({ personnages: [], total: 0 }),
       voir === "talents"
-        ? talentsDeLaGalaxie(page, GALAXIE_PAR_PAGE)
+        ? talentsDeLaGalaxie(page, parPage)
         : Promise.resolve({ talents: [], total: 0 }),
     ]);
     const totalGalaxie = voir === "personnages" ? totalPersonnages : totalTalents;
     const affiches = voir === "personnages" ? personnages.length : talents.length;
-    const pagesGalaxie = Math.max(1, Math.ceil(totalGalaxie / GALAXIE_PAR_PAGE));
+    const pagesGalaxie = Math.max(1, Math.ceil(totalGalaxie / parPage));
     return (
       <PageShell
         title="Galaxies"
@@ -74,16 +79,19 @@ export default async function ProjetsPage({
         connecte={!!user}
       >
         {/* La liste des talents (ou personnages) disparaît dès qu'un mot est cherché. */}
+        <div className={duo.centre}>
         <Finder adherent={adherent} premiere={voir}>
         <p className={formStyles.hint}>
-          {`${voir === "personnages" ? "Personnages" : "Talents"} ${((page - 1) * GALAXIE_PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * GALAXIE_PAR_PAGE + affiches).toLocaleString("fr-FR")} sur ${totalGalaxie.toLocaleString("fr-FR")} dans les Galaxies.`}
+          {`${voir === "personnages" ? "Personnages" : "Talents"} ${((page - 1) * parPage + 1).toLocaleString("fr-FR")} à ${((page - 1) * parPage + affiches).toLocaleString("fr-FR")} sur ${totalGalaxie.toLocaleString("fr-FR")} dans les Galaxies.`}
         </p>
         {voir === "personnages" ? (
-          <ul className={finderStyles.grillePersonnages}>
-            {personnages.map((c) => (
-              <li key={c.id}>
-                <CartePersonnage c={c} />
-              </li>
+          // Essai du 12/11 (Sarah) : des cartes à jouer, qui sortent du Finder
+          // dos visible et se retournent en se posant.
+          <ul className={duo.table}>
+            {personnages.map((c, i) => (
+              <Apparition key={c.id} rang={i} retourne>
+                <CarteAJouer c={c} />
+              </Apparition>
             ))}
           </ul>
         ) : (
@@ -99,11 +107,12 @@ export default async function ProjetsPage({
           page={page}
           pages={pagesGalaxie}
           total={totalGalaxie}
-          parPage={GALAXIE_PAR_PAGE}
+          parPage={parPage}
           base={`/galaxies?voir=${voir}`}
           libelle="Pages des Galaxies"
         />
         </Finder>
+        </div>
       </PageShell>
     );
   }

@@ -309,3 +309,171 @@
   opacity: 0.5;
   cursor: progress;
 }
+
+/* ---- Les personnages en cartes à jouer (essai du 12/11, Sarah) ----
+   Retour à la grille de petites cartes : étiquette git galaxies-avant-cartes-a-jouer. */
+
+.table {
+  list-style: none;
+  padding: 0;
+  margin: 28px auto 0;
+  max-width: 1120px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 36px 28px;
+}
+
+/* La place d'une carte sur la table : la carte y arrive du Finder, dos
+   visible, puis se retourne. Invisible tant qu'elle n'est pas partie. */
+.place {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 5 / 7;
+  visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.place.vu {
+  visibility: visible;
+}
+
+.face,
+.dos {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.face {
+  display: block;
+  background: var(--surface-actif);
+  border: 1px solid color-mix(in srgb, var(--fg) 24%, transparent);
+  color: #fff;
+  transition:
+    transform 0.5s var(--ease),
+    border-color 0.3s ease;
+}
+
+/* Sous la souris, la carte se soulève, comme prise en main. */
+.face:hover,
+.face:focus-visible {
+  transform: translateY(-8px) rotate(-1.2deg);
+  border-color: color-mix(in srgb, var(--fg) 60%, transparent);
+}
+
+.face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sansPortrait {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: clamp(56px, 8vw, 110px);
+  font-weight: 800;
+  color: color-mix(in srgb, var(--fg) 22%, transparent);
+}
+
+/* L'index de la carte : l'initiale et un point rouge, dans le coin. */
+.index {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+}
+
+.index i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--rouge-wfg);
+}
+
+.bas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 48px 14px 14px;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.88));
+  overflow-wrap: anywhere;
+}
+
+.bas strong {
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.bas span {
+  font-size: 13px;
+  opacity: 0.82;
+}
+
+/* Le dos : rouge, liseré blanc, croisillons. */
+.dos {
+  transform: rotateY(180deg);
+  border: 7px solid #fff;
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.16) 0 5px, transparent 5px 14px),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.16) 0 5px, transparent 5px 14px),
+    var(--rouge-wfg);
+}
+
+@media (max-width: 1000px) {
+  .table {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .table {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 12px;
+    margin-top: 20px;
+  }
+
+  .face,
+  .dos {
+    border-radius: 12px;
+  }
+
+  .dos {
+    border-width: 5px;
+  }
+
+  .bas {
+    padding: 36px 10px 10px;
+  }
+
+  .bas strong {
+    font-size: 14px;
+  }
+
+  .bas span {
+    font-size: 11.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .place {
+    visibility: visible;
+  }
+}

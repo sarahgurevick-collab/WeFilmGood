@@ -17,7 +17,16 @@ const DUREE = 2400;
 const ECART = 450;
 let prochainDepart = 0;
 
-export default function Apparition({ children, rang }: { children: ReactNode; rang: number }) {
+export default function Apparition({
+  children,
+  rang,
+  retourne = false,
+}: {
+  children: ReactNode;
+  rang: number;
+  /** Carte à jouer : elle sort dos visible et se retourne en se posant. */
+  retourne?: boolean;
+}) {
   const ref = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
@@ -44,15 +53,24 @@ export default function Apparition({ children, rang }: { children: ReactNode; ra
 
       el.classList.add(styles.vu);
       el.style.zIndex = "5";
-      vol = el.animate(
-        [
-          { transform: `translate(${dx}px, ${dy}px) scale(0.05) rotate(${vrille}deg)`, opacity: 0 },
-          { opacity: 1, offset: 0.12 },
-          { transform: "translate(0, 0) scale(1) rotate(0deg)", opacity: 1 },
-        ],
-        // Départ doux : on a le temps de voir l'image quitter la barre.
-        { duration: DUREE, delay: attente, easing: "cubic-bezier(0.5, 0, 0.2, 1)", fill: "backwards" },
-      );
+      vol = retourne
+        ? el.animate(
+            [
+              { transform: `perspective(1400px) translate(${dx}px, ${dy}px) scale(0.08) rotateY(180deg) rotate(${vrille}deg)` },
+              { transform: "perspective(1400px) translate(0px, 0px) scale(1) rotateY(180deg) rotate(0deg)", offset: 0.62 },
+              { transform: "perspective(1400px) translate(0px, 0px) scale(1) rotateY(0deg) rotate(0deg)" },
+            ],
+            { duration: DUREE, delay: attente, easing: "cubic-bezier(0.5, 0, 0.2, 1)", fill: "backwards" },
+          )
+        : el.animate(
+            [
+              { transform: `translate(${dx}px, ${dy}px) scale(0.05) rotate(${vrille}deg)`, opacity: 0 },
+              { opacity: 1, offset: 0.12 },
+              { transform: "translate(0, 0) scale(1) rotate(0deg)", opacity: 1 },
+            ],
+            // Départ doux : on a le temps de voir l'image quitter la barre.
+            { duration: DUREE, delay: attente, easing: "cubic-bezier(0.5, 0, 0.2, 1)", fill: "backwards" },
+          );
       vol.onfinish = () => {
         el.style.zIndex = "";
       };
@@ -72,10 +90,10 @@ export default function Apparition({ children, rang }: { children: ReactNode; ra
       observateur.disconnect();
       vol?.cancel();
     };
-  }, [rang]);
+  }, [rang, retourne]);
 
   return (
-    <li ref={ref} className={styles.item}>
+    <li ref={ref} className={retourne ? styles.place : styles.item}>
       {children}
     </li>
   );
