@@ -438,12 +438,13 @@ type LigneRecap = {
 
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
 const RECAP: LigneRecap[] = [
-  // Ouvert à tous (11/11, Sarah : sans adhésion on lit, avec l'adhésion on ouvre).
+  // Les Galaxies et le Finder restent ouverts à tous ; les fiches ne
+  // s'ouvrent plus sans adhésion (décision de Sarah du 12/11).
   { nom: "Galaxie de Projets et Finder", icone: "galaxie", non: "✓", oui: "✓" },
   {
     nom: "Lire les fiches Projets et Personnages",
     icone: "fiche",
-    non: "✓",
+    non: "✕",
     oui: "✓",
   },
   {
