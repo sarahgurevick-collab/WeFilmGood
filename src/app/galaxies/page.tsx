@@ -6,7 +6,6 @@ import { redirect } from "next/navigation";
 import LogoComplet from "@/components/LogoComplet";
 import Finder, { CartePersonnage, CarteTalent } from "@/components/Finder";
 import finderStyles from "@/components/Finder.module.css";
-import VignetteEau from "@/components/VignetteEau";
 import { categorieDeDepart, peutVoirLeNuage, personnagesDeLaGalaxie, talentsDeLaGalaxie } from "./actions";
 import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut } from "./personnages-carte";
 import PersonnagesCarte from "@/components/PersonnagesCarte";
@@ -28,13 +27,6 @@ import { AUDIENCES, BUDGETS, FORMATS } from "@/app/projet/ChampsFiche";
 import type { Tag } from "./tags";
 import { accesAuxFiches } from "@/lib/acces-fiches";
 import { clientCartes } from "@/lib/supabase/admin";
-
-/**
- * Effet au survol des vignettes. « eau » : l'image ondule comme un reflet
- * dans l'eau (essai du 23/09). « live » : l'effet Live Photo d'avant, gardé
- * de côté — remettre « live » ici suffit pour y revenir.
- */
-const EFFET_VIGNETTE: "eau" | "live" = "eau";
 
 type Projet = {
   id: string;
@@ -236,18 +228,46 @@ export default async function ProjetsPage({
   // ligne n'existe pas.
   const contenuCarte = (p: Projet) => {
     const vignette = vignetteDe(p);
+    // Les informations du projet : format, genre, audience, budget — aux
+    // couleurs des tags de la recherche avancée —, le titre (il ne part
+    // qu'aux adhérents : sans lui, la ligne n'existe pas), puis la tagline.
+    const texte = (
+      <>
+        <span className={duo.infos}>
+          {infosDe(p).map((info) => (
+            <span key={info.famille} className={`${duo.info} ${duo[info.famille]}`}>
+              {info.libelle}
+            </span>
+          ))}
+          {/* Sans titre, le logo des labellisés se range ici. */}
+          {!p.title && p.status === "labellise" && (
+            <span className={duo.labelSeul} title="Projet labellisé WeFilmGood">
+              <LogoComplet hauteur={22} />
+            </span>
+          )}
+        </span>
+        {p.title && (
+          <strong className={duo.titre}>
+            {p.title}
+            {p.status === "labellise" && (
+              <span className={styles.label} title="Projet labellisé WeFilmGood">
+                <LogoComplet hauteur={22} />
+              </span>
+            )}
+          </strong>
+        )}
+        {p.tagline && <p className={duo.tagline}>{p.tagline}</p>}
+      </>
+    );
     return (
       <>
-        <Link
-          href={`/projet/${p.id}`}
-          className={`${styles.carte} ${EFFET_VIGNETTE === "eau" ? styles.eau : ""}`}
-        >
+        {/* L'effet d'eau au survol est retiré (12/11, Sarah) : il marchait
+            moins bien sur de grandes images. */}
+        <Link href={`/projet/${p.id}`} className={`${styles.carte} ${styles.eau} ${duo.carte}`}>
           <div className={`${styles.vignette} ${duo.image}`}>
             <Bandeau valeur={p.bandeau} />
             {dejaOuverts.has(p.id) && <MarqueDejaOuvert />}
-            {vignette && EFFET_VIGNETTE === "eau" ? (
-              <VignetteEau src={vignette} />
-            ) : vignette ? (
+            {vignette ? (
               <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={vignette} alt="" loading="lazy" />
@@ -255,38 +275,14 @@ export default async function ProjetsPage({
             ) : (
               <span className={styles.sansImage}>Sans vignette</span>
             )}
+            {/* Comme sur WFG 1 (12/11, Sarah) : sous la souris, la photo
+                disparaît et laisse lire les informations sur fond blanc. */}
+            <div className={`clair ${duo.volet}`} aria-hidden="true">
+              {texte}
+            </div>
           </div>
-          {/* La tagline sous l'image, comme sur WFG 1 (Nicolas, 12/11). Le
-              titre ne part qu'aux adhérents : sans lui, la ligne n'existe pas. */}
-          <div className={duo.legende}>
-            {/* Toutes les informations du projet sous la photo, comme sur WFG 1
-                (essai du 12/11, Sarah) : format, genre, audience, budget — aux
-                couleurs des tags de la recherche avancée — puis la tagline. */}
-            <span className={duo.infos}>
-              {infosDe(p).map((info) => (
-                <span key={info.famille} className={`${duo.info} ${duo[info.famille]}`}>
-                  {info.libelle}
-                </span>
-              ))}
-              {/* Sans titre, le logo des labellisés se range ici. */}
-              {!p.title && p.status === "labellise" && (
-                <span className={duo.labelSeul} title="Projet labellisé WeFilmGood">
-                  <LogoComplet hauteur={22} />
-                </span>
-              )}
-            </span>
-            {p.title && (
-              <strong className={duo.titre}>
-                {p.title}
-                {p.status === "labellise" && (
-                  <span className={styles.label} title="Projet labellisé WeFilmGood">
-                    <LogoComplet hauteur={22} />
-                  </span>
-                )}
-              </strong>
-            )}
-            {p.tagline && <p className={duo.tagline}>{p.tagline}</p>}
-          </div>
+          {/* Sans souris (téléphone, tablette) : les informations restent sous la photo. */}
+          <div className={duo.legende}>{texte}</div>
         </Link>
         <EquipeCarte projetId={p.id} equipe={equipes.get(p.id)} />
         <PersonnagesCarte projetId={p.id} personnages={personnagesDeLaCarte(p.characters, urlDe)} />
