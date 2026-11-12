@@ -49,12 +49,10 @@ type Projet = {
 
 export const metadata: Metadata = { title: "Galaxies — WeFilmGood" };
 
-// Douze projets par page (12/11, Sarah : le tri par mot-clé fait le
-// travail, inutile d'en montrer beaucoup ; le nombre total est affiché en
-// gros). Douze se partage en trois colonnes comme en deux pour le mur.
-const PAR_PAGE = 12;
-// En dessous, le mur n'aurait pas de quoi défiler : cartes posées deux par deux.
-const MUR_MINIMUM = 6;
+// Deux projets par ligne, cinq lignes (12/11, Sarah : le tri par mot-clé
+// fait le travail, inutile d'en montrer beaucoup ; le nombre total est
+// affiché en gros).
+const PAR_PAGE = 10;
 // Talents et personnages : six par ligne, dix lignes.
 const GALAXIE_PAR_PAGE = 60;
 
@@ -277,34 +275,6 @@ export default async function ProjetsPage({
       </>
     );
   };
-  // Le mur (12/11, d'après « Assistant Wall » de 21st.dev) : les projets
-  // rangés en colonnes, chacun à son tour.
-  const colonnes = (n: number) =>
-    Array.from({ length: n }, (_, c) => (projects ?? []).filter((_, i) => i % n === c));
-  const mur = (n: number, classe: string) => (
-    <div className={`${duo.mur} ${classe}`}>
-      {colonnes(n).map((liste, c) => (
-        <div
-          key={c}
-          className={duo.colonne}
-          style={{ "--duree": `${liste.length * (9 + c * 2)}s`, "--depart": `${-c * 11}s` } as React.CSSProperties}
-        >
-          {/* La liste deux fois de suite : quand la première est passée, la
-              seconde a pris sa place et le défilement ne s'arrête jamais. */}
-          {[0, 1].map((tour) => (
-            <ul key={tour} className={duo.moitie} aria-hidden={tour === 1 ? true : undefined}>
-              {liste.map((p) => (
-                <li key={p.id} className={duo.verre}>
-                  {contenuCarte(p)}
-                </li>
-              ))}
-            </ul>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-
   return (
     <PageShell
       title="Galaxies"
@@ -353,18 +323,14 @@ export default async function ProjetsPage({
             anime={page === 1}
           />
 
-          {projects.length < MUR_MINIMUM ? (
-            <ul className={duo.duo}>
-              {projects.map((p) => (
-                <Apparition key={p.id}>{contenuCarte(p)}</Apparition>
-              ))}
-            </ul>
-          ) : (
-            <>
-              {mur(3, duo.murLarge)}
-              {mur(2, duo.murEtroit)}
-            </>
-          )}
+          {/* Les cartes sortent de la barre du Finder et se posent deux par deux. */}
+          <ul className={duo.duo}>
+            {projects.map((p, i) => (
+              <Apparition key={p.id} rang={i}>
+                {contenuCarte(p)}
+              </Apparition>
+            ))}
+          </ul>
 
           <Pagination
             page={page}

@@ -266,7 +266,7 @@ export default function Finder({
   return (
     <FiltresContexte.Provider value={contexte}>
     <div className={styles.zone}>
-      <div className={styles.barre}>
+      <div className={styles.barre} data-finder-barre>
         <TagsChoisis />
         {/* Les trois galaxies dans le champ lui-même (04/11, Sarah, modèle « morphing
             input » de 21st.dev) : un clic sur le mot à gauche passe à la suivante. */}
