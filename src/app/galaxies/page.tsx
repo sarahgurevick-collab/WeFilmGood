@@ -41,6 +41,9 @@ type Projet = {
   title: string;
   tagline: string | null;
   status: string;
+  format: string | null;
+  target_audience: string | null;
+  budget_range: string | null;
   bandeau: string | null;
   genre: { label_fr: string } | null;
   files: { storage_path: string; kind: string }[];
@@ -56,7 +59,7 @@ const PAR_PAGE = 10;
 // Talents et personnages : six par ligne, dix lignes.
 const GALAXIE_PAR_PAGE = 60;
 
-const SELECTION = `id, title, tagline, status, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind), ${SELECTION_PERSONNAGES}`;
+const SELECTION = `id, title, tagline, status, format, target_audience, budget_range, bandeau, genre:genres(label_fr), files:project_files(storage_path, kind), ${SELECTION_PERSONNAGES}`;
 
 export default async function ProjetsPage({
   searchParams,
@@ -218,6 +221,16 @@ export default async function ProjetsPage({
     return chemin ? urlDe.get(chemin) ?? null : null;
   };
 
+  // Les informations d'un projet, dans l'ordre des familles de tags.
+  const libelleDe = (liste: readonly { value: string; label: string }[], valeur: string | null) =>
+    liste.find((x) => x.value === valeur)?.label;
+  const infosDe = (p: Projet) =>
+    [
+      { famille: "format" as const, libelle: libelleDe(FORMATS, p.format) },
+      { famille: "genre" as const, libelle: p.genre?.label_fr },
+      { famille: "audience" as const, libelle: libelleDe(AUDIENCES, p.target_audience) },
+      { famille: "budget" as const, libelle: libelleDe(BUDGETS, p.budget_range) },
+    ].filter((i): i is { famille: "format" | "genre" | "audience" | "budget"; libelle: string } => Boolean(i.libelle));
   // Le contenu d'une carte : l'image, puis la tagline dessous, comme sur
   // WFG 1 (Nicolas, 12/11). Le titre ne part qu'aux adhérents : sans lui, la
   // ligne n'existe pas.
@@ -246,17 +259,22 @@ export default async function ProjetsPage({
           {/* La tagline sous l'image, comme sur WFG 1 (Nicolas, 12/11). Le
               titre ne part qu'aux adhérents : sans lui, la ligne n'existe pas. */}
           <div className={duo.legende}>
-            {(p.genre?.label_fr || (!p.title && p.status === "labellise")) && (
-              <span className={duo.genre}>
-                {p.genre?.label_fr}
-                {/* Sans titre, le logo des labellisés se range à côté du genre. */}
-                {!p.title && p.status === "labellise" && (
-                  <span className={duo.labelSeul} title="Projet labellisé WeFilmGood">
-                    <LogoComplet hauteur={22} />
-                  </span>
-                )}
-              </span>
-            )}
+            {/* Toutes les informations du projet sous la photo, comme sur WFG 1
+                (essai du 12/11, Sarah) : format, genre, audience, budget — aux
+                couleurs des tags de la recherche avancée — puis la tagline. */}
+            <span className={duo.infos}>
+              {infosDe(p).map((info) => (
+                <span key={info.famille} className={`${duo.info} ${duo[info.famille]}`}>
+                  {info.libelle}
+                </span>
+              ))}
+              {/* Sans titre, le logo des labellisés se range ici. */}
+              {!p.title && p.status === "labellise" && (
+                <span className={duo.labelSeul} title="Projet labellisé WeFilmGood">
+                  <LogoComplet hauteur={22} />
+                </span>
+              )}
+            </span>
             {p.title && (
               <strong className={duo.titre}>
                 {p.title}

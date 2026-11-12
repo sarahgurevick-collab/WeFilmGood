@@ -185,17 +185,49 @@
   overflow-wrap: anywhere;
 }
 
-.genre {
+/* Les informations du projet : de petites étiquettes, un point de la
+   couleur de leur famille (les mêmes que la recherche avancée). */
+.infos {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 6px 8px;
   min-height: 22px;
-  margin-bottom: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--dim);
+  margin-bottom: 10px;
+}
+
+.info {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid color-mix(in srgb, var(--puce) 55%, transparent);
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.3;
+  color: var(--fg);
+}
+
+.info::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--puce);
+}
+
+.format {
+  --puce: #3b82f6;
+}
+.genre {
+  --puce: var(--rouge-wfg);
+}
+.audience {
+  --puce: #f5c518;
+}
+.budget {
+  --puce: #22a35a;
 }
 
 .labelSeul {
@@ -239,6 +271,11 @@
 
   .titre {
     font-size: 15px;
+  }
+
+  .info {
+    padding: 2px 7px;
+    font-size: 10.5px;
   }
 
   .tagline {
