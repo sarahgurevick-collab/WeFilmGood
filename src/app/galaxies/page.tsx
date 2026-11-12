@@ -287,7 +287,7 @@ export default async function ProjetsPage({
         <div
           key={c}
           className={duo.colonne}
-          style={{ "--duree": `${liste.length * (26 + c * 4)}s`, "--depart": `${-c * 31}s` } as React.CSSProperties}
+          style={{ "--duree": `${liste.length * (9 + c * 2)}s`, "--depart": `${-c * 11}s` } as React.CSSProperties}
         >
           {/* La liste deux fois de suite : quand la première est passée, la
               seconde a pris sa place et le défilement ne s'arrête jamais. */}
