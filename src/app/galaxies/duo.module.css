@@ -477,3 +477,147 @@
     visibility: visible;
   }
 }
+
+/* ---- Les talents en constellation (essai du 12/11, Sarah) ----
+   De grands portraits ronds, posés en léger décalage plutôt qu'en lignes
+   strictes, qui sortent du Finder puis flottent doucement.
+   Retour à la grille de petites cartes : étiquette git galaxies-avant-talents-constellation. */
+
+.constellation {
+  list-style: none;
+  padding: 0 0 40px;
+  margin: 28px auto 0;
+  max-width: 1120px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 44px 36px;
+}
+
+.constellation > li:nth-child(4n + 2) {
+  margin-top: 52px;
+}
+
+.constellation > li:nth-child(4n + 3) {
+  margin-top: 14px;
+}
+
+.constellation > li:nth-child(4n + 4) {
+  margin-top: 70px;
+}
+
+.astre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+  animation: flotte 7s ease-in-out infinite alternate;
+}
+
+/* Chaque astre flotte à son rythme. */
+.constellation > li:nth-child(3n + 1) .astre {
+  animation-duration: 8.5s;
+  animation-delay: -3s;
+}
+
+.constellation > li:nth-child(3n + 2) .astre {
+  animation-duration: 6.2s;
+  animation-delay: -1.5s;
+}
+
+@keyframes flotte {
+  from {
+    transform: translateY(6px);
+  }
+  to {
+    transform: translateY(-8px);
+  }
+}
+
+.astrePhoto {
+  display: grid;
+  place-items: center;
+  width: min(100%, 210px);
+  aspect-ratio: 1;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface-actif);
+  border: 1px solid color-mix(in srgb, var(--fg) 22%, transparent);
+  color: var(--dim);
+  font-size: clamp(40px, 6vw, 76px);
+  font-weight: 800;
+  transition:
+    transform 0.5s var(--ease),
+    box-shadow 0.5s ease;
+}
+
+.astrePhoto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.astre:hover .astrePhoto,
+.astre:focus-visible .astrePhoto {
+  transform: scale(1.06);
+  box-shadow: 0 0 44px color-mix(in srgb, var(--fg) 26%, transparent);
+}
+
+.astre strong {
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.astreDetail {
+  font-size: 13.5px;
+  line-height: 1.35;
+  color: var(--dim);
+}
+
+@media (max-width: 1000px) {
+  .constellation {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .constellation > li:nth-child(n) {
+    margin-top: 0;
+  }
+
+  .constellation > li:nth-child(3n + 2) {
+    margin-top: 44px;
+  }
+}
+
+@media (max-width: 720px) {
+  .constellation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 26px 16px;
+    margin-top: 20px;
+  }
+
+  .constellation > li:nth-child(n) {
+    margin-top: 0;
+  }
+
+  .constellation > li:nth-child(even) {
+    margin-top: 34px;
+  }
+
+  .astre strong {
+    font-size: 14.5px;
+  }
+
+  .astreDetail {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .astre {
+    animation: none;
+  }
+}

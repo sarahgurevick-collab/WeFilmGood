@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import Finder, { CarteTalent } from "@/components/Finder";
-import finderStyles from "@/components/Finder.module.css";
+import Finder from "@/components/Finder";
 import { categorieDeDepart, peutVoirLeNuage, personnagesDeLaGalaxie, talentsDeLaGalaxie } from "./actions";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
 import duo from "./duo.module.css";
 import Suite from "./Suite";
+import Apparition from "./Apparition";
+import CarteAstre from "./CarteAstre";
 import { PERSONNAGES_PAR_PAGE, cartesPersonnages, lotDeCartes } from "./lot";
 import GrandNombre from "./GrandNombre";
 import CineCrushEnTete from "./CineCrushEnTete";
@@ -21,8 +22,8 @@ import type { Tag } from "./tags";
 
 export const metadata: Metadata = { title: "Galaxies — WeFilmGood" };
 
-// Talents et personnages : six par ligne, dix lignes.
-const GALAXIE_PAR_PAGE = 60;
+// Talents en constellation (essai du 12/11) : quatre par ligne, six lignes.
+const GALAXIE_PAR_PAGE = 24;
 
 
 export default async function ProjetsPage({
@@ -85,11 +86,13 @@ export default async function ProjetsPage({
           // dos visible et se retournent en se posant.
           <Suite key={`personnages-${page}`} quoi="personnages" premier={cartesPersonnages(personnages)} page={page} pages={pagesGalaxie} />
         ) : (
-          <ul className={finderStyles.grilleTalents}>
-            {talents.map((t) => (
-              <li key={t.id}>
-                <CarteTalent t={t} />
-              </li>
+          // Essai du 12/11 (Sarah) : de grands portraits ronds en constellation,
+          // qui sortent du Finder puis flottent doucement.
+          <ul className={duo.constellation}>
+            {talents.map((t, i) => (
+              <Apparition key={t.id} rang={i}>
+                <CarteAstre t={t} />
+              </Apparition>
             ))}
           </ul>
         )}
