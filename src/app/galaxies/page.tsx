@@ -15,6 +15,10 @@ import { equipesDesCartes, lectureRestreinte } from "./equipe-carte";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
+import duo from "./duo.module.css";
+import Apparition from "./Apparition";
+import GrandNombre from "./GrandNombre";
+import CineCrushEnTete from "./CineCrushEnTete";
 import { createClient } from "@/lib/supabase/server";
 import RechercheAvancee from "./RechercheAvancee";
 import MarqueDejaOuvert from "@/components/MarqueDejaOuvert";
@@ -45,8 +49,10 @@ type Projet = {
 
 export const metadata: Metadata = { title: "Galaxies — WeFilmGood" };
 
-// Cinq projets par ligne, dix lignes.
-const PAR_PAGE = 50;
+// Deux projets par ligne, cinq lignes (12/11, Sarah : le tri par mot-clé
+// fait le travail, inutile d'en montrer beaucoup ; le nombre total est
+// affiché en gros).
+const PAR_PAGE = 10;
 // Talents et personnages : six par ligne, dix lignes.
 const GALAXIE_PAR_PAGE = 60;
 
@@ -221,6 +227,9 @@ export default async function ProjetsPage({
       nav="pitchotheque"
       connecte={!!user}
     >
+      {/* Le CinéCrush de la semaine, seul en haut (12/11, Sarah) : à l'arrivée
+          seulement, pas sur les pages suivantes ni sur une liste filtrée. */}
+      {page === 1 && nbFiltres === 0 && typeof params.q !== "string" && <CineCrushEnTete supabase={supabase} />}
       {/* La recherche avancée reste toujours là ; la liste des projets en dessous
           disparaît dès qu'un mot est cherché : ce qu'on ne demande pas ne
           revient pas après les résultats (03/10, demande de Sarah). */}
@@ -251,22 +260,22 @@ export default async function ProjetsPage({
         </p>
       ) : (
         <>
-          <p className={formStyles.hint}>
-            {total > projects.length
-              ? `Projets ${((page - 1) * PAR_PAGE + 1).toLocaleString("fr-FR")} à ${((page - 1) * PAR_PAGE + projects.length).toLocaleString("fr-FR")} sur ${total.toLocaleString("fr-FR")} ${nbFiltres > 0 ? "correspondant à vos filtres" : "dans les Galaxies"}.`
-              : `${total.toLocaleString("fr-FR")} projet${total > 1 ? "s" : ""} ${nbFiltres > 0 ? `correspond${total > 1 ? "ent" : ""} à vos filtres` : "dans les Galaxies"}.`}
-          </p>
+          <GrandNombre
+            valeur={total}
+            legende={`projet${total > 1 ? "s" : ""} ${nbFiltres > 0 ? "correspondant à vos filtres" : "dans les Galaxies"}`}
+            anime={page === 1}
+          />
 
-          <ul className={styles.grille}>
+          <ul className={duo.duo}>
             {projects.map((p) => {
               const vignette = vignetteDe(p);
               return (
-                <li key={p.id}>
+                <Apparition key={p.id}>
                   <Link
                     href={`/projet/${p.id}`}
                     className={`${styles.carte} ${EFFET_VIGNETTE === "eau" ? styles.eau : ""}`}
                   >
-                    <div className={styles.vignette}>
+                    <div className={`${styles.vignette} ${duo.image}`}>
                       <Bandeau valeur={p.bandeau} />
                       {dejaOuverts.has(p.id) && <MarqueDejaOuvert />}
                       {vignette && EFFET_VIGNETTE === "eau" ? (
@@ -280,24 +289,36 @@ export default async function ProjetsPage({
                         <span className={styles.sansImage}>Sans vignette</span>
                       )}
                     </div>
-                    <div className={styles.legende}>
-                      <strong>
-                        {p.title}
-                        {p.status === "labellise" && (
-                          <span className={styles.label} title="Projet labellisé WeFilmGood">
-                            <LogoComplet hauteur={22} />
-                          </span>
-                        )}
-                      </strong>
-                      {p.genre?.label_fr && (
-                        <span className={styles.genre}>{p.genre.label_fr}</span>
+                    {/* La tagline sous l'image, comme sur WFG 1 (Nicolas, 12/11). Le
+                        titre ne part qu'aux adhérents : sans lui, la ligne n'existe pas. */}
+                    <div className={duo.legende}>
+                      {(p.genre?.label_fr || (!p.title && p.status === "labellise")) && (
+                        <span className={duo.genre}>
+                          {p.genre?.label_fr}
+                          {/* Sans titre, le logo des labellisés se range à côté du genre. */}
+                          {!p.title && p.status === "labellise" && (
+                            <span className={duo.labelSeul} title="Projet labellisé WeFilmGood">
+                              <LogoComplet hauteur={22} />
+                            </span>
+                          )}
+                        </span>
                       )}
-                      {p.tagline && <p className={styles.logline}>{p.tagline}</p>}
+                      {p.title && (
+                        <strong className={duo.titre}>
+                          {p.title}
+                          {p.status === "labellise" && (
+                            <span className={styles.label} title="Projet labellisé WeFilmGood">
+                              <LogoComplet hauteur={22} />
+                            </span>
+                          )}
+                        </strong>
+                      )}
+                      {p.tagline && <p className={duo.tagline}>{p.tagline}</p>}
                     </div>
                   </Link>
                   <EquipeCarte projetId={p.id} equipe={equipes.get(p.id)} />
                   <PersonnagesCarte projetId={p.id} personnages={personnagesDeLaCarte(p.characters, urlDe)} />
-                </li>
+                </Apparition>
               );
             })}
           </ul>
