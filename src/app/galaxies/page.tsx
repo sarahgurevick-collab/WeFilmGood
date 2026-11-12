@@ -49,10 +49,12 @@ type Projet = {
 
 export const metadata: Metadata = { title: "Galaxies — WeFilmGood" };
 
-// Deux projets par ligne, cinq lignes (12/11, Sarah : le tri par mot-clé
-// fait le travail, inutile d'en montrer beaucoup ; le nombre total est
-// affiché en gros).
-const PAR_PAGE = 10;
+// Douze projets par page (12/11, Sarah : le tri par mot-clé fait le
+// travail, inutile d'en montrer beaucoup ; le nombre total est affiché en
+// gros). Douze se partage en trois colonnes comme en deux pour le mur.
+const PAR_PAGE = 12;
+// En dessous, le mur n'aurait pas de quoi défiler : cartes posées deux par deux.
+const MUR_MINIMUM = 6;
 // Talents et personnages : six par ligne, dix lignes.
 const GALAXIE_PAR_PAGE = 60;
 
@@ -218,6 +220,91 @@ export default async function ProjetsPage({
     return chemin ? urlDe.get(chemin) ?? null : null;
   };
 
+  // Le contenu d'une carte : l'image, puis la tagline dessous, comme sur
+  // WFG 1 (Nicolas, 12/11). Le titre ne part qu'aux adhérents : sans lui, la
+  // ligne n'existe pas.
+  const contenuCarte = (p: Projet) => {
+    const vignette = vignetteDe(p);
+    return (
+      <>
+        <Link
+          href={`/projet/${p.id}`}
+          className={`${styles.carte} ${EFFET_VIGNETTE === "eau" ? styles.eau : ""}`}
+        >
+          <div className={`${styles.vignette} ${duo.image}`}>
+            <Bandeau valeur={p.bandeau} />
+            {dejaOuverts.has(p.id) && <MarqueDejaOuvert />}
+            {vignette && EFFET_VIGNETTE === "eau" ? (
+              <VignetteEau src={vignette} />
+            ) : vignette ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={vignette} alt="" loading="lazy" />
+              </>
+            ) : (
+              <span className={styles.sansImage}>Sans vignette</span>
+            )}
+          </div>
+          {/* La tagline sous l'image, comme sur WFG 1 (Nicolas, 12/11). Le
+              titre ne part qu'aux adhérents : sans lui, la ligne n'existe pas. */}
+          <div className={duo.legende}>
+            {(p.genre?.label_fr || (!p.title && p.status === "labellise")) && (
+              <span className={duo.genre}>
+                {p.genre?.label_fr}
+                {/* Sans titre, le logo des labellisés se range à côté du genre. */}
+                {!p.title && p.status === "labellise" && (
+                  <span className={duo.labelSeul} title="Projet labellisé WeFilmGood">
+                    <LogoComplet hauteur={22} />
+                  </span>
+                )}
+              </span>
+            )}
+            {p.title && (
+              <strong className={duo.titre}>
+                {p.title}
+                {p.status === "labellise" && (
+                  <span className={styles.label} title="Projet labellisé WeFilmGood">
+                    <LogoComplet hauteur={22} />
+                  </span>
+                )}
+              </strong>
+            )}
+            {p.tagline && <p className={duo.tagline}>{p.tagline}</p>}
+          </div>
+        </Link>
+        <EquipeCarte projetId={p.id} equipe={equipes.get(p.id)} />
+        <PersonnagesCarte projetId={p.id} personnages={personnagesDeLaCarte(p.characters, urlDe)} />
+      </>
+    );
+  };
+  // Le mur (12/11, d'après « Assistant Wall » de 21st.dev) : les projets
+  // rangés en colonnes, chacun à son tour.
+  const colonnes = (n: number) =>
+    Array.from({ length: n }, (_, c) => (projects ?? []).filter((_, i) => i % n === c));
+  const mur = (n: number, classe: string) => (
+    <div className={`${duo.mur} ${classe}`}>
+      {colonnes(n).map((liste, c) => (
+        <div
+          key={c}
+          className={duo.colonne}
+          style={{ "--duree": `${liste.length * (26 + c * 4)}s`, "--depart": `${-c * 31}s` } as React.CSSProperties}
+        >
+          {/* La liste deux fois de suite : quand la première est passée, la
+              seconde a pris sa place et le défilement ne s'arrête jamais. */}
+          {[0, 1].map((tour) => (
+            <ul key={tour} className={duo.moitie} aria-hidden={tour === 1 ? true : undefined}>
+              {liste.map((p) => (
+                <li key={p.id} className={duo.verre}>
+                  {contenuCarte(p)}
+                </li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <PageShell
       title="Galaxies"
@@ -266,62 +353,18 @@ export default async function ProjetsPage({
             anime={page === 1}
           />
 
-          <ul className={duo.duo}>
-            {projects.map((p) => {
-              const vignette = vignetteDe(p);
-              return (
-                <Apparition key={p.id}>
-                  <Link
-                    href={`/projet/${p.id}`}
-                    className={`${styles.carte} ${EFFET_VIGNETTE === "eau" ? styles.eau : ""}`}
-                  >
-                    <div className={`${styles.vignette} ${duo.image}`}>
-                      <Bandeau valeur={p.bandeau} />
-                      {dejaOuverts.has(p.id) && <MarqueDejaOuvert />}
-                      {vignette && EFFET_VIGNETTE === "eau" ? (
-                        <VignetteEau src={vignette} />
-                      ) : vignette ? (
-                        <>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={vignette} alt="" loading="lazy" />
-                        </>
-                      ) : (
-                        <span className={styles.sansImage}>Sans vignette</span>
-                      )}
-                    </div>
-                    {/* La tagline sous l'image, comme sur WFG 1 (Nicolas, 12/11). Le
-                        titre ne part qu'aux adhérents : sans lui, la ligne n'existe pas. */}
-                    <div className={duo.legende}>
-                      {(p.genre?.label_fr || (!p.title && p.status === "labellise")) && (
-                        <span className={duo.genre}>
-                          {p.genre?.label_fr}
-                          {/* Sans titre, le logo des labellisés se range à côté du genre. */}
-                          {!p.title && p.status === "labellise" && (
-                            <span className={duo.labelSeul} title="Projet labellisé WeFilmGood">
-                              <LogoComplet hauteur={22} />
-                            </span>
-                          )}
-                        </span>
-                      )}
-                      {p.title && (
-                        <strong className={duo.titre}>
-                          {p.title}
-                          {p.status === "labellise" && (
-                            <span className={styles.label} title="Projet labellisé WeFilmGood">
-                              <LogoComplet hauteur={22} />
-                            </span>
-                          )}
-                        </strong>
-                      )}
-                      {p.tagline && <p className={duo.tagline}>{p.tagline}</p>}
-                    </div>
-                  </Link>
-                  <EquipeCarte projetId={p.id} equipe={equipes.get(p.id)} />
-                  <PersonnagesCarte projetId={p.id} personnages={personnagesDeLaCarte(p.characters, urlDe)} />
-                </Apparition>
-              );
-            })}
-          </ul>
+          {projects.length < MUR_MINIMUM ? (
+            <ul className={duo.duo}>
+              {projects.map((p) => (
+                <Apparition key={p.id}>{contenuCarte(p)}</Apparition>
+              ))}
+            </ul>
+          ) : (
+            <>
+              {mur(3, duo.murLarge)}
+              {mur(2, duo.murEtroit)}
+            </>
+          )}
 
           <Pagination
             page={page}
