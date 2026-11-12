@@ -10,9 +10,7 @@ import formStyles from "@/components/form.module.css";
 import styles from "./projets.module.css";
 import duo from "./duo.module.css";
 import Suite from "./Suite";
-import Apparition from "./Apparition";
-import CarteAJouer from "./CarteAJouer";
-import { lotDeCartes } from "./lot";
+import { PERSONNAGES_PAR_PAGE, cartesPersonnages, lotDeCartes } from "./lot";
 import GrandNombre from "./GrandNombre";
 import CineCrushEnTete from "./CineCrushEnTete";
 import { createClient } from "@/lib/supabase/server";
@@ -25,8 +23,6 @@ export const metadata: Metadata = { title: "Galaxies — WeFilmGood" };
 
 // Talents et personnages : six par ligne, dix lignes.
 const GALAXIE_PAR_PAGE = 60;
-// Personnages en cartes à jouer (essai du 12/11) : quatre par ligne, six lignes.
-const PERSONNAGES_PAR_PAGE = 24;
 
 
 export default async function ProjetsPage({
@@ -87,13 +83,7 @@ export default async function ProjetsPage({
         {voir === "personnages" ? (
           // Essai du 12/11 (Sarah) : des cartes à jouer, qui sortent du Finder
           // dos visible et se retournent en se posant.
-          <ul className={duo.table}>
-            {personnages.map((c, i) => (
-              <Apparition key={c.id} rang={i} retourne>
-                <CarteAJouer c={c} />
-              </Apparition>
-            ))}
-          </ul>
+          <Suite key={`personnages-${page}`} quoi="personnages" premier={cartesPersonnages(personnages)} page={page} pages={pagesGalaxie} />
         ) : (
           <ul className={finderStyles.grilleTalents}>
             {talents.map((t) => (
@@ -103,7 +93,8 @@ export default async function ProjetsPage({
             ))}
           </ul>
         )}
-        <Pagination
+{voir === "talents" && (
+                <Pagination
           page={page}
           pages={pagesGalaxie}
           total={totalGalaxie}
@@ -111,6 +102,7 @@ export default async function ProjetsPage({
           base={`/galaxies?voir=${voir}`}
           libelle="Pages des Galaxies"
         />
+        )}
         </Finder>
         </div>
       </PageShell>

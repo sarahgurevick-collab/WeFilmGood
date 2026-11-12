@@ -1,27 +1,31 @@
 "use client";
 
 import { Fragment, useState, useTransition, type ReactNode } from "react";
-import { autresProjets } from "./actions";
+import { autresPersonnages, autresProjets } from "./actions";
 import type { Filtres } from "./filtres";
 import projetsStyles from "./projets.module.css";
 import styles from "./duo.module.css";
 
 /**
  * Les cartes des Galaxies et, dessous, le bouton « Voir d'autres projets »
- * (12/11/2026, libellé validé par Sarah) qui remplace les numéros de page :
- * chaque clic fait venir un lot de plus, sans recharger la page.
+ * ou « Voir d'autres personnages » (12/11/2026, libellés validés par Sarah)
+ * qui remplace les numéros de page : chaque clic fait venir un lot de plus,
+ * sans recharger la page.
  */
 export default function Suite({
   premier,
   page,
   pages,
   filtres,
+  quoi = "projets",
 }: {
+  quoi?: "projets" | "personnages";
   premier: ReactNode;
   /** Le numéro du premier lot (1, sauf arrivée par un ancien lien ?page=…). */
   page: number;
   pages: number;
-  filtres: Filtres;
+  /** Les filtres de la recherche avancée (projets seulement). */
+  filtres?: Filtres;
 }) {
   const [lots, setLots] = useState<ReactNode[]>([]);
   const [enAttente, demarrer] = useTransition();
@@ -29,7 +33,7 @@ export default function Suite({
 
   return (
     <>
-      <ul className={styles.duo}>
+      <ul className={quoi === "personnages" ? styles.table : styles.duo}>
         {premier}
         {lots.map((lot, i) => (
           <Fragment key={i}>{lot}</Fragment>
@@ -43,12 +47,15 @@ export default function Suite({
             disabled={enAttente}
             onClick={() =>
               demarrer(async () => {
-                const lot = await autresProjets(suivante, filtres);
+                const lot =
+                  quoi === "personnages" || !filtres
+                    ? await autresPersonnages(suivante)
+                    : await autresProjets(suivante, filtres);
                 setLots((avant) => [...avant, lot]);
               })
             }
           >
-            Voir d&apos;autres projets
+            {quoi === "personnages" ? "Voir d'autres personnages" : "Voir d'autres projets"}
           </button>
         </p>
       )}

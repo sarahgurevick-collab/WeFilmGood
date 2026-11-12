@@ -10,7 +10,7 @@ import { photoNette } from "@/lib/photo";
 import { clientCartes, clientProfils } from "@/lib/supabase/admin";
 import { accesAuxFiches, sexeEtAge } from "@/lib/acces-fiches";
 import type { ReactNode } from "react";
-import { lotDeCartes } from "./lot";
+import { PERSONNAGES_PAR_PAGE, cartesPersonnages, lotDeCartes } from "./lot";
 
 export type ProjetTrouve = {
   id: string;
@@ -521,4 +521,15 @@ export async function autresProjets(page: number, filtres: Filtres): Promise<Rea
   ) as Filtres;
   const { cartes } = await lotDeCartes(supabase, user.id, Math.max(1, Math.floor(Number(page)) || 1), propre);
   return cartes;
+}
+
+/** Le lot suivant de personnages, pour le bouton « Voir d'autres personnages » (12/11/2026). */
+export async function autresPersonnages(page: number): Promise<ReactNode> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { personnages } = await personnagesDeLaGalaxie(Math.max(1, Math.floor(Number(page)) || 1), PERSONNAGES_PAR_PAGE);
+  return cartesPersonnages(personnages);
 }

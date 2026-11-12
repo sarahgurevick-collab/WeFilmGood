@@ -14,6 +14,8 @@ import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type Per
 import { equipesDesCartes, lectureRestreinte } from "./equipe-carte";
 import { parametresRpc, type Filtres } from "./filtres";
 import Apparition from "./Apparition";
+import CarteAJouer from "./CarteAJouer";
+import type { PersonnageTrouve } from "./actions";
 import styles from "./projets.module.css";
 import duo from "./duo.module.css";
 
@@ -199,4 +201,16 @@ export async function lotDeCartes(
     total,
     pages,
   };
+}
+
+// Personnages en cartes à jouer (essai du 12/11) : quatre par ligne, six lignes.
+export const PERSONNAGES_PAR_PAGE = 24;
+
+/** Un lot de personnages en cartes à jouer, pour la page comme pour le bouton. */
+export function cartesPersonnages(personnages: PersonnageTrouve[]): ReactNode {
+  return personnages.map((c, i) => (
+    <Apparition key={c.id} rang={i} retourne>
+      <CarteAJouer c={c} />
+    </Apparition>
+  ));
 }
