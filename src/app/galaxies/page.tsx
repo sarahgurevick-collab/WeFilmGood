@@ -213,22 +213,21 @@ export default async function ProjetsPage({
     return chemin ? urlDe.get(chemin) ?? null : null;
   };
 
-  // Les informations d'un projet, dans l'ordre des familles de tags.
+  // Les étiquettes d'un projet : format et genre seulement (12/11) ;
+  // l'audience et le budget alourdissaient, ils restent à la recherche avancée.
   const libelleDe = (liste: readonly { value: string; label: string }[], valeur: string | null) =>
     liste.find((x) => x.value === valeur)?.label;
   const infosDe = (p: Projet) =>
     [
       { famille: "format" as const, libelle: libelleDe(FORMATS, p.format) },
       { famille: "genre" as const, libelle: p.genre?.label_fr },
-      { famille: "audience" as const, libelle: libelleDe(AUDIENCES, p.target_audience) },
-      { famille: "budget" as const, libelle: libelleDe(BUDGETS, p.budget_range) },
-    ].filter((i): i is { famille: "format" | "genre" | "audience" | "budget"; libelle: string } => Boolean(i.libelle));
+    ].filter((i): i is { famille: "format" | "genre"; libelle: string } => Boolean(i.libelle));
   // Le contenu d'une carte : l'image, puis la tagline dessous, comme sur
   // WFG 1 (Nicolas, 12/11). Le titre ne part qu'aux adhérents : sans lui, la
   // ligne n'existe pas.
   const contenuCarte = (p: Projet) => {
     const vignette = vignetteDe(p);
-    // Les informations du projet : format, genre, audience, budget — aux
+    // Les informations du projet : format et genre — aux
     // couleurs des tags de la recherche avancée —, le titre (il ne part
     // qu'aux adhérents : sans lui, la ligne n'existe pas), puis la tagline.
     const texte = (
@@ -275,13 +274,9 @@ export default async function ProjetsPage({
             ) : (
               <span className={styles.sansImage}>Sans vignette</span>
             )}
-            {/* Comme sur WFG 1 (12/11, Sarah) : sous la souris, la photo
-                disparaît et laisse lire les informations sur fond blanc. */}
-            <div className={`clair ${duo.volet}`} aria-hidden="true">
-              {texte}
-            </div>
           </div>
-          {/* Sans souris (téléphone, tablette) : les informations restent sous la photo. */}
+          {/* Le texte sous la photo, toujours visible (12/11, Sarah ; le volet
+              blanc au survol façon WFG 1 a été essayé puis retiré). */}
           <div className={duo.legende}>{texte}</div>
         </Link>
         <EquipeCarte projetId={p.id} equipe={equipes.get(p.id)} />
