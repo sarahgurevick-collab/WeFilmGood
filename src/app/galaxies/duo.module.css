@@ -293,3 +293,19 @@
     animation: none;
   }
 }
+
+/* ---- « Voir d'autres projets », à la place des numéros de page ---- */
+
+.suite {
+  margin: 72px 0 0;
+  text-align: center;
+}
+
+.suiteBouton {
+  font-family: inherit;
+}
+
+.suiteBouton:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}

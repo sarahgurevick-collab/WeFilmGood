@@ -9,6 +9,8 @@ import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type Per
 import { photoNette } from "@/lib/photo";
 import { clientCartes, clientProfils } from "@/lib/supabase/admin";
 import { accesAuxFiches, sexeEtAge } from "@/lib/acces-fiches";
+import type { ReactNode } from "react";
+import { lotDeCartes } from "./lot";
 
 export type ProjetTrouve = {
   id: string;
@@ -498,4 +500,25 @@ export async function categorieDeDepart(): Promise<Categorie> {
   const metiers = (data ?? []) as string[];
   // Le métier principal seul : un réalisateur qui joue aussi garde les projets.
   return metiers[0] === "comedien" ? "personnages" : "projets";
+}
+
+/**
+ * Le lot suivant de cartes des Galaxies, pour le bouton « Voir d'autres
+ * projets » (12/11/2026) : mêmes règles que la page (membre connecté, titre
+ * réservé aux adhérents), rendues par le serveur.
+ */
+export async function autresProjets(page: number, filtres: Filtres): Promise<ReactNode> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+  const propre = Object.fromEntries(
+    Object.keys(AUCUN).map((cle) => {
+      const v = (filtres as Record<string, unknown>)?.[cle];
+      return [cle, typeof v === "string" && v.trim() ? v.trim() : null];
+    }),
+  ) as Filtres;
+  const { cartes } = await lotDeCartes(supabase, user.id, Math.max(1, Math.floor(Number(page)) || 1), propre);
+  return cartes;
 }
