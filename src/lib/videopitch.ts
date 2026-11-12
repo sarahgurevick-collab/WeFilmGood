@@ -257,7 +257,7 @@ async function prevenirRecu(depot: Depot) {
     htmlContent: gabarit(d.prenom, [
       `Nous avons bien reçu le videopitch de « ${echapper(d.titre)} »${depot.langue === "en" ? " (version anglaise)" : ""}. Il a été préparé pour la lecture en ligne.`,
       "L'équipe le regarde avant de le mettre en ligne sur votre fiche projet.",
-    ]),
+    ], { href: `${SITE}/projet/${depot.project_id}/documents`, texte: "Suivre mon videopitch" }),
   });
 }
 
