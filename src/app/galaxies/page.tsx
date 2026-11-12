@@ -290,13 +290,26 @@ export default async function ProjetsPage({
       {/* La recherche avancée reste toujours là ; la liste des projets en dessous
           disparaît dès qu'un mot est cherché : ce qu'on ne demande pas ne
           revient pas après les résultats (03/10, demande de Sarah). */}
+<div className={duo.centre}>
       <Finder
         adherent={adherent}
         filtres={filtres}
         premiere={premiere}
         requeteInitiale={typeof params.q === "string" ? params.q : ""}
         tags={tags}
-        avance={<RechercheAvancee />}
+        avance={
+          // Le nombre de projets, petit, à côté du bouton (12/11, Sarah).
+          <div className={duo.ligneAvancee}>
+            <RechercheAvancee />
+            {projects && projects.length > 0 && (
+              <GrandNombre
+                valeur={total}
+                legende={`projet${total > 1 ? "s" : ""} ${nbFiltres > 0 ? "correspondant à vos filtres" : "dans les Galaxies"}`}
+                anime={page === 1}
+              />
+            )}
+          </div>
+        }
       >
       {!projects || projects.length === 0 ? (
         <p className={formStyles.hint}>
@@ -317,12 +330,6 @@ export default async function ProjetsPage({
         </p>
       ) : (
         <>
-          <GrandNombre
-            valeur={total}
-            legende={`projet${total > 1 ? "s" : ""} ${nbFiltres > 0 ? "correspondant à vos filtres" : "dans les Galaxies"}`}
-            anime={page === 1}
-          />
-
           {/* Les cartes sortent de la barre du Finder et se posent deux par deux. */}
           <ul className={duo.duo}>
             {projects.map((p, i) => (
@@ -343,6 +350,7 @@ export default async function ProjetsPage({
         </>
       )}
       </Finder>
+      </div>
     </PageShell>
   );
 }

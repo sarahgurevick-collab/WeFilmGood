@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import styles from "./duo.module.css";
 
 /**
- * Le nombre de projets, en très gros (12/11/2026, Sarah : « il suffit de
- * mettre un chiffre en gros »). Sur la première page il défile de zéro
+ * Le nombre de projets, à côté du bouton « Recherche avancée » (12/11/2026,
+ * Sarah ; d'abord essayé en très gros, « beaucoup trop gros »). Sur la première page il défile de zéro
  * jusqu'à sa valeur ; ailleurs, ou si le mouvement est réduit, il est posé.
  */
 export default function GrandNombre({

@@ -94,29 +94,53 @@
   }
 }
 
-/* ---- Le nombre de projets, en très gros ---- */
+/* ---- Le Finder centré, le nombre de projets à côté de « Recherche avancée » ----
+   (12/11, Sarah : le nombre en très gros repoussait les cartes en bas de
+   page, on ne voyait pas les images sortir du Finder.) */
 
-.nombre {
-  margin: 44px 0 0;
+.centre [data-finder-barre] {
+  justify-content: center;
+}
+
+.ligneAvancee {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 12px 22px;
+  margin: 0 0 8px;
+}
+
+.ligneAvancee details {
+  margin: 0;
+}
+
+/* Cadre ouvert : il prend toute la largeur, le nombre passe dessous. */
+.ligneAvancee:has(details[open]) {
+  display: block;
+}
+
+.ligneAvancee:has(details[open]) details {
+  margin-top: 12px;
+}
+
+.ligneAvancee:has(details[open]) .nombre {
+  margin-top: 14px;
   text-align: center;
 }
 
-.nombreChiffre {
-  display: block;
-  font-size: clamp(72px, 15vw, 190px);
-  font-weight: 800;
-  line-height: 0.95;
-  letter-spacing: -0.05em;
-  font-variant-numeric: tabular-nums;
+.nombre {
+  margin: 0;
+  font-size: 15px;
+  color: var(--dim);
 }
 
-.nombreLegende {
-  display: block;
-  margin-top: 12px;
-  font-size: 14px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--dim);
+.nombreChiffre {
+  margin-right: 7px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---- Les projets, deux par deux ---- */
@@ -124,7 +148,7 @@
 .duo {
   list-style: none;
   padding: 0;
-  margin: 56px auto 0;
+  margin: 28px auto 0;
   max-width: 1120px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -140,6 +164,7 @@
 /* Les cartes sortent de la barre du Finder (voir Apparition.tsx) : tant
    qu'elles ne sont pas parties, elles sont invisibles. */
 .item {
+  position: relative;
   min-width: 0;
   opacity: 0;
   will-change: transform, opacity;
@@ -195,12 +220,8 @@
 }
 
 @media (max-width: 720px) {
-  .nombre {
-    margin-top: 28px;
-  }
-
   .duo {
-    margin-top: 32px;
+    margin-top: 20px;
     gap: 30px 14px;
   }
 
