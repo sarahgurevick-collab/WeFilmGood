@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { COLONNES, numeroVimeo, prevenirRefuse, prevenirValide, supprimerFichiers, type Depot } from "@/lib/videopitch";
+import { COLONNES, numeroVimeo, prevenirRefuse, supprimerFichiers, type Depot } from "@/lib/videopitch";
 
 async function adminConnecte() {
   const supabase = await createClient();
@@ -56,7 +56,6 @@ export async function validerVideopitch(formData: FormData) {
     .update({ etat: "valide", vimeo_id: numero, traite_le: new Date().toISOString(), traite_par: user.id })
     .eq("id", id);
   await supprimerFichiers(id);
-  await prevenirValide(depot);
   revalidatePath(`/projet/${depot.project_id}`);
   revalidatePath("/admin/videopitchs");
   retour();

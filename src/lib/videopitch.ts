@@ -256,7 +256,7 @@ async function prevenirRecu(depot: Depot) {
     subject: `Votre videopitch pour « ${d.titre} » est bien arrivé`,
     htmlContent: gabarit(d.prenom, [
       `Nous avons bien reçu le videopitch de « ${echapper(d.titre)} »${depot.langue === "en" ? " (version anglaise)" : ""}. Il a été préparé pour la lecture en ligne.`,
-      "L'équipe le regarde avant de le mettre en ligne sur votre fiche projet. Vous recevrez un e-mail dès que ce sera fait.",
+      "L'équipe le regarde avant de le mettre en ligne sur votre fiche projet.",
     ]),
   });
 }
@@ -278,19 +278,9 @@ async function prevenirEchec(depot: Depot) {
   });
 }
 
-export async function prevenirValide(depot: Depot) {
-  const d = await destinataire(depot);
-  if (!d) return;
-  await envoyerEmail({
-    to: [{ email: d.email, name: d.prenom ?? undefined }],
-    subject: `Votre videopitch pour « ${d.titre} » est en ligne`,
-    htmlContent: gabarit(
-      d.prenom,
-      [`Le videopitch de « ${echapper(d.titre)} »${depot.langue === "en" ? " (version anglaise)" : ""} est en ligne sur votre fiche projet.`],
-      { href: `${SITE}/projet/${depot.project_id}`, texte: "Voir ma fiche projet" },
-    ),
-  });
-}
+// Pas d'e-mail à la mise en ligne (Sarah, 12/11) : un seul e-mail à la réception,
+// puis l'auteur suit l'avancement sur sa fiche ; on n'écrit de nouveau que si la
+// vidéo est à renvoyer (refus, fichier illisible).
 
 export async function prevenirRefuse(depot: Depot, motif: string) {
   const d = await destinataire(depot);

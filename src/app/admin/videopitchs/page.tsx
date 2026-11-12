@@ -73,7 +73,7 @@ export default async function VideopitchsAdminPage({
       <p className={formStyles.hint}>
         Chaque vidéo a été allégée par le serveur (720p, moins de 100 Mo). Regardez-la ici, puis
         téléchargez-la et déposez-la sur Vimeo ; collez enfin le lien Vimeo pour la mettre en ligne
-        sur la fiche. L&apos;auteur reçoit un e-mail à la validation comme au refus.
+        sur la fiche. L&apos;auteur reçoit un e-mail en cas de refus seulement.
       </p>
 
       {(aValider ?? []).length === 0 ? (

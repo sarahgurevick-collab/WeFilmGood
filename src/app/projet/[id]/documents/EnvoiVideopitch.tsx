@@ -122,7 +122,7 @@ export default function EnvoiVideopitch({
       case "preparation":
         return "Vidéo reçue. Nous la préparons pour la lecture en ligne : cela prend quelques minutes.";
       case "a_valider":
-        return "Votre videopitch est entre les mains de l'équipe, qui le regarde avant de le mettre en ligne. Vous recevrez un e-mail.";
+        return "Votre videopitch est entre les mains de l'équipe, qui le regarde avant de le mettre en ligne.";
       case "refuse":
         return `Votre videopitch n'a pas été retenu${d.motif_refus ? ` : ${d.motif_refus}` : "."} Vous pouvez en envoyer un autre.`;
       case "echec":
@@ -159,7 +159,7 @@ export default function EnvoiVideopitch({
       {phase === "fini" ? (
         <p className={formStyles.hint} style={{ color: "#1a1a1a" }}>
           ✓ Vidéo envoyée. Nous la préparons, puis l&apos;équipe la regarde avant de la mettre en
-          ligne. Vous recevrez un e-mail à chaque étape.
+          ligne.
         </p>
       ) : (
         <>
