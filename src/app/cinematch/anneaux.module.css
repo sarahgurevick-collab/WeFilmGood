@@ -1,0 +1,76 @@
+/* Les anneaux entrelacés à côté du titre CinéMatch (13/11, Sarah : « cela
+   anime et donne de la vie ») : trois anneaux aux couleurs du logo tournent
+   chacun sur son axe et se croisent, comme deux portraits qui se rencontrent. */
+.anneaux {
+  position: relative;
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  margin-left: 0.45em;
+  vertical-align: -0.2em;
+  perspective: 6em;
+  transform-style: preserve-3d;
+}
+
+.anneaux i {
+  position: absolute;
+  inset: 0;
+  border: 0.09em solid currentColor;
+  border-radius: 50%;
+  transform-style: preserve-3d;
+}
+
+.anneaux i:nth-child(1) {
+  color: #da2c25;
+  animation: tourneX 3.2s linear infinite;
+}
+
+.anneaux i:nth-child(2) {
+  color: #3b8ef5;
+  animation: tourneY 3.2s linear infinite;
+}
+
+.anneaux i:nth-child(3) {
+  color: #f2c230;
+  animation: tourneXY 4.8s linear infinite;
+}
+
+@keyframes tourneX {
+  from {
+    transform: rotateX(0deg) rotateZ(0deg);
+  }
+  to {
+    transform: rotateX(360deg) rotateZ(180deg);
+  }
+}
+
+@keyframes tourneY {
+  from {
+    transform: rotateY(60deg) rotateZ(0deg);
+  }
+  to {
+    transform: rotateY(420deg) rotateZ(-180deg);
+  }
+}
+
+@keyframes tourneXY {
+  from {
+    transform: rotate3d(1, 1, 0, 0deg);
+  }
+  to {
+    transform: rotate3d(1, 1, 0, 360deg);
+  }
+}
+
+/* Sans animation (réglage du système) : les trois anneaux croisés, immobiles. */
+@media (prefers-reduced-motion: reduce) {
+  .anneaux i {
+    animation: none;
+  }
+  .anneaux i:nth-child(1) {
+    transform: rotateX(62deg);
+  }
+  .anneaux i:nth-child(2) {
+    transform: rotateY(62deg);
+  }
+}
