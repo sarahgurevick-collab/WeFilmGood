@@ -66,10 +66,13 @@ export function formesDuMot(w: string): string[] {
   return [...formes];
 }
 
-/** Les autres formes du mot, en mot entier (pluriel compris), ou null. */
+/**
+ * Les autres formes du mot, en début de mot (13/11, migration 0267 :
+ * « animaux » trouve « animalier » comme le fait « animal »), ou null.
+ */
 function motifDesFormes(w: string): RegExp | null {
   const formes = formesDuMot(w);
-  return formes.length ? new RegExp(`(?<![a-z0-9])(${formes.join("|")})[sx]?(?![a-z0-9])`, "g") : null;
+  return formes.length ? new RegExp(`(?<![a-z0-9])(${formes.join("|")})`, "g") : null;
 }
 
 /**
