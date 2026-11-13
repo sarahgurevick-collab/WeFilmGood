@@ -3,7 +3,7 @@
 import { createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { AUCUN, parametresRpc, type Filtres } from "./filtres";
-import { enTexte, vecteur } from "@/lib/vecteurs";
+import { enTexte, variantesDeSens, vecteur, vecteurs } from "@/lib/vecteurs";
 import { equipesDesCartes, lectureRestreinte, type EquipeCarte } from "./equipe-carte";
 import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut, type PersonnagesCarte } from "./personnages-carte";
 import { photoNette } from "@/lib/photo";
@@ -61,8 +61,13 @@ async function projetsParLeSens(
   dejaTrouves: Set<string>,
   limite: number,
 ): Promise<{ ids: string[]; mots: string[] }> {
-  const v = await vecteur(q);
-  if (!v) return { ids: [], mots: [] };
+  // Le mot et son autre nombre (13/11) : singulier et pluriel rapprochent
+  // les mêmes projets.
+  const vs = await vecteurs(variantesDeSens(q)).catch((e) => {
+    console.error("vecteurs : modèle indisponible", e);
+    return [] as number[][];
+  });
+  if (vs.length === 0) return { ids: [], mots: [] };
   const supabase = await createClient();
   const ids: string[] = [];
   const mots: string[] = [];
@@ -74,13 +79,20 @@ async function projetsParLeSens(
   // Le texte même des fiches (0097) : un projet qui parle de
   // poissons ou de pêcheurs remonte pour « sardine », même sans le mot.
   if (ids.length < limite) {
-    const { data: fiches } = await supabase.rpc("projets_par_sens", {
-      p_vecteur: enTexte(v),
-      p_limite: limite,
-      ...parametresRpc(filtres),
-    });
+    const listes = await Promise.all(
+      vs.map(async (v) => {
+        const { data } = await supabase.rpc("projets_par_sens", {
+          p_vecteur: enTexte(v),
+          p_limite: limite,
+          ...parametresRpc(filtres),
+        });
+        return (data ?? []) as { id: string; proximite: number }[];
+      }),
+    );
+    // Les plus proches d'abord, toutes formes confondues.
+    const fiches = listes.flat().sort((a, b) => b.proximite - a.proximite);
     let ajoutes = 0;
-    for (const f of (fiches ?? []) as { id: string; proximite: number }[]) {
+    for (const f of fiches) {
       if (f.proximite < PROXIMITE_FICHE || dejaTrouves.has(f.id) || ids.length >= limite) continue;
       dejaTrouves.add(f.id);
       ids.push(f.id);
@@ -265,14 +277,14 @@ export async function compterRecherche(requete: string): Promise<DecompteRecherc
   // projets comme dans rechercherProjets. Les trois nombres sont demandés
   // en même temps, pour ne pas attendre trois fois.
   const supabase = await createClient();
-  const v = await vecteur(q);
-  const p_vecteur = v ? enTexte(v) : null;
+  const vs = await vecteurs(variantesDeSens(q)).catch(() => [] as number[][]);
+  const p_vecteurs = vs.length ? vs.map(enTexte) : null;
   const parties = ["projets", "talents", "personnages"] as const;
   const lignes = await Promise.all(
     parties.map(async (p_partie) => {
       const { data } = await supabase.rpc("compter_recherche", {
         q,
-        p_vecteur: p_partie === "projets" ? p_vecteur : null,
+        p_vecteurs: p_partie === "projets" ? p_vecteurs : null,
         p_partie,
       });
       return ((data ?? [])[0] as DecompteRecherche | undefined) ?? vide;

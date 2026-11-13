@@ -49,3 +49,23 @@ export async function vecteur(texte: string): Promise<number[] | null> {
 export function enTexte(v: number[]): string {
   return `[${v.map((x) => x.toFixed(6)).join(",")}]`;
 }
+
+/**
+ * Le mot cherché et son autre nombre (13/11, Sarah) : « zombie » compte
+ * aussi le sens de « zombies », et l'inverse, pour que le singulier et le
+ * pluriel rapprochent les mêmes projets — et le plus de projets possible.
+ * Une recherche de plusieurs mots reste telle quelle.
+ */
+export function variantesDeSens(q: string): string[] {
+  const w = q.trim().toLowerCase();
+  if (!w || /\s/.test(w)) return [q.trim()];
+  const formes = [w];
+  if (w.endsWith("aux") && w.length > 4) formes.push(`${w.slice(0, -3)}al`);
+  else if (w.endsWith("al") && w.length > 3) formes.push(`${w.slice(0, -2)}aux`);
+  else if (w.endsWith("eau")) formes.push(`${w}x`);
+  else if (w.endsWith("eaux")) formes.push(w.slice(0, -1));
+  else if (w.endsWith("s") && w.length > 3) formes.push(w.slice(0, -1));
+  else if (!/[sxz]$/.test(w)) formes.push(`${w}s`);
+  // Toujours dans le même ordre, quel que soit le mot tapé.
+  return formes.sort();
+}
