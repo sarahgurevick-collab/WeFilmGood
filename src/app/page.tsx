@@ -10,6 +10,7 @@ import GalaxieAccueil from "@/components/GalaxieAccueil";
 import HashSession from "@/components/HashSession";
 import NuageAccueil from "@/components/NuageAccueil";
 import SpherePhotos, { type PhotoSphereItem } from "@/components/SpherePhotos";
+import { SOUTIENS_CINEASTES } from "@/data/soutiensCineastes";
 import { SUCCESS_STORIES_BLOG } from "@/data/successStoriesBlog";
 import { chiffresAccueil } from "@/lib/chiffres-accueil";
 import { chargerProjetOrbite } from "@/lib/orbite";
@@ -43,13 +44,28 @@ export default async function Home() {
       .returns<{ id: string; avatar_url: string | null; testimonial: string | null }[]>(),
     chiffresAccueil(),
   ]);
-  const photosTemoignages: PhotoSphereItem[] = (temoignages ?? []).map((t) => ({
+  const photosMembres: PhotoSphereItem[] = (temoignages ?? []).map((t) => ({
     id: t.id,
     src: photoNette(t.avatar_url),
     // Témoignages anonymes (04/11, Sarah) : la photo reste, le nom ne quitte plus le serveur.
     alt: "Membre WeFilmGood",
     description: t.testimonial ?? undefined,
   }));
+  // Les cinéastes qui soutiennent WFG (13/11, Sarah) : les huit messages de
+  // l'accueil de WFG 1 rejoignent la sphère, signés, répartis parmi les
+  // témoignages des membres.
+  const photosTemoignages: PhotoSphereItem[] = [...photosMembres];
+  const pas = Math.max(1, Math.floor(photosMembres.length / SOUTIENS_CINEASTES.length));
+  SOUTIENS_CINEASTES.forEach((s, i) => {
+    photosTemoignages.splice(Math.min(i * (pas + 1), photosTemoignages.length), 0, {
+      id: s.id,
+      src: s.image,
+      alt: s.nom,
+      titre: s.nom,
+      credits: s.credits,
+      description: s.citation,
+    });
+  });
 
   return (
     <>

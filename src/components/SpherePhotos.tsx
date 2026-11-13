@@ -26,6 +26,8 @@ export type PhotoSphereItem = {
   src?: string | null;
   alt: string;
   titre?: string;
+  /** Sous le nom : le métier et les films (les cinéastes qui soutiennent WFG, 13/11). */
+  credits?: string;
   description?: string;
 };
 
@@ -373,6 +375,7 @@ function Fenetre({ photo, index, fermer }: { photo: PhotoSphereItem | null; inde
         </div>
         <div className={styles.fenetreTexte}>
           {photo.titre && <p className={styles.legendeTitre}>{photo.titre}</p>}
+          {photo.credits && <p className={styles.legendeCredits}>{photo.credits}</p>}
           {photo.description && (
             <p className={styles.legendeTexte}>&laquo;&nbsp;{photo.description}&nbsp;&raquo;</p>
           )}

@@ -195,3 +195,11 @@
   background: none;
   cursor: pointer;
 }
+
+/* Sous le nom d'un cinéaste : son métier et ses films (13/11). */
+.legendeCredits {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  opacity: 0.7;
+}
