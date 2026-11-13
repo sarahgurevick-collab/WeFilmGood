@@ -14,11 +14,16 @@ function proposeDans(s: SousGenre | undefined, famille: string) {
 }
 
 /**
- * Le genre de la fiche en quatre marches, comme l'escalier du logo (04/11,
- * Sarah, d'après un menu en cascade) : la famille, ses sous-genres, la
+ * Le genre de la fiche en quatre étapes : la famille, ses sous-genres, la
  * posture (fiction / documentaire), la technique. Fermé, il ne montre que
- * les choix faits ; un clic ouvre l'escalier, chaque marche un cran plus
- * bas et plus à droite que la précédente.
+ * les choix faits.
+ *
+ * Essai du 13/11/2026 (Sarah, d'après « Animated file tree » de 21st.dev) :
+ * ouvert, c'est une arborescence qui se déplie. La famille choisie s'ouvre
+ * comme un dossier sur ses sous-genres ; dessous viennent Fiction et
+ * Documentaire, et la posture choisie s'ouvre à son tour sur les techniques.
+ * Mêmes règles et mêmes étapes que l'escalier à quatre marches rouges
+ * d'avant (04/11 – 13/11) : étiquette git fiche-avant-arborescence.
  */
 export default function ChoixGenre({
   genres,
@@ -97,25 +102,37 @@ export default function ChoixGenre({
     TECHNIQUES.filter((t) => techniques.includes(t.value)).map((t) => t.label).join(", "),
   ];
 
-  const marche = (
-    n: number,
-    elements: { value: string; label: string; coche: boolean; bloque?: boolean; onClick: () => void; suite?: boolean }[],
-  ) => (
-    <div className={styles.marche} style={{ "--marche": n } as React.CSSProperties}>
-      {elements.map((e) => (
-        <button
-          key={e.value}
-          type="button"
-          className={`${styles.element} ${e.coche ? styles.coche : ""}`}
-          onClick={e.onClick}
-          disabled={e.bloque}
-          aria-pressed={e.coche}
-        >
-          <span>{e.label}</span>
-          {e.suite ? <span aria-hidden="true">›</span> : e.coche ? <span aria-hidden="true">✓</span> : null}
-        </button>
-      ))}
-    </div>
+  // Une ligne de l'arborescence : un « dossier » (chevron, il s'ouvre) ou une
+  // « feuille » (case à cocher).
+  const ligne = (e: {
+    cle: string;
+    rang: number;
+    label: string;
+    coche: boolean;
+    dossier?: boolean;
+    bloque?: boolean;
+    onClick: () => void;
+  }) => (
+    <button
+      type="button"
+      className={`${styles.ligne} ${e.coche ? styles.coche : ""}`}
+      style={{ "--rang": e.rang } as React.CSSProperties}
+      onClick={e.onClick}
+      disabled={e.bloque}
+      aria-pressed={e.coche}
+      aria-expanded={e.dossier ? e.coche : undefined}
+    >
+      {e.dossier ? (
+        <span className={styles.chevron} aria-hidden="true">
+          ›
+        </span>
+      ) : (
+        <span className={styles.caseACocher} aria-hidden="true">
+          {e.coche ? "✓" : ""}
+        </span>
+      )}
+      <span>{e.label}</span>
+    </button>
   );
 
   return (
@@ -166,71 +183,99 @@ export default function ChoixGenre({
       </button>
 
       {ouvert && (
-        <div className={styles.escalier}>
+        <div className={styles.arbre}>
           <button type="button" className={styles.fermer} onClick={() => setOuvert(false)} aria-label="Fermer">
             ×
           </button>
-          {marche(
-            0,
-            genres.map((g) => ({
-              value: g.slug,
-              label: g.label_fr,
-              coche: g.slug === genre,
-              suite: g.slug === genre,
-              onClick: () => choisirGenre(g.slug),
-            })),
-          )}
-          {genre &&
-            atteinte >= 1 &&
-            marche(1, [
-              ...proposes.map((s) => {
-                const coche = choisis.includes(s.slug);
-                return {
-                  value: s.slug,
-                  label: s.label_fr,
-                  coche,
-                  bloque: !coche && choisis.length >= MAXIMUM,
-                  onClick: () => basculerSousGenre(s.slug),
-                };
-              }),
-              // Les sous-genres sont facultatifs : de quoi passer à la marche suivante.
-              ...(atteinte < 2
-                ? [{ value: "_suivant", label: "Suivant", coche: false, suite: true, onClick: () => avancer(2) }]
-                : []),
-            ])}
-          {genre &&
-            atteinte >= 2 &&
-            marche(
-              2,
-              POSTURES.map((p) => ({
-                value: p.value,
-                label: p.label,
-                coche: postures.includes(p.value),
-                // Fiction ou documentaire : l'un ou l'autre (04/11, Sarah).
-                onClick: () => {
-                  setPostures([p.value]);
-                  avancer(3);
-                },
-              })),
-            )}
-          {genre &&
-            atteinte >= 3 &&
-            marche(
-              3,
-              TECHNIQUES.map((t) => ({
-                value: t.value,
-                label: t.label,
-                coche: techniques.includes(t.value),
-                // La dernière marche cochée, l'escalier se referme de lui-même
-                // (07/11, Sarah), le temps de voir la coche. Décocher le
-                // laisse ouvert ; une seconde technique : un clic le rouvre.
-                onClick: () => {
-                  const ajout = !techniques.includes(t.value);
-                  basculer(techniques, setTechniques, t.value);
-                  if (ajout && genre && postures.length) setTimeout(() => setOuvert(false), 350);
-                },
-              })),
-            )}
+          <ul className={styles.niveau}>
+            {genres.map((g, i) => (
+              <li key={g.slug}>
+                {ligne({
+                  cle: g.slug,
+                  rang: i,
+                  label: g.label_fr,
+                  coche: g.slug === genre,
+                  dossier: true,
+                  onClick: () => choisirGenre(g.slug),
+                })}
+                {g.slug === genre && atteinte >= 1 && (
+                  <ul className={`${styles.niveau} ${styles.branche}`}>
+                    {proposes.map((sg, j) => {
+                      const coche = choisis.includes(sg.slug);
+                      return (
+                        <li key={sg.slug}>
+                          {ligne({
+                            cle: sg.slug,
+                            rang: j,
+                            label: sg.label_fr,
+                            coche,
+                            bloque: !coche && choisis.length >= MAXIMUM,
+                            onClick: () => basculerSousGenre(sg.slug),
+                          })}
+                        </li>
+                      );
+                    })}
+                    {/* Les sous-genres sont facultatifs : de quoi passer à la suite. */}
+                    {atteinte < 2 && (
+                      <li>
+                        <button
+                          type="button"
+                          className={`${styles.ligne} ${styles.suivant}`}
+                          style={{ "--rang": proposes.length } as React.CSSProperties}
+                          onClick={() => avancer(2)}
+                        >
+                          <span className={styles.chevron} aria-hidden="true">
+                            ›
+                          </span>
+                          <span>Suivant</span>
+                        </button>
+                      </li>
+                    )}
+                    {atteinte >= 2 &&
+                      POSTURES.map((p, j) => (
+                        <li key={p.value} className={j === 0 ? styles.separe : undefined}>
+                          {ligne({
+                            cle: p.value,
+                            rang: j,
+                            label: p.label,
+                            coche: postures.includes(p.value),
+                            dossier: true,
+                            // Fiction ou documentaire : l'un ou l'autre (04/11, Sarah).
+                            onClick: () => {
+                              setPostures([p.value]);
+                              avancer(3);
+                            },
+                          })}
+                          {postures.includes(p.value) && atteinte >= 3 && (
+                            <ul className={`${styles.niveau} ${styles.branche}`}>
+                              {TECHNIQUES.map((t, k) => (
+                                <li key={t.value}>
+                                  {ligne({
+                                    cle: t.value,
+                                    rang: k,
+                                    label: t.label,
+                                    coche: techniques.includes(t.value),
+                                    // La dernière branche cochée, l'arborescence se referme
+                                    // d'elle-même (07/11, Sarah), le temps de voir la coche.
+                                    // Décocher la laisse ouverte ; une seconde technique :
+                                    // un clic la rouvre.
+                                    onClick: () => {
+                                      const ajout = !techniques.includes(t.value);
+                                      basculer(techniques, setTechniques, t.value);
+                                      if (ajout && genre && postures.length) setTimeout(() => setOuvert(false), 350);
+                                    },
+                                  })}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
