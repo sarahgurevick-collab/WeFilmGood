@@ -705,7 +705,9 @@ export default async function ProjetPage({
         bandeau={project.bandeau ?? null}
         avis={(avisWfg as string | null) ?? null}
         videopitch={
-          !restreint && videopitchVisible && (videopitch?.videopitch_fr || videopitch?.videopitch_en)
+          // Pendant sa semaine de CinéCrush, le videopitch s'ouvre à tous (13/11,
+          // Sarah : le comédien doit savoir de quelle histoire il s'agit).
+          (!restreint || reglesComedy.cinecrush) && videopitchVisible && (videopitch?.videopitch_fr || videopitch?.videopitch_en)
             ? { fr: videopitch.videopitch_fr, en: videopitch.videopitch_en, titre: project.title }
             : undefined
         }
