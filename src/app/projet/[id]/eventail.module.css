@@ -125,7 +125,7 @@
 }
 
 .carteRangee {
-  position: static;
+  position: relative;
   transform: none !important;
   opacity: 1 !important;
   transition: none;

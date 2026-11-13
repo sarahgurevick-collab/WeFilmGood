@@ -6,6 +6,7 @@ import VideopitchLecteur from "@/components/VideopitchLecteur";
 import ContactEnveloppe from "./ContactEnveloppe";
 import CoteFiche from "./CoteFiche";
 import EventailPersonnages from "./EventailPersonnages";
+import BlocComedyPitch, { type ComedyPitchCadre } from "./BlocComedyPitch";
 import OrbiteEquipe from "./OrbiteEquipe";
 import { prendreLaPlace } from "@/app/admin/profils/prise-de-place";
 import MoodboardPhotos from "./MoodboardPhotos";
@@ -55,6 +56,8 @@ export type PersonnageCadre = {
   proposee?: boolean;
   infos: string;
   bio: string | null;
+  /** Le ComedyPitch (13/11) : pastille verte, vidéos en ligne, bouton de dépôt. */
+  comedypitch?: ComedyPitchCadre;
 };
 
 export type MembreEquipe = {
@@ -421,6 +424,7 @@ export default function CadreEquipe({
                 </div>
               </div>
               {detail.bio && <p className={styles.detailBio}>{detail.bio}</p>}
+              {personnageChoisi?.comedypitch && <BlocComedyPitch comedypitch={personnageChoisi.comedypitch} />}
               {detail.site && (
                 <p className={styles.detailBio}>
                   <a href={detail.site} target="_blank" rel="noopener noreferrer">

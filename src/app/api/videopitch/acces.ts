@@ -61,6 +61,8 @@ export async function depotDe(id: string) {
     .maybeSingle<Depot>();
   if (!depot) return null;
   if (u.estAdmin || depot.deposant_id === u.id) return { ...u, depot, admin };
+  // Un ComedyPitch n'appartient qu'au comédien : l'auteur du projet ne le voit qu'une fois en ligne.
+  if (depot.genre !== "videopitch") return null;
   const { data: projet } = await admin.from("projects").select("owner_id").eq("id", depot.project_id).maybeSingle();
   return projet?.owner_id === u.id ? { ...u, depot, admin } : null;
 }

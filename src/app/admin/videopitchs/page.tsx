@@ -18,9 +18,10 @@ import { refuserVideopitch, validerVideopitch } from "./actions";
 type Ligne = Depot & {
   project: { id: string; title: string } | null;
   deposant: { full_name: string | null } | null;
+  personnage: { name: string } | null;
 };
 
-const SELECTION = `${COLONNES}, project:projects(id, title), deposant:profiles!videopitch_depots_deposant_id_fkey(full_name)`;
+const SELECTION = `${COLONNES}, project:projects(id, title), deposant:profiles!videopitch_depots_deposant_id_fkey(full_name), personnage:characters(name)`;
 
 const date = (iso: string | null) =>
   iso ? new Date(iso).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : "—";
@@ -64,8 +65,20 @@ export default async function VideopitchsAdminPage({
       .returns<Ligne[]>(),
   ]);
 
-  const titre = (l: Ligne) =>
-    l.project ? <Link href={`/projet/${l.project.id}`}>{l.project.title}</Link> : <>—</>;
+  // Un ComedyPitch (13/11) se reconnaît à son personnage, écrit devant le projet.
+  const titre = (l: Ligne) => (
+    <>
+      {l.genre === "comedypitch" && <>ComedyPitch · {l.personnage?.name ?? "—"} · </>}
+      {l.project ? (
+        <Link href={`/projet/${l.project.id}${l.personnage_id ? `?personnage=${l.personnage_id}#personnages` : ""}`}>{l.project.title}</Link>
+      ) : (
+        <>—</>
+      )}
+    </>
+  );
+  const version = (l: Ligne) =>
+    l.genre === "comedypitch" ? "ComedyPitch" : `version ${l.langue === "en" ? "anglaise" : "française"}`;
+  const langue = (l: Ligne) => (l.genre === "comedypitch" ? "—" : l.langue.toUpperCase());
 
   return (
     <PageShell nav="admin" avantTitre={<NavAdmin />} title={`Videopitchs à valider${aValider?.length ? ` (${aValider.length})` : ""}`} theme="clair">
@@ -73,7 +86,8 @@ export default async function VideopitchsAdminPage({
       <p className={formStyles.hint}>
         Chaque vidéo a été allégée par le serveur (720p, moins de 100 Mo). Regardez-la ici, puis
         téléchargez-la et déposez-la sur Vimeo ; collez enfin le lien Vimeo pour la mettre en ligne
-        sur la fiche. L&apos;auteur reçoit un e-mail en cas de refus seulement.
+        sur la fiche. L&apos;auteur reçoit un e-mail en cas de refus seulement. Les ComedyPitchs des
+        comédiens arrivent ici aussi : ils portent le nom du personnage.
       </p>
 
       {(aValider ?? []).length === 0 ? (
@@ -100,7 +114,7 @@ export default async function VideopitchsAdminPage({
               <div>
                 <p style={{ margin: 0, fontWeight: 600, fontSize: 16 }}>{titre(l)}</p>
                 <p className={formStyles.hint} style={{ marginTop: 4 }}>
-                  {l.deposant?.full_name ?? "—"} · version {l.langue === "en" ? "anglaise" : "française"} · reçu le{" "}
+                  {l.deposant?.full_name ?? "—"} · {version(l)} · reçu le{" "}
                   {date(l.recu_le)}
                   {l.nom_origine ? ` · fichier d'origine : ${l.nom_origine} (${tailleLisible(l.taille_annoncee)})` : ""}
                 </p>
@@ -112,7 +126,7 @@ export default async function VideopitchsAdminPage({
                     <input type="text" name="lien" placeholder="https://vimeo.com/123456789" required />
                   </label>
                   <button type="submit" className={formStyles.submit} style={{ marginTop: 8 }}>
-                    Mettre en ligne sur la fiche
+                    {l.genre === "comedypitch" ? "Mettre en ligne sur le personnage" : "Mettre en ligne sur la fiche"}
                   </button>
                 </form>
 
@@ -150,7 +164,7 @@ export default async function VideopitchsAdminPage({
                 <tr key={l.id}>
                   <td>{titre(l)}</td>
                   <td>{l.deposant?.full_name ?? "—"}</td>
-                  <td>{l.langue.toUpperCase()}</td>
+                  <td>{langue(l)}</td>
                   <td>
                     {ETATS[l.etat] ?? l.etat}
                     {l.etat === "envoi" && ` (${tailleLisible(l.taille_recue)} sur ${tailleLisible(l.taille_annoncee)})`}
@@ -182,7 +196,7 @@ export default async function VideopitchsAdminPage({
                 <tr key={l.id}>
                   <td>{titre(l)}</td>
                   <td>{l.deposant?.full_name ?? "—"}</td>
-                  <td>{l.langue.toUpperCase()}</td>
+                  <td>{langue(l)}</td>
                   <td>
                     {l.etat === "valide" ? (
                       <>

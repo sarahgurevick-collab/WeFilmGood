@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import type { PersonnageCadre } from "./CadreEquipe";
 import styles from "./eventail.module.css";
+import BlocComedyPitch from "./BlocComedyPitch";
+import comedy from "./comedypitch.module.css";
 
 /**
  * Les personnages en éventail (14/10/2026, Sarah) : les mêmes cartes
@@ -143,6 +145,9 @@ export default function EventailPersonnages({
 
   const contenuCarte = (c: PersonnageCadre) => (
     <>
+      {c.comedypitch?.attend && (
+        <span className={comedy.pastille} role="img" aria-label="Ce personnage attend son ComedyPitch" title="Ce personnage attend son ComedyPitch" />
+      )}
       <span className={styles.portrait} aria-hidden="true">
         {c.portrait ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -178,6 +183,11 @@ export default function EventailPersonnages({
           ))}
         </div>
         {ouverte?.bio && <p className={styles.bioDessous}>{ouverte.bio}</p>}
+        {ouverte?.comedypitch && (
+          <div className={comedy.dessous}>
+            <BlocComedyPitch comedypitch={ouverte.comedypitch} />
+          </div>
+        )}
       </div>
     );
   }
@@ -258,6 +268,11 @@ export default function EventailPersonnages({
       {/* Sous l'éventail, sur les écrans où le panneau de droite n'existe pas. */}
       {courant && ouvert === courant.id && courant.bio && (
         <p className={styles.bioDessous}>{courant.bio}</p>
+      )}
+      {courant && ouvert === courant.id && courant.comedypitch && (
+        <div className={comedy.dessous}>
+          <BlocComedyPitch comedypitch={courant.comedypitch} />
+        </div>
       )}
     </div>
   );

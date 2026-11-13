@@ -39,6 +39,29 @@ export async function validerVideopitch(formData: FormData) {
   if (!numero) retour("Collez le lien Vimeo de la vidéo (vimeo.com/123456789).");
   const depot = await depotAValider(admin, id);
 
+  // ComedyPitch (13/11) : le numéro reste sur le dépôt, qui devient le
+  // ComedyPitch en ligne ; il remplace celui que ce comédien avait déjà
+  // pour ce personnage. Pas d'e-mail à la mise en ligne.
+  if (depot.genre === "comedypitch") {
+    await admin
+      .from("videopitch_depots")
+      .delete()
+      .eq("genre", "comedypitch")
+      .eq("etat", "valide")
+      .eq("personnage_id", depot.personnage_id as string)
+      .eq("deposant_id", depot.deposant_id)
+      .neq("id", id);
+    const { error: echec } = await admin
+      .from("videopitch_depots")
+      .update({ etat: "valide", vimeo_id: numero, traite_le: new Date().toISOString(), traite_par: user.id, vu_par_auteur_le: null })
+      .eq("id", id);
+    if (echec) retour("Le lien n'a pas pu être enregistré : " + echec.message);
+    await supprimerFichiers(id);
+    revalidatePath(`/projet/${depot.project_id}`);
+    revalidatePath("/admin/videopitchs");
+    retour();
+  }
+
   const colonne = depot.langue === "en" ? "videopitch_en" : "videopitch_fr";
   const { data: existant } = await admin
     .from("project_videopitchs")

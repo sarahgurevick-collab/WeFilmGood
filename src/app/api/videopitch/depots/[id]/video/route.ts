@@ -38,7 +38,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       .replace(/[^a-zA-Z0-9]+/g, "-")
       .replace(/^-|-$/g, "")
       .toLowerCase() || "videopitch";
-    entetes["Content-Disposition"] = `attachment; filename="${base}-videopitch-${depot.langue}.mp4"`;
+    entetes["Content-Disposition"] = `attachment; filename="${base}-${depot.genre === "comedypitch" ? "comedypitch" : `videopitch-${depot.langue}`}.mp4"`;
   }
 
   const plage = req.headers.get("range")?.match(/bytes=(\d*)-(\d*)/);

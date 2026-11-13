@@ -30,8 +30,13 @@ export const EXTENSIONS = ["mp4", "mov", "m4v", "avi", "mkv", "webm", "mpg", "mp
 export type Etat = "envoi" | "recu" | "preparation" | "a_valider" | "valide" | "refuse" | "echec";
 export type Langue = "fr" | "en";
 
+export type Genre = "videopitch" | "comedypitch";
+
 export type Depot = {
   id: string;
+  /** videopitch : l'auteur, pour son projet. comedypitch : un comédien joue un personnage (0261). */
+  genre: Genre;
+  personnage_id: string | null;
   project_id: string;
   deposant_id: string;
   langue: Langue;
@@ -52,7 +57,7 @@ export type Depot = {
 };
 
 export const COLONNES =
-  "id, project_id, deposant_id, langue, etat, nom_origine, type_origine, taille_annoncee, taille_recue, taille_allegee, duree_secondes, erreur, motif_refus, vimeo_id, cree_le, recu_le, prepare_le, traite_le";
+  "id, genre, personnage_id, project_id, deposant_id, langue, etat, nom_origine, type_origine, taille_annoncee, taille_recue, taille_allegee, duree_secondes, erreur, motif_refus, vimeo_id, cree_le, recu_le, prepare_le, traite_le";
 
 export function extension(nom: string | null | undefined): string | null {
   const ext = (nom ?? "").split(".").pop()?.toLowerCase() ?? "";
@@ -222,18 +227,30 @@ export async function rattrapage(): Promise<{ convertis: number; nettoyes: numbe
 // Les e-mails à l'auteur
 // ---------------------------------------------------------------------
 
-async function destinataire(depot: Pick<Depot, "deposant_id" | "project_id">) {
+async function destinataire(depot: Pick<Depot, "deposant_id" | "project_id" | "personnage_id">) {
   const admin = createAdminClient();
   if (!admin) return null;
-  const [email, { data: profil }, { data: projet }] = await Promise.all([
+  const [email, { data: profil }, { data: projet }, { data: personnage }] = await Promise.all([
     emailDuMembre(depot.deposant_id),
     admin.from("profiles").select("first_name, full_name").eq("id", depot.deposant_id).maybeSingle(),
     admin.from("projects").select("title").eq("id", depot.project_id).maybeSingle(),
+    depot.personnage_id
+      ? admin.from("characters").select("name").eq("id", depot.personnage_id).maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
   if (!email) return null;
   const prenom = profil?.first_name?.trim() || profil?.full_name?.trim()?.split(" ")[0] || null;
-  return { email, prenom, titre: projet?.title ?? "votre projet" };
+  return {
+    email,
+    prenom,
+    titre: projet?.title ?? "votre projet",
+    personnage: (personnage as { name: string } | null)?.name ?? "ce personnage",
+  };
 }
+
+/** La page où le comédien dépose et suit son ComedyPitch. */
+const pageComedyPitch = (depot: Pick<Depot, "project_id" | "personnage_id">) =>
+  `${SITE}/projet/${depot.project_id}/comedypitch/${depot.personnage_id}`;
 
 function gabarit(prenom: string | null, paragraphes: string[], lien?: { href: string; texte: string }) {
   return `
@@ -251,6 +268,21 @@ const SITE = "https://app.wefilmgood.com";
 async function prevenirRecu(depot: Depot) {
   const d = await destinataire(depot);
   if (!d) return;
+  // ComedyPitch : textes validés par Sarah le 12/11.
+  if (depot.genre === "comedypitch") {
+    await envoyerEmail({
+      to: [{ email: d.email, name: d.prenom ?? undefined }],
+      subject: `Votre ComedyPitch pour ${d.personnage} est bien arrivé`,
+      htmlContent: gabarit(
+        d.prenom,
+        [
+          `Nous avons bien reçu votre ComedyPitch pour ${echapper(d.personnage)}, dans « ${echapper(d.titre)} ». L'équipe le regarde avant de le mettre en ligne.`,
+        ],
+        { href: pageComedyPitch(depot), texte: "Suivre mon ComedyPitch" },
+      ),
+    });
+    return;
+  }
   await envoyerEmail({
     to: [{ email: d.email, name: d.prenom ?? undefined }],
     subject: `Votre videopitch pour « ${d.titre} » est bien arrivé`,
@@ -264,6 +296,20 @@ async function prevenirRecu(depot: Depot) {
 async function prevenirEchec(depot: Depot) {
   const d = await destinataire(depot);
   if (!d) return;
+  if (depot.genre === "comedypitch") {
+    await envoyerEmail({
+      to: [{ email: d.email, name: d.prenom ?? undefined }],
+      subject: `Votre ComedyPitch pour ${d.personnage} n'a pas pu être lu`,
+      htmlContent: gabarit(
+        d.prenom,
+        [
+          `Nous n'avons pas réussi à lire la vidéo envoyée pour ${echapper(d.personnage)}. Le fichier est peut-être abîmé, ou dans un format que nous ne connaissons pas. Vous pouvez la renvoyer, de préférence en MP4.`,
+        ],
+        { href: pageComedyPitch(depot), texte: "Renvoyer ma vidéo" },
+      ),
+    });
+    return;
+  }
   await envoyerEmail({
     to: [{ email: d.email, name: d.prenom ?? undefined }],
     subject: `Votre videopitch pour « ${d.titre} » n'a pas pu être lu`,
@@ -285,6 +331,21 @@ async function prevenirEchec(depot: Depot) {
 export async function prevenirRefuse(depot: Depot, motif: string) {
   const d = await destinataire(depot);
   if (!d) return;
+  if (depot.genre === "comedypitch") {
+    await envoyerEmail({
+      to: [{ email: d.email, name: d.prenom ?? undefined }],
+      subject: `Votre ComedyPitch pour ${d.personnage} n'a pas été retenu`,
+      htmlContent: gabarit(
+        d.prenom,
+        [
+          `Nous avons regardé votre ComedyPitch pour ${echapper(d.personnage)}, et nous ne le mettons pas en ligne tel quel.`,
+          `<em>${echapper(motif)}</em>`,
+        ],
+        { href: pageComedyPitch(depot), texte: "Envoyer un autre ComedyPitch" },
+      ),
+    });
+    return;
+  }
   await envoyerEmail({
     to: [{ email: d.email, name: d.prenom ?? undefined }],
     subject: `Votre videopitch pour « ${d.titre} » n'a pas été retenu`,

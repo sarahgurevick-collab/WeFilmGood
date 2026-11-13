@@ -33,7 +33,8 @@ import { lecteurBandeAnnonce } from "@/lib/videopitch";
 import BarreGravity, { type EtatGravity } from "./BarreGravity";
 import { compterArchives } from "@/lib/archives-lecture";
 import { photoNette } from "@/lib/photo";
-import { clientCartes, clientProfils } from "@/lib/supabase/admin";
+import { clientCartes, clientProfils, createAdminClient } from "@/lib/supabase/admin";
+import { assezDecrit, comedypitchsDuProjet, projetAccepte } from "@/lib/comedypitch";
 import { GRAVITY } from "@/lib/gravity-textes";
 
 const FORMATS_LISIBLES: Record<string, string> = {
@@ -406,6 +407,45 @@ export default async function ProjetPage({
     };
   }
 
+  // Le ComedyPitch (13/11) : quels personnages en attendent un, qui peut en
+  // déposer, qui les regarde — règles dans src/lib/comedypitch.ts.
+  const service = createAdminClient();
+  const reglesComedy = service
+    ? await projetAccepte(service, { id: project.id, owner_id: project.owner_id })
+    : { cinecrush: false, accepte: false };
+  const voitComedyPitchs = !!user && (!restreint || reglesComedy.cinecrush);
+  const comedyEnLigne = voitComedyPitchs && user ? await comedypitchsDuProjet(project.id, user.id) : [];
+  let comedienPeutDeposer = false;
+  if (user && service && reglesComedy.accepte && (ouverture || reglesComedy.cinecrush)) {
+    const { data: comedien } = await service
+      .from("profile_roles")
+      .select("role_slug")
+      .eq("profile_id", user.id)
+      .eq("role_slug", "comedien")
+      .maybeSingle();
+    comedienPeutDeposer = !!comedien;
+  }
+  // Pour l'auteur : les ComedyPitchs mis en ligne qu'il n'a pas encore vus.
+  // Arriver sur le personnage par « Le regarder » les marque comme vus.
+  let nouveauxComedyPitchs: { id: string; personnageId: string; prenom: string }[] = [];
+  if (isOwner && service) {
+    const { data: nonVus } = await service
+      .from("videopitch_depots")
+      .select("id, personnage_id")
+      .eq("project_id", project.id)
+      .eq("genre", "comedypitch")
+      .eq("etat", "valide")
+      .is("vu_par_auteur_le", null)
+      .returns<{ id: string; personnage_id: string }[]>();
+    const regardes = (nonVus ?? []).filter((d) => d.personnage_id === personnage);
+    if (regardes.length) {
+      await service.from("videopitch_depots").update({ vu_par_auteur_le: new Date().toISOString() }).in("id", regardes.map((d) => d.id));
+    }
+    nouveauxComedyPitchs = (nonVus ?? [])
+      .filter((d) => d.personnage_id !== personnage)
+      .map((d) => ({ id: d.id, personnageId: d.personnage_id, prenom: comedyEnLigne.find((v) => v.id === d.id)?.prenom ?? "" }));
+  }
+
   // La phrase d'encouragement des lecteurs, pour un projet labellisé.
   const { data: avisWfg } = await supabase.rpc("avis_wfg_projet", { p_project_id: id });
 
@@ -613,6 +653,12 @@ export default async function ProjetPage({
         </div>
       )}
 
+      {nouveauxComedyPitchs.map((n) => (
+        <p key={n.id} className={formStyles.hint} style={{ color: "inherit" }}>
+          {n.prenom} a déposé un ComedyPitch pour votre personnage {(characters ?? []).find((c) => c.id === n.personnageId)?.name ?? ""}.{" "}
+          <Link href={`/projet/${project.id}?personnage=${n.personnageId}#personnages`}>Le regarder</Link>
+        </p>
+      ))}
       {gravity && <BarreGravity projetId={project.id} gravity={gravity} favori={favori} />}
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
@@ -640,6 +686,16 @@ export default async function ProjetPage({
             .filter(Boolean)
             .join(" · "),
           bio: c.biography,
+          comedypitch: (() => {
+            const attend = reglesComedy.accepte && assezDecrit(c.biography, reglesComedy.cinecrush);
+            return {
+              attend,
+              deposer: estAdmin === true || (comedienPeutDeposer && attend) ? `/projet/${project.id}/comedypitch/${c.id}` : null,
+              videos: comedyEnLigne
+                .filter((v) => v.personnageId === c.id)
+                .map((v) => ({ id: v.id, prenom: v.prenom, vimeoId: v.vimeoId, etoiles: v.etoiles, donnee: v.donnee, peutEtoiler: v.comedienId !== user?.id })),
+            };
+          })(),
         }))}
         moodboard={moodboard.map((m) => urls.get(m.storage_path)).filter((u): u is string => Boolean(u))}
         image={urlVignette ?? null}

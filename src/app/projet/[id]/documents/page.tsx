@@ -57,6 +57,7 @@ export default async function DocumentsPage({
       .from("videopitch_depots")
       .select("langue, etat, nom_origine, motif_refus, cree_le")
       .eq("project_id", id)
+      .eq("genre", "videopitch")
       .order("cree_le", { ascending: false })
       .returns<DepotAffiche[]>(),
     supabase.rpc("a_une_adhesion_active", { p_profile_id: projet.owner_id }),

@@ -24,6 +24,8 @@ import styles from "./membre.module.css";
 import { photoNette } from "@/lib/photo";
 import { clientCartes, clientProfils } from "@/lib/supabase/admin";
 import { accesAuxFiches } from "@/lib/acces-fiches";
+import { comedypitchsDuComedien } from "@/lib/comedypitch";
+import BlocComedyPitch from "@/app/projet/[id]/BlocComedyPitch";
 
 type Membre = {
   id: string;
@@ -182,6 +184,10 @@ export default async function ProfilMembrePage({
   ) : null;
 
   const nom = masque ? "Membre" : (membre.display_name ?? membre.full_name ?? "Membre");
+  // Les ComedyPitchs du comédien (Sarah, 12/11 : « aussi sur le profil du
+  // comédien »). Tant que les profils sont masqués aux autres membres (nom
+  // caché, photo floutée), ils ne paraissent que pour lui et l'administration.
+  const comedypitchs = masque ? [] : await comedypitchsDuComedien(membre.id, user.id);
 
   return (
     <PageShell eyebrow="Membre" title={nom}>
@@ -248,6 +254,28 @@ export default async function ProfilMembrePage({
             Son site
           </a>
         </p>
+      )}
+
+      {comedypitchs.length > 0 && (
+        <>
+          <h2 style={{ marginTop: 40 }}>ComedyPitch</h2>
+          <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
+            {comedypitchs.map((v) => (
+              <div key={v.id}>
+                <p className={formStyles.hint} style={{ margin: "12px 0 -10px" }}>
+                  {v.personnage}
+                </p>
+                <BlocComedyPitch
+                  comedypitch={{
+                    attend: false,
+                    deposer: null,
+                    videos: [{ id: v.id, prenom: v.prenom, vimeoId: v.vimeoId, etoiles: v.etoiles, donnee: v.donnee, peutEtoiler: v.comedienId !== user.id }],
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {projets.length > 0 && (
