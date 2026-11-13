@@ -143,22 +143,38 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ---- Les projets, deux par deux ---- */
+/* ---- Les projets, trois par trois (essai du 13/11, Sarah ; avant, deux
+   par deux : étiquette git galaxies-avant-trois-colonnes) ---- */
 
 .duo {
   list-style: none;
   padding: 0;
   margin: 28px auto 0;
-  max-width: 1120px;
+  max-width: 1320px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 64px 56px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 56px 40px;
 }
 
-/* La colonne de droite est décalée vers le bas : une mise en page de
+/* La colonne du milieu est décalée vers le bas : une mise en page de
    revue plutôt qu'un mur de vignettes. */
-.duo > li:nth-child(even) {
+.duo > li:nth-child(3n + 2) {
   margin-top: 72px;
+}
+
+/* Écran moyen : deux par deux, la colonne de droite décalée. */
+@media (max-width: 1000px) {
+  .duo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .duo > li:nth-child(3n + 2) {
+    margin-top: 0;
+  }
+
+  .duo > li:nth-child(even) {
+    margin-top: 72px;
+  }
 }
 
 /* Les cartes sortent de la barre du Finder (voir Apparition.tsx) : tant

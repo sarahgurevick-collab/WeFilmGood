@@ -584,7 +584,7 @@ export default async function ProjetPage({
             project.postures?.includes("documentaire") ? "Documentaire" : null,
             project.techniques?.includes("animation") ? "Animation" : null,
             project.techniques?.includes("contenu_ia") ? "Contenu IA" : null,
-            project.techniques?.includes("medias_mixtes") ? "Médias mixtes" : null,
+            project.techniques?.includes("medias_mixtes") ? "Contenus hybrides" : null,
             project.techniques?.includes("formats_immersifs") ? "Formats immersifs (360/VR)" : null,
             FORMATS_LISIBLES[project.format ?? ""] ?? project.format,
             nomDeLangue(project.language),
