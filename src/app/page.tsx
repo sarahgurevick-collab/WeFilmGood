@@ -32,10 +32,7 @@ const DIAPOS_SUCCES = SUCCESS_STORIES_BLOG.map((s) => ({
 export default async function Home() {
   const supabase = await createClient();
 
-  // Les projets ne sont plus lisibles sans compte : les totaux passent
-  // par une fonction dédiée, qui ne renvoie que des nombres.
-  const [{ data: fonds }, { data: auth }, projetOrbite, { data: temoignages }, chiffres] = await Promise.all([
-    supabase.rpc("compter_fonds"),
+  const [{ data: auth }, projetOrbite, { data: temoignages }, chiffres] = await Promise.all([
     supabase.auth.getUser(),
     chargerProjetOrbite(),
     // Les témoignages publics (vue temoignages_publics, migration 0023),
@@ -53,8 +50,6 @@ export default async function Home() {
     alt: "Membre WeFilmGood",
     description: t.testimonial ?? undefined,
   }));
-  const { mots_cles: totalMotsCles = 0 } =
-    ((fonds ?? [])[0] as { projets: number; mots_cles: number } | undefined) ?? {};
 
   return (
     <>
@@ -142,7 +137,7 @@ export default async function Home() {
         )}
 
         <div className={styles.bandeFinder}>
-          <NuageAccueil total={totalMotsCles} />
+          <NuageAccueil />
         </div>
       </section>
 

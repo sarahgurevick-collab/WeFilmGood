@@ -1,41 +1,19 @@
 import Link from "next/link";
-import { nuagePublic } from "@/app/galaxies/actions";
 import styles from "./NuageAccueil.module.css";
 
 /**
- * L'aperçu du nuage de mots-clés sur la page d'accueil.
+ * Le lien vers l'adhésion, sur la page d'accueil.
  *
- * Volontairement inerte : les mots ne sont pas cliquables et ne portent
- * aucun chiffre. Ils montrent que le fonds est réel et thématiquement
- * riche, sans rien en livrer — le nuage complet, les effectifs et la
- * recherche par mots-clés sont l'un des avantages de l'adhésion.
+ * Jusqu'au 13/11/2026, ce bloc montrait un aperçu du nuage de mots-clés
+ * (quinze mots, inertes) et une phrase sur ce qui est réservé aux
+ * adhérents. Sarah les a retirés le 13/11, les chiffres de l'accueil
+ * (AnneauChiffres) étant arrivés juste au-dessus ; seul le lien reste.
+ * Avant : étiquette git accueil-avant-retrait-nuage.
  */
-const APERCU = 15;
-
-export default async function NuageAccueil({ total }: { total: number }) {
-  const mots = await nuagePublic(APERCU);
-  if (mots.length === 0) return null;
-
-  // Une courbe douce plutôt qu'une proportion brute : "drame" est porté
-  // par cinq fois plus de projets que le suivant et écraserait tout.
-  const taille = (poids: number) => Math.round(15 + 19 * Math.pow(poids, 0.6));
-
+export default function NuageAccueil() {
   return (
     <div className={styles.bloc}>
-      <p className={styles.titre}>Les thèmes les plus portés par les projets</p>
-
-      <p className={styles.nuage} aria-label="Aperçu des mots-clés les plus utilisés">
-        {mots.map((m) => (
-          <span key={m.label} style={{ fontSize: taille(m.poids) }}>
-            {m.label}
-          </span>
-        ))}
-      </p>
-
       <p className={styles.mention}>
-        Ces {mots.length} mots sur les <strong>{total.toLocaleString("fr-FR")}</strong> que
-        compte la plateforme. Le nuage complet, les chiffres et la recherche par
-        mots-clés sont réservés aux adhérents.{" "}
         <Link href="/adhesion" className={styles.lien}>
           Découvrir l&apos;adhésion
         </Link>
