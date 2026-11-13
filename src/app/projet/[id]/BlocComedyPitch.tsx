@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useTransition } from "react";
+import EtoileSpark from "@/components/EtoileSpark";
 import { envoyerEtoileFilante } from "./comedypitch-actions";
 import styles from "./comedypitch.module.css";
 
@@ -13,48 +14,37 @@ export type ComedyPitchCadre = {
   videos: { id: string; prenom: string; vimeoId: string; etoiles: number; donnee: boolean; peutEtoiler: boolean }[];
 };
 
-/** L'étoile filante (dessin définitif du 12/11) : étoile pleine à cinq branches et trois traînées. */
-export function EtoileFilante({ taille = 18 }: { taille?: number }) {
-  return (
-    <svg width={taille} height={taille} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M17 2 L18.23 5.3 L21.76 5.45 L19 7.65 L19.94 11.05 L17 9.1 L14.06 11.05 L15 7.65 L12.24 5.45 L15.77 5.3 Z" fill="currentColor" />
-      <path d="M13 11.5 L4 20.5" />
-      <path d="M11 8.5 L5 14.5" />
-      <path d="M15.5 13.5 L10 19" />
-    </svg>
-  );
-}
-
+/**
+ * L'étoile (13/11, Sarah : « ce ne sont plus des étoiles filantes mais une
+ * étoile ») : l'étoile rouge à huit rayons, le nombre reçu au centre —
+ * la même que sur /admin/essai-etoile. Elle remplace l'étoile filante du
+ * 12/11. Une seule par personne : après l'envoi, il ne reste que l'étoile
+ * et son nombre.
+ */
 function Etoiles({ video }: { video: ComedyPitchCadre["videos"][number] }) {
   const [donnee, setDonnee] = useState(video.donnee);
   const [nombre, setNombre] = useState(video.etoiles);
   const [enCours, lancer] = useTransition();
-  const compteur = nombre > 0 ? `${nombre} étoile${nombre > 1 ? "s" : ""} filante${nombre > 1 ? "s" : ""}` : null;
+  const etoile = <EtoileSpark nombre={nombre} taille={46} vague={nombre - video.etoiles} />;
 
+  if (!video.peutEtoiler || donnee) return <p className={styles.etoiles}>{etoile}</p>;
   return (
     <p className={styles.etoiles}>
-      {video.peutEtoiler && !donnee && (
-        <button
-          type="button"
-          className={styles.etoileBouton}
-          disabled={enCours}
-          onClick={() =>
-            lancer(async () => {
-              if (await envoyerEtoileFilante(video.id)) {
-                setDonnee(true);
-                setNombre((n) => n + 1);
-              }
-            })
-          }
-        >
-          <EtoileFilante /> Envoyer une étoile filante
-        </button>
-      )}
-      {compteur && (
-        <span className={`${styles.compteur} ${donnee ? styles.donnee : ""}`}>
-          <EtoileFilante taille={16} /> {compteur}
-        </span>
-      )}
+      <button
+        type="button"
+        className={styles.etoileBouton}
+        disabled={enCours}
+        onClick={() =>
+          lancer(async () => {
+            if (await envoyerEtoileFilante(video.id)) {
+              setDonnee(true);
+              setNombre((n) => n + 1);
+            }
+          })
+        }
+      >
+        {etoile} Envoyer une étoile
+      </button>
     </p>
   );
 }

@@ -40,10 +40,9 @@
 .etoileBouton {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border: 1px solid currentColor;
-  border-radius: 999px;
+  gap: 8px;
+  padding: 0;
+  border: 0;
   background: none;
   color: inherit;
   font: inherit;
@@ -51,24 +50,12 @@
 }
 
 .etoileBouton:hover:not(:disabled) {
-  color: var(--rouge-wfg, #da2c25);
+  text-decoration: underline;
 }
 
 .etoileBouton:disabled {
   opacity: 0.5;
   cursor: default;
-}
-
-.compteur {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  opacity: 0.8;
-}
-
-.donnee {
-  color: var(--rouge-wfg, #da2c25);
-  opacity: 1;
 }
 
 .deposer {

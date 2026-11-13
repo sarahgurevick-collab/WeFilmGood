@@ -39,6 +39,7 @@ export default function EtoileSpark({
   cliquable = false,
   scintille = false,
   soleil = false,
+  vague = 0,
 }: {
   nombre: number;
   taille?: number;
@@ -47,6 +48,8 @@ export default function EtoileSpark({
   scintille?: boolean;
   /** Dessine le soleil (la monnaie) au lieu de l'étoile. */
   soleil?: boolean;
+  /** Compteur tenu par le parent : chaque fois qu'il augmente, la vague repart (étoile donnée ailleurs que par le clic interne). */
+  vague?: number;
 }) {
   const [ajoutees, setAjoutees] = useState(0);
   const total = nombre + ajoutees;
@@ -64,7 +67,7 @@ export default function EtoileSpark({
       aria-hidden="true"
     >
       {/* La clé change à chaque étoile donnée : la vague repart de zéro. */}
-      <g key={ajoutees} className={ajoutees > 0 ? styles.vague : undefined}>
+      <g key={ajoutees + vague} className={ajoutees + vague > 0 ? styles.vague : undefined}>
         <g className={styles.tour}>
           {Array.from({ length: forme.rayons }, (_, i) => (
             <g key={i} transform={`rotate(${i * (360 / forme.rayons)})`}>
