@@ -77,11 +77,11 @@ const GALAXIES_ZERO =
 const ADHESION: Noeud[] = [
   {
     id: "galaxies",
-    nom: "Crédit Gravity",
+    nom: "Crédit Soleil",
     nomZero: "Les Galaxies Projets - Personnages - Talents",
     icone: "gravity",
     texte:
-      "Chaque jour tu as un nouveau Gravity (crédit) pour trouver le projet de ton choix dans la Galaxie de projets. Tu pourras écouter l’auteur raconter son histoire (StoryPitch), un comédien qui donne vie aux personnages (ComedyPitch) ou un compositeur qui propose le thème ou on l’espère une chanson phare qui déclenchera la production du film (MusicPitch)\nEnregistre le projet dans tes favoris et contacte les Talents le moment venu.",
+      "Chaque jour tu as un nouveau soleil (crédit) pour trouver le projet de ton choix dans la Galaxie de projets. Tu pourras écouter l’auteur raconter son histoire (StoryPitch), un comédien qui donne vie aux personnages (ComedyPitch) ou un compositeur qui propose le thème ou on l’espère une chanson phare qui déclenchera la production du film (MusicPitch)\nEnregistre le projet dans tes favoris et contacte les Talents le moment venu.",
     aZero: "reste",
     texteZero: GALAXIES_ZERO,
   },
@@ -100,7 +100,7 @@ const ADHESION: Noeud[] = [
     texte:
       "Découvre chaque jour qui sera le talent qui vibre sur la même longueur d’onde que toi grâce à un portrait chinois en 20 questions. Contacte-le si tu le souhaites.",
     texteZero:
-      "Chaque jour un nouveau talent vibre sur la même longueur d’onde que toi grâce à un portrait chinois en 20 questions. Le contact coûte 1 Gravity.",
+      "Chaque jour un nouveau talent vibre sur la même longueur d’onde que toi grâce à un portrait chinois en 20 questions. Le contact coûte 1 soleil.",
     aZero: "payant",
   },
   {
@@ -159,10 +159,10 @@ const SERVICES: Noeud[] = [
   },
   {
     id: "credits-galaxie",
-    nom: "Pack Gravity",
+    nom: "Pack Soleils",
     icone: "gravity",
     texte:
-      "Pack Gravity : 5, 10 ou 20 Gravity à utiliser quand tu veux, pour ouvrir d’autres projets et contacter leurs Talents. Prix dégressif pour les adhérents.",
+      "Pack Soleils : 5, 10 ou 20 soleils à utiliser quand tu veux, pour ouvrir d’autres projets et contacter leurs Talents. Prix dégressif pour les adhérents.",
   },
 ];
 
@@ -430,7 +430,7 @@ type LigneRecap = {
   ouiNote?: string;
   /** Un seul prix, le même avec ou sans adhésion, sur les deux colonnes. */
   commun?: string;
-  /** La ligne du Pack Gravity, avec son choix du nombre de crédits. */
+  /** La ligne du Pack Soleils, avec son choix du nombre de crédits. */
   pack?: boolean;
   /** Les ronds de l'animation dont l'explication s'ouvre sous la ligne (11/11). */
   bulles?: string[];
@@ -458,7 +458,7 @@ const RECAP: LigneRecap[] = [
   // Trois chapitres en rouge (11/11, mots de Sarah) : tous les jours,
   // chaque semaine, à la demande.
   {
-    nom: "Crédit Gravity",
+    nom: "Crédit Soleil",
     accroche: "Tous les jours de nouveaux talents à contacter",
     icone: "gravity",
     avecIcone: true,
@@ -505,7 +505,7 @@ const RECAP: LigneRecap[] = [
     commun: "500 €",
   },
   {
-    nom: "Pack Gravity",
+    nom: "Pack Soleils",
     icone: "gravity",
     non: "",
     oui: "",
@@ -958,7 +958,7 @@ export default function OrbiteAdhesion({
                               </div>
                               <div className={styles.ficheTexte}>
                                 {/* Les deux textes, comme les deux colonnes
-                                    (11/11, Sarah). Le Crédit Gravity n'en a
+                                    (11/11, Sarah). Le Crédit Soleil n'en a
                                     qu'un : sans adhésion, il n'existe pas. */}
                                 {r.texteZero && r.id !== "galaxies" ? (
                                   <>

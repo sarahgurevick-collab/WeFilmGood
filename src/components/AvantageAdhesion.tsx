@@ -123,7 +123,7 @@ export const ICONES = {
       <circle cx="5.6" cy="18.4" r="1.4" />
     </svg>
   ),
-  // Une pièce : les crédits (les Gravity).
+  // Une pièce : les crédits (les soleils).
   piece: (
     <svg
       width="20"
@@ -265,7 +265,7 @@ export const ICONES = {
       <circle cx="15.7" cy="12" r="6.3" />
     </svg>
   ),
-  // La pièce fendue avec le G de Gravity : le crédit.
+  // Le soleil (13/11, Sarah) : le crédit. Même dessin que sur /admin/essai-etoile.
   gravity: (
     <svg
       width="20"
@@ -273,15 +273,23 @@ export const ICONES = {
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="butt"
-      strokeLinejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
       aria-hidden="true"
     >
-      <path d="M1.55 11A10.5 10.5 0 0 1 22.45 11" />
-      <path d="M1.55 13A10.5 10.5 0 0 0 22.45 13" />
-      <path d="M14.9 9.5A3.9 3.9 0 1 0 15.9 12" />
-      <path d="M15.9 12H12.8" />
+      <circle cx="12" cy="12" r="5.2" fill="currentColor" stroke="none" />
+      <path d="M12.00 4.40L12.00 1.20" />
+      <path d="M15.80 5.42L16.80 3.69" />
+      <path d="M18.58 8.20L21.35 6.60" />
+      <path d="M19.60 12.00L21.60 12.00" />
+      <path d="M18.58 15.80L21.35 17.40" />
+      <path d="M15.80 18.58L16.80 20.31" />
+      <path d="M12.00 19.60L12.00 22.80" />
+      <path d="M8.20 18.58L7.20 20.31" />
+      <path d="M5.42 15.80L2.65 17.40" />
+      <path d="M4.40 12.00L2.40 12.00" />
+      <path d="M5.42 8.20L2.65 6.60" />
+      <path d="M8.20 5.42L7.20 3.69" />
     </svg>
   ),
   // La carte d'identité : la fiche personnage.

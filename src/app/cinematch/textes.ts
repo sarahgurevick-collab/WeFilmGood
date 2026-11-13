@@ -39,7 +39,7 @@ export const TEXTES = {
   emailRien: "Rien reçu après quelques minutes ? Regardez dans les indésirables.",
   emailInvalide: "Cette adresse email n'est pas valide.",
 
-  // Le nom : un profil complet ET une adhésion (ou des Gravity, pas encore en vente).
+  // Le nom : un profil complet ET une adhésion (ou des soleils, pas encore en vente).
   nomReserve: "Pour connaître son nom, il faut un profil complet et une adhésion.",
   nomProfilIncomplet: "Complétez votre profil pour connaître son nom.",
   voirProfilIncomplet: "Compléter mon profil",
