@@ -44,6 +44,38 @@ export default async function EssaiEtoilePage() {
         Page d&apos;essai, visible de vous seule. Les nombres sont des exemples, rien n&apos;est enregistré.
       </p>
 
+      <Bloc titre="Nouveau (13/11). Le soleil à côté de l'étoile : cliquez">
+        <p style={legende}>
+          Même famille (rayons arrondis, longs et courts, même mouvement), mais le soleil a douze rayons, un disque plein
+          et il est jaune d&apos;or.
+        </p>
+        <div style={rangee}>
+          <EtoileSpark nombre={47} taille={120} cliquable />
+          <EtoileSpark nombre={47} taille={120} cliquable soleil />
+          <EtoileSpark nombre={5} taille={120} cliquable soleil />
+          <EtoileSpark nombre={998} taille={120} cliquable soleil />
+        </div>
+        <p style={legende}>Les tailles, l&apos;étoile puis le soleil.</p>
+        <div style={rangee}>
+          <EtoileSpark nombre={7} taille={40} />
+          <EtoileSpark nombre={7} taille={40} soleil />
+          <EtoileSpark nombre={128} taille={56} />
+          <EtoileSpark nombre={128} taille={56} soleil />
+          <EtoileSpark nombre={1204} taille={88} />
+          <EtoileSpark nombre={1204} taille={88} soleil />
+          <EtoileSpark nombre={12} taille={160} soleil scintille />
+        </div>
+      </Bloc>
+
+      <Bloc titre="Le soleil et l'étoile sur fond noir" sombre>
+        <div style={rangee}>
+          <EtoileSpark nombre={12} taille={120} cliquable />
+          <EtoileSpark nombre={12} taille={120} cliquable soleil />
+          <EtoileSpark nombre={128} taille={56} />
+          <EtoileSpark nombre={128} taille={56} soleil />
+        </div>
+      </Bloc>
+
       <Bloc titre="1. Donner une étoile : cliquez">
         <p style={legende}>Au repos l&apos;étoile ne bouge pas. Chaque clic lance la vague et ajoute un.</p>
         <div style={rangee}>

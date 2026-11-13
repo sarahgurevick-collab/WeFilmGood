@@ -34,6 +34,20 @@
   transform-origin: 50% 50%;
 }
 
+/* Le soleil : jaune d'or, disque plein, rayons plus fins ; nombre en noir sur le disque. */
+.soleil .rayon {
+  stroke: #f5b301;
+  stroke-width: 4.5;
+}
+
+.disque {
+  fill: #f5b301;
+}
+
+.soleil .nombre {
+  fill: #1a1a1a;
+}
+
 /* Une étoile vient d'être donnée : la vague fait le tour, le nombre saute. */
 .vague .rayon {
   animation: etirer 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
