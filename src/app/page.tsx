@@ -14,6 +14,7 @@ import { SOUTIENS_CINEASTES } from "@/data/soutiensCineastes";
 import { SUCCESS_STORIES_BLOG } from "@/data/successStoriesBlog";
 import { chiffresAccueil } from "@/lib/chiffres-accueil";
 import { chargerProjetOrbite } from "@/lib/orbite";
+import { nomDuPays } from "@/lib/pays";
 import { createClient } from "@/lib/supabase/server";
 import formStyles from "@/components/form.module.css";
 import styles from "./page.module.css";
@@ -143,11 +144,15 @@ export default async function Home() {
               { label: "Comédiens", n: chiffres.metiers.comedien ?? 0 },
               { label: "Compositeurs", n: chiffres.metiers.compositeur ?? 0 },
             ]}
+            pays={Object.entries(chiffres.pays_detail ?? {})
+              .map(([code, n]) => ({ code, nom: nomDuPays(code) ?? code, n }))
+              .sort((a, b) => b.n - a.n)}
             compteurs={[
               { label: "Scénarios analysés", n: chiffres.fiches },
               { label: "Projets labellisés", n: chiffres.labellises },
-              { label: "Pays connectés", n: chiffres.pays },
               { label: "Contrats signés", n: chiffres.signes },
+              // Un clic ouvre le globe des drapeaux (13/11, Sarah).
+              { label: "Pays connectés", n: chiffres.pays, globe: true },
             ]}
           />
         )}

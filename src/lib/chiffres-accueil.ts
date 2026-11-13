@@ -12,6 +12,8 @@ export type ChiffresAccueil = {
   fiches: number;
   labellises: number;
   pays: number;
+  /** Les talents par pays : code à deux lettres → nombre (0270). */
+  pays_detail?: Record<string, number>;
   signes: number;
 };
 

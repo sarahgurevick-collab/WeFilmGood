@@ -176,3 +176,90 @@
     transition: none;
   }
 }
+
+/* « Pays connectés » se clique : il ouvre le globe des drapeaux (13/11). */
+.ouvreGlobe {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  margin: -6px -12px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.ouvreGlobe:hover,
+.ouvreGlobe:focus-visible {
+  background: var(--surface-actif, #f2f2f0);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.ouvreGlobe span {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.voileGlobe {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.82);
+  animation: globeApparait 0.3s ease-out;
+}
+
+.globe {
+  position: relative;
+  width: min(600px, 100%);
+  animation: globeGrandit 0.45s var(--ease, ease-out);
+}
+
+.fermeGlobe {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fermeGlobe:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes globeApparait {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes globeGrandit {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}

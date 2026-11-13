@@ -98,6 +98,7 @@ export default function SpherePhotos({
   freinage = 0.95,
   vitesseMax = 5,
   vitesseAuto = 0.2,
+  indice = "Faites tourner la sphère avec la souris, ou cliquez sur une photo pour lire le témoignage.",
 }: {
   photos: PhotoSphereItem[];
   /** La taille de la scène en pixels, réduite si l'écran est plus étroit. */
@@ -111,6 +112,8 @@ export default function SpherePhotos({
   vitesseMax?: number;
   /** La rotation toute seule, en degrés par image. */
   vitesseAuto?: number;
+  /** La phrase sous la sphère ; null pour ne rien écrire (le globe des pays, 13/11). */
+  indice?: string | null;
 }) {
   const cadre = useRef<HTMLDivElement | null>(null);
   const [largeur, setLargeur] = useState<number | null>(null);
@@ -373,7 +376,7 @@ export default function SpherePhotos({
                 onMouseEnter={() => setSurvol(i)}
                 onMouseLeave={() => setSurvol(null)}
                 onClick={() => setOuvert(photo)}
-                aria-label={photo.titre ? `Lire le témoignage de ${photo.titre}` : "Lire le témoignage"}
+                aria-label={indice === null ? photo.alt : photo.titre ? `Lire le témoignage de ${photo.titre}` : "Lire le témoignage"}
               >
                 <Vignette photo={photo} index={i} />
               </button>
@@ -398,9 +401,7 @@ export default function SpherePhotos({
         </div>
       )}
 
-      <p className={styles.legendeIndice}>
-        Faites tourner la sphère avec la souris, ou cliquez sur une photo pour lire le témoignage.
-      </p>
+      {indice && <p className={styles.legendeIndice}>{indice}</p>}
 
       <Fenetre photo={ouvert} index={photos.findIndex((p) => p.id === ouvert?.id)} fermer={() => setOuvert(null)} />
     </div>

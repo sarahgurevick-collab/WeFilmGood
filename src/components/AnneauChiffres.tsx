@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import SpherePhotos from "./SpherePhotos";
 import styles from "./AnneauChiffres.module.css";
 
 /**
@@ -10,7 +11,8 @@ import styles from "./AnneauChiffres.module.css";
  * se dessine et les nombres montent quand le bloc arrive à l'écran ; au
  * survol d'une part (ou de sa ligne), le centre montre ce métier.
  */
-export type Part = { label: string; n: number };
+export type Part = { label: string; n: number; /** Ce chiffre ouvre le globe des pays. */ globe?: boolean };
+export type PaysTalents = { code: string; nom: string; n: number };
 
 // Les couleurs du logo (13/11, Sarah : « les couleurs sont tristes ») : le
 // rouge, le bleu, le vert et le jaune des engagements (globals.css), puis le
@@ -50,15 +52,38 @@ export default function AnneauChiffres({
   libelleTotal,
   parts,
   compteurs,
+  pays = [],
 }: {
   total: number;
   libelleTotal: string;
   parts: Part[];
   compteurs: Part[];
+  /** Les talents par pays, pour le globe des drapeaux (13/11). */
+  pays?: PaysTalents[];
 }) {
   const bloc = useRef<HTMLDivElement>(null);
   const [lance, setLance] = useState(false);
   const [survol, setSurvol] = useState<number | null>(null);
+  const [globe, setGlobe] = useState(false);
+
+  // Le globe se ferme avec Échap.
+  useEffect(() => {
+    if (!globe) return;
+    const touche = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setGlobe(false);
+    };
+    document.addEventListener("keydown", touche);
+    return () => document.removeEventListener("keydown", touche);
+  }, [globe]);
+
+  // Chaque pays, un drapeau sur la sphère ; au clic, son nom et ses talents.
+  const drapeaux = pays.map((p) => ({
+    id: p.code,
+    src: `/drapeaux/${p.code.toLowerCase()}.svg`,
+    alt: p.nom,
+    titre: p.nom,
+    credits: `${p.n.toLocaleString("fr-FR")} talent${p.n > 1 ? "s" : ""}`,
+  }));
 
   useEffect(() => {
     const el = bloc.current;
@@ -144,15 +169,40 @@ export default function AnneauChiffres({
       </div>
 
       <ul className={styles.compteurs}>
-        {compteurs.map((c) => (
-          <li key={c.label}>
-            <strong>
-              <Nombre n={c.n} lance={lance} />
-            </strong>
-            <span>{c.label}</span>
-          </li>
-        ))}
+        {compteurs.map((c) =>
+          c.globe && drapeaux.length > 0 ? (
+            <li key={c.label}>
+              <button type="button" className={styles.ouvreGlobe} onClick={() => setGlobe(true)}>
+                <strong>
+                  <Nombre n={c.n} lance={lance} />
+                </strong>
+                <span>{c.label}</span>
+              </button>
+            </li>
+          ) : (
+            <li key={c.label}>
+              <strong>
+                <Nombre n={c.n} lance={lance} />
+              </strong>
+              <span>{c.label}</span>
+            </li>
+          ),
+        )}
       </ul>
+
+      {/* Le globe des drapeaux (13/11, Sarah) : la sphère des témoignages,
+          un drapeau par pays ; un clic sur un drapeau donne le pays et son
+          nombre de talents. */}
+      {globe && (
+        <div className={styles.voileGlobe} onClick={() => setGlobe(false)} role="presentation">
+          <div className={styles.globe} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+            <button type="button" className={styles.fermeGlobe} onClick={() => setGlobe(false)} aria-label="Fermer">
+              ×
+            </button>
+            <SpherePhotos photos={drapeaux} indice={null} echelleImage={0.13} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
