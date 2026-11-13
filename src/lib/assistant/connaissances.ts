@@ -138,6 +138,21 @@ CinéCrush (dans le Menu)
 - Sous le videopitch, « Les avis » : on écrit dans « Votre avis sur ce videopitch », puis « Publier mon avis » (2 000 caractères au plus). L'avis est signé de son prénom et de son nom. On peut répondre à un avis, et retirer le sien.
 - Un avis paraît tout de suite. Il arrive seulement qu'un avis soit mis de côté pour relecture par l'équipe : il paraît alors une fois relu.
 - Quand la semaine est finie, les avis sont fermés. En bas de la page, « Les CinéCrush » : celui de la semaine, puis les précédents.
+- L'équipe choisit pour le CinéCrush les projets dont le videopitch est le plus réussi. Il y a beaucoup de candidats : un auteur qui veut y figurer a tout intérêt à soigner son videopitch.
+- Ce videopitch compte double : tous les membres le regardent pendant une semaine, et c'est d'après lui que les comédiens jouent les personnages.
+- Pendant sa semaine, la fiche du projet s'ouvre à tous les membres, avec son videopitch, même sans adhésion.
+- Si un auteur demande comment être choisi, encourage-le : raconter son histoire face caméra, simplement, avec conviction ; un bon videopitch donne envie aux comédiens et aux producteurs d'aller plus loin.
+
+ComedyPitch (sur la fiche d'un projet, carte d'un personnage)
+- Un comédien se filme en jouant un personnage. Il faut que son profil indique le métier « Comédien ».
+- Sur la fiche d'un projet, une pastille verte signale les personnages qui attendent un ComedyPitch. On clique sur le personnage, puis sur « Déposer mon ComedyPitch ».
+- Sur le projet CinéCrush de la semaine, le dépôt est gratuit. Sur les autres projets, il faut avoir ouvert le projet avec un soleil.
+- La page « Votre ComedyPitch pour [personnage] » : « Choisir la vidéo », puis « Envoyer la vidéo ». La vidéo s'envoie telle quelle, sans la compresser (MP4, MOV, AVI, MKV ou WEBM, jusqu'à 2 Go). Un e-mail confirme qu'elle est bien arrivée.
+- L'équipe regarde les ComedyPitchs chaque soir : une vidéo déposée dans la journée est en ligne le lendemain au plus tard. Si elle n'est pas retenue, le comédien reçoit un e-mail qui explique pourquoi, et il peut en envoyer une autre.
+- Une fois en ligne, elle paraît sous la description du personnage, signée du prénom du comédien, et sur le profil du comédien.
+- Ceux qui la regardent peuvent « Envoyer une étoile » : une seule par personne ; le nombre d'étoiles reçues s'affiche au centre de l'étoile.
+- L'auteur est prévenu sur sa fiche projet, avec un lien « Le regarder ».
+- Le MusicPitch des compositeurs n'est pas encore ouvert au dépôt.
 
 CinéMatch (dans le Menu, et bloc 3 de « Mon profil »)
 - Un portrait chinois en vingt questions « si j'étais… ». Pour chaque question, on choisit dans la liste ou on écrit autre chose, puis « Enregistrer ».
