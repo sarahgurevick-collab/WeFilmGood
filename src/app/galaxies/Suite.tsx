@@ -3,6 +3,7 @@
 import { Fragment, useState, useTransition, type ReactNode } from "react";
 import { autresPersonnages, autresProjets } from "./actions";
 import type { Filtres } from "./filtres";
+import type { FiltresPersonnages } from "./filtres-personnages";
 import projetsStyles from "./projets.module.css";
 import styles from "./duo.module.css";
 
@@ -17,6 +18,7 @@ export default function Suite({
   page,
   pages,
   filtres,
+  filtresPersonnages,
   quoi = "projets",
 }: {
   quoi?: "projets" | "personnages";
@@ -26,6 +28,8 @@ export default function Suite({
   pages: number;
   /** Les filtres de la recherche avancée (projets seulement). */
   filtres?: Filtres;
+  /** Les filtres de la recherche avancée des personnages. */
+  filtresPersonnages?: FiltresPersonnages;
 }) {
   const [lots, setLots] = useState<ReactNode[]>([]);
   const [enAttente, demarrer] = useTransition();
@@ -49,7 +53,7 @@ export default function Suite({
               demarrer(async () => {
                 const lot =
                   quoi === "personnages" || !filtres
-                    ? await autresPersonnages(suivante)
+                    ? await autresPersonnages(suivante, filtresPersonnages)
                     : await autresProjets(suivante, filtres);
                 setLots((avant) => [...avant, lot]);
               })

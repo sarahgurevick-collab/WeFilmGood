@@ -11,6 +11,7 @@ import { clientCartes, clientProfils } from "@/lib/supabase/admin";
 import { accesAuxFiches, sexeEtAge } from "@/lib/acces-fiches";
 import type { ReactNode } from "react";
 import { PERSONNAGES_PAR_PAGE, cartesPersonnages, lotDeCartes } from "./lot";
+import { lireFiltresPersonnages, parametresRpcPersonnages, type FiltresPersonnages } from "./filtres-personnages";
 
 export type ProjetTrouve = {
   id: string;
@@ -456,11 +457,14 @@ export async function rechercherPersonnages(
 export async function personnagesDeLaGalaxie(
   page: number,
   parPage: number,
+  filtres?: FiltresPersonnages,
 ): Promise<{ personnages: PersonnageTrouve[]; total: number }> {
   const supabase = await createClient();
   const { data } = await supabase.rpc("galaxie_personnages", {
     p_limite: parPage,
     p_decalage: (Math.max(1, page) - 1) * parPage,
+    // La recherche avancée des personnages (13/11) ; relus ici, l'appel vient aussi du navigateur.
+    ...parametresRpcPersonnages(lireFiltresPersonnages(filtres)),
   });
   return fichesPersonnages(supabase, (data ?? []) as { id: string; total: number }[]);
 }
@@ -555,12 +559,16 @@ export async function autresProjets(page: number, filtres: Filtres): Promise<Rea
 }
 
 /** Le lot suivant de personnages, pour le bouton « Voir d'autres personnages » (12/11/2026). */
-export async function autresPersonnages(page: number): Promise<ReactNode> {
+export async function autresPersonnages(page: number, filtres?: FiltresPersonnages): Promise<ReactNode> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return null;
-  const { personnages } = await personnagesDeLaGalaxie(Math.max(1, Math.floor(Number(page)) || 1), PERSONNAGES_PAR_PAGE);
+  const { personnages } = await personnagesDeLaGalaxie(
+    Math.max(1, Math.floor(Number(page)) || 1),
+    PERSONNAGES_PAR_PAGE,
+    filtres,
+  );
   return cartesPersonnages(personnages);
 }

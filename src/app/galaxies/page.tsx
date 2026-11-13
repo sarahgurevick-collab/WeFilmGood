@@ -19,6 +19,8 @@ import RechercheAvancee from "./RechercheAvancee";
 import { adresse, lireFiltres, nombreDeFiltres } from "./filtres";
 import { AUDIENCES, BUDGETS, FORMATS } from "@/app/projet/ChampsFiche";
 import type { Tag } from "./tags";
+import RechercheAvanceePersonnages from "./RechercheAvanceePersonnages";
+import { AUCUN_PERSONNAGE, adressePersonnages, lireFiltresPersonnages, nombreDeFiltresPersonnages } from "./filtres-personnages";
 
 export const metadata: Metadata = { title: "Galaxies — WeFilmGood" };
 
@@ -56,10 +58,13 @@ export default async function ProjetsPage({
   // recherche amènent ici avec ?voir=… : eux à la place des projets (02/10).
   if (params.voir === "personnages" || params.voir === "talents") {
     const voir = params.voir;
+    // La recherche avancée des personnages (13/11, Sarah).
+    const filtresPersonnages = lireFiltresPersonnages(params);
+    const nbFiltresPersonnages = nombreDeFiltresPersonnages(filtresPersonnages);
     const parPage = voir === "personnages" ? PERSONNAGES_PAR_PAGE : GALAXIE_PAR_PAGE;
     const [{ personnages, total: totalPersonnages }, { talents, total: totalTalents }] = await Promise.all([
       voir === "personnages"
-        ? personnagesDeLaGalaxie(page, parPage)
+        ? personnagesDeLaGalaxie(page, parPage, filtresPersonnages)
         : Promise.resolve({ personnages: [], total: 0 }),
       voir === "talents"
         ? talentsDeLaGalaxie(page, parPage)
@@ -77,14 +82,38 @@ export default async function ProjetsPage({
       >
         {/* La liste des talents (ou personnages) disparaît dès qu'un mot est cherché. */}
         <div className={duo.centre}>
-        <Finder adherent={adherent} premiere={voir}>
+        <Finder
+          adherent={adherent}
+          premiere={voir}
+          avance={
+            voir === "personnages" ? (
+              <div className={duo.ligneAvancee}>
+                <RechercheAvanceePersonnages filtres={filtresPersonnages} />
+              </div>
+            ) : undefined
+          }
+        >
+        {voir === "personnages" && affiches === 0 ? (
+          <p className={formStyles.hint}>
+            Aucun personnage ne correspond à ces filtres.{" "}
+            <Link href={adressePersonnages(AUCUN_PERSONNAGE)}>Tout effacer</Link>.
+          </p>
+        ) : (
         <p className={formStyles.hint}>
-          {`${voir === "personnages" ? "Personnages" : "Talents"} ${((page - 1) * parPage + 1).toLocaleString("fr-FR")} à ${((page - 1) * parPage + affiches).toLocaleString("fr-FR")} sur ${totalGalaxie.toLocaleString("fr-FR")} dans les Galaxies.`}
+          {`${voir === "personnages" ? "Personnages" : "Talents"} ${((page - 1) * parPage + 1).toLocaleString("fr-FR")} à ${((page - 1) * parPage + affiches).toLocaleString("fr-FR")} sur ${totalGalaxie.toLocaleString("fr-FR")} ${nbFiltresPersonnages > 0 ? "correspondant à vos filtres" : "dans les Galaxies"}.`}
         </p>
+        )}
         {voir === "personnages" ? (
           // Essai du 12/11 (Sarah) : des cartes à jouer, qui sortent du Finder
           // dos visible et se retournent en se posant.
-          <Suite key={`personnages-${page}`} quoi="personnages" premier={cartesPersonnages(personnages)} page={page} pages={pagesGalaxie} />
+          <Suite
+            key={`${adressePersonnages(filtresPersonnages)}-${page}`}
+            quoi="personnages"
+            premier={cartesPersonnages(personnages)}
+            page={page}
+            pages={pagesGalaxie}
+            filtresPersonnages={filtresPersonnages}
+          />
         ) : (
           // Essai du 12/11 (Sarah) : de grands portraits ronds en constellation,
           // qui sortent du Finder puis flottent doucement.
