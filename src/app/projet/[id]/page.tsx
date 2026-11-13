@@ -356,7 +356,14 @@ export default async function ProjetPage({
   const restreint = !chezSoi && !ouverture;
   // Sans adhésion, la fiche ne s'ouvre pas (12/11, Sarah) : on ne voit des
   // projets que leur carte. Rien de la fiche ne part vers le navigateur.
-  if (!chezSoi && !ouverture && adherent !== true) {
+  // Exception (13/11, Sarah) : la fiche du CinéCrush de la semaine s'ouvre à
+  // tous les membres — c'est là que les comédiens déposent leur ComedyPitch.
+  // Elle reste « restreinte » (videopitch, noms de l'équipe) sans soleil.
+  const service = createAdminClient();
+  const reglesComedy = service
+    ? await projetAccepte(service, { id: project.id, owner_id: project.owner_id })
+    : { cinecrush: false, accepte: false };
+  if (!chezSoi && !ouverture && adherent !== true && !reglesComedy.cinecrush) {
     return (
       <PageShell title="Galaxies" nav="pitchotheque" connecte>
         <p className={formStyles.hint}>
@@ -409,10 +416,6 @@ export default async function ProjetPage({
 
   // Le ComedyPitch (13/11) : quels personnages en attendent un, qui peut en
   // déposer, qui les regarde — règles dans src/lib/comedypitch.ts.
-  const service = createAdminClient();
-  const reglesComedy = service
-    ? await projetAccepte(service, { id: project.id, owner_id: project.owner_id })
-    : { cinecrush: false, accepte: false };
   const voitComedyPitchs = !!user && (!restreint || reglesComedy.cinecrush);
   const comedyEnLigne = voitComedyPitchs && user ? await comedypitchsDuProjet(project.id, user.id) : [];
   let comedienPeutDeposer = false;
