@@ -99,6 +99,10 @@ export default function SpherePhotos({
   vitesseMax = 5,
   vitesseAuto = 0.2,
   indice = "Faites tourner la sphère avec la souris, ou cliquez sur une photo pour lire le témoignage.",
+  vedettes,
+  dureeVedette = DUREE_VEDETTE,
+  pauseVedette = PAUSE_VEDETTE,
+  vedetteCompacte = false,
 }: {
   photos: PhotoSphereItem[];
   /** La taille de la scène en pixels, réduite si l'écran est plus étroit. */
@@ -114,6 +118,13 @@ export default function SpherePhotos({
   vitesseAuto?: number;
   /** La phrase sous la sphère ; null pour ne rien écrire (le globe des pays, 13/11). */
   indice?: string | null;
+  /** Les photos qui sortent en exemple (leurs id) ; par défaut, celles qui portent des crédits. */
+  vedettes?: string[];
+  /** Le temps d'une carte sortie, puis la pause avant la suivante (millisecondes). */
+  dureeVedette?: number;
+  pauseVedette?: number;
+  /** Une petite carte : le globe des pays n'a qu'un nom et un nombre à montrer. */
+  vedetteCompacte?: boolean;
 }) {
   const cadre = useRef<HTMLDivElement | null>(null);
   const [largeur, setLargeur] = useState<number | null>(null);
@@ -298,8 +309,8 @@ export default function SpherePhotos({
     ecranCourant.current = ecran;
   }, [ecran]);
   const signes = useMemo(
-    () => photos.map((p, i) => (p.credits ? i : -1)).filter((i) => i >= 0),
-    [photos],
+    () => photos.map((p, i) => ((vedettes ? vedettes.includes(p.id) : p.credits) ? i : -1)).filter((i) => i >= 0),
+    [photos, vedettes],
   );
   useEffect(() => {
     if (reduit || !aLEcran || ouvert || signes.length === 0) return;
@@ -315,15 +326,15 @@ export default function SpherePhotos({
       dernier = i;
       const p = ecranCourant.current[i];
       setVedette({ i, dx: p?.visible ? p.x : 0, dy: p?.visible ? p.y : 0 });
-      minuteur = setTimeout(rentrer, DUREE_VEDETTE);
+      minuteur = setTimeout(rentrer, dureeVedette);
     };
     const rentrer = () => {
       setVedette(null);
-      minuteur = setTimeout(sortir, PAUSE_VEDETTE);
+      minuteur = setTimeout(sortir, pauseVedette);
     };
-    minuteur = setTimeout(sortir, PAUSE_VEDETTE);
+    minuteur = setTimeout(sortir, pauseVedette);
     return () => clearTimeout(minuteur);
-  }, [reduit, aLEcran, ouvert, signes]);
+  }, [reduit, aLEcran, ouvert, signes, dureeVedette, pauseVedette]);
   const enVedette = vedette && !ouvert && aLEcran ? vedette : null;
 
   if (reduit) {
@@ -386,7 +397,7 @@ export default function SpherePhotos({
           {enVedette && photos[enVedette.i] && (
             <div
               key={photos[enVedette.i].id}
-              className={styles.vedette}
+              className={`${styles.vedette} ${vedetteCompacte ? styles.vedetteCompacte : ""}`}
               style={{ "--dx": `${enVedette.dx}px`, "--dy": `${enVedette.dy}px` } as CSSProperties}
               onMouseDown={(e) => e.stopPropagation()}
               onTouchStart={(e) => e.stopPropagation()}
@@ -395,7 +406,9 @@ export default function SpherePhotos({
               <Vignette photo={photos[enVedette.i]} index={0} />
               <p className={styles.vedetteNom}>{photos[enVedette.i].titre}</p>
               <p className={styles.vedetteCredits}>{photos[enVedette.i].credits}</p>
-              <p className={styles.vedetteTexte}>&laquo;&nbsp;{photos[enVedette.i].description}&nbsp;&raquo;</p>
+              {photos[enVedette.i].description && (
+                <p className={styles.vedetteTexte}>&laquo;&nbsp;{photos[enVedette.i].description}&nbsp;&raquo;</p>
+              )}
             </div>
           )}
         </div>

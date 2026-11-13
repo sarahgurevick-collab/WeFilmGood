@@ -11,7 +11,7 @@ import styles from "./AnneauChiffres.module.css";
  * se dessine et les nombres montent quand le bloc arrive à l'écran ; au
  * survol d'une part (ou de sa ligne), le centre montre ce métier.
  */
-export type Part = { label: string; n: number; /** Ce chiffre ouvre le globe des pays. */ globe?: boolean };
+export type Part = { label: string; n: number; /** Ce chiffre s'affiche sous le globe des pays. */ globe?: boolean };
 export type PaysTalents = { code: string; nom: string; n: number };
 
 // Les couleurs du logo (13/11, Sarah : « les couleurs sont tristes ») : le
@@ -22,6 +22,8 @@ const RAYON = 80;
 const TOUR = 2 * Math.PI * RAYON;
 const ECART = 3;
 const DUREE = 1400;
+// Combien de pays sortent du globe en exemple, parmi les mieux représentés.
+const PAYS_EN_VEDETTE = 40;
 
 /** Le nombre qui monte de zéro, une fois le bloc à l'écran. */
 function useMontee(cible: number, lance: boolean): number {
@@ -64,18 +66,6 @@ export default function AnneauChiffres({
   const bloc = useRef<HTMLDivElement>(null);
   const [lance, setLance] = useState(false);
   const [survol, setSurvol] = useState<number | null>(null);
-  const [globe, setGlobe] = useState(false);
-
-  // Le globe se ferme avec Échap.
-  useEffect(() => {
-    if (!globe) return;
-    const touche = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setGlobe(false);
-    };
-    document.addEventListener("keydown", touche);
-    return () => document.removeEventListener("keydown", touche);
-  }, [globe]);
-
   // Chaque pays, un drapeau sur la sphère ; au clic, son nom et ses talents.
   const drapeaux = pays.map((p) => ({
     id: p.code,
@@ -114,95 +104,106 @@ export default function AnneauChiffres({
 
   const centre = survol === null ? { label: libelleTotal, n: total } : parts[survol];
 
+  // Les pays qui sortent du globe en exemple : les mieux représentés.
+  const vedettes = pays.slice(0, PAYS_EN_VEDETTE).map((p) => p.code);
+  const compteurPays = drapeaux.length > 0 ? compteurs.find((c) => c.globe) : undefined;
+  const autres = compteurs.filter((c) => c !== compteurPays);
+
   return (
-    <div ref={bloc} className={`${styles.bloc} ${lance ? styles.lance : ""}`}>
-      <div className={styles.haut}>
-        <div className={styles.anneau}>
-          <svg viewBox="0 0 200 200" role="img" aria-label={`${libelleTotal} : ${total.toLocaleString("fr-FR")}`}>
-            <g transform="rotate(-90 100 100)">
-              {arcs.map((a) => (
-                <circle
-                  key={a.label}
-                  cx="100"
-                  cy="100"
-                  r={RAYON}
-                  fill="none"
-                  stroke={COULEURS[a.i % COULEURS.length]}
-                  strokeWidth={survol === a.i ? 26 : 20}
-                  strokeDasharray={`${lance ? a.longueur : 0} ${TOUR}`}
-                  strokeDashoffset={-a.depart}
-                  className={styles.arc}
-                  style={{
-                    transitionDelay: lance && survol === null ? `${a.i * 0.12}s` : "0s",
-                    opacity: survol === null || survol === a.i ? 1 : 0.3,
-                  }}
-                  onMouseEnter={() => setSurvol(a.i)}
-                  onMouseLeave={() => setSurvol(null)}
-                />
-              ))}
-            </g>
-          </svg>
-          <div className={styles.centre} aria-hidden="true">
+    <div
+      ref={bloc}
+      className={`${styles.bloc} ${lance ? styles.lance : ""} ${compteurPays ? styles.avecGlobe : ""}`}
+    >
+      {/* Le globe des drapeaux, en grand (13/11, Sarah : « le plus important
+          devient le globe, les statistiques à côté en plus petit ») : la
+          sphère des témoignages, un drapeau par pays. Les pays sortent l'un
+          après l'autre avec leur nombre de talents ; un clic sur un drapeau
+          donne le sien. */}
+      {compteurPays && (
+        <div className={styles.coteGlobe}>
+          <SpherePhotos
+            photos={drapeaux}
+            indice={null}
+            taille={520}
+            echelleImage={0.13}
+            vedettes={vedettes}
+            dureeVedette={2800}
+            pauseVedette={900}
+            vedetteCompacte
+          />
+          <p className={styles.sousGlobe}>
             <strong>
-              {survol === null ? <Nombre n={centre.n} lance={lance} /> : centre.n.toLocaleString("fr-FR")}
+              <Nombre n={compteurPays.n} lance={lance} />
             </strong>
-            <span>{centre.label}</span>
+            <span>{compteurPays.label}</span>
+          </p>
+        </div>
+      )}
+
+      <div className={styles.coteChiffres}>
+        <div className={styles.haut}>
+          <div className={styles.anneau}>
+            <svg viewBox="0 0 200 200" role="img" aria-label={`${libelleTotal} : ${total.toLocaleString("fr-FR")}`}>
+              <g transform="rotate(-90 100 100)">
+                {arcs.map((a) => (
+                  <circle
+                    key={a.label}
+                    cx="100"
+                    cy="100"
+                    r={RAYON}
+                    fill="none"
+                    stroke={COULEURS[a.i % COULEURS.length]}
+                    strokeWidth={survol === a.i ? 26 : 20}
+                    strokeDasharray={`${lance ? a.longueur : 0} ${TOUR}`}
+                    strokeDashoffset={-a.depart}
+                    className={styles.arc}
+                    style={{
+                      transitionDelay: lance && survol === null ? `${a.i * 0.12}s` : "0s",
+                      opacity: survol === null || survol === a.i ? 1 : 0.3,
+                    }}
+                    onMouseEnter={() => setSurvol(a.i)}
+                    onMouseLeave={() => setSurvol(null)}
+                  />
+                ))}
+              </g>
+            </svg>
+            <div className={styles.centre} aria-hidden="true">
+              <strong>
+                {survol === null ? <Nombre n={centre.n} lance={lance} /> : centre.n.toLocaleString("fr-FR")}
+              </strong>
+              <span>{centre.label}</span>
+            </div>
           </div>
+
+          <ul className={styles.legende}>
+            {parts.map((p, i) => (
+              <li
+                key={p.label}
+                className={survol === i ? styles.actif : ""}
+                onMouseEnter={() => setSurvol(i)}
+                onMouseLeave={() => setSurvol(null)}
+              >
+                <i style={{ background: COULEURS[i % COULEURS.length] }} />
+                <span>{p.label}</span>
+                <strong>
+                  <Nombre n={p.n} lance={lance} />
+                </strong>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <ul className={styles.legende}>
-          {parts.map((p, i) => (
-            <li
-              key={p.label}
-              className={survol === i ? styles.actif : ""}
-              onMouseEnter={() => setSurvol(i)}
-              onMouseLeave={() => setSurvol(null)}
-            >
-              <i style={{ background: COULEURS[i % COULEURS.length] }} />
-              <span>{p.label}</span>
-              <strong>
-                <Nombre n={p.n} lance={lance} />
-              </strong>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <ul className={styles.compteurs}>
-        {compteurs.map((c) =>
-          c.globe && drapeaux.length > 0 ? (
-            <li key={c.label}>
-              <button type="button" className={styles.ouvreGlobe} onClick={() => setGlobe(true)}>
-                <strong>
-                  <Nombre n={c.n} lance={lance} />
-                </strong>
-                <span>{c.label}</span>
-              </button>
-            </li>
-          ) : (
+        <ul className={styles.compteurs}>
+          {autres.map((c) => (
             <li key={c.label}>
               <strong>
                 <Nombre n={c.n} lance={lance} />
               </strong>
               <span>{c.label}</span>
             </li>
-          ),
-        )}
-      </ul>
-
-      {/* Le globe des drapeaux (13/11, Sarah) : la sphère des témoignages,
-          un drapeau par pays ; un clic sur un drapeau donne le pays et son
-          nombre de talents. */}
-      {globe && (
-        <div className={styles.voileGlobe} onClick={() => setGlobe(false)} role="presentation">
-          <div className={styles.globe} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
-            <button type="button" className={styles.fermeGlobe} onClick={() => setGlobe(false)} aria-label="Fermer">
-              ×
-            </button>
-            <SpherePhotos photos={drapeaux} indice={null} echelleImage={0.13} />
-          </div>
-        </div>
-      )}
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

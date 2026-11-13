@@ -279,3 +279,30 @@
     font-size: 13px;
   }
 }
+
+/* La petite carte du globe des pays : un drapeau, un nom, un nombre. */
+.vedetteCompacte {
+  width: auto;
+  min-width: 190px;
+  max-width: 80%;
+  padding: 16px 22px 18px;
+}
+
+.vedetteCompacte .vignette {
+  width: 76px;
+  height: 76px;
+  margin-bottom: 10px;
+  border-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.vedetteCompacte .vedetteNom {
+  font-size: 17px;
+}
+
+.vedetteCompacte .vedetteCredits {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #da2c25;
+}

@@ -177,89 +177,95 @@
   }
 }
 
-/* « Pays connectés » se clique : il ouvre le globe des drapeaux (13/11). */
-.ouvreGlobe {
+/* ---- Le globe en grand, les chiffres à côté en plus petit (13/11) ---- */
+
+.avecGlobe {
+  max-width: 1080px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 40px;
+}
+
+.coteGlobe {
+  min-width: 0;
+}
+
+.sousGlobe {
+  margin: 4px 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 6px 12px;
-  margin: -6px -12px;
-  border: 0;
-  border-radius: 12px;
-  background: none;
-  font: inherit;
-  letter-spacing: inherit;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.ouvreGlobe:hover,
-.ouvreGlobe:focus-visible {
-  background: var(--surface-actif, #f2f2f0);
-  transform: translateY(-2px);
-  outline: none;
+.sousGlobe strong {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: #da2c25;
 }
 
-.ouvreGlobe span {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.sousGlobe span {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--dim);
 }
 
-.voileGlobe {
-  position: fixed;
-  inset: 0;
-  z-index: 4000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.82);
-  animation: globeApparait 0.3s ease-out;
+.avecGlobe .coteChiffres {
+  min-width: 0;
 }
 
-.globe {
-  position: relative;
-  width: min(600px, 100%);
-  animation: globeGrandit 0.45s var(--ease, ease-out);
+.avecGlobe .haut {
+  flex-direction: column;
+  gap: 16px;
 }
 
-.fermeGlobe {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 2;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
-  font-size: 24px;
-  line-height: 1;
-  cursor: pointer;
+.avecGlobe .anneau {
+  width: 170px;
+  height: 170px;
 }
 
-.fermeGlobe:hover {
-  background: rgba(255, 255, 255, 0.3);
+.avecGlobe .centre strong {
+  font-size: 22px;
 }
 
-@keyframes globeApparait {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.avecGlobe .centre span {
+  font-size: 10px;
 }
 
-@keyframes globeGrandit {
-  from {
-    transform: scale(0.6);
-    opacity: 0;
-  }
-  to {
-    transform: none;
-    opacity: 1;
+.avecGlobe .legende {
+  width: 100%;
+  max-width: 280px;
+  min-width: 0;
+}
+
+.avecGlobe .legende li {
+  padding: 5px 8px;
+  font-size: 13px;
+}
+
+.avecGlobe .compteurs {
+  margin-top: 20px;
+  padding-top: 18px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.avecGlobe .compteurs strong {
+  font-size: 20px;
+}
+
+.avecGlobe .compteurs span {
+  font-size: 10px;
+}
+
+@media (max-width: 860px) {
+  .avecGlobe {
+    grid-template-columns: 1fr;
+    gap: 28px;
   }
 }
