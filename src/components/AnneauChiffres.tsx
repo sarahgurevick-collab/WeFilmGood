@@ -12,7 +12,10 @@ import styles from "./AnneauChiffres.module.css";
  */
 export type Part = { label: string; n: number };
 
-const COULEURS = ["#da2c25", "#1a1a1a", "#8f1b17", "#8a8a8a", "#cfcac5"];
+// Les couleurs du logo (13/11, Sarah : « les couleurs sont tristes ») : le
+// rouge, le bleu, le vert et le jaune des engagements (globals.css), puis le
+// rose des champs remplis, plus soutenu ici pour se voir sur le blanc.
+const COULEURS = ["#da2c25", "#3b8ef5", "#35b05e", "#f2c230", "#f4c0be"];
 const RAYON = 80;
 const TOUR = 2 * Math.PI * RAYON;
 const ECART = 3;
