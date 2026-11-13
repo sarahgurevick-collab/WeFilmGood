@@ -24,13 +24,25 @@ export default function BoutonRetirerPersonnage() {
         const form = e.currentTarget.closest("form");
         if (!form || !window.confirm("Retirer ce personnage ?")) return;
         setEnvoi(true);
-        const echec = await enregistrerLesModifies(form);
-        if (echec) {
-          window.alert(echec);
+        // Le retrait ne part qu'avec ce qui désigne le personnage : pas le
+        // portrait ni les autres champs du cadre (13/11).
+        const quoi = new FormData();
+        for (const nom of ["project_id", "character_id"]) quoi.set(nom, String(new FormData(form).get(nom) ?? ""));
+        try {
+          const echec = await enregistrerLesModifies(form);
+          if (echec) {
+            window.alert(echec);
+            setEnvoi(false);
+            return;
+          }
+          await retirerPersonnage(quoi);
+        } catch (erreur) {
+          // Une redirection de Next passe par ici : elle n'est pas une erreur.
+          if (erreur && typeof erreur === "object" && "digest" in erreur && String(erreur.digest).startsWith("NEXT_REDIRECT")) throw erreur;
+          // Avant le 13/11, un échec ici ne disait rien : le bouton restait grisé.
+          window.alert("Le personnage n'a pas pu être retiré. Réessayez, ou écrivez-nous.");
           setEnvoi(false);
-          return;
         }
-        await retirerPersonnage(new FormData(form));
       }}
     >
       Retirer ce personnage
