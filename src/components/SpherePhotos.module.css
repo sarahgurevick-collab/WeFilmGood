@@ -203,3 +203,79 @@
   line-height: 1.45;
   opacity: 0.7;
 }
+
+/* Un témoignage signé sorti de la sphère en exemple (13/11) : la carte part
+   de la place de la photo (--dx, --dy) et grandit jusqu'au centre, reste le
+   temps d'être lue, puis la suivante sort. Un clic la referme. */
+.vedette {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3000;
+  width: min(360px, 88%);
+  padding: 22px 24px 24px;
+  border-radius: 16px;
+  background: #fff;
+  color: #1a1a1a;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: normal;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  animation: sortDeLaSphere 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vedette .vignette {
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 12px;
+  border-color: #da2c25;
+  box-shadow: none;
+}
+
+.vedetteNom {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.vedetteCredits {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #6b6b6b;
+}
+
+.vedetteTexte {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #333;
+}
+
+@keyframes sortDeLaSphere {
+  from {
+    transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) scale(0.15);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .vedette {
+    padding: 16px 16px 18px;
+  }
+
+  .vedette .vignette {
+    width: 80px;
+    height: 80px;
+  }
+
+  .vedetteTexte {
+    font-size: 13px;
+  }
+}

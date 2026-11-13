@@ -6,6 +6,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type MouseEvent as ReactMouseEvent,
   type TouchEvent as ReactTouchEvent,
 } from "react";
@@ -45,6 +46,10 @@ export type PhotoSphereItem = {
  * Elle ne tourne que lorsqu'elle est à l'écran (la page Témoignages pesait
  * lourd, remarque de Sarah le 14/10).
  */
+
+// Une photo sortie en exemple : le temps de la lire, puis la pause avant la suivante.
+const DUREE_VEDETTE = 8000;
+const PAUSE_VEDETTE = 2500;
 
 type PositionSphere = { theta: number; phi: number };
 type PositionEcran = {
@@ -117,6 +122,9 @@ export default function SpherePhotos({
   const dernierPoint = useRef({ x: 0, y: 0 });
   const [survol, setSurvol] = useState<number | null>(null);
   const [ouvert, setOuvert] = useState<PhotoSphereItem | null>(null);
+  // La photo sortie de la sphère en exemple (13/11) : son rang, et d'où elle part.
+  const [vedette, setVedette] = useState<{ i: number; dx: number; dy: number } | null>(null);
+  const ecranCourant = useRef<PositionEcran[]>([]);
 
   const scene = largeur === null ? null : Math.min(taille, largeur);
   const rayonReel = scene === null ? 0 : (rayon ?? scene * 0.36);
@@ -277,6 +285,44 @@ export default function SpherePhotos({
     });
   }, [positions, rotation, scene, rayonReel, tailleImage]);
 
+  // Les témoignages signés sortent de la sphère l'un après l'autre, au
+  // hasard, en exemple (13/11, Sarah : perdus parmi les autres photos, on ne
+  // les voyait pas — et cela montre au visiteur qu'il peut cliquer lui
+  // aussi). Chacun reste le temps d'être lu, puis rentre ; rien ne sort
+  // hors écran, pendant qu'on fait tourner la sphère ou qu'une fenêtre est
+  // ouverte.
+  useEffect(() => {
+    ecranCourant.current = ecran;
+  }, [ecran]);
+  const signes = useMemo(
+    () => photos.map((p, i) => (p.credits ? i : -1)).filter((i) => i >= 0),
+    [photos],
+  );
+  useEffect(() => {
+    if (reduit || !aLEcran || ouvert || signes.length === 0) return;
+    let minuteur: ReturnType<typeof setTimeout>;
+    let dernier = -1;
+    const sortir = () => {
+      if (glisse.current) {
+        minuteur = setTimeout(sortir, 1500);
+        return;
+      }
+      const choix = signes.filter((i) => i !== dernier);
+      const i = (choix.length ? choix : signes)[Math.floor(Math.random() * (choix.length || signes.length))];
+      dernier = i;
+      const p = ecranCourant.current[i];
+      setVedette({ i, dx: p?.visible ? p.x : 0, dy: p?.visible ? p.y : 0 });
+      minuteur = setTimeout(rentrer, DUREE_VEDETTE);
+    };
+    const rentrer = () => {
+      setVedette(null);
+      minuteur = setTimeout(sortir, PAUSE_VEDETTE);
+    };
+    minuteur = setTimeout(sortir, PAUSE_VEDETTE);
+    return () => clearTimeout(minuteur);
+  }, [reduit, aLEcran, ouvert, signes]);
+  const enVedette = vedette && !ouvert && aLEcran ? vedette : null;
+
   if (reduit) {
     return (
       <div ref={cadre} className={styles.zone}>
@@ -319,7 +365,8 @@ export default function SpherePhotos({
                   height: dim,
                   left: scene / 2 + p.x,
                   top: scene / 2 + p.y,
-                  opacity: p.opacite,
+                  // Sortie de la sphère : sa place reste vide le temps de la carte.
+                  opacity: enVedette?.i === i ? 0 : p.opacite,
                   transform: `translate(-50%, -50%) scale(${zoom})`,
                   zIndex: Math.round(1000 + p.z),
                 }}
@@ -332,6 +379,22 @@ export default function SpherePhotos({
               </button>
             );
           })}
+
+          {enVedette && photos[enVedette.i] && (
+            <div
+              key={photos[enVedette.i].id}
+              className={styles.vedette}
+              style={{ "--dx": `${enVedette.dx}px`, "--dy": `${enVedette.dy}px` } as CSSProperties}
+              onMouseDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              onClick={() => setVedette(null)}
+            >
+              <Vignette photo={photos[enVedette.i]} index={0} />
+              <p className={styles.vedetteNom}>{photos[enVedette.i].titre}</p>
+              <p className={styles.vedetteCredits}>{photos[enVedette.i].credits}</p>
+              <p className={styles.vedetteTexte}>&laquo;&nbsp;{photos[enVedette.i].description}&nbsp;&raquo;</p>
+            </div>
+          )}
         </div>
       )}
 
