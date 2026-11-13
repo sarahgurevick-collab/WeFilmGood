@@ -1,6 +1,6 @@
-/* Le genre de la fiche : fermé, les choix faits ; ouvert, une arborescence
-   qui se déplie (essai du 13/11, Sarah). Avant : quatre marches rouges en
-   escalier, étiquette git fiche-avant-arborescence. */
+/* Le genre en escalier, comme les marches du logo (04/11, Sarah) :
+   fermé, les choix faits ; ouvert, quatre marches rouges, chacune un cran
+   plus bas et plus à droite. */
 .bloc {
   grid-column: 1 / -1;
   position: relative;
@@ -65,139 +65,80 @@
   color: var(--dim);
 }
 
-/* ---- L'arborescence ---- */
-
-.arbre {
+.escalier {
   position: relative;
-  padding: 10px 10px 12px;
-  background: var(--surface);
-  border: 1px solid var(--bordure);
-  border-radius: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+  padding-top: 4px;
 }
 
-.niveau {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* Une branche : en retrait, avec son trait rouge qui descend. */
-.branche {
-  position: relative;
-  margin: 2px 0 6px 17px;
-  padding-left: 12px;
-}
-
-.branche::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  border-radius: 2px;
-  background: #da2c25;
-  opacity: 0.55;
-  transform-origin: top;
-  animation: traitDescend 0.45s ease-out both;
-}
-
-/* Chaque ligne arrive à son tour, de la gauche. */
-.ligne {
+.marche {
+  margin-top: calc(var(--marche) * 40px);
   display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  background: #da2c25;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* Quatre tons, du rouge du logo au plus clair (05/11, Sarah) : la famille
+   ressort. Sur les deux plus clairs, le texte passe en rouge très foncé pour
+   rester lisible. */
+.marche:nth-child(3) {
+  background: #e25a54;
+}
+.marche:nth-child(4) {
+  background: #eb8b87;
+}
+.marche:nth-child(4) .element,
+.marche:nth-child(5) .element {
+  color: #4a0b08;
+}
+.marche:nth-child(5) {
+  background: #f4bdba;
+}
+.marche:nth-child(4) .element:hover:not(:disabled),
+.marche:nth-child(5) .element:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.element {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  padding: 7px 10px;
+  padding: 8px 14px;
   background: transparent;
   border: 0;
-  border-radius: 8px;
-  color: var(--fg);
+  color: #ffffff;
   font: inherit;
   font-size: 14px;
   line-height: 1.25;
   text-align: left;
   cursor: pointer;
-  transition: background 0.15s ease;
 }
 
-.branche .ligne {
-  animation: ligneArrive 0.35s ease-out both;
-  animation-delay: calc(var(--rang, 0) * 35ms + 80ms);
-}
-
-.ligne:hover:not(:disabled),
-.ligne:focus-visible {
-  background: var(--surface-actif);
+.element:hover:not(:disabled),
+.element:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
   outline: none;
-}
-
-.ligne:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 .coche {
   font-weight: 700;
 }
 
-/* Le chevron d'un « dossier » : il tourne quand la branche s'ouvre. */
-.chevron {
-  flex: 0 0 auto;
-  width: 14px;
-  text-align: center;
-  font-size: 17px;
-  line-height: 1;
-  color: var(--dim);
-  transition: transform 0.25s ease, color 0.25s ease;
-}
-
-.coche > .chevron {
-  transform: rotate(90deg);
-  color: #da2c25;
-}
-
-/* La case d'une « feuille ». */
-.caseACocher {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 14px;
-  height: 14px;
-  border: 1.5px solid var(--bordure-forte);
-  border-radius: 4px;
-  font-size: 10px;
-  line-height: 1;
-  color: #fff;
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-
-.coche > .caseACocher {
-  background: #da2c25;
-  border-color: #da2c25;
-}
-
-.suivant {
-  color: #da2c25;
-  font-weight: 600;
-}
-
-.suivant .chevron {
-  color: #da2c25;
-}
-
-/* Fiction / Documentaire, sous les sous-genres : un filet les sépare. */
-.separe {
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid var(--bordure-douce);
+.element:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .fermer {
   position: absolute;
-  top: 6px;
-  right: 8px;
-  z-index: 1;
+  top: -34px;
+  right: 0;
   background: transparent;
   border: 0;
   color: var(--fg);
@@ -206,29 +147,14 @@
   cursor: pointer;
 }
 
-@keyframes ligneArrive {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
+/* Sur un écran étroit, l'escalier descend : chaque marche sous la
+   précédente, décalée vers la droite. */
+@media (max-width: 720px) {
+  .escalier {
+    grid-template-columns: 1fr;
   }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes traitDescend {
-  from {
-    transform: scaleY(0);
-  }
-  to {
-    transform: scaleY(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .branche::before,
-  .branche .ligne {
-    animation: none;
+  .marche {
+    margin-top: 0;
+    margin-left: calc(var(--marche) * 18px);
   }
 }
