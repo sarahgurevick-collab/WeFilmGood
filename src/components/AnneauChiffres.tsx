@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import SpherePhotos from "./SpherePhotos";
+import GlobePays from "./GlobePays";
 import styles from "./AnneauChiffres.module.css";
 
 /**
@@ -66,15 +66,6 @@ export default function AnneauChiffres({
   const bloc = useRef<HTMLDivElement>(null);
   const [lance, setLance] = useState(false);
   const [survol, setSurvol] = useState<number | null>(null);
-  // Chaque pays, un drapeau sur la sphère ; au clic, son nom et ses talents.
-  const drapeaux = pays.map((p) => ({
-    id: p.code,
-    src: `/drapeaux/${p.code.toLowerCase()}.svg`,
-    alt: p.nom,
-    titre: p.nom,
-    credits: `${p.n.toLocaleString("fr-FR")} talent${p.n > 1 ? "s" : ""}`,
-  }));
-
   useEffect(() => {
     const el = bloc.current;
     if (!el) return;
@@ -106,7 +97,7 @@ export default function AnneauChiffres({
 
   // Les pays qui sortent du globe en exemple : les mieux représentés.
   const vedettes = pays.slice(0, PAYS_EN_VEDETTE).map((p) => p.code);
-  const compteurPays = drapeaux.length > 0 ? compteurs.find((c) => c.globe) : undefined;
+  const compteurPays = pays.length > 0 ? compteurs.find((c) => c.globe) : undefined;
   const autres = compteurs.filter((c) => c !== compteurPays);
 
   return (
@@ -114,23 +105,14 @@ export default function AnneauChiffres({
       ref={bloc}
       className={`${styles.bloc} ${lance ? styles.lance : ""} ${compteurPays ? styles.avecGlobe : ""}`}
     >
-      {/* Le globe des drapeaux, en grand (13/11, Sarah : « le plus important
-          devient le globe, les statistiques à côté en plus petit ») : la
-          sphère des témoignages, un drapeau par pays. Les pays sortent l'un
-          après l'autre avec leur nombre de talents ; un clic sur un drapeau
-          donne le sien. */}
+      {/* Le globe des pays, en grand (13/11, Sarah : « le plus important
+          devient le globe, les statistiques à côté en plus petit ») : une
+          Terre en points (essai du même jour, à la place de la sphère de
+          drapeaux). Les pays sortent l'un après l'autre avec leur nombre de
+          talents. */}
       {compteurPays && (
         <div className={styles.coteGlobe}>
-          <SpherePhotos
-            photos={drapeaux}
-            indice={null}
-            taille={520}
-            echelleImage={0.13}
-            vedettes={vedettes}
-            dureeVedette={2800}
-            pauseVedette={900}
-            vedetteCompacte
-          />
+          <GlobePays pays={pays} vedettes={vedettes} dureeVedette={2800} />
           <p className={styles.sousGlobe}>
             <strong>
               <Nombre n={compteurPays.n} lance={lance} />

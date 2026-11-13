@@ -1,0 +1,126 @@
+/* Le globe Terre des pays (essai du 13/11) : une Terre en points, un point
+   rouge par pays ; la carte du pays mis en avant sort sous lui. */
+.scene {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  aspect-ratio: 1;
+  user-select: none;
+}
+
+.toile {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  cursor: grab;
+  touch-action: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.toile:active {
+  cursor: grabbing;
+}
+
+.pret {
+  opacity: 1;
+}
+
+/* Le repère du pays mis en avant, au centre du globe. */
+.repere {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border: 2px solid #da2c25;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: bat 1.4s ease-out infinite;
+}
+
+@keyframes bat {
+  from {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.carte {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  min-width: 190px;
+  max-width: 80%;
+  padding: 16px 22px 18px;
+  border-radius: 16px;
+  background: #fff;
+  color: #1a1a1a;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: normal;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  transform: translateX(-50%);
+  animation: sort 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes sort {
+  from {
+    transform: translate(-50%, -30px) scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.drapeau {
+  display: block;
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.nom {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.nombre {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #da2c25;
+}
+
+@media (max-width: 480px) {
+  .carte {
+    padding: 12px 16px 14px;
+    min-width: 160px;
+  }
+
+  .drapeau {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .repere,
+  .carte {
+    animation: none;
+  }
+}
