@@ -260,10 +260,29 @@ export async function compterRecherche(requete: string): Promise<DecompteRecherc
   const vide = { projets: 0, talents: 0, personnages: 0 };
   if (!q) return vide;
 
+  // Les mêmes nombres que dans les Galaxies (13/11, Sarah) : la base passe
+  // par les mêmes recherches (migration 0264), et le sens complète les
+  // projets comme dans rechercherProjets. Les trois nombres sont demandés
+  // en même temps, pour ne pas attendre trois fois.
   const supabase = await createClient();
-  const { data } = await supabase.rpc("compter_recherche", { q });
-  const ligne = (data ?? [])[0] as DecompteRecherche | undefined;
-  return ligne ?? vide;
+  const v = await vecteur(q);
+  const p_vecteur = v ? enTexte(v) : null;
+  const parties = ["projets", "talents", "personnages"] as const;
+  const lignes = await Promise.all(
+    parties.map(async (p_partie) => {
+      const { data } = await supabase.rpc("compter_recherche", {
+        q,
+        p_vecteur: p_partie === "projets" ? p_vecteur : null,
+        p_partie,
+      });
+      return ((data ?? [])[0] as DecompteRecherche | undefined) ?? vide;
+    }),
+  );
+  return {
+    projets: Number(lignes[0].projets),
+    talents: Number(lignes[1].talents),
+    personnages: Number(lignes[2].personnages),
+  };
 }
 
 export type MotNuage = { label: string; poids: number };
