@@ -1,5 +1,6 @@
 import Link from "next/link";
 import BarreNav from "@/components/BarreNav";
+import AnneauChiffres from "@/components/AnneauChiffres";
 import GalerieSucces from "@/components/GalerieSucces";
 import CielEtoile from "@/components/CielEtoile";
 import DefilementEngagements from "@/components/DefilementEngagements";
@@ -10,6 +11,7 @@ import HashSession from "@/components/HashSession";
 import NuageAccueil from "@/components/NuageAccueil";
 import SpherePhotos, { type PhotoSphereItem } from "@/components/SpherePhotos";
 import { SUCCESS_STORIES_BLOG } from "@/data/successStoriesBlog";
+import { chiffresAccueil } from "@/lib/chiffres-accueil";
 import { chargerProjetOrbite } from "@/lib/orbite";
 import { createClient } from "@/lib/supabase/server";
 import formStyles from "@/components/form.module.css";
@@ -32,7 +34,7 @@ export default async function Home() {
 
   // Les projets ne sont plus lisibles sans compte : les totaux passent
   // par une fonction dédiée, qui ne renvoie que des nombres.
-  const [{ data: fonds }, { data: auth }, projetOrbite, { data: temoignages }] = await Promise.all([
+  const [{ data: fonds }, { data: auth }, projetOrbite, { data: temoignages }, chiffres] = await Promise.all([
     supabase.rpc("compter_fonds"),
     supabase.auth.getUser(),
     chargerProjetOrbite(),
@@ -42,6 +44,7 @@ export default async function Home() {
       .from("temoignages_publics")
       .select("id, avatar_url, testimonial")
       .returns<{ id: string; avatar_url: string | null; testimonial: string | null }[]>(),
+    chiffresAccueil(),
   ]);
   const photosTemoignages: PhotoSphereItem[] = (temoignages ?? []).map((t) => ({
     id: t.id,
@@ -113,6 +116,30 @@ export default async function Home() {
         <p className={styles.bandeSousTitre}>
           Créons ensemble les Films et les Séries de demain !
         </p>
+
+        {/* Les chiffres de l'accueil de WFG 1 (13/11, Sarah) : l'anneau des
+            talents par métier, les autres chiffres en nombres autour. Les
+            libellés sont ceux de WFG 1 ; « Contrats signés » = projets au
+            bandeau Signé ou Tourné. Avant : étiquette accueil-avant-anneau. */}
+        {chiffres && (
+          <AnneauChiffres
+            total={chiffres.talents}
+            libelleTotal="Talents"
+            parts={[
+              { label: "Scénaristes", n: chiffres.metiers.scenariste ?? 0 },
+              { label: "Réalisateurs", n: chiffres.metiers.realisateur ?? 0 },
+              { label: "Producteurs", n: chiffres.metiers.producteur ?? 0 },
+              { label: "Comédiens", n: chiffres.metiers.comedien ?? 0 },
+              { label: "Compositeurs", n: chiffres.metiers.compositeur ?? 0 },
+            ]}
+            compteurs={[
+              { label: "Scénarios analysés", n: chiffres.fiches },
+              { label: "Projets labellisés", n: chiffres.labellises },
+              { label: "Pays connectés", n: chiffres.pays },
+              { label: "Contrats signés", n: chiffres.signes },
+            ]}
+          />
+        )}
 
         <div className={styles.bandeFinder}>
           <NuageAccueil total={totalMotsCles} />
