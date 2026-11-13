@@ -48,7 +48,13 @@ export default async function ComedyPitchPage({
 
   const { data: personnage } = await admin.from("characters").select("name").eq("id", personnageId).maybeSingle<{ name: string }>();
   if (!personnage) notFound();
-  const fiche = `/projet/${id}?personnage=${personnageId}#personnages`;
+  // « Le voir » : sur la fiche du personnage si la base la lui ouvre encore ;
+  // sinon (semaine du CinéCrush finie, pas d'adhésion) sur son propre profil,
+  // où son ComedyPitch figure aussi.
+  const { data: ficheOuverte } = await supabase.from("projects").select("id").eq("id", id).maybeSingle();
+  const fiche = ficheOuverte ? `/projet/${id}?personnage=${personnageId}#personnages` : `/membres/${user.id}`;
+  // Une vidéo refusée, illisible ou interrompue se renvoie toujours.
+  const peutRenvoyer = dernier ? ["refuse", "echec", "envoi"].includes(dernier.etat) : false;
 
   const suivi = (() => {
     switch (dernier?.etat) {
@@ -82,7 +88,7 @@ export default async function ComedyPitchPage({
         </p>
       )}
 
-      {acces && !enAttente && <EnvoiComedyPitch personnageId={personnageId} remplace={!!dernier} />}
+      {(acces || peutRenvoyer) && !enAttente && <EnvoiComedyPitch personnageId={personnageId} remplace={!!dernier} />}
     </PageShell>
   );
 }

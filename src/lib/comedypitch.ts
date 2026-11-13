@@ -100,6 +100,27 @@ export async function peutDeposerComedyPitch(
   return cinecrush || ouverture ? acces : null;
 }
 
+/**
+ * Le comédien dont la vidéo a été refusée, n'a pas pu être lue ou dont
+ * l'envoi s'est interrompu garde le droit de la renvoyer, même s'il ne
+ * peut plus déposer (semaine du CinéCrush finie, 13/11) : l'e-mail de
+ * refus le lui promet. Rend le projet du dépôt, ou null.
+ */
+export async function peutRenvoyerComedyPitch(userId: string, personnageId: string): Promise<string | null> {
+  const admin = createAdminClient();
+  if (!admin) return null;
+  const { data } = await admin
+    .from("videopitch_depots")
+    .select("project_id, etat")
+    .eq("genre", "comedypitch")
+    .eq("personnage_id", personnageId)
+    .eq("deposant_id", userId)
+    .order("cree_le", { ascending: false })
+    .limit(1)
+    .maybeSingle<{ project_id: string; etat: string }>();
+  return data && ["refuse", "echec", "envoi"].includes(data.etat) ? data.project_id : null;
+}
+
 export type ComedyPitchEnLigne = {
   id: string;
   personnageId: string;

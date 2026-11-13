@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { TAILLE_MAX, TAILLE_MORCEAU, dossierDepot, extension, supprimerFichiers } from "@/lib/videopitch";
-import { peutDeposerComedyPitch } from "@/lib/comedypitch";
+import { peutDeposerComedyPitch, peutRenvoyerComedyPitch } from "@/lib/comedypitch";
 import { peutDeposer, utilisateur } from "../acces";
 
 /**
@@ -71,7 +71,9 @@ async function ouvrirComedyPitch(corps: { personnage_id: string; nom?: string; t
   const u = await utilisateur();
   if (!u) return Response.json({ erreur: "Connectez-vous." }, { status: 401 });
   const acces = await peutDeposerComedyPitch(u.supabase, u.id, u.estAdmin, corps.personnage_id);
-  if (!acces) return Response.json({ erreur: "Vous ne pouvez pas déposer de ComedyPitch pour ce personnage." }, { status: 403 });
+  // Une vidéo refusée ou illisible se renvoie toujours, même quand le dépôt est refermé.
+  const projetId = acces?.projet.id ?? (await peutRenvoyerComedyPitch(u.id, corps.personnage_id));
+  if (!projetId) return Response.json({ erreur: "Vous ne pouvez pas déposer de ComedyPitch pour ce personnage." }, { status: 403 });
   const admin = createAdminClient();
   if (!admin) return Response.json({ erreur: "Indisponible." }, { status: 500 });
 
@@ -99,7 +101,7 @@ async function ouvrirComedyPitch(corps: { personnage_id: string; nom?: string; t
     .insert({
       genre: "comedypitch",
       personnage_id: corps.personnage_id,
-      project_id: acces.projet.id,
+      project_id: projetId,
       deposant_id: u.id,
       langue: "fr",
       nom_origine: (corps.nom ?? "video").slice(0, 200),
