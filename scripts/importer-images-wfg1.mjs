@@ -23,7 +23,7 @@ const env = Object.fromEntries(
 );
 
 const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
-const RACINE = "/home/wfg/imports/extrait/img";
+const RACINE = process.env.RACINE_IMG_WFG1 ?? "/home/wfg/imports/extrait/img"; // RACINE_IMG_WFG1 : ne traiter qu'un sous-ensemble (réimportation)
 const MAX_MOODBOARD = 10;
 const LARGEUR_MAX = 1600;
 

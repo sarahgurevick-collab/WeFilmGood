@@ -260,3 +260,37 @@ rend mieux les accents que celle de septembre), puis le schéma d'essai a
 été supprimé. Sans la copie de septembre comme témoin, le même essai
 voudrait ramener 1 compte et 6 projets supprimés exprès sur WFG 2 : c'est
 ce que la référence empêche.
+
+## Réimportation du 14 novembre 2026 : ce qui a vraiment été fait
+
+L'appel à projets clos, la copie finale a été prise le 14/11/2026 à 12 h 08
+(heure de Paris) et appliquée le jour même : 307 comptes, 226 projets,
+407 personnages, 238 fiches de lecture, 21 profils d'équipiers, puis
+248 photos de profil, 222 vignettes, 143 portraits de personnages,
+212 scénarios et 107 documents annexes. Rapports dans
+`~/imports/reimport-wfg1-applique-2026-11-14-*.md`, journaux dans
+`~/imports/final/`.
+
+Ce qui diffère du mode d'emploi ci-dessus :
+
+- **o2switch n'a pas la « sauvegarde complète » de cPanel** : seulement
+  JetBackup 5, dont le téléchargement part vers le navigateur. La base a été
+  copiée depuis le **Terminal de cPanel** avec `scripts/copie-base-wfg1.php`
+  (déposé par FTP dans `~/wfg-backups/`, lancé par
+  `php wfg-backups/copie-base.php`) : il lit les identifiants dans la
+  configuration du site sans les afficher et écrit
+  `~/wfg-backups/wfg1-final.sql.gz`, repris ensuite par FTP.
+- **Le mot de passe FTP n'est jamais passé par la conversation** : Sarah l'a
+  collé dans le terminal du serveur (`~/imports/final/poser-cle-ftp.sh`), qui
+  l'a rangé dans `~/.netrc` ; `curl --netrc` et `wget` le lisent là.
+- **Fichiers** : `wget -r -nc` (rien de déjà rapatrié n'est remplacé) vers
+  `~/imports/extrait/img/` et `~/imports/docs/`, puis les seuls fichiers
+  nouveaux recopiés dans un dossier à part et donnés aux scripts par
+  `RACINE_IMG_WFG1=…` et `RACINE_DOCS_WFG1=…` : ainsi rien de ce qui a été
+  retiré exprès de WFG 2 depuis septembre ne revient. Les PDF nouveaux sont
+  allégés avant (`~/imports/compresser-tout.sh`).
+- **Sociétés** : `reprendre-societes-wfg1.sql` lit le schéma `wfg1` ; pour les
+  nouveaux producteurs, le rejouer en remplaçant `wfg1.` par `wfg1_final.`
+  (`sed 's/wfg1\./wfg1_final./g' … | psql`).
+- La réimportation est rejouable : une nouvelle copie se charge avec
+  `--remplacer` et n'ajoute que ce qui manque encore.

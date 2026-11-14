@@ -36,7 +36,7 @@ const env = Object.fromEntries(
 );
 
 const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
-const RACINE = "/home/wfg/imports/docs";
+const RACINE = process.env.RACINE_DOCS_WFG1 ?? "/home/wfg/imports/docs"; // RACINE_DOCS_WFG1 : ne traiter qu'un sous-ensemble (réimportation)
 const MAX_MOODBOARD = Infinity; // 07/10 : plus de limite pour les anciens projets (le site, lui, en tient 9 au dépôt)
 const LARGEUR_MAX = 1600;
 const IMAGE = /\.(jpe?g|png|gif|webp)$/i;
