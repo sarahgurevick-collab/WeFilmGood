@@ -138,14 +138,19 @@ export default async function Home() {
             total={chiffres.talents}
             libelleTotal="Talents"
             parts={[
-              { label: "Scénaristes", n: chiffres.metiers.scenariste ?? 0 },
-              { label: "Réalisateurs", n: chiffres.metiers.realisateur ?? 0 },
-              { label: "Producteurs", n: chiffres.metiers.producteur ?? 0 },
-              { label: "Comédiens", n: chiffres.metiers.comedien ?? 0 },
-              { label: "Compositeurs", n: chiffres.metiers.compositeur ?? 0 },
+              { label: "Scénaristes", slug: "scenariste", n: chiffres.metiers.scenariste ?? 0 },
+              { label: "Réalisateurs", slug: "realisateur", n: chiffres.metiers.realisateur ?? 0 },
+              { label: "Producteurs", slug: "producteur", n: chiffres.metiers.producteur ?? 0 },
+              { label: "Comédiens", slug: "comedien", n: chiffres.metiers.comedien ?? 0 },
+              { label: "Compositeurs", slug: "compositeur", n: chiffres.metiers.compositeur ?? 0 },
             ]}
             pays={Object.entries(chiffres.pays_detail ?? {})
-              .map(([code, n]) => ({ code, nom: nomDuPays(code) ?? code, n }))
+              .map(([code, n]) => ({
+                code,
+                nom: nomDuPays(code) ?? code,
+                n,
+                metiers: chiffres.pays_metiers?.[code] ?? {},
+              }))
               .sort((a, b) => b.n - a.n)}
             compteurs={[
               { label: "Scénarios analysés", n: chiffres.fiches },

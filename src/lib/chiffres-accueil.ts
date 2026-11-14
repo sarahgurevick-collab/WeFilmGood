@@ -14,6 +14,8 @@ export type ChiffresAccueil = {
   pays: number;
   /** Les talents par pays : code à deux lettres → nombre (0270). */
   pays_detail?: Record<string, number>;
+  /** Les talents par pays et par métier : code → métier → nombre (0274). */
+  pays_metiers?: Record<string, Record<string, number>>;
   signes: number;
 };
 

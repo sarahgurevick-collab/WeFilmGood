@@ -7,17 +7,27 @@ import styles from "./GlobePays.module.css";
 
 /**
  * Le globe Terre des pays (essai du 13/11/2026, Sarah, d'après « cobe globe »
- * de 21st.dev) : une Terre en points qui tourne, un point rouge par pays à sa
- * vraie place, plus gros quand le pays compte plus de talents. Le globe
+ * de 21st.dev) : une Terre en points qui tourne. Dans chaque pays, un point
+ * par métier, à la couleur de ce métier sur l'anneau d'à côté, plus gros
+ * quand ce métier y compte plus de talents (14/11, Sarah : « Ma fille a
+ * compris qu'il n'y avait que des scénaristes sur le globe » — avant, un
+ * seul point rouge par pays). Le globe
  * tourne tout seul jusqu'à un pays parmi les mieux représentés, sa carte sort
  * (drapeau, nom, nombre de talents), puis il part vers le suivant. On peut le
  * faire tourner à la main. Globe d'avant : étiquette git
  * « accueil-avant-globe-terre ».
  */
-export type PaysDuGlobe = { code: string; nom: string; n: number };
+export type PaysDuGlobe = { code: string; nom: string; n: number; metiers?: Record<string, number> };
+/** Un métier de l'anneau et sa couleur (« #da2c25 »). */
+export type FamilleDuGlobe = { slug: string; label: string; couleur: string };
 
-const ROUGE: [number, number, number] = [0.855, 0.173, 0.145];
-const SOMBRE: [number, number, number] = [0.1, 0.1, 0.1];
+type Couleur = [number, number, number];
+const ROUGE: Couleur = [0.855, 0.173, 0.145];
+
+function couleurDe(hex: string): Couleur {
+  const n = parseInt(hex.slice(1), 16);
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
 const TOUR = 2 * Math.PI;
 // Le temps laissé au globe pour tourner jusqu'au pays, puis celui de la carte.
 const TRAJET = 1500;
@@ -30,9 +40,12 @@ function anglesDe([lat, lng]: [number, number]): [number, number] {
 export default function GlobePays({
   pays,
   vedettes,
+  familles = [],
   dureeVedette = 2800,
 }: {
   pays: PaysDuGlobe[];
+  /** Les métiers montrés, chacun avec sa couleur. */
+  familles?: FamilleDuGlobe[];
   /** Les codes des pays qui sortent en exemple. */
   vedettes: string[];
   dureeVedette?: number;
@@ -50,13 +63,31 @@ export default function GlobePays({
     const calme = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const places = pays.filter((p) => POSITIONS_PAYS[p.code]);
     const max = Math.max(1, ...places.map((p) => p.n));
+    // Du plus petit point au plus gros, sans que la France écrase tout.
+    const poids = (n: number) => Math.log(1 + n) / Math.log(1 + max);
+    const teintes = familles.map((f) => ({ slug: f.slug, couleur: couleurDe(f.couleur) }));
     const marqueurs = (enAvant: string | null) =>
-      places.map((p) => ({
-        location: POSITIONS_PAYS[p.code],
-        // Du plus petit point au plus gros, sans que la France écrase tout.
-        size: (enAvant === p.code ? 0.03 : 0) + 0.018 + 0.05 * (Math.log(1 + p.n) / Math.log(1 + max)),
-        color: enAvant === p.code ? SOMBRE : ROUGE,
-      }));
+      places.flatMap((p) => {
+        const [lat, lng] = POSITIONS_PAYS[p.code];
+        const plus = enAvant === p.code ? 0.02 : 0;
+        const presents = teintes.filter((t) => (p.metiers?.[t.slug] ?? 0) > 0);
+        // Un pays dont aucun talent n'a l'un de ces métiers garde son point rouge.
+        if (presents.length === 0) {
+          return [{ location: [lat, lng] as [number, number], size: plus + 0.018 + 0.05 * poids(p.n), color: ROUGE }];
+        }
+        // Les points d'un pays se rangent en rond autour de sa place, d'autant
+        // plus écartés que le pays compte de talents.
+        const rayon = presents.length === 1 ? 0 : 1.3 + 2.4 * poids(p.n) + (plus ? 1 : 0);
+        const serre = Math.max(0.3, Math.cos((lat * Math.PI) / 180));
+        return presents.map((t, i) => {
+          const angle = (i / presents.length) * 2 * Math.PI - Math.PI / 2;
+          return {
+            location: [lat - rayon * Math.sin(angle), lng + (rayon * Math.cos(angle)) / serre] as [number, number],
+            size: plus + 0.014 + 0.04 * poids(p.metiers?.[t.slug] ?? 0),
+            color: t.couleur,
+          };
+        });
+      });
     const candidats = places.filter((p) => vedettes.includes(p.code));
 
     // Au départ : la France face à nous.
@@ -170,7 +201,7 @@ export default function GlobePays({
       window.removeEventListener("pointerup", lache);
       globe?.destroy();
     };
-  }, [pays, vedettes, dureeVedette]);
+  }, [pays, vedettes, familles, dureeVedette]);
 
   return (
     <div ref={scene} className={styles.scene}>
@@ -179,12 +210,28 @@ export default function GlobePays({
         <>
           <span className={styles.repere} aria-hidden="true" />
           <div key={vedette.code} className={styles.carte}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className={styles.drapeau} src={`/drapeaux/${vedette.code.toLowerCase()}.svg`} alt="" />
-            <p className={styles.nom}>{vedette.nom}</p>
-            <p className={styles.nombre}>
-              {vedette.n.toLocaleString("fr-FR")} talent{vedette.n > 1 ? "s" : ""}
-            </p>
+            <div className={styles.tete}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className={styles.drapeau} src={`/drapeaux/${vedette.code.toLowerCase()}.svg`} alt="" />
+              <div>
+                <p className={styles.nom}>{vedette.nom}</p>
+                <p className={styles.nombre}>
+                  {vedette.n.toLocaleString("fr-FR")} talent{vedette.n > 1 ? "s" : ""}
+                </p>
+              </div>
+            </div>
+            {/* Les métiers du pays, à la couleur de leurs points. */}
+            <ul className={styles.metiers}>
+              {familles
+                .filter((f) => (vedette.metiers?.[f.slug] ?? 0) > 0)
+                .map((f) => (
+                  <li key={f.slug}>
+                    <i style={{ background: f.couleur }} />
+                    <span>{f.label}</span>
+                    <strong>{(vedette.metiers?.[f.slug] ?? 0).toLocaleString("fr-FR")}</strong>
+                  </li>
+                ))}
+            </ul>
           </div>
         </>
       )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import GlobePays from "./GlobePays";
 import styles from "./AnneauChiffres.module.css";
 
@@ -11,8 +11,15 @@ import styles from "./AnneauChiffres.module.css";
  * se dessine et les nombres montent quand le bloc arrive à l'écran ; au
  * survol d'une part (ou de sa ligne), le centre montre ce métier.
  */
-export type Part = { label: string; n: number; /** Ce chiffre s'affiche sous le globe des pays. */ globe?: boolean };
-export type PaysTalents = { code: string; nom: string; n: number };
+export type Part = {
+  label: string;
+  n: number;
+  /** Le métier de cette part, pour retrouver sa couleur sur le globe. */
+  slug?: string;
+  /** Ce chiffre s'affiche sous le globe des pays. */
+  globe?: boolean;
+};
+export type PaysTalents = { code: string; nom: string; n: number; metiers?: Record<string, number> };
 
 // Les couleurs du logo (13/11, Sarah : « les couleurs sont tristes ») : le
 // rouge, le bleu, le vert et le jaune des engagements (globals.css), puis le
@@ -96,7 +103,17 @@ export default function AnneauChiffres({
   const centre = survol === null ? { label: libelleTotal, n: total } : parts[survol];
 
   // Les pays qui sortent du globe en exemple : les mieux représentés.
-  const vedettes = pays.slice(0, PAYS_EN_VEDETTE).map((p) => p.code);
+  // (Gardés d'un affichage à l'autre : sinon le globe repart de zéro à chaque
+  // survol de l'anneau.)
+  const vedettes = useMemo(() => pays.slice(0, PAYS_EN_VEDETTE).map((p) => p.code), [pays]);
+  // Les métiers de l'anneau, avec leur couleur : les mêmes sur le globe.
+  const familles = useMemo(
+    () =>
+      parts.flatMap((p, i) =>
+        p.slug ? [{ slug: p.slug, label: p.label, couleur: COULEURS[i % COULEURS.length] }] : [],
+      ),
+    [parts],
+  );
   const compteurPays = pays.length > 0 ? compteurs.find((c) => c.globe) : undefined;
   const autres = compteurs.filter((c) => c !== compteurPays);
 
@@ -112,7 +129,7 @@ export default function AnneauChiffres({
           talents. */}
       {compteurPays && (
         <div className={styles.coteGlobe}>
-          <GlobePays pays={pays} vedettes={vedettes} dureeVedette={2800} />
+          <GlobePays pays={pays} vedettes={vedettes} familles={familles} dureeVedette={2800} />
           <p className={styles.sousGlobe}>
             <strong>
               <Nombre n={compteurPays.n} lance={lance} />
