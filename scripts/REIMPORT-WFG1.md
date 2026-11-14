@@ -300,3 +300,6 @@ Ce qui diffère du mode d'emploi ci-dessus :
   est rejouable après une nouvelle copie. Aucun lecteur n'est posé : les 17
   lectures déjà confiées sur WFG 1 sont listées dans le classeur de
   `~/exports`.
+- **Lectures déjà confiées** : la migration `0277` confie au même lecteur,
+  sur WFG 2, les lectures confiées sur WFG 1 et pas encore écrites (15 le
+  14/11, mission « proposée », sans email). Rejouable.
