@@ -7,17 +7,18 @@ import styles from "./GlobePays.module.css";
 
 /**
  * Le globe Terre des pays (essai du 13/11/2026, Sarah, d'après « cobe globe »
- * de 21st.dev) : une Terre en points qui tourne. Dans chaque pays, un point
- * par métier, à la couleur de ce métier sur l'anneau d'à côté, plus gros
- * quand ce métier y compte plus de talents (14/11, Sarah : « Ma fille a
- * compris qu'il n'y avait que des scénaristes sur le globe » — avant, un
- * seul point rouge par pays). Le globe
- * tourne tout seul jusqu'à un pays parmi les mieux représentés, sa carte sort
- * (drapeau, nom, nombre de talents), puis il part vers le suivant. On peut le
- * faire tourner à la main. Quand la souris passe sur un pays (ou qu'on le
- * touche du doigt), son drapeau, son nom et son nombre de talents s'affichent
- * au-dessus et le globe s'arrête (14/11, Sarah : « c'est dommage que le nom
- * du pays ne s'affiche pas quand je passe la souris dessus »). Globe d'avant : étiquette git
+ * de 21st.dev) : une Terre en points qui tourne lentement. Dans chaque pays,
+ * un point par métier, à la couleur de ce métier sur l'anneau d'à côté, plus
+ * gros quand ce métier y compte plus de talents (14/11, Sarah : « Ma fille a
+ * compris qu'il n'y avait que des scénaristes sur le globe »).
+ *
+ * C'est la souris qui montre les pays (14/11, Sarah : « je voudrais remplacer
+ * l'effet automatique par la souris, qu'on puisse pointer sur une zone ») :
+ * le globe s'arrête dès que la souris est dessus ; sur un pays, sa carte
+ * s'affiche (drapeau, nom, nombre de talents, métiers). Au doigt : toucher un
+ * pays affiche sa carte quelques secondes. On peut toujours faire tourner le
+ * globe à la main. Avant (le globe allait seul d'un pays à l'autre) :
+ * étiquette git « accueil-avant-globe-a-la-souris » ; globe d'avant la Terre :
  * « accueil-avant-globe-terre ».
  */
 export type PaysDuGlobe = { code: string; nom: string; n: number; metiers?: Record<string, number> };
@@ -31,9 +32,10 @@ function couleurDe(hex: string): Couleur {
   const n = parseInt(hex.slice(1), 16);
   return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 }
-const TOUR = 2 * Math.PI;
-// Le temps laissé au globe pour tourner jusqu'au pays, puis celui de la carte.
-const TRAJET = 1500;
+// La vitesse du globe quand il tourne seul : un tour en une minute environ.
+const PAS = 0.0018;
+// Combien de temps la carte reste après un toucher du doigt.
+const DUREE_TOUCHER = 4000;
 
 /** L'angle du globe qui met ce point de la Terre face à nous. */
 function anglesDe([lat, lng]: [number, number]): [number, number] {
@@ -42,24 +44,18 @@ function anglesDe([lat, lng]: [number, number]): [number, number] {
 
 export default function GlobePays({
   pays,
-  vedettes,
   familles = [],
-  dureeVedette = 2800,
 }: {
   pays: PaysDuGlobe[];
   /** Les métiers montrés, chacun avec sa couleur. */
   familles?: FamilleDuGlobe[];
-  /** Les codes des pays qui sortent en exemple. */
-  vedettes: string[];
-  dureeVedette?: number;
 }) {
   const scene = useRef<HTMLDivElement>(null);
   const toile = useRef<HTMLCanvasElement>(null);
   const [pret, setPret] = useState(false);
-  // Le pays dont la carte est sortie.
-  const [vedette, setVedette] = useState<PaysDuGlobe | null>(null);
-  // Le pays sous la souris, et où poser sa bulle dans la scène.
-  const [bulle, setBulle] = useState<{ p: PaysDuGlobe; x: number; y: number } | null>(null);
+  // Le pays sous la souris, et où poser sa carte dans la scène (dessous
+  // quand la souris est en haut du globe, sinon dessus).
+  const [bulle, setBulle] = useState<{ p: PaysDuGlobe; x: number; y: number; dessous: boolean } | null>(null);
 
   useEffect(() => {
     const canvas = toile.current;
@@ -96,53 +92,21 @@ export default function GlobePays({
           };
         });
       });
-    const candidats = places.filter((p) => vedettes.includes(p.code));
 
     // Au départ : la France face à nous.
     let [phi, theta] = anglesDe(POSITIONS_PAYS.FR ?? [46, 2]);
-    let cible: [number, number] | null = null;
     let tire: { x: number; y: number; phi: number; theta: number } | null = null;
     let visible = true;
     let image = 0;
-    let minuterie: ReturnType<typeof setTimeout> | undefined;
-    let dernier: string | null = null;
-    // Le pays sous la souris (ou touché du doigt) : le globe l'attend.
+    // La souris est sur le globe : il ne tourne plus.
+    let dessus = false;
+    // Le pays sous la souris (ou touché du doigt).
     let survol: string | null = null;
     let finToucher: ReturnType<typeof setTimeout> | undefined;
     let globe: ReturnType<typeof createGlobe> | null = null;
 
-    const suivant = () => {
-      clearTimeout(minuterie);
-      setVedette(null);
-      globe?.update({ markers: marqueurs(null) });
-      if (calme || candidats.length === 0) return;
-      if (!visible || tire || survol) {
-        minuterie = setTimeout(suivant, 800);
-        return;
-      }
-      let p = candidats[Math.floor(Math.random() * candidats.length)];
-      if (p.code === dernier && candidats.length > 1) {
-        p = candidats[(candidats.indexOf(p) + 1) % candidats.length];
-      }
-      dernier = p.code;
-      cible = anglesDe(POSITIONS_PAYS[p.code]);
-      globe?.update({ markers: marqueurs(p.code) });
-      minuterie = setTimeout(() => {
-        if (tire) return suivant();
-        setVedette(p);
-        minuterie = setTimeout(suivant, dureeVedette);
-      }, TRAJET);
-    };
-
     const dessiner = () => {
-      if (cible && !tire) {
-        // Par le plus court chemin autour du globe.
-        let ecart = (cible[0] - phi) % TOUR;
-        if (ecart > Math.PI) ecart -= TOUR;
-        if (ecart < -Math.PI) ecart += TOUR;
-        phi += ecart * 0.07;
-        theta += (cible[1] - theta) * 0.07;
-      }
+      if (!calme && !tire && !dessus && !survol) phi += PAS;
       globe?.update({ phi, theta });
       if (visible) image = requestAnimationFrame(dessiner);
     };
@@ -168,7 +132,6 @@ export default function GlobePays({
       });
       setPret(true);
       image = requestAnimationFrame(dessiner);
-      minuterie = setTimeout(suivant, 1200);
     };
 
     const taille = new ResizeObserver(() => creer());
@@ -212,13 +175,11 @@ export default function GlobePays({
       const cadre = zone.getBoundingClientRect();
       if (survol !== p.code) {
         survol = p.code;
-        cible = null;
-        clearTimeout(minuterie);
-        setVedette(null);
         globe?.update({ markers: marqueurs(p.code) });
         canvas.style.cursor = "pointer";
       }
-      setBulle({ p, x: clientX - cadre.left, y: clientY - cadre.top });
+      const y = clientY - cadre.top;
+      setBulle({ p, x: clientX - cadre.left, y, dessous: y < cadre.height * 0.5 });
     };
     const quitter = () => {
       clearTimeout(finToucher);
@@ -227,11 +188,10 @@ export default function GlobePays({
       setBulle(null);
       canvas.style.cursor = "";
       globe?.update({ markers: marqueurs(null) });
-      clearTimeout(minuterie);
-      minuterie = setTimeout(suivant, 1500);
     };
     const passe = (e: PointerEvent) => {
       if (tire || e.pointerType === "touch") return;
+      dessus = true;
       const p = paysSous(e.clientX, e.clientY);
       if (p) montrer(p, e.clientX, e.clientY);
       else quitter();
@@ -240,8 +200,10 @@ export default function GlobePays({
     const appui = (e: PointerEvent) => {
       quitter();
       tire = { x: e.clientX, y: e.clientY, phi, theta };
-      cible = null;
-      setVedette(null);
+    };
+    const sortie = () => {
+      dessus = false;
+      quitter();
     };
     const glisse = (e: PointerEvent) => {
       if (!tire) return;
@@ -252,80 +214,65 @@ export default function GlobePays({
       if (!tire) return;
       const bouge = Math.hypot(e.clientX - tire.x, e.clientY - tire.y);
       tire = null;
-      clearTimeout(minuterie);
-      // Un toucher sans glisser, sur un pays : sa bulle reste trois secondes.
+      // Un toucher sans glisser, sur un pays : sa carte reste quelques secondes.
       const p = bouge < 8 ? paysSous(e.clientX, e.clientY) : null;
-      if (p) {
-        montrer(p, e.clientX, e.clientY);
-        if (e.pointerType === "touch") finToucher = setTimeout(quitter, 3000);
-        return;
-      }
-      minuterie = setTimeout(suivant, 2500);
+      if (!p) return;
+      montrer(p, e.clientX, e.clientY);
+      if (e.pointerType === "touch") finToucher = setTimeout(quitter, DUREE_TOUCHER);
     };
     canvas.addEventListener("pointerdown", appui);
     canvas.addEventListener("pointermove", passe, { passive: true });
-    canvas.addEventListener("pointerleave", quitter);
+    canvas.addEventListener("pointerleave", sortie);
     window.addEventListener("pointermove", glisse, { passive: true });
     window.addEventListener("pointerup", lache, { passive: true });
 
     return () => {
-      clearTimeout(minuterie);
       clearTimeout(finToucher);
       cancelAnimationFrame(image);
       taille.disconnect();
       veille.disconnect();
       canvas.removeEventListener("pointerdown", appui);
       canvas.removeEventListener("pointermove", passe);
-      canvas.removeEventListener("pointerleave", quitter);
+      canvas.removeEventListener("pointerleave", sortie);
       window.removeEventListener("pointermove", glisse);
       window.removeEventListener("pointerup", lache);
       globe?.destroy();
     };
-  }, [pays, vedettes, familles, dureeVedette]);
+  }, [pays, familles]);
 
   return (
     <div ref={scene} className={styles.scene}>
       <canvas ref={toile} className={`${styles.toile} ${pret ? styles.pret : ""}`} aria-hidden="true" />
       {bulle && (
-        <div className={styles.bulle} style={{ left: bulle.x, top: bulle.y }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/drapeaux/${bulle.p.code.toLowerCase()}.svg`} alt="" />
-          <span>
-            <strong>{bulle.p.nom}</strong>
-            <em>
-              {bulle.p.n.toLocaleString("fr-FR")} talent{bulle.p.n > 1 ? "s" : ""}
-            </em>
-          </span>
-        </div>
-      )}
-      {vedette && !bulle && (
-        <>
-          <span className={styles.repere} aria-hidden="true" />
-          <div key={vedette.code} className={styles.carte}>
-            <div className={styles.tete}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className={styles.drapeau} src={`/drapeaux/${vedette.code.toLowerCase()}.svg`} alt="" />
-              <div>
-                <p className={styles.nom}>{vedette.nom}</p>
-                <p className={styles.nombre}>
-                  {vedette.n.toLocaleString("fr-FR")} talent{vedette.n > 1 ? "s" : ""}
-                </p>
-              </div>
+        <div
+          className={`${styles.carte} ${bulle.dessous ? styles.dessous : ""}`}
+          style={{ left: bulle.x, top: bulle.y }}
+        >
+          <div className={styles.tete}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.drapeau} src={`/drapeaux/${bulle.p.code.toLowerCase()}.svg`} alt="" />
+            <div>
+              <p className={styles.nom}>{bulle.p.nom}</p>
+              <p className={styles.nombre}>
+                {bulle.p.n.toLocaleString("fr-FR")} talent{bulle.p.n > 1 ? "s" : ""}
+              </p>
             </div>
-            {/* Les métiers du pays, à la couleur de leurs points. */}
+          </div>
+          {/* Les métiers du pays, à la couleur de leurs points. */}
+          {familles.some((f) => (bulle.p.metiers?.[f.slug] ?? 0) > 0) && (
             <ul className={styles.metiers}>
               {familles
-                .filter((f) => (vedette.metiers?.[f.slug] ?? 0) > 0)
+                .filter((f) => (bulle.p.metiers?.[f.slug] ?? 0) > 0)
                 .map((f) => (
                   <li key={f.slug}>
                     <i style={{ background: f.couleur }} />
                     <span>{f.label}</span>
-                    <strong>{(vedette.metiers?.[f.slug] ?? 0).toLocaleString("fr-FR")}</strong>
+                    <strong>{(bulle.p.metiers?.[f.slug] ?? 0).toLocaleString("fr-FR")}</strong>
                   </li>
                 ))}
             </ul>
-          </div>
-        </>
+          )}
+        </div>
       )}
     </div>
   );

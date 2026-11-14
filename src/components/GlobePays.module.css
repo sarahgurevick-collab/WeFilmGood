@@ -1,5 +1,5 @@
 /* Le globe Terre des pays (essai du 13/11) : une Terre en points, un point
-   rouge par pays ; la carte du pays mis en avant sort sous lui. */
+   par métier dans chaque pays ; la carte du pays sort près de la souris. */
 .scene {
   position: relative;
   width: 100%;
@@ -27,59 +27,26 @@
   opacity: 1;
 }
 
-/* Le repère du pays mis en avant, au centre du globe. */
-.repere {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 26px;
-  height: 26px;
-  margin: -13px 0 0 -13px;
-  border: 2px solid #da2c25;
-  border-radius: 50%;
-  pointer-events: none;
-  animation: bat 1.4s ease-out infinite;
-}
-
-@keyframes bat {
-  from {
-    transform: scale(0.5);
-    opacity: 1;
-  }
-  to {
-    transform: scale(1.6);
-    opacity: 0;
-  }
-}
-
+/* La carte du pays sous la souris : au-dessus d'elle, ou dessous quand la
+   souris est en haut du globe. */
 .carte {
   position: absolute;
-  left: 50%;
-  top: 53%;
-  min-width: 210px;
-  max-width: 80%;
-  padding: 16px 22px 18px;
+  z-index: 2;
+  min-width: 200px;
+  padding: 12px 16px 14px;
   border-radius: 16px;
   background: #fff;
   color: #1a1a1a;
-  text-align: center;
+  white-space: nowrap;
   text-transform: none;
   letter-spacing: normal;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
   pointer-events: none;
-  transform: translateX(-50%);
-  animation: sort 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translate(-50%, calc(-100% - 18px));
 }
 
-@keyframes sort {
-  from {
-    transform: translate(-50%, -30px) scale(0.3);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(-50%) scale(1);
-    opacity: 1;
-  }
+.carte.dessous {
+  transform: translate(-50%, 24px);
 }
 
 /* Le drapeau à gauche, le nom et le nombre à droite : la carte reste basse
@@ -94,8 +61,8 @@
 .drapeau {
   flex: none;
   display: block;
-  width: 52px;
-  height: 52px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   border: 2px solid #fff;
   object-fit: cover;
@@ -111,52 +78,6 @@
 .nombre {
   margin: 0;
   font-size: 15px;
-  font-weight: 700;
-  color: #da2c25;
-}
-
-/* La bulle du pays sous la souris : drapeau, nom, nombre de talents. */
-.bulle {
-  position: absolute;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px 8px 8px;
-  border-radius: 999px;
-  background: #fff;
-  color: #1a1a1a;
-  white-space: nowrap;
-  text-transform: none;
-  letter-spacing: normal;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
-  pointer-events: none;
-  transform: translate(-50%, calc(-100% - 16px));
-}
-
-.bulle img {
-  flex: none;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.bulle span {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-  text-align: left;
-}
-
-.bulle strong {
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.bulle em {
-  font-size: 13px;
-  font-style: normal;
   font-weight: 700;
   color: #da2c25;
 }
@@ -191,20 +112,12 @@
 
 @media (max-width: 480px) {
   .carte {
-    top: 48%;
-    padding: 12px 16px 14px;
-    min-width: 180px;
+    min-width: 170px;
+    padding: 10px 14px 12px;
   }
 
   .drapeau {
-    width: 44px;
-    height: 44px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .repere,
-  .carte {
-    animation: none;
+    width: 40px;
+    height: 40px;
   }
 }

@@ -29,8 +29,6 @@ const RAYON = 80;
 const TOUR = 2 * Math.PI * RAYON;
 const ECART = 3;
 const DUREE = 1400;
-// Combien de pays sortent du globe en exemple, parmi les mieux représentés.
-const PAYS_EN_VEDETTE = 40;
 
 /** Le nombre qui monte de zéro, une fois le bloc à l'écran. */
 function useMontee(cible: number, lance: boolean): number {
@@ -102,11 +100,9 @@ export default function AnneauChiffres({
 
   const centre = survol === null ? { label: libelleTotal, n: total } : parts[survol];
 
-  // Les pays qui sortent du globe en exemple : les mieux représentés.
+  // Les métiers de l'anneau, avec leur couleur : les mêmes sur le globe.
   // (Gardés d'un affichage à l'autre : sinon le globe repart de zéro à chaque
   // survol de l'anneau.)
-  const vedettes = useMemo(() => pays.slice(0, PAYS_EN_VEDETTE).map((p) => p.code), [pays]);
-  // Les métiers de l'anneau, avec leur couleur : les mêmes sur le globe.
   const familles = useMemo(
     () =>
       parts.flatMap((p, i) =>
@@ -125,11 +121,11 @@ export default function AnneauChiffres({
       {/* Le globe des pays, en grand (13/11, Sarah : « le plus important
           devient le globe, les statistiques à côté en plus petit ») : une
           Terre en points (essai du même jour, à la place de la sphère de
-          drapeaux). Les pays sortent l'un après l'autre avec leur nombre de
+          drapeaux). La souris montre chaque pays avec son nombre de
           talents. */}
       {compteurPays && (
         <div className={styles.coteGlobe}>
-          <GlobePays pays={pays} vedettes={vedettes} familles={familles} dureeVedette={2800} />
+          <GlobePays pays={pays} familles={familles} />
           <p className={styles.sousGlobe}>
             <strong>
               <Nombre n={compteurPays.n} lance={lance} />
