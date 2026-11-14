@@ -192,6 +192,14 @@ node scripts/corriger-accents.mjs essai
 
 (puis `appliquer` : rend leurs accents aux textes arrivés avec « e? »)
 
+```bash
+docker exec -i supabase-db psql -U postgres -d postgres < scripts/reprendre-societes-wfg1.sql
+```
+
+(reprend le nom de société et le SIREN des nouveaux producteurs, sans rien
+écraser — 14/11 ; puis `node scripts/controler-societes-siren.mjs` contrôle
+les nouveaux numéros dans l'annuaire des entreprises et refait le classeur)
+
 Les nouvelles fiches reçoivent leurs vecteurs par le rattrapage horaire ;
 leur tagline et leurs mots-clés IA se font ensuite comme pour les autres.
 

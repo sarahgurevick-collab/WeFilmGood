@@ -35,7 +35,7 @@ export default async function ParcoursPage({
       supabase
         .from("profiles")
         .select(
-          "category, biofilmo, agent_name, agent_reponse, reseaux_reponse, site_reponse, website, autre_metier_actif, autre_metier, autre_genre_actif, autre_genre",
+          "category, societe, biofilmo, agent_name, agent_reponse, reseaux_reponse, site_reponse, website, autre_metier_actif, autre_metier, autre_genre_actif, autre_genre",
         )
         .eq("id", user.id)
         .maybeSingle(),
@@ -88,6 +88,16 @@ export default async function ParcoursPage({
             }
           />
         </label>
+
+        {/* La société du producteur (14/11, Sarah : « c'est le nom de société
+            qu'on devrait mentionner ») : reprise de WFG 1, il la corrige ici
+            quand il change de structure. */}
+        {profil?.category === "producteur" && (
+          <label className={formStyles.field}>
+            <span>Société</span>
+            <input type="text" name="societe" maxLength={200} defaultValue={profil?.societe ?? ""} />
+          </label>
+        )}
 
         {metiersAffiches.length > 0 ? (
           <div className={formStyles.field}>

@@ -164,6 +164,8 @@ export async function saveParcours(formData: FormData) {
             website: formData.get("site_reponse") === "oui" ? texte(formData, "website") : null,
           }
         : {}),
+      // La société : seul le producteur la saisit (14/11).
+      ...(profil?.category === "producteur" ? { societe: texte(formData, "societe")?.slice(0, 200) ?? null } : {}),
       autre_metier_actif: formData.get("autre_metier_actif") === "1",
       autre_metier: formData.get("autre_metier_actif") === "1" ? texte(formData, "autre_metier") : null,
       autre_genre_actif: formData.get("autre_genre_actif") === "1",

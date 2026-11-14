@@ -32,6 +32,7 @@ type Membre = {
   full_name: string | null;
   display_name: string | null;
   biofilmo: string | null;
+  societe: string | null;
   city: string | null;
   country: string | null;
   website: string | null;
@@ -71,7 +72,7 @@ export default async function ProfilMembrePage({
 
   const { data: membre } = await clientProfils(supabase)
     .from("profiles")
-    .select("id, full_name, display_name, biofilmo, website, avatar_url, avatar_original_path, photo_x, photo_y")
+    .select("id, full_name, display_name, biofilmo, societe, website, avatar_url, avatar_original_path, photo_x, photo_y")
     .eq("id", id)
     .maybeSingle<Membre>();
 
@@ -99,14 +100,19 @@ export default async function ProfilMembrePage({
   // celui du formulaire « Qui êtes-vous ? », sinon celui des coordonnées
   // de dépôt, comme dans l'écran des membres.
   let coordonnees: { email: string | null; telephone: string | null } | null = null;
+  // Le SIREN de sa société, repris de WFG 1 et contrôlé dans l'annuaire des
+  // entreprises (14/11, Sarah) : pour l'administration seulement.
+  let siren: { siren: string; etat: string | null; denomination: string | null; fermee_le: string | null } | null = null;
   if (estAdmin) {
     const service = createAdminClient();
     if (service) {
-      const [{ data: compte }, { data: prive }, { data: contact }] = await Promise.all([
+      const [{ data: compte }, { data: prive }, { data: contact }, { data: societe }] = await Promise.all([
         service.auth.admin.getUserById(membre.id),
         service.from("profile_private_details").select("phone").eq("profile_id", membre.id).maybeSingle(),
         service.from("profile_contact_info").select("phone").eq("profile_id", membre.id).maybeSingle(),
+        service.from("societes_siren").select("siren, etat, denomination, fermee_le").eq("profile_id", membre.id).maybeSingle(),
       ]);
+      siren = societe ?? null;
       const email = compte.user?.email ?? null;
       coordonnees = {
         email: email && email.endsWith("@sans-adresse.invalid") ? null : email,
@@ -235,10 +241,28 @@ export default async function ProfilMembrePage({
               <ChangerTelephoneMembre profileId={membre.id} telephone={coordonnees.telephone} />
             </>
           )}
+          {siren && (
+            <span>
+              SIREN {siren.siren.replace(/(\d{3})(?=\d)/g, "$1 ")}
+              {siren.denomination ? ` (${siren.denomination})` : ""} :{" "}
+              {siren.etat === "active"
+                ? "société en activité"
+                : siren.etat === "fermee"
+                  ? `société fermée${siren.fermee_le ? ` le ${new Date(siren.fermee_le).toLocaleDateString("fr-FR")}` : ""}`
+                  : siren.etat === "introuvable"
+                    ? "numéro introuvable"
+                    : "pas encore contrôlé"}
+            </span>
+          )}
         </div>
       )}
 
       {enveloppe}
+
+      {/* La société du producteur (14/11, Sarah). */}
+      {membre.societe && !masque && (
+        <p style={{ marginTop: 24, fontWeight: 700 }}>{membre.societe}</p>
+      )}
 
       {masque ? null : membre.biofilmo ? (
         <p style={{ marginTop: 24, whiteSpace: "pre-wrap" }}>{membre.biofilmo}</p>
