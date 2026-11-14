@@ -5,12 +5,16 @@
 // email envoyé, ville/pays/biofilmo repris s'ils sont vides, rôle lecteur,
 // profil lecteur, fiche WFG 1 marquée comme reprise. Laissés de côté : les
 // comptes supprimés, les comptes « Clermont » de test, les membres supprimés.
-//   node scripts/preparer-anciens-lecteurs.mjs [--ecrire]
+//   node scripts/preparer-anciens-lecteurs.mjs [--ecrire] [--seulement=14175,14292]
+// --seulement : ne préparer que ces identifiants WFG 1 (14/11 : deux lectrices
+// arrivées après la copie de septembre, posées d'abord dans legacy_profiles).
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { createClient } from "@supabase/supabase-js";
 
 const ECRIRE = process.argv.includes("--ecrire");
+const SEULEMENT = (process.argv.find((a) => a.startsWith("--seulement="))?.split("=")[1] ?? "")
+  .split(",").map(Number).filter(Boolean);
 const env = Object.fromEntries(
   readFileSync(new URL("../.env.local", import.meta.url), "utf8")
     .split("\n")
@@ -21,7 +25,7 @@ const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE
 const sql = (q) =>
   JSON.parse(execFileSync("docker", ["exec", "supabase-db", "psql", "-U", "postgres", "-At", "-c", q], { encoding: "utf8" }).trim() || "[]");
 
-const anciens = sql(`with ids as (
+const tous = sql(`with ids as (
     select legacy_user_id id from legacy_profiles where role_slug = 'lecteur'
     union select reader_legacy_id from legacy_reading_reports where statut <> 0 and reader_legacy_id is not null)
   select coalesce(json_agg(json_build_object('id', lp.legacy_user_id, 'email', lp.email, 'full_name', lp.full_name,
@@ -32,6 +36,8 @@ const anciens = sql(`with ids as (
     and coalesce(trim(lp.email), '') <> '' and lp.email not ilike '%@sans-adresse%'
     and lp.full_name not ilike 'clermont%'
     and not exists (select 1 from membres_supprimes m where m.legacy_user_id = ids.id or lower(m.email) = lower(lp.email))`);
+
+const anciens = SEULEMENT.length ? tous.filter((a) => SEULEMENT.includes(a.id)) : tous;
 
 console.log(`${anciens.length} lecteurs à préparer (${anciens.filter((a) => a.uid).length} ont déjà un compte avec la même adresse).`);
 if (!ECRIRE) {
