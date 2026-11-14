@@ -91,8 +91,8 @@ export default async function ProjetsEnAttentePage() {
   // sur WFG 2 ne demande pas une lecture. Seuls comptent ici les projets dont
   // la lecture est payée (09/11, Sarah : « on envoie son scénario en payant
   // 50 euros ») : le bouton « Envoyer » de l'onglet Documents, migration 0249.
-  // La file en cours sur l'ancien site arrivera avec la dernière copie, à la
-  // bascule.
+  // La file en cours sur l'ancien site est entrée le 14/11 avec la dernière
+  // copie : une demande « reprise » à 0 € par projet (migration 0276).
   const { data: nouveaux } = await supabase
     .from("lecture_demandes")
     .select("project_id")

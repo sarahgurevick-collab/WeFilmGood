@@ -294,3 +294,9 @@ Ce qui diffère du mode d'emploi ci-dessus :
   (`sed 's/wfg1\./wfg1_final./g' … | psql`).
 - La réimportation est rejouable : une nouvelle copie se charge avec
   `--remplacer` et n'ajoute que ce qui manque encore.
+- **File d'attente des lecteurs** : la migration `0276` fait entrer dans
+  /admin/projets-en-attente les projets « en lecture » sur WFG 1 dont aucune
+  fiche n'est écrite (92 le 14/11), par une demande « reprise » à 0 €. Elle
+  est rejouable après une nouvelle copie. Aucun lecteur n'est posé : les 17
+  lectures déjà confiées sur WFG 1 sont listées dans le classeur de
+  `~/exports`.
