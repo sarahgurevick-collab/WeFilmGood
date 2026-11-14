@@ -14,7 +14,10 @@ import styles from "./GlobePays.module.css";
  * seul point rouge par pays). Le globe
  * tourne tout seul jusqu'à un pays parmi les mieux représentés, sa carte sort
  * (drapeau, nom, nombre de talents), puis il part vers le suivant. On peut le
- * faire tourner à la main. Globe d'avant : étiquette git
+ * faire tourner à la main. Quand la souris passe sur un pays (ou qu'on le
+ * touche du doigt), son drapeau, son nom et son nombre de talents s'affichent
+ * au-dessus et le globe s'arrête (14/11, Sarah : « c'est dommage que le nom
+ * du pays ne s'affiche pas quand je passe la souris dessus »). Globe d'avant : étiquette git
  * « accueil-avant-globe-terre ».
  */
 export type PaysDuGlobe = { code: string; nom: string; n: number; metiers?: Record<string, number> };
@@ -55,6 +58,8 @@ export default function GlobePays({
   const [pret, setPret] = useState(false);
   // Le pays dont la carte est sortie.
   const [vedette, setVedette] = useState<PaysDuGlobe | null>(null);
+  // Le pays sous la souris, et où poser sa bulle dans la scène.
+  const [bulle, setBulle] = useState<{ p: PaysDuGlobe; x: number; y: number } | null>(null);
 
   useEffect(() => {
     const canvas = toile.current;
@@ -66,18 +71,21 @@ export default function GlobePays({
     // Du plus petit point au plus gros, sans que la France écrase tout.
     const poids = (n: number) => Math.log(1 + n) / Math.log(1 + max);
     const teintes = familles.map((f) => ({ slug: f.slug, couleur: couleurDe(f.couleur) }));
+    const presentsDe = (p: PaysDuGlobe) => teintes.filter((t) => (p.metiers?.[t.slug] ?? 0) > 0);
+    // L'écart, en degrés, entre la place du pays et ses points rangés en rond.
+    const rayonDe = (p: PaysDuGlobe, n: number) => (n <= 1 ? 0 : 1.3 + 2.4 * poids(p.n));
     const marqueurs = (enAvant: string | null) =>
       places.flatMap((p) => {
         const [lat, lng] = POSITIONS_PAYS[p.code];
         const plus = enAvant === p.code ? 0.02 : 0;
-        const presents = teintes.filter((t) => (p.metiers?.[t.slug] ?? 0) > 0);
+        const presents = presentsDe(p);
         // Un pays dont aucun talent n'a l'un de ces métiers garde son point rouge.
         if (presents.length === 0) {
           return [{ location: [lat, lng] as [number, number], size: plus + 0.018 + 0.05 * poids(p.n), color: ROUGE }];
         }
         // Les points d'un pays se rangent en rond autour de sa place, d'autant
         // plus écartés que le pays compte de talents.
-        const rayon = presents.length === 1 ? 0 : 1.3 + 2.4 * poids(p.n) + (plus ? 1 : 0);
+        const rayon = rayonDe(p, presents.length) + (plus && presents.length > 1 ? 1 : 0);
         const serre = Math.max(0.3, Math.cos((lat * Math.PI) / 180));
         return presents.map((t, i) => {
           const angle = (i / presents.length) * 2 * Math.PI - Math.PI / 2;
@@ -98,6 +106,9 @@ export default function GlobePays({
     let image = 0;
     let minuterie: ReturnType<typeof setTimeout> | undefined;
     let dernier: string | null = null;
+    // Le pays sous la souris (ou touché du doigt) : le globe l'attend.
+    let survol: string | null = null;
+    let finToucher: ReturnType<typeof setTimeout> | undefined;
     let globe: ReturnType<typeof createGlobe> | null = null;
 
     const suivant = () => {
@@ -105,7 +116,7 @@ export default function GlobePays({
       setVedette(null);
       globe?.update({ markers: marqueurs(null) });
       if (calme || candidats.length === 0) return;
-      if (!visible || tire) {
+      if (!visible || tire || survol) {
         minuterie = setTimeout(suivant, 800);
         return;
       }
@@ -171,7 +182,63 @@ export default function GlobePays({
     });
     veille.observe(zone);
 
+    // Le pays le plus proche de ce point de l'écran, s'il y en a un tout près.
+    // (Même calcul que la bibliothèque : les points sont à 0,82 du bord de la toile.)
+    const paysSous = (clientX: number, clientY: number) => {
+      const cadre = canvas.getBoundingClientRect();
+      const r = (cadre.width / 2) * 0.82;
+      const [cp, sp, ct, st] = [Math.cos(phi), Math.sin(phi), Math.cos(theta), Math.sin(theta)];
+      let trouve: PaysDuGlobe | null = null;
+      let pres = Infinity;
+      for (const p of places) {
+        const [lat, lng] = POSITIONS_PAYS[p.code];
+        const la = (lat * Math.PI) / 180;
+        const lo = (lng * Math.PI) / 180 - Math.PI;
+        const [x, y, z] = [-Math.cos(la) * Math.cos(lo), Math.sin(la), Math.cos(la) * Math.sin(lo)];
+        // Derrière le globe, ou trop sur le bord : on ne le voit pas.
+        if (-sp * ct * x + st * y + cp * ct * z < 0.2) continue;
+        const ex = cadre.left + cadre.width / 2 + r * (cp * x + sp * z);
+        const ey = cadre.top + cadre.height / 2 - r * (sp * st * x + ct * y - cp * st * z);
+        const d = Math.hypot(clientX - ex, clientY - ey);
+        const marge = 14 + ((rayonDe(p, presentsDe(p).length) * Math.PI) / 180) * r;
+        if (d <= marge && d < pres) {
+          pres = d;
+          trouve = p;
+        }
+      }
+      return trouve;
+    };
+    const montrer = (p: PaysDuGlobe, clientX: number, clientY: number) => {
+      const cadre = zone.getBoundingClientRect();
+      if (survol !== p.code) {
+        survol = p.code;
+        cible = null;
+        clearTimeout(minuterie);
+        setVedette(null);
+        globe?.update({ markers: marqueurs(p.code) });
+        canvas.style.cursor = "pointer";
+      }
+      setBulle({ p, x: clientX - cadre.left, y: clientY - cadre.top });
+    };
+    const quitter = () => {
+      clearTimeout(finToucher);
+      if (!survol) return;
+      survol = null;
+      setBulle(null);
+      canvas.style.cursor = "";
+      globe?.update({ markers: marqueurs(null) });
+      clearTimeout(minuterie);
+      minuterie = setTimeout(suivant, 1500);
+    };
+    const passe = (e: PointerEvent) => {
+      if (tire || e.pointerType === "touch") return;
+      const p = paysSous(e.clientX, e.clientY);
+      if (p) montrer(p, e.clientX, e.clientY);
+      else quitter();
+    };
+
     const appui = (e: PointerEvent) => {
+      quitter();
       tire = { x: e.clientX, y: e.clientY, phi, theta };
       cible = null;
       setVedette(null);
@@ -181,22 +248,35 @@ export default function GlobePays({
       phi = tire.phi + (e.clientX - tire.x) / 200;
       theta = Math.max(-1.2, Math.min(1.2, tire.theta + (e.clientY - tire.y) / 300));
     };
-    const lache = () => {
+    const lache = (e: PointerEvent) => {
       if (!tire) return;
+      const bouge = Math.hypot(e.clientX - tire.x, e.clientY - tire.y);
       tire = null;
       clearTimeout(minuterie);
+      // Un toucher sans glisser, sur un pays : sa bulle reste trois secondes.
+      const p = bouge < 8 ? paysSous(e.clientX, e.clientY) : null;
+      if (p) {
+        montrer(p, e.clientX, e.clientY);
+        if (e.pointerType === "touch") finToucher = setTimeout(quitter, 3000);
+        return;
+      }
       minuterie = setTimeout(suivant, 2500);
     };
     canvas.addEventListener("pointerdown", appui);
+    canvas.addEventListener("pointermove", passe, { passive: true });
+    canvas.addEventListener("pointerleave", quitter);
     window.addEventListener("pointermove", glisse, { passive: true });
     window.addEventListener("pointerup", lache, { passive: true });
 
     return () => {
       clearTimeout(minuterie);
+      clearTimeout(finToucher);
       cancelAnimationFrame(image);
       taille.disconnect();
       veille.disconnect();
       canvas.removeEventListener("pointerdown", appui);
+      canvas.removeEventListener("pointermove", passe);
+      canvas.removeEventListener("pointerleave", quitter);
       window.removeEventListener("pointermove", glisse);
       window.removeEventListener("pointerup", lache);
       globe?.destroy();
@@ -206,7 +286,19 @@ export default function GlobePays({
   return (
     <div ref={scene} className={styles.scene}>
       <canvas ref={toile} className={`${styles.toile} ${pret ? styles.pret : ""}`} aria-hidden="true" />
-      {vedette && (
+      {bulle && (
+        <div className={styles.bulle} style={{ left: bulle.x, top: bulle.y }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`/drapeaux/${bulle.p.code.toLowerCase()}.svg`} alt="" />
+          <span>
+            <strong>{bulle.p.nom}</strong>
+            <em>
+              {bulle.p.n.toLocaleString("fr-FR")} talent{bulle.p.n > 1 ? "s" : ""}
+            </em>
+          </span>
+        </div>
+      )}
+      {vedette && !bulle && (
         <>
           <span className={styles.repere} aria-hidden="true" />
           <div key={vedette.code} className={styles.carte}>
