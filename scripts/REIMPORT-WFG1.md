@@ -303,3 +303,10 @@ Ce qui diffère du mode d'emploi ci-dessus :
 - **Lectures déjà confiées** : la migration `0277` confie au même lecteur,
   sur WFG 2, les lectures confiées sur WFG 1 et pas encore écrites (15 le
   14/11, mission « proposée », sans email). Rejouable.
+- **Relectures** (15/11) : la migration `0278` corrige `0276` — un projet
+  « en lecture » sur WFG 1 avec une fiche ouverte attend une analyse même
+  s'il a d'anciennes fiches validées. Rejouer `0276`, `0278` puis `0277`.
+  Les projets « labellisés » sur WFG 2 ne sont pas remis en lecture.
+- **Lecteurs nouveaux** : les poser dans `legacy_profiles` puis
+  `preparer-anciens-lecteurs.mjs --seulement=<ids> --ecrire` (jamais sans
+  `--seulement`).
