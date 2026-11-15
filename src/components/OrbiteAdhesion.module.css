@@ -1256,3 +1256,10 @@
 .recapIcone.recapRond svg {
   flex: none;
 }
+
+/* Le récapitulatif plus large que l'orbite (15/11, Sarah : « il suffit
+   d'élargir un peu les 2 colonnes ») : jusqu'à 880 px, centré, avec 16 px
+   de marge sur les bords de l'écran. Retour : étiquette adhesion-avant-cartes-larges. */
+.recap {
+  margin-inline: calc((100% - min(880px, 100vw - 32px)) / 2);
+}
