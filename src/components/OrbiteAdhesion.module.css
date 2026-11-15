@@ -747,76 +747,179 @@
   }
 }
 
-/* Essai du 15/11 : les deux colonnes se présentent comme des cartes de
-   tarif, à la manière de la page de Brevo (nom, grand prix, unité).
-   Retour : étiquette git adhesion-avant-cartes-brevo. */
-.recap .recapTable thead th:nth-child(n + 2) {
-  padding: 0 6px 14px;
-  vertical-align: top;
+/* Essai du 15/11 : deux cartes de tarif, à la manière de la page de Brevo
+   (nom, grand prix, puis la liste). Retour : étiquette git
+   adhesion-avant-deux-cartes (tableau d'avant). */
+.recap {
+  background: transparent;
+  padding: 0;
 }
 
-.recap .planCarte {
+.recap .recapTitre {
+  color: var(--fg, #ededed);
+}
+
+.plans {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  align-items: start;
+}
+
+.planCarte {
+  overflow: hidden;
+  border: 2px solid #dcdcdc;
+  border-radius: 22px;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.planMiseEnAvant {
+  border-color: #c4241e;
+  box-shadow: 0 8px 28px rgba(196, 36, 30, 0.22);
+}
+
+.planEntete {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
-  height: 100%;
-  padding: 18px 16px 20px;
-  border: 2px solid #dcdcdc;
-  border-radius: 18px;
-  background: #ffffff;
+  padding: 24px 24px 20px;
+  border-bottom: 1px solid #e6e6e6;
 }
 
-.recap .planMiseEnAvant {
-  border-color: #c4241e;
-  box-shadow: 0 6px 22px rgba(196, 36, 30, 0.14);
-}
-
-.recap .planCarte i {
-  display: none;
-}
-
-.recap .planNom {
-  font-size: 20px;
+.planNom {
+  font-size: 22px;
   font-weight: 800;
+  color: #1d6fd8;
 }
 
-.recap .planPrix {
-  margin-top: 8px;
-  font-size: 46px;
+.planMiseEnAvant .planNom {
+  color: #c4241e;
+}
+
+.planPrix {
+  margin-top: 6px;
+  font-size: 52px;
   font-weight: 900;
   line-height: 1;
   color: #1a1a1a;
 }
 
-.recap .planUnite {
+.planUnite {
   margin-left: 4px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: #666666;
 }
 
-.recap .planCarte small {
-  margin: 0;
+.planEntete small {
   font-size: 14px;
   font-weight: 600;
   color: #666666;
 }
 
-@media (max-width: 520px) {
-  .recap .planCarte {
-    padding: 14px 10px 16px;
+.planListe {
+  margin: 0;
+  padding: 4px 24px 14px;
+  list-style: none;
+}
+
+.planLigne {
+  padding: 16px 0;
+  border-top: 1px solid #ececec;
+}
+
+.planLigne:first-child {
+  border-top: 0;
+}
+
+.planAccroche {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #c4241e;
+}
+
+.planLigneCorps {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.planLigneNom {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.planLigneNom em {
+  font-weight: 400;
+  font-style: italic;
+  color: #666666;
+}
+
+.planLigneNom small {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #666666;
+}
+
+.planValeur {
+  flex: none;
+  max-width: 48%;
+  text-align: right;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.planValeur small {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  color: #666666;
+}
+
+.planCarte .recapIcone,
+.planCarte .recapSymbole {
+  color: #1a1a1a;
+}
+
+.planCarte .recapIcone.recapRond {
+  background: #f1f1f1;
+}
+
+.planCarte .recapBouton:hover {
+  color: #000000;
+}
+
+.planCarte .recapSelect {
+  color: #1a1a1a;
+  background: #ffffff;
+  border-color: #c9c9c9;
+}
+
+.planBulle {
+  margin-top: 12px;
+}
+
+.planBulle .fiche.ficheTableau {
+  color: #ededed;
+}
+
+@media (max-width: 720px) {
+  .plans {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .recap .planNom {
-    font-size: 15px;
-  }
-
-  .recap .planPrix {
-    font-size: 32px;
-  }
-
-  .recap .planUnite {
-    font-size: 13px;
+  .planPrix {
+    font-size: 44px;
   }
 }
