@@ -533,7 +533,7 @@ const RECAP: LigneRecap[] = [
     ouiVert: true,
   },
   {
-    nom: "Analyse d’un projet",
+    nom: "Projet analysé",
     icone: "nuage",
     avecIcone: true,
     bulles: ["analyse"],
