@@ -344,3 +344,9 @@
   margin: 28px auto 0;
   text-align: left;
 }
+
+/* Le bouton « Créez votre profil… » sous les chiffres de l'accueil. */
+.bandeInscription {
+  margin: 36px 0 0;
+  text-align: center;
+}

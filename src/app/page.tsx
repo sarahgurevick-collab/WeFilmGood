@@ -161,6 +161,16 @@ export default async function Home() {
           />
         )}
 
+        {/* Le bouton d'inscription (15/11, Sarah), pour les visiteurs : le
+            nombre est celui des talents de l'anneau, toujours à jour. */}
+        {!auth?.user && chiffres && (
+          <p className={styles.bandeInscription}>
+            <Link href="/connexion" className={formStyles.submit}>
+              Créez votre profil et rejoignez les {chiffres.talents.toLocaleString("fr-FR")} talents
+            </Link>
+          </p>
+        )}
+
         <div className={styles.bandeFinder}>
           <NuageAccueil />
         </div>
