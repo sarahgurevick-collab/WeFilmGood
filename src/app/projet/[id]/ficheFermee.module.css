@@ -1,0 +1,28 @@
+.carte {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 560px;
+  margin: 24px auto 48px;
+  text-align: center;
+}
+
+.image {
+  width: 100%;
+  border-radius: 14px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.tagline {
+  margin: 0;
+  font-size: 18px;
+  font-style: italic;
+}
+
+.message {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}

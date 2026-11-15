@@ -8,6 +8,7 @@ import { langueDuCookie } from "@/lib/langue-cookie";
 import { notFound, redirect } from "next/navigation";
 import LabelWFG from "@/components/LabelWFG";
 import PageShell from "@/components/PageShell";
+import FicheFermee from "./FicheFermee";
 import formStyles from "@/components/form.module.css";
 import PartageProjet from "./PartageProjet";
 import { choisirVisibilite, setShareLink } from "./actions";
@@ -134,13 +135,7 @@ export default async function ProjetPage({
       .eq("is_public", true)
       .maybeSingle();
     if (!existe) notFound();
-    return (
-      <PageShell title="Galaxies" nav="pitchotheque" connecte>
-        <p className={formStyles.hint}>
-          <Link href="/adhesion">{GRAVITY.sansAdhesion}</Link>
-        </p>
-      </PageShell>
-    );
+    return <FicheFermee supabase={supabase} projetId={id} />;
   }
 
   const isOwner = user?.id === project.owner_id;
@@ -364,13 +359,7 @@ export default async function ProjetPage({
     ? await projetAccepte(service, { id: project.id, owner_id: project.owner_id })
     : { cinecrush: false, accepte: false };
   if (!chezSoi && !ouverture && adherent !== true && !reglesComedy.cinecrush) {
-    return (
-      <PageShell title="Galaxies" nav="pitchotheque" connecte>
-        <p className={formStyles.hint}>
-          <Link href="/adhesion">{GRAVITY.sansAdhesion}</Link>
-        </p>
-      </PageShell>
-    );
+    return <FicheFermee supabase={supabase} projetId={project.id} />;
   }
   let gravity: EtatGravity | null = null;
   let favori: boolean | null = null;
