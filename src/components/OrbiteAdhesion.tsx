@@ -815,11 +815,21 @@ export default function OrbiteAdhesion({
               <tr>
                 <th scope="col" aria-label="Fonctionnalités et avantages" />
                 <th scope="col" className={styles.recapServices}>
-                  <i aria-hidden="true" /> Sans adhésion
+                  <div className={styles.planCarte}>
+                    <i aria-hidden="true" />
+                    <span className={styles.planNom}>Sans adhésion</span>
+                    <span className={styles.planPrix}>0 €</span>
+                  </div>
                 </th>
                 <th scope="col" className={styles.recapAdhesion}>
-                  <i aria-hidden="true" /> Adhésion annuelle
-                  <small>7 €/mois ou 84 €/an</small>
+                  <div className={`${styles.planCarte} ${styles.planMiseEnAvant}`}>
+                    <i aria-hidden="true" />
+                    <span className={styles.planNom}>Adhésion annuelle</span>
+                    <span className={styles.planPrix}>
+                      7 €<span className={styles.planUnite}>/mois</span>
+                    </span>
+                    <small>ou 84 €/an</small>
+                  </div>
                 </th>
               </tr>
             </thead>

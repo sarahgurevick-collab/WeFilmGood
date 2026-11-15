@@ -746,3 +746,77 @@
     font-size: 18px;
   }
 }
+
+/* Essai du 15/11 : les deux colonnes se présentent comme des cartes de
+   tarif, à la manière de la page de Brevo (nom, grand prix, unité).
+   Retour : étiquette git adhesion-avant-cartes-brevo. */
+.recap .recapTable thead th:nth-child(n + 2) {
+  padding: 0 6px 14px;
+  vertical-align: top;
+}
+
+.recap .planCarte {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  height: 100%;
+  padding: 18px 16px 20px;
+  border: 2px solid #dcdcdc;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.recap .planMiseEnAvant {
+  border-color: #c4241e;
+  box-shadow: 0 6px 22px rgba(196, 36, 30, 0.14);
+}
+
+.recap .planCarte i {
+  display: none;
+}
+
+.recap .planNom {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.recap .planPrix {
+  margin-top: 8px;
+  font-size: 46px;
+  font-weight: 900;
+  line-height: 1;
+  color: #1a1a1a;
+}
+
+.recap .planUnite {
+  margin-left: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #666666;
+}
+
+.recap .planCarte small {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666666;
+}
+
+@media (max-width: 520px) {
+  .recap .planCarte {
+    padding: 14px 10px 16px;
+  }
+
+  .recap .planNom {
+    font-size: 15px;
+  }
+
+  .recap .planPrix {
+    font-size: 32px;
+  }
+
+  .recap .planUnite {
+    font-size: 13px;
+  }
+}
