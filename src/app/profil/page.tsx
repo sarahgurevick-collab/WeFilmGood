@@ -131,7 +131,12 @@ export default async function ProfilPage({
 
       {bienvenue && <p className={styles.surtitre}>Étape 2 sur 2</p>}
       <h1 className={styles.titre}>
-        {bienvenue ? `Bienvenue${prenom ? ` ${prenom}` : ""}, votre compte est activé.` : "Mon profil"}
+        {/* « Bienvenue Prénom » à la place de « Mon profil » (15/11, Sarah). */}
+        {bienvenue
+          ? `Bienvenue${prenom ? ` ${prenom}` : ""}, votre compte est activé.`
+          : prenom
+            ? `Bienvenue ${prenom}`
+            : "Mon profil"}
       </h1>
       <p className={styles.chapeau}>
         {pourcent === 100
