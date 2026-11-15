@@ -20,14 +20,6 @@ export default async function AdhesionPage({
     supabase.rpc("compter_fonds"),
   ]);
 
-  // Les factures de l'adhérent, émises automatiquement à chaque paiement.
-  const { data: factures } = user
-    ? await supabase
-        .from("membership_invoices")
-        .select("id, numero, issued_at")
-        .order("issued_at", { ascending: false })
-        .returns<{ id: string; numero: string; issued_at: string }[]>()
-    : { data: null };
   const motsCles =
     ((fonds ?? [])[0] as { mots_cles: number } | undefined)?.mots_cles ?? 0;
 
@@ -43,19 +35,7 @@ export default async function AdhesionPage({
       enTeteAnime
       connecte={!!user}
     >
-      {(factures ?? []).length > 0 && (
-        <p className={formStyles.hint} style={{ marginBottom: 12 }}>
-          Mes factures :{" "}
-          {(factures ?? []).map((f, i) => (
-            <span key={f.id}>
-              {i > 0 && " · "}
-              <a href={`/adhesion/facture/${f.id}`}>
-                {f.numero} ({new Date(f.issued_at).toLocaleDateString("fr-FR")})
-              </a>
-            </span>
-          ))}
-        </p>
-      )}
+      {/* « Mes factures » est passé dans « Réglages du compte » (15/11, Sarah). */}
       {/* Le bouton « Aller aux Galaxies » des adhérents est retiré (15/11, Sarah) :
           la carte à 0 € porte « J'explore les Galaxies ». */}
       {paiement === "erreur" && (

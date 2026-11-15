@@ -65,7 +65,7 @@ export async function verifierAdhesion(membershipId: string): Promise<"active" |
         htmlContent: `
           <p>Bonjour,</p>
           <p>Votre paiement est bien reçu : votre adhésion WeFilmGood est active pour un an, jusqu'au ${fin.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.</p>
-          ${factureEmise ? `<p>Votre facture est disponible sur WeFilmGood, dans la page <a href="https://app.wefilmgood.com/adhesion">Adhésion</a>.</p>` : ""}
+          ${factureEmise ? `<p>Votre facture est disponible sur WeFilmGood, dans <a href="https://app.wefilmgood.com/profil/compte">Réglages du compte</a>.</p>` : ""}
           <p>Merci de votre soutien.</p>
         `,
       });

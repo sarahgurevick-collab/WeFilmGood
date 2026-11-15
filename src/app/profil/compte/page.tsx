@@ -7,7 +7,7 @@ import { quitterLaPlateforme, reglerMessagerie } from "../actions";
 import styles from "../profil.module.css";
 
 /**
- * Réglages du compte : se déconnecter, quitter la plateforme.
+ * Réglages du compte : ses factures, se déconnecter, quitter la plateforme.
  *
  * Volontairement à l'écart du profil. Avec le lien de connexion, on reste
  * connecté des mois sur son appareil : un bouton « Se déconnecter » bien
@@ -33,6 +33,14 @@ export default async function ComptePage({
     : { data: null };
   const ouverte = moi?.messages_ouverts !== false;
 
+  // Les factures d'adhésion, émises automatiquement à chaque paiement :
+  // ici depuis le 15/11 (Sarah), et non plus sur la page Adhésion.
+  const { data: factures } = await supabase
+    .from("membership_invoices")
+    .select("id, numero, issued_at")
+    .order("issued_at", { ascending: false })
+    .returns<{ id: string; numero: string; issued_at: string }[]>();
+
   return (
     <PageShell nav="profil" connecte>
       <h1 className={styles.titre}>Réglages du compte</h1>
@@ -55,6 +63,22 @@ export default async function ComptePage({
               {ouverte ? "Fermer ma messagerie momentanément" : "Rouvrir ma messagerie"}
             </button>
           </form>
+        </>
+      )}
+
+      {(factures ?? []).length > 0 && (
+        <>
+          <h2 className={styles.section}>Mes factures</h2>
+          <p style={{ marginTop: 8, marginBottom: 40 }}>
+            {(factures ?? []).map((f, i) => (
+              <span key={f.id}>
+                {i > 0 && " · "}
+                <Link href={`/adhesion/facture/${f.id}`}>
+                  {f.numero} ({new Date(f.issued_at).toLocaleDateString("fr-FR")})
+                </Link>
+              </span>
+            ))}
+          </p>
         </>
       )}
 
