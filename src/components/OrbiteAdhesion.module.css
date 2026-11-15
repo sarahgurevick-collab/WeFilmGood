@@ -973,3 +973,110 @@
     border-bottom: 2px solid #dcdcdc;
   }
 }
+
+/* Le bloc des services : sur la largeur des deux cartes, valable pour les deux. */
+.services {
+  margin-top: 26px;
+  overflow: hidden;
+  border: 2px solid #dcdcdc;
+  border-radius: 22px;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.servicesTitre {
+  margin: 0;
+  padding: 22px 24px 8px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.servicesEntete {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 22px;
+  padding: 0 24px 10px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.servicesEntete span:first-child {
+  color: #1d6fd8;
+}
+
+.servicesEntete span:last-child {
+  color: #c4241e;
+}
+
+.service {
+  padding: 16px 24px;
+  border-top: 1px solid #ececec;
+}
+
+.serviceNom {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.serviceNom em {
+  font-weight: 400;
+  font-style: italic;
+  color: #666666;
+}
+
+.serviceNom small {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #666666;
+}
+
+.serviceValeurs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 22px;
+  margin-top: 8px;
+}
+
+.serviceValeur {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.serviceValeur small {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  color: #666666;
+}
+
+/* Un prix commun : une seule valeur, centrée sur les deux colonnes. */
+.serviceCommune {
+  grid-column: 1 / -1;
+  text-align: center;
+}
+
+.services .recapIcone,
+.services .recapSymbole {
+  color: #1a1a1a;
+}
+
+.services .recapIcone.recapRond {
+  background: #f1f1f1;
+}
+
+.services .recapSelect {
+  display: block;
+  margin-top: 6px;
+  color: #1a1a1a;
+  background: #ffffff;
+  border-color: #c9c9c9;
+}
+
+.services .planBulle .fiche.ficheTableau {
+  color: #ededed;
+}

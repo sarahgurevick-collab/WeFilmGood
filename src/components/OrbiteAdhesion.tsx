@@ -860,6 +860,174 @@ export default function OrbiteAdhesion({
     );
   };
 
+  // Les services « à la demande » (15/11, Sarah) : valables avec ou sans
+  // adhésion, ils forment un troisième bloc sous les deux cartes, sur toute
+  // leur largeur ; chaque prix tombe sous la carte qui le concerne.
+  const NOMS_SERVICES = [
+    "Analyse d’un projet",
+    "Accompagnement personnalisé",
+    "Pack Soleils",
+    "ScénarioLab",
+  ];
+  const estService = (l: LigneRecap) => NOMS_SERVICES.includes(l.nom);
+  const lignesCartes = lignes.filter((l) => !estService(l));
+  const lignesServices = lignes.filter(estService);
+
+  const ligneService = (l: LigneRecap) => {
+    const cle = `service-${l.nom}-${l.precision ?? ""}`;
+    const ronds = (l.bulles ?? [])
+      .map((id) => RONDS.find((r) => r.id === id))
+      .filter((r): r is Rond => !!r);
+    const ouverte = bulle === cle;
+    const nom = ronds.length ? (
+      <button
+        type="button"
+        className={styles.recapBouton}
+        aria-expanded={ouverte}
+        onClick={() => setBulle(ouverte ? null : cle)}
+      >
+        <span
+          className={`${styles.recapIcone} ${styles.recapRond} ${styles[ronds[0].origine]}`}
+        >
+          {ICONES[l.icone]}
+        </span>
+        {l.nom}
+      </button>
+    ) : (
+      <>
+        {l.avecIcone && <span className={styles.recapIcone}>{ICONES[l.icone]}</span>}
+        {l.nom}
+      </>
+    );
+    const valeur = (plan: "non" | "oui") =>
+      l.pack ? (
+        <strong>{plan === "oui" ? prixAdherent : nombreCredits * 5} €</strong>
+      ) : (
+        <>
+          <strong>
+            <Symboles texte={plan === "oui" ? l.oui : l.non} />
+          </strong>
+          {(plan === "oui" ? l.ouiNote : l.nonNote) && (
+            <small>{plan === "oui" ? l.ouiNote : l.nonNote}</small>
+          )}
+        </>
+      );
+    return (
+      <div key={cle} className={styles.service}>
+        <div className={styles.serviceNom}>
+          {nom}
+          {l.precision && <em> ({l.precision})</em>}
+          {l.suite && <small>{l.suite}</small>}
+          {l.pack && (
+            <select
+              aria-label="Nombre de crédits"
+              className={styles.recapSelect}
+              value={nombreCredits}
+              onChange={(e) => setNombreCredits(Number(e.target.value))}
+            >
+              {GRILLE_CREDITS.map((g) => (
+                <option key={g.nombre} value={g.nombre}>
+                  {g.nombre} {g.nombre > 1 ? "crédits" : "crédit"}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+        <div className={styles.serviceValeurs}>
+          {l.commun ? (
+            <div className={`${styles.serviceValeur} ${styles.serviceCommune}`}>
+              <strong>{l.commun}</strong>
+            </div>
+          ) : (
+            <>
+              <div className={styles.serviceValeur}>{valeur("non")}</div>
+              <div className={styles.serviceValeur}>{valeur("oui")}</div>
+            </>
+          )}
+        </div>
+        {ouverte && (
+          <div className={styles.planBulle}>
+            {ronds.map((r) => (
+                            <div
+                              key={r.id}
+                              className={`${styles.fiche} ${styles.ficheTableau}`}
+                            >
+                              <div className={styles.ficheHaut}>
+                                <span
+                                  className={`${styles.ficheIcone} ${styles[r.origine]}`}
+                                >
+                                  {ICONES[r.icone]}
+                                </span>
+                                <div className={styles.ficheNoms}>
+                                  <span
+                                    className={`${styles.ficheEtiquette} ${styles[r.origine]}`}
+                                  >
+                                    {ETIQUETTE[r.origine]}
+                                  </span>
+                                  <span className={styles.ficheNom}>{r.nom}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  className={styles.fermer}
+                                  onClick={() => setBulle(null)}
+                                  aria-label="Fermer"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                              <div className={styles.ficheTexte}>
+                                {/* Les deux textes, comme les deux colonnes
+                                    (11/11, Sarah). Le Crédit Soleil n'en a
+                                    qu'un : sans adhésion, il n'existe pas. */}
+                                {r.texteZero && r.id !== "galaxies" ? (
+                                  <>
+                                    <p>
+                                      <strong>Sans adhésion :</strong>{" "}
+                                      {r.texteZero}
+                                    </p>
+                                    <p>
+                                      <strong>Adhésion :</strong> {r.texte}
+                                    </p>
+                                  </>
+                                ) : (
+                                  r.texte.split("\n").map((ligne, i) => (
+                                    <p key={i}>{ligne}</p>
+                                  ))
+                                )}
+                              </div>
+                              <div className={styles.actions}>
+                                <Link
+                                  href={`/tutoriels#${r.id}`}
+                                  className={styles.action}
+                                >
+                                  {ICONE_TUTORIEL}
+                                  Tutoriel
+                                </Link>
+                                <button
+                                  type="button"
+                                  className={styles.action}
+                                  onClick={() =>
+                                    window.dispatchEvent(
+                                      new CustomEvent(EVENEMENT_CONTACT, {
+                                        detail: {
+                                          message: `À propos de « ${r.nom} » : `,
+                                        },
+                                      }),
+                                    )
+                                  }
+                                >
+                                  {ICONE_MIRA}
+                                  Poser une question à Mira
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <section className={styles.orbite}>
       <div className={styles.cadreScene}>
@@ -1006,12 +1174,21 @@ export default function OrbiteAdhesion({
           <h2 className={styles.recapTitre}>Récapitulatif du pricing</h2>
           <div
             className={styles.plans}
-            style={{ "--lignes": lignes.length + 1 } as React.CSSProperties}
+            style={{ "--lignes": lignesCartes.length + 1 } as React.CSSProperties}
           >
             {enteteCarte("non")}
-            {lignes.map((l, i) => celluleLigne("non", l, i === lignes.length - 1))}
+            {lignesCartes.map((l, i) => celluleLigne("non", l, i === lignesCartes.length - 1))}
             {enteteCarte("oui")}
-            {lignes.map((l, i) => celluleLigne("oui", l, i === lignes.length - 1))}
+            {lignesCartes.map((l, i) => celluleLigne("oui", l, i === lignesCartes.length - 1))}
+          </div>
+
+          <div className={styles.services}>
+            <h3 className={styles.servicesTitre}>Les services</h3>
+            <div className={styles.servicesEntete} aria-hidden="true">
+              <span>Sans adhésion</span>
+              <span>Adhésion annuelle</span>
+            </div>
+            {lignesServices.map(ligneService)}
           </div>
         </div>
       </div>
