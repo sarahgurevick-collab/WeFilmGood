@@ -115,12 +115,10 @@ export default async function Home() {
       {/* Les success stories juste sous la galaxie (14/10, Sarah) : la bande
           noire remonte au-dessus de la bande blanche et des engagements. */}
       <section className={styles.stories}>
-        {/* Le titre mène à la liste de tous les films réalisés. */}
+        {/* Le bouton « Success stories » est retiré (15/11, Sarah : « il n'est
+            pas prêt ») ; à sa place, un titre. */}
         <h2 className={styles.storiesTitre}>
-          {/* Le même bouton que partout sur la plateforme (form.module.css). */}
-          <Link href="/succes" className={`${formStyles.submit} ${styles.storiesBouton}`}>
-            Success stories
-          </Link>
+          Projets qui ont trouvé une production et ont été réalisés
         </h2>
         {/* Essai du 04/11 (Sarah) : la galerie qui défile, films tournés en affiche,
             projets signés en 16/9. Avant : le carrousel « glass » (CarrouselVerre,
