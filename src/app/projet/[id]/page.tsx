@@ -348,16 +348,20 @@ export default async function ProjetPage({
         .maybeSingle<{ ouvert_le: string }>()
     : { data: null };
   const chezSoi = isOwner || estAdmin === true || dansEquipe;
-  const restreint = !chezSoi && !ouverture;
   // Sans adhésion, la fiche ne s'ouvre pas (12/11, Sarah) : on ne voit des
   // projets que leur carte. Rien de la fiche ne part vers le navigateur.
   // Exception (13/11, Sarah) : la fiche du CinéCrush de la semaine s'ouvre à
   // tous les membres — c'est là que les comédiens déposent leur ComedyPitch.
-  // Elle reste « restreinte » (videopitch, noms de l'équipe) sans soleil.
+  // Sans adhésion elle reste « restreinte » (noms de l'équipe, contact).
   const service = createAdminClient();
   const reglesComedy = service
     ? await projetAccepte(service, { id: project.id, owner_id: project.owner_id })
     : { cinecrush: false, accepte: false };
+  // Pour l'adhérent, le CinéCrush de la semaine s'ouvre sans soleil (15/11,
+  // Sarah : « l'adhésion donnerait les contacts partout ») : équipe et
+  // contact. La base applique la même règle (0280) ; la semaine finie, la
+  // fiche redevient restreinte tant qu'il n'y a pas dépensé de soleil.
+  const restreint = !chezSoi && !ouverture && !(reglesComedy.cinecrush && adherent === true);
   if (!chezSoi && !ouverture && adherent !== true && !reglesComedy.cinecrush) {
     return <FicheFermee supabase={supabase} projetId={project.id} />;
   }

@@ -68,6 +68,13 @@ export default async function ConversationPage({
   // Le nom complet : écrire demande une adhésion, le contact est payé (03/10).
   const nom = interlocuteur?.display_name ?? interlocuteur?.full_name ?? interlocuteur?.first_name ?? "Un membre";
   const avatar = (await avatarsDe(supabase, [autre])).get(autre) ?? { src: null, lettre: "?" };
+  // À propos d'un projet : la case pour répondre n'apparaît que si la base
+  // laisse écrire (0280). Sur un CinéCrush contacté sans soleil, un seul
+  // message tant que le porteur n'a pas répondu.
+  const { data: droit } = projetId
+    ? await supabase.rpc("peut_ecrire_sur_projet", { p_project_id: projetId, p_destinataire: autre })
+    : { data: "oui" };
+  const peutRepondre = droit === "oui";
   // Hors projet : l'objet du premier message qui en porte un (10/10).
   const objet = projet ? null : (fil.find((m) => m.objet)?.objet ?? null);
 
@@ -103,6 +110,7 @@ export default async function ConversationPage({
         </p>
       )}
 
+      {peutRepondre && (
       <form action={ecrire} className={formStyles.form} style={{ marginTop: 24 }}>
         <input type="hidden" name="project_id" value={projetId ?? ""} />
         <input type="hidden" name="recipient_id" value={autre} />
@@ -115,6 +123,7 @@ export default async function ConversationPage({
           Envoyer
         </button>
       </form>
+      )}
     </PageShell>
   );
 }

@@ -50,14 +50,17 @@ export default async function NouveauMessagePage({
   // Soi-même : rien à s'écrire.
   if (destinataireId === user.id) redirect(projet ? `/projet/${projet.id}` : "/profil");
   if (adherent !== true && estAdmin !== true) redirect("/adhesion");
-  // Écrire au porteur d'un projet demande de l'avoir ouvert avec un Gravity
-  // (12/11) ; une conversation déjà commencée continue. La base vérifie aussi.
+  // Écrire au porteur d'un projet demande de l'avoir ouvert avec un soleil
+  // (12/11), ou d'être adhérent pendant sa semaine CinéCrush (15/11 : un
+  // seul message tant qu'il n'a pas répondu — on retrouve alors son message
+  // dans la conversation). La base décide (peut_ecrire_sur_projet, 0280).
   if (projet && estAdmin !== true) {
-    const [{ data: ouvert }, { count: echanges }] = await Promise.all([
-      supabase.rpc("projet_ouvert", { p_project_id: projet.id }),
-      supabase.from("project_messages").select("id", { count: "exact", head: true }).eq("project_id", projet.id),
-    ]);
-    if (ouvert !== true && !echanges) redirect(`/projet/${projet.id}`);
+    const { data: droit } = await supabase.rpc("peut_ecrire_sur_projet", {
+      p_project_id: projet.id,
+      p_destinataire: destinataireId,
+    });
+    if (droit === "attendre") redirect(`/mes-messages/avec/${destinataireId}?projet=${projet.id}`);
+    if (droit !== "oui") redirect(`/projet/${projet.id}`);
   }
 
   const { data: destinataire } = await clientProfils(supabase)
