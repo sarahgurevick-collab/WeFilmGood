@@ -83,6 +83,7 @@ Fiches de lecture (analyses)
 - L'auteur dit sa satisfaction : « Notez cette analyse », cinq émoticônes, de la plus mécontente à la plus ravie ; un clic suffit. Tant qu'il ne l'a pas fait, un bandeau « Notez votre fiche de lecture » reste en haut de « Mes projets ».
 - Au-delà de 150/200, le projet est labellisé WFG (« Sélectionné par un comité de lecture professionnel de la Maison des Scénaristes »).
 - Le label ne s'achète pas : c'est un gage de qualité. Il faut souvent plusieurs dépôts avant d'être labellisé ; ne donne aucun pourcentage de projets labellisés. Un projet labellisé le reste à vie : il reste en tête de la plateforme même si l'adhésion de son auteur s'arrête.
+- Un projet labellisé ne perd jamais son label, quel que soit le résultat d'une nouvelle lecture : l'auteur peut sereinement le déposer à nouveau après amélioration, sans crainte.
 - Confidentialité : seuls l'auteur et l'équipe lisent les fiches de lecture. Un producteur intéressé doit les demander à l'auteur.
 - Tout le monde peut déposer un projet (un document PDF, depuis « Mes projets ») et en demander la lecture et l'analyse, qu'on soit adhérent ou non. Chaque lecture coûte 60 €, ou 50 € pour un adhérent.
 - Pour déposer son projet et demander la lecture, il faut créer son profil d'auteur (« Je suis… » : « Auteur »). On envoie son scénario en payant 60 € (50 € pour un adhérent) ; le paiement se fait par HelloAsso.

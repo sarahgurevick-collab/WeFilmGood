@@ -310,3 +310,22 @@ Ce qui diffère du mode d'emploi ci-dessus :
 - **Lecteurs nouveaux** : les poser dans `legacy_profiles` puis
   `preparer-anciens-lecteurs.mjs --seulement=<ids> --ecrire` (jamais sans
   `--seulement`).
+
+## 15 novembre 2026 : WFG 1 fermé, dernière copie
+
+- **WFG 1 est en maintenance** depuis le 15/11 (Sarah : « Tout le site fermé,
+  sauf pour moi ») : bloc `MAINTENANCE-WFG` dans `~/wefilmgood.com/.htaccess`
+  chez o2switch + page `maintenance.html` (texte de Sarah). Tout renvoie la
+  page (code 503), sauf `/assets/`, `/.well-known/` et qui est passé par le
+  lien privé `/acces-<clé>` (laissez-passer de 30 jours). Pour rouvrir :
+  retirer le bloc, ou remettre `~/htaccess-avant-maintenance-2026-11-15`.
+- **Plus de FTP** (comptes supprimés le 14/11). Pour rapatrier un fichier :
+  dossier `assets/transfert-<nom au hasard>/` avec un `.htaccess`
+  « Require ip <adresse du serveur WFG 2> », lien en dur du fichier dedans,
+  `curl` depuis le serveur WFG 2, puis tout retirer.
+- Copie du 15/11 à 7 h 32 chargée avec `--remplacer` : 1 compte, 2 fiches
+  ouvertes (projets renvoyés en lecture après la copie du 14/11).
+- **Label à vie** (migration `0279`) : un déclencheur empêche un projet
+  « labellisé » de changer de statut ; la file « Projets en attente » montre
+  aussi un projet labellisé renvoyé à la lecture tant qu'aucune fiche n'a
+  été validée depuis.
