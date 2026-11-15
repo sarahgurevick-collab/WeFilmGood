@@ -19,9 +19,10 @@ export function modeHelloAsso(): ModeHelloAsso {
 
 /**
  * En mode test, qui d'autre que l'administration peut payer (avec une fausse
- * carte) : Nicolas Zappi, pour essayer l'envoi à la lecture (Sarah, 15/11).
+ * carte). Nicolas Zappi a fait l'essai de l'envoi à la lecture le 15/11 (réussi),
+ * son accès est retiré. Ajouter ici l'identifiant d'un profil pour un nouvel essai.
  */
-const TESTEURS_PAIEMENT = ["2613adec-5637-40d0-b726-29ca92eae60a"];
+const TESTEURS_PAIEMENT: string[] = [];
 
 export function testeurPaiement(uid: string | null | undefined): boolean {
   return !!uid && TESTEURS_PAIEMENT.includes(uid);
