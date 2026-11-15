@@ -1,4 +1,3 @@
-import Link from "next/link";
 import OrbiteAdhesion from "@/components/OrbiteAdhesion";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -29,14 +28,6 @@ export default async function AdhesionPage({
         .order("issued_at", { ascending: false })
         .returns<{ id: string; numero: string; issued_at: string }[]>()
     : { data: null };
-  // Un adhérent actif qui arrive ici (par l'email de confirmation, par
-  // exemple) est invité à aller voir les Galaxies.
-  const { count: adhesionsActives } = user
-    ? await supabase
-        .from("memberships")
-        .select("id", { count: "exact", head: true })
-        .eq("status", "active")
-    : { count: 0 };
   const motsCles =
     ((fonds ?? [])[0] as { mots_cles: number } | undefined)?.mots_cles ?? 0;
 
@@ -65,17 +56,8 @@ export default async function AdhesionPage({
           ))}
         </p>
       )}
-      {(adhesionsActives ?? 0) > 0 && (
-        <p style={{ margin: "16px 0 24px" }}>
-          <Link
-            href="/galaxies"
-            className={formStyles.submit}
-            style={{ display: "inline-block" }}
-          >
-            Aller aux Galaxies
-          </Link>
-        </p>
-      )}
+      {/* Le bouton « Aller aux Galaxies » des adhérents est retiré (15/11, Sarah) :
+          la carte à 0 € porte « J'explore les Galaxies ». */}
       {paiement === "erreur" && (
         <p className={formStyles.error}>
           Le paiement n&apos;a pas pu démarrer. Réessayez dans un instant, ou
