@@ -1191,3 +1191,52 @@
 .planLigneCorps:has(.fichesValeur) .recapIcone {
   margin-right: 4px;
 }
+
+/* Crédit Soleil : « 1 / jour » en vert, comme l'œil des fiches (15/11). */
+.valeurVerte {
+  color: #2e9e5b;
+  white-space: nowrap;
+}
+
+/* L'explication dans une carte étroite : icône et croix plus petites pour
+   que le nom (CinéMatch, CinéCrush) ne passe pas sous la croix (15/11). */
+.planBulle .fiche.ficheTableau {
+  padding: 14px 12px;
+}
+
+.planBulle .ficheHaut {
+  gap: 8px;
+}
+
+.planBulle .ficheIcone {
+  width: 34px;
+  height: 34px;
+}
+
+.planBulle .ficheIcone svg {
+  width: 20px;
+  height: 20px;
+}
+
+.planBulle .fermer {
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+}
+
+.planBulle .ficheNom {
+  font-size: 16px;
+}
+
+/* L'enveloppe du contact en vert, partout dans les cartes (15/11, Sarah). */
+.recapSymbole.enveloppeVerte,
+.cellule .recapSymbole.enveloppeVerte,
+.recap .recapSymbole.enveloppeVerte,
+.services .recapSymbole.enveloppeVerte,
+.accolade .enveloppeVerte {
+  color: #2e9e5b;
+}
+
+.valeurVerte .recapSymbole {
+  margin-left: 6px;
+}

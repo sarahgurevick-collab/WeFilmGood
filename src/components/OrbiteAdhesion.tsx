@@ -373,7 +373,7 @@ const ENVELOPPE = (
     viewBox="0 0 24 24"
     width="22"
     height="22"
-    className={styles.recapSymbole}
+    className={`${styles.recapSymbole} ${styles.enveloppeVerte}`}
     aria-label="contact"
     role="img"
   >
@@ -468,6 +468,8 @@ type LigneRecap = {
   nonNote?: string;
   oui: string;
   ouiNote?: string;
+  /** La valeur de la carte adhésion en vert (Crédit Soleil, 15/11). */
+  ouiVert?: boolean;
   /** Un seul prix, le même avec ou sans adhésion, sur les deux colonnes. */
   commun?: string;
   /** La ligne du Pack Soleils, avec son choix du nombre de crédits. */
@@ -522,12 +524,13 @@ const RECAP: LigneRecap[] = [
   // chaque semaine, à la demande.
   {
     nom: "Crédit Soleil",
-    accroche: "Tous les jours de nouveaux talents à contacter",
     icone: "gravity",
     avecIcone: true,
     bulles: ["galaxies"],
     non: "✕",
-    oui: "✓ 1 projet au choix et ses Talents ✉ /jour",
+    // « 1 / jour » et l'enveloppe en vert, sans coche ni accroche (15/11, Sarah ; retour : étiquette adhesion-avant-soleil-1-jour).
+    oui: "1 / jour ✉",
+    ouiVert: true,
   },
   {
     nom: "Analyse d’un projet",
@@ -602,6 +605,18 @@ export default function OrbiteAdhesion({
   const [nombreCredits, setNombreCredits] = useState(5);
   // La ligne du tableau dont l'explication est ouverte (11/11).
   const [bulle, setBulle] = useState<string | null>(null);
+  // L'explication s'ouvre sous sa ligne : si elle sort de l'écran, la page
+  // descend jusqu'à elle (15/11, Sarah : le Crédit Soleil, en bas de l'écran,
+  // semblait ne pas s'ouvrir).
+  useEffect(() => {
+    if (!bulle) return;
+    const id = requestAnimationFrame(() => {
+      document
+        .querySelector("[data-bulle-ouverte]")
+        ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [bulle]);
   const [vedette, setVedette] = useState(0);
   const enVedette = choix ? null : RONDS[vedette].id;
 
@@ -793,7 +808,7 @@ export default function OrbiteAdhesion({
       <strong>{l.commun}</strong>
     ) : (
       <>
-        <strong className={plan === "oui" && l.oui === "∞" ? styles.recapInfini : undefined}>
+        <strong className={plan === "oui" && l.oui === "∞" ? styles.recapInfini : plan === "oui" && l.ouiVert ? styles.valeurVerte : undefined}>
           <Symboles texte={plan === "oui" ? l.oui : l.non} />
           {/* Sans l'accolade (téléphone, explication ouverte) : l'enveloppe sur chaque ligne. */}
           {groupe && <span className={styles.enveloppeLigne}>{ENVELOPPE}</span>}
@@ -829,7 +844,7 @@ export default function OrbiteAdhesion({
           <div className={styles.planValeur}>{valeur}</div>
         </div>
         {ouverte && (
-          <div className={styles.planBulle}>
+          <div className={styles.planBulle} data-bulle-ouverte>
             {ronds.map((r) => (
                             <div
                               key={r.id}
@@ -999,7 +1014,7 @@ export default function OrbiteAdhesion({
           )}
         </div>
         {ouverte && (
-          <div className={styles.planBulle}>
+          <div className={styles.planBulle} data-bulle-ouverte>
             {ronds.map((r) => (
                             <div
                               key={r.id}
