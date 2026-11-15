@@ -1240,3 +1240,17 @@
 .valeurVerte .recapSymbole {
   margin-left: 6px;
 }
+
+/* Le rond de l'icône garde sa taille, même devant un nom long (Analyse
+   d'un projet, 15/11) : il ne s'écrase pas, son dessin ne disparaît pas. */
+.recapIcone.recapRond {
+  flex: none;
+  box-sizing: border-box;
+  min-width: 30px;
+  max-width: 30px;
+  padding: 0;
+}
+
+.recapIcone.recapRond svg {
+  flex: none;
+}

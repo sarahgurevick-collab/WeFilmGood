@@ -148,11 +148,11 @@ const SERVICES: Noeud[] = [
     id: "analyse",
     nom: "Analyse du projet",
     icone: "nuage",
+    // 60 € sans adhésion, 50 € adhérent (11/11, Sarah) ; texte du 15/11.
     texte:
-      "50 € : 1 analyse de document PDF, qui permet d’accéder à la Labellisation du projet.",
-    // 60 € sans adhésion, 50 € adhérent (11/11, Sarah).
+      "50 € : 1 analyse de document PDF (LM : traitement de 8 à 10 pages – CM : analyse du scénario – Série : une prébible de 15 pages environ). Optionnel : note d’intention, annexes.\nParticipation automatique aux appels à projets.",
     texteZero:
-      "60 € : 1 analyse de document PDF, qui permet d’accéder à la Labellisation du projet.",
+      "60 € : 1 analyse de document PDF (LM : traitement de 8 à 10 pages – CM : analyse du scénario – Série : une prébible de 15 pages environ). Optionnel : note d’intention, annexes.\nParticipation automatique aux appels à projets.",
   },
   {
     id: "accompagnement",
@@ -534,13 +534,9 @@ const RECAP: LigneRecap[] = [
   },
   {
     nom: "Analyse d’un projet",
-    accroche: "À la demande",
     icone: "nuage",
     avecIcone: true,
     bulles: ["analyse"],
-    precision:
-      "traitement de 8 à 10 pages pour un LM, analyse du scénario pour un CM, une prébible de 15 pages pour une série",
-    suite: "Participation automatique aux appels à projets",
     non: "60 €",
     oui: "50 €",
   },
@@ -878,13 +874,10 @@ export default function OrbiteAdhesion({
                                     (11/11, Sarah). Le Crédit Soleil n'en a
                                     qu'un : sans adhésion, il n'existe pas. */}
                                 {/* Chaque colonne, son texte seul (15/11, Sarah). */}
-                                {plan === "non" && r.texteZero && r.id !== "galaxies" ? (
-                                  <p>{r.texteZero}</p>
-                                ) : (
-                                  r.texte.split("\n").map((ligne, i) => (
-                                    <p key={i}>{ligne}</p>
-                                  ))
-                                )}
+                                {(plan === "non" && r.texteZero && r.id !== "galaxies"
+                                  ? r.texteZero
+                                  : r.texte
+                                ).split("\n").map((ligne, i) => <p key={i}>{ligne}</p>)}
                               </div>
                               <div className={styles.actions}>
                                 <Link
@@ -922,8 +915,9 @@ export default function OrbiteAdhesion({
   // Les services « à la demande » (15/11, Sarah) : valables avec ou sans
   // adhésion, ils forment un troisième bloc sous les deux cartes, sur toute
   // leur largeur ; chaque prix tombe sous la carte qui le concerne.
+  // L'analyse passe dans les deux cartes (15/11, Sarah ; retour : étiquette
+  // adhesion-avant-analyse-dans-cartes).
   const NOMS_SERVICES = [
-    "Analyse d’un projet",
     "Accompagnement personnalisé",
     "Pack Soleils",
     "ScénarioLab",
