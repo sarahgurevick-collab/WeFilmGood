@@ -395,6 +395,43 @@ const ENVELOPPE = (
   </svg>
 );
 
+/** Un nom sur deux lignes quand il porte un retour à la ligne. */
+function NomLigne({ nom }: { nom: string }) {
+  const morceaux = nom.split("\n");
+  return (
+    <span className={morceaux.length > 1 ? styles.nomDeuxLignes : undefined}>
+      {morceaux.map((m, i) => (
+        <Fragment key={i}>
+          {i > 0 && <br />}
+          {m}
+        </Fragment>
+      ))}
+    </span>
+  );
+}
+
+/** Lire (l'œil) et créer sans limite (l'infini), réunis par une accolade. */
+const VALEUR_FICHES = (
+  <span className={styles.fichesValeur}>
+    <svg viewBox="0 0 14 100" preserveAspectRatio="none" className={styles.fichesAccolade} aria-hidden="true">
+      <path
+        d="M1 1C8 1 7 6 7 12L7 42C7 47 8 50 13 50C8 50 7 53 7 58L7 88C7 94 8 99 1 99"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
+    <span className={styles.fichesOeil} role="img" aria-label="lire">
+      {ICONES.oeil}
+    </span>
+    <span className={styles.recapInfini} role="img" aria-label="créer sans limite">
+      ∞
+    </span>
+  </span>
+);
+
 /** Remplace ✓ et ✉ par leur dessin. */
 function Symboles({ texte }: { texte: string }) {
   return (
@@ -436,6 +473,8 @@ type LigneRecap = {
   bulles?: string[];
   /** Avec l'adhésion, ces lignes voisines partagent une accolade et une enveloppe (15/11). */
   contact?: boolean;
+  /** La ligne des fiches : accolade, œil (lire) et infini (créer) (15/11). */
+  fiches?: boolean;
 };
 
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
@@ -464,19 +503,17 @@ const RECAP: LigneRecap[] = [
   // Les Galaxies et le Finder restent ouverts à tous ; les fiches ne
   // s'ouvrent plus sans adhésion (décision de Sarah du 12/11).
   { nom: "Galaxie de Projets et Finder", icone: "galaxie", non: "✓", oui: "✓" },
+  // Lire et créer les fiches sur une seule ligne (15/11, Sarah : inutile de
+  // répéter « fiches » deux fois) : une accolade, l'œil pour lire, l'infini
+  // pour créer ; l'explication s'ouvre depuis l'icône.
   {
-    nom: "Lire les fiches Projets et Personnages",
-    icone: "fiche",
-    non: "✕",
-    oui: "✓",
-  },
-  {
-    nom: "Créer ses fiches Projets et Personnages",
+    nom: "Fiches projet\n& personnages",
     icone: "identite",
     avecIcone: true,
     bulles: ["fiche-projet", "fiche-personnage"],
     non: "✕",
-    oui: "∞",
+    oui: "",
+    fiches: true,
   },
   // Trois chapitres en rouge (11/11, mots de Sarah) : tous les jours,
   // chaque semaine, à la demande.
@@ -737,16 +774,18 @@ export default function OrbiteAdhesion({
         >
           {ICONES[l.icone]}
         </span>
-        {l.nom}
+        <NomLigne nom={l.nom} />
       </button>
     ) : (
       <>
         {l.avecIcone && <span className={styles.recapIcone}>{ICONES[l.icone]}</span>}
-        {l.nom}
+        <NomLigne nom={l.nom} />
       </>
     );
     const valeur = l.pack ? (
       <strong>{plan === "oui" ? prixAdherent : nombreCredits * 5} €</strong>
+    ) : l.fiches && plan === "oui" ? (
+      VALEUR_FICHES
     ) : l.commun ? (
       <strong>{l.commun}</strong>
     ) : (
@@ -909,12 +948,12 @@ export default function OrbiteAdhesion({
         >
           {ICONES[l.icone]}
         </span>
-        {l.nom}
+        <NomLigne nom={l.nom} />
       </button>
     ) : (
       <>
         {l.avecIcone && <span className={styles.recapIcone}>{ICONES[l.icone]}</span>}
-        {l.nom}
+        <NomLigne nom={l.nom} />
       </>
     );
     const valeur = (plan: "non" | "oui") =>
