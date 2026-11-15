@@ -913,11 +913,13 @@
   line-height: 1.25;
 }
 
+/* La fin d'une valeur, en plus petit pour tenir (« Accès prioritaire »,
+   15/11) : même encre que la valeur, pas de gris. */
 .planValeur small {
   display: block;
-  font-size: 13px;
-  font-weight: 400;
-  color: #666666;
+  font-size: 15px;
+  font-weight: 800;
+  color: inherit;
 }
 
 .cellule .recapIcone,
