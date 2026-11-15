@@ -640,3 +640,109 @@
   max-height: none;
   margin-bottom: 8px;
 }
+
+/* Le récapitulatif du pricing sur fond blanc, tarifs en grand (15/11,
+   proposition de Nicolas : les prix étaient trop petits à lire).
+   Retour : étiquette git adhesion-avant-recap-blanc. */
+.recap {
+  padding: 28px 22px 20px;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.recap .recapTitre {
+  margin-bottom: 18px;
+  font-size: 26px;
+  color: #1a1a1a;
+}
+
+.recap .recapTable {
+  font-size: 16px;
+}
+
+.recap .recapTable th,
+.recap .recapTable td {
+  padding: 14px 10px;
+  border-top-color: #e6e6e6;
+}
+
+.recap .recapTable thead th {
+  font-size: 16px;
+}
+
+/* Les tarifs : en grand, en gras. */
+.recap .recapTable td {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.recap .recapTable td small {
+  font-size: 13px;
+  font-weight: 400;
+  color: #666666;
+}
+
+.recap .recapTable small,
+.recap .recapTable tbody th em {
+  color: #666666;
+}
+
+.recap .recapTable thead small {
+  font-size: 14px;
+}
+
+.recap .recapServices {
+  color: #1d6fd8;
+}
+
+.recap .recapAdhesion {
+  color: #c4241e;
+}
+
+.recap .recapTable th.recapSepare {
+  color: #666666;
+}
+
+.recap .recapTable th.recapAccroche {
+  color: #c4241e;
+}
+
+.recap .recapIcone,
+.recap .recapSymbole {
+  color: #1a1a1a;
+}
+
+.recap .recapIcone.recapRond {
+  background: #f1f1f1;
+}
+
+.recap .recapBouton:hover {
+  color: #000000;
+}
+
+.recap .recapSelect {
+  color: #1a1a1a;
+  background: #ffffff;
+  border-color: #c9c9c9;
+}
+
+/* L'explication d'une ligne reste une carte sombre, posée sur le blanc. */
+.recap .fiche.ficheTableau {
+  color: #ededed;
+}
+
+@media (max-width: 520px) {
+  .recap {
+    padding: 22px 12px 14px;
+  }
+
+  .recap .recapTable {
+    font-size: 14px;
+  }
+
+  .recap .recapTable td {
+    font-size: 18px;
+  }
+}
