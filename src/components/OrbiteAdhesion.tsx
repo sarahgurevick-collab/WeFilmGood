@@ -553,6 +553,17 @@ const RECAP: LigneRecap[] = [
     ouiVert: true,
   },
   {
+    nom: "ScénarioLab",
+    icone: "oeil",
+    avecIcone: true,
+    bulles: ["scenariolab-spectateur"],
+    precision: "Spectateur",
+    // « 5 € » seul ; à 7 €, une coche verte (accès prioritaire) et ▶ vert
+    // (la vidéo de la séance, offerte) (15/11, Sarah).
+    non: "5 €",
+    oui: "✓ ▶",
+  },
+  {
     nom: "Projet analysé",
     icone: "nuage",
     avecIcone: true,
@@ -576,17 +587,6 @@ const RECAP: LigneRecap[] = [
     oui: "",
     pack: true,
     bulles: ["credits-galaxie"],
-  },
-  {
-    nom: "ScénarioLab",
-    icone: "oeil",
-    avecIcone: true,
-    bulles: ["scenariolab-spectateur"],
-    precision: "Spectateur",
-    // « 5 € » seul ; à 7 €, une coche verte (accès prioritaire) et ▶ vert
-    // (la vidéo de la séance, offerte) (15/11, Sarah).
-    non: "5 €",
-    oui: "✓ ▶",
   },
   {
     nom: "ScénarioLab",
