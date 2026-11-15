@@ -1241,10 +1241,8 @@ export default function OrbiteAdhesion({
 
           <div className={styles.services}>
             <h3 className={styles.servicesTitre}>Les services</h3>
-            <div className={styles.servicesEntete} aria-hidden="true">
-              <span>Sans adhésion</span>
-              <span>Adhésion annuelle</span>
-            </div>
+            {/* Plus de « Sans adhésion » / « Adhésion annuelle » : ces services
+                ont le même prix pour tous (15/11, Sarah). */}
             {lignesServices.map(ligneService)}
           </div>
         </div>
