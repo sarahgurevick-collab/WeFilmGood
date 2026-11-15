@@ -563,10 +563,9 @@ const RECAP: LigneRecap[] = [
     avecIcone: true,
     bulles: ["scenariolab-spectateur"],
     precision: "Spectateur",
-    // « 5 € » seul, « prioritaire » en petit pour tenir (15/11, Sarah).
+    // « 5 € » seul ; « Accès prioritaire » en grand depuis l'élargissement (15/11, Sarah).
     non: "5 €",
-    oui: "Accès",
-    ouiNote: "prioritaire",
+    oui: "Accès prioritaire",
   },
   {
     nom: "ScénarioLab",

@@ -1263,3 +1263,13 @@
 .recap {
   margin-inline: calc((100% - min(880px, 100vw - 32px)) / 2);
 }
+
+/* Les valeurs des cartes tiennent sur une ligne (« Accès prioritaire »,
+   15/11) : c'est le nom, à gauche, qui passe à la ligne s'il le faut. */
+.planValeur {
+  max-width: 62%;
+}
+
+.planValeur > strong {
+  white-space: nowrap;
+}
