@@ -109,7 +109,7 @@ const ADHESION: Noeud[] = [
   },
   {
     id: "fiche-projet",
-    nom: "Fiches Projets",
+    nom: "Accès fiches projets",
     icone: "fiche",
     texte:
       "Ne laisse aucun scénario dans ton tiroir : tes projets en développement, même anciens, sont la vitrine et la richesse de ton univers qui attise la curiosité des producteurs, inspire les comédiens (ComedyPitch) et les compositeurs (MusicPitch). Tu peux ajouter un StoryPitch pour chacun de tes projets.",
@@ -117,7 +117,7 @@ const ADHESION: Noeud[] = [
   },
   {
     id: "fiche-personnage",
-    nom: "Fiches Personnages",
+    nom: "Accès aux fiches personnages",
     icone: "identite",
     texte:
       "Donne vie à tes personnages avec une biographie si vibrante qu’un comédien n’aura qu’une envie… s’en emparer face caméra ! Ajoute la photo d’un inconnu ou d’une personne célèbre. Reçois une notification dès qu’un ComedyPitch est associé à ton personnage et échange avec le comédien.",
