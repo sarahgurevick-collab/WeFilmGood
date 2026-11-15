@@ -1273,3 +1273,8 @@
 .planValeur > strong {
   white-space: nowrap;
 }
+
+/* Le bloc des services sans titre (15/11, Sarah) : pas de trait au-dessus de la première ligne. */
+.services > .service:first-of-type {
+  border-top: 0;
+}
