@@ -433,16 +433,22 @@ function NomLigne({ nom }: { nom: string }) {
 }
 
 /** Lire (l'œil) et créer sans limite (l'infini). */
-const VALEUR_FICHES = (
-  <span className={styles.fichesValeur}>
-    <span className={styles.fichesOeil} role="img" aria-label="lire">
-      {ICONES.oeil}
+const VALEUR_FICHES = {
+  lire: (
+    <span className={styles.fichesValeur}>
+      <span className={styles.fichesOeil} role="img" aria-label="lire">
+        {ICONES.oeil}
+      </span>
     </span>
-    <span className={styles.recapInfini} role="img" aria-label="créer sans limite">
-      ∞
+  ),
+  creer: (
+    <span className={styles.fichesValeur}>
+      <span className={styles.recapInfini} role="img" aria-label="créer sans limite">
+        ∞
+      </span>
     </span>
-  </span>
-);
+  ),
+};
 
 /** Remplace ✓, ✉ et ▶ par leur dessin. */
 function Symboles({ texte }: { texte: string }) {
@@ -489,8 +495,8 @@ type LigneRecap = {
   bulles?: string[];
   /** Avec l'adhésion, la ligne porte une enveloppe verte : le contact (15/11). */
   contact?: boolean;
-  /** Une ligne des fiches : l'œil (lire) et l'infini (créer) (15/11). */
-  fiches?: boolean;
+  /** Une ligne des fiches : l'œil (accès, lire) ou l'infini (création) (15/11). */
+  fiches?: "lire" | "creer";
 };
 
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
@@ -524,22 +530,22 @@ const RECAP: LigneRecap[] = [
   // non plus, chaque ligne a son enveloppe (15/11, Sarah ; retour : étiquette
   // adhesion-avant-sans-accolades).
   {
-    nom: "Accès fiches projets",
+    nom: "Accès fiches projets & personnages",
     icone: "fiche",
     avecIcone: true,
     bulles: ["fiche-projet"],
     non: "✕",
     oui: "",
-    fiches: true,
+    fiches: "lire",
   },
   {
-    nom: "Accès aux fiches personnages",
+    nom: "Création fiches projets & personnages",
     icone: "identite",
     avecIcone: true,
     bulles: ["fiche-personnage"],
     non: "✕",
     oui: "",
-    fiches: true,
+    fiches: "creer",
   },
   // Trois chapitres en rouge (11/11, mots de Sarah) : tous les jours,
   // chaque semaine, à la demande.
@@ -842,7 +848,7 @@ export default function OrbiteAdhesion({
     const valeur = l.pack ? (
       <strong>{plan === "oui" ? prixAdherent : nombreCredits * 5} €</strong>
     ) : l.fiches && plan === "oui" ? (
-      VALEUR_FICHES
+      VALEUR_FICHES[l.fiches]
     ) : l.commun ? (
       <strong>{l.commun}</strong>
     ) : (
