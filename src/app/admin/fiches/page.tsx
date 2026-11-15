@@ -5,7 +5,7 @@ import NavAdmin from "../NavAdmin";
 import formStyles from "@/components/form.module.css";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import adminStyles from "../admin.module.css";
+import SelecteurAnnees from "./SelecteurAnnees";
 import TableauFiches, { type LigneFiche } from "./TableauFiches";
 import LienScenario from "../LienScenario";
 
@@ -407,30 +407,15 @@ export default async function TableauFichesPage({
         </section>
       )}
 
-      <nav className={adminStyles.annees} aria-label="Années">
-        {annees.map((a) => {
-          const cochee = cochees.includes(a);
-          const suivantes = cochee
-            ? cochees.filter((c) => c !== a)
-            : [...cochees, a];
-          return (
-            <Link
-              key={a}
-              href={`/admin/fiches?annees=${suivantes.sort((x, y) => y - x).join(",")}`}
-              className={cochee ? adminStyles.anneeActive : adminStyles.annee}
-              aria-pressed={cochee}
-            >
-              {cochee ? "✓ " : ""}
-              {a}
-            </Link>
-          );
-        })}
-      </nav>
-
       {cochees.length === 0 ? (
-        <p className={formStyles.hint} style={{ marginTop: 24 }}>
-          Cochez une ou plusieurs années.
-        </p>
+        <>
+          <div style={{ marginTop: 24 }}>
+            <SelecteurAnnees annees={annees} cochees={cochees} />
+          </div>
+          <p className={formStyles.hint} style={{ marginTop: 16 }}>
+            Cochez une ou plusieurs années.
+          </p>
+        </>
       ) : (
         <TableauFiches
           lignes={lignes}
@@ -438,6 +423,7 @@ export default async function TableauFichesPage({
           selectionsDe={selectionsDe}
           selectionsConnues={connues}
           retour={`/admin/fiches?annees=${cochees.join(",")}`}
+          selecteurAnnees={<SelecteurAnnees annees={annees} cochees={cochees} />}
         />
       )}
     </PageShell>

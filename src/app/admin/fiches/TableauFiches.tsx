@@ -1,7 +1,8 @@
 "use client";
 
 import { emojiSatisfaction } from "@/lib/satisfaction";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
+import MenuCases from "./MenuCases";
 import adminStyles from "../admin.module.css";
 import styles from "./fiches.module.css";
 import { choisirBandeau, modifierSelection } from "@/app/projet/[id]/actions";
@@ -85,6 +86,7 @@ export default function TableauFiches({
   selectionsDe,
   selectionsConnues,
   retour,
+  selecteurAnnees,
 }: {
   lignes: LigneFiche[];
   /** Une seule année cochée : inutile de la répéter à chaque ligne. */
@@ -95,6 +97,8 @@ export default function TableauFiches({
   selectionsConnues: string[];
   /** L'adresse de cette page, pour y revenir après un ajout. */
   retour: string;
+  /** Le sélecteur d'années, posé à côté de celui des formats. */
+  selecteurAnnees: ReactNode;
 }) {
   const [recherche, setRecherche] = useState("");
   // Le long métrage est ce que Sarah regarde d'abord ; les autres se cochent.
@@ -188,30 +192,20 @@ export default function TableauFiches({
             <option value="satisfaction">Satisfaction de l&apos;auteur</option>
           </select>
         </label>
-        <div className={styles.formats}>
-          {TOUS_FORMATS.map((f) => {
-            const coche = formats.has(f);
-            return (
-              <button
-                key={f}
-                type="button"
-                className={coche ? adminStyles.anneeActive : adminStyles.annee}
-                aria-pressed={coche}
-                onClick={() =>
-                  setFormats((actuels) => {
-                    const n = new Set(actuels);
-                    if (coche) n.delete(f);
-                    else n.add(f);
-                    return n;
-                  })
-                }
-              >
-                {coche ? "✓ " : ""}
-                {f}
-              </button>
-            );
-          })}
-        </div>
+        {selecteurAnnees}
+        <MenuCases
+          libelle="Format"
+          options={TOUS_FORMATS.map((f) => ({ valeur: f, libelle: f }))}
+          choisies={[...formats]}
+          resume={
+            formats.size === 0
+              ? "Aucun"
+              : formats.size === TOUS_FORMATS.length
+                ? "Tous"
+                : TOUS_FORMATS.filter((f) => formats.has(f)).join(", ")
+          }
+          onChange={(suivants) => setFormats(new Set(suivants))}
+        />
       </div>
 
       <p className={styles.compte}>
