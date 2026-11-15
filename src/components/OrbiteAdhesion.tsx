@@ -349,6 +349,21 @@ const ICONE_MIRA = (
   </svg>
 );
 
+/** La vidéo de la séance, offerte aux adhérents (15/11, Sarah) : ▶ vert dans un rond. */
+const LECTURE = (
+  <svg
+    viewBox="0 0 24 24"
+    width="22"
+    height="22"
+    className={`${styles.recapSymbole} ${styles.enveloppeVerte}`}
+    aria-label="vidéo"
+    role="img"
+  >
+    <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
+    <path d="M10 8.3v7.4l6-3.7z" fill="currentColor" />
+  </svg>
+);
+
 const COCHE = (
   <svg
     viewBox="0 0 24 24"
@@ -428,17 +443,19 @@ const VALEUR_FICHES = (
   </span>
 );
 
-/** Remplace ✓ et ✉ par leur dessin. */
+/** Remplace ✓, ✉ et ▶ par leur dessin. */
 function Symboles({ texte }: { texte: string }) {
   return (
     <>
       {texte
-        .split(/(✓|✉)/)
+        .split(/(✓|✉|▶)/)
         .map((morceau, i) =>
           morceau === "✓" ? (
             <Fragment key={i}>{COCHE}</Fragment>
           ) : morceau === "✉" ? (
             <Fragment key={i}>{ENVELOPPE}</Fragment>
+          ) : morceau === "▶" ? (
+            <Fragment key={i}>{LECTURE}</Fragment>
           ) : (
             morceau
           ),
@@ -566,9 +583,10 @@ const RECAP: LigneRecap[] = [
     avecIcone: true,
     bulles: ["scenariolab-spectateur"],
     precision: "Spectateur",
-    // « 5 € » seul ; à 7 €, une coche verte à la place d'« Accès prioritaire » (15/11, Sarah).
+    // « 5 € » seul ; à 7 €, une coche verte (accès prioritaire) et ▶ vert
+    // (la vidéo de la séance, offerte) (15/11, Sarah).
     non: "5 €",
-    oui: "✓",
+    oui: "✓ ▶",
   },
   {
     nom: "ScénarioLab",
