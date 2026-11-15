@@ -38,7 +38,7 @@ export default async function ChoixAdhesionPage() {
       <form action={adherer} className={formStyles.form} style={{ marginTop: 24 }}>
         <input type="hidden" name="plan" value="annee_75" />
         <button type="submit" className={formStyles.submitWide}>
-          75 € à l’année
+          75 € à l’année (-10%)
         </button>
         <p className={formStyles.hint}>Payés en une fois.</p>
       </form>
