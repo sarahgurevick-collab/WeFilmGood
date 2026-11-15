@@ -947,6 +947,51 @@
   color: #ededed;
 }
 
+/* L'accolade du contact (15/11, Sarah) : à 7 €, CinéMatch et CinéCrush
+   réunis devant une seule enveloppe. Posée par-dessus les deux lignes de la
+   carte de droite, sans prendre de place dans la grille. */
+.plans {
+  position: relative;
+}
+
+.accolade {
+  position: absolute;
+  grid-column: 2;
+  top: 12px;
+  bottom: 12px;
+  right: 26px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #1a1a1a;
+  pointer-events: none;
+}
+
+.accoladeTrait {
+  width: 14px;
+  height: 100%;
+  color: #c4241e;
+}
+
+/* Les deux coches laissent la place de l'accolade et de l'enveloppe. */
+.avecAccolade .planValeur {
+  padding-right: 54px;
+}
+
+.enveloppeLigne {
+  display: none;
+  margin-left: 8px;
+}
+
+/* Sans accolade (explication ouverte) : une enveloppe par ligne. */
+.sansAccolade .avecAccolade .planValeur {
+  padding-right: 0;
+}
+
+.sansAccolade .enveloppeLigne {
+  display: inline;
+}
+
 /* Téléphone : une carte, puis l'autre ; les cases vides disparaissent. */
 @media (max-width: 720px) {
   .plans {
@@ -962,6 +1007,18 @@
 
   .celluleEntete.droite {
     margin-top: 24px;
+  }
+
+  .accolade {
+    display: none;
+  }
+
+  .avecAccolade .planValeur {
+    padding-right: 0;
+  }
+
+  .enveloppeLigne {
+    display: inline;
   }
 
   .planPrix {

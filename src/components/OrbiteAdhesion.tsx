@@ -434,18 +434,23 @@ type LigneRecap = {
   pack?: boolean;
   /** Les ronds de l'animation dont l'explication s'ouvre sous la ligne (11/11). */
   bulles?: string[];
+  /** Avec l'adhésion, ces lignes voisines partagent une accolade et une enveloppe (15/11). */
+  contact?: boolean;
 };
 
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
 const RECAP: LigneRecap[] = [
-  // CinéMatch et CinéCrush en tête des deux cartes (15/11, Sarah).
+  // CinéMatch et CinéCrush en tête des deux cartes (15/11, Sarah). À 0 €
+  // ils sont ensemble, chacun sa coche ; à 7 € une accolade les réunit
+  // devant une enveloppe : le contact vaut pour les deux (0280).
   {
     nom: "CinéMatch",
     icone: "cercles",
     avecIcone: true,
     bulles: ["cinematch"],
     non: "✓",
-    oui: "✓ ✉ talents contactables",
+    oui: "✓",
+    contact: true,
   },
   {
     nom: "CinéCrush",
@@ -455,6 +460,7 @@ const RECAP: LigneRecap[] = [
     bulles: ["cinecrush"],
     non: "✓",
     oui: "✓",
+    contact: true,
   },
   // Les Galaxies et le Finder restent ouverts à tous ; les fiches ne
   // s'ouvrent plus sans adhésion (décision de Sarah du 12/11).
@@ -710,7 +716,8 @@ export default function OrbiteAdhesion({
 
   const celluleLigne = (plan: "non" | "oui", l: LigneRecap, dernier: boolean) => {
     const cote = plan === "oui" ? styles.droite : styles.gauche;
-    const classe = `${styles.cellule} ${cote} ${dernier ? styles.derniere : ""}`;
+    const groupe = plan === "oui" && !!l.contact;
+    const classe = `${styles.cellule} ${cote} ${dernier ? styles.derniere : ""} ${groupe ? styles.avecAccolade : ""}`;
     if (plan === "non" && l.non === "✕") {
       return <div key={`${plan}-${l.nom}-${l.precision ?? ""}`} className={`${classe} ${styles.vide}`} aria-hidden="true" />;
     }
@@ -747,6 +754,8 @@ export default function OrbiteAdhesion({
       <>
         <strong className={plan === "oui" && l.oui === "∞" ? styles.recapInfini : undefined}>
           <Symboles texte={plan === "oui" ? l.oui : l.non} />
+          {/* Sans l'accolade (téléphone, explication ouverte) : l'enveloppe sur chaque ligne. */}
+          {groupe && <span className={styles.enveloppeLigne}>{ENVELOPPE}</span>}
         </strong>
         {(plan === "oui" ? l.ouiNote : l.nonNote) && (
           <small>{plan === "oui" ? l.ouiNote : l.nonNote}</small>
@@ -873,6 +882,15 @@ export default function OrbiteAdhesion({
   const estService = (l: LigneRecap) => NOMS_SERVICES.includes(l.nom);
   const lignesCartes = lignes.filter((l) => !estService(l));
   const lignesServices = lignes.filter(estService);
+  // L'accolade du contact : devant les lignes voisines qui le partagent
+  // (rang dans la grille : l'en-tête est au rang 1). Elle s'efface quand une
+  // explication est ouverte sous l'une d'elles.
+  const premierContact = lignesCartes.findIndex((l) => l.contact);
+  const nombreContact = lignesCartes.filter((l) => l.contact).length;
+  const rangContact = premierContact >= 0 ? premierContact + 2 : 0;
+  const accoladeOuverte = !lignesCartes.some(
+    (l) => l.contact && bulle === `oui-${l.nom}-${l.precision ?? ""}`,
+  );
 
   const ligneService = (l: LigneRecap) => {
     const cle = `service-${l.nom}-${l.precision ?? ""}`;
@@ -1174,13 +1192,32 @@ export default function OrbiteAdhesion({
         <div className={styles.recap}>
           <h2 className={styles.recapTitre}>Récapitulatif du pricing</h2>
           <div
-            className={styles.plans}
+            className={`${styles.plans} ${accoladeOuverte ? "" : styles.sansAccolade}`}
             style={{ "--lignes": lignesCartes.length + 1 } as React.CSSProperties}
           >
             {enteteCarte("non")}
             {lignesCartes.map((l, i) => celluleLigne("non", l, i === lignesCartes.length - 1))}
             {enteteCarte("oui")}
             {lignesCartes.map((l, i) => celluleLigne("oui", l, i === lignesCartes.length - 1))}
+            {rangContact > 0 && accoladeOuverte && (
+              <div
+                className={styles.accolade}
+                style={{ gridRow: `${rangContact} / span ${nombreContact}` }}
+                aria-hidden="true"
+              >
+                <svg viewBox="0 0 14 100" preserveAspectRatio="none" className={styles.accoladeTrait}>
+                  <path
+                    d="M1 1C8 1 7 6 7 12L7 42C7 47 8 50 13 50C8 50 7 53 7 58L7 88C7 94 8 99 1 99"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </svg>
+                {ENVELOPPE}
+              </div>
+            )}
           </div>
 
           <div className={styles.services}>
