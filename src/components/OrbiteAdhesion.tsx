@@ -146,7 +146,7 @@ const SERVICES: Noeud[] = [
   },
   {
     id: "analyse",
-    nom: "Analyse du projet",
+    nom: "Projet analysé",
     icone: "nuage",
     // 60 € sans adhésion, 50 € adhérent (11/11, Sarah) ; texte du 15/11.
     texte:
