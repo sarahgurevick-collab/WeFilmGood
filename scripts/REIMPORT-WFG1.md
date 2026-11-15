@@ -329,3 +329,8 @@ Ce qui diffère du mode d'emploi ci-dessus :
   « labellisé » de changer de statut ; la file « Projets en attente » montre
   aussi un projet labellisé renvoyé à la lecture tant qu'aucune fiche n'a
   été validée depuis.
+- **Scénarios renvoyés** : la reprise des documents ne remplace jamais un
+  scénario déjà présent. Pour les projets de la file renvoyés à la lecture,
+  comparer la taille de `project.pdf` sur WFG 1 avec la copie rapatriée, puis
+  `scripts/remplacer-scenarios-relecture.mjs <dossier> --ecrire` (10 scénarios
+  remplacés le 15/11, anciennes versions dans `~/imports/final-2/scenarios/avant/`).
