@@ -778,10 +778,10 @@ export default function OrbiteAdhesion({
           "0 €"
         )}
       </span>
-      {/* La ligne « ou 75 €/an » existe aussi à gauche, invisible : les deux
+      {/* La ligne « ou 75 €/an (-10%) » existe aussi à gauche, invisible : les deux
           boutons tombent ainsi à la même hauteur. */}
       <small className={plan === "oui" ? undefined : styles.reserve} aria-hidden={plan !== "oui"}>
-        ou 75 €/an
+        ou 75 €/an (-10%)
       </small>
       {/* Les boutons (15/11, mots de Sarah) : « J'adhère » à 7 € ; à 0 €,
           « J'explore les Galaxies » avec un profil, « Je crée mon profil » sans. */}
