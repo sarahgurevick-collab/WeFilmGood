@@ -142,6 +142,7 @@ CinéCrush (dans le Menu)
 - L'équipe choisit pour le CinéCrush les projets dont le videopitch est le plus réussi. Il y a beaucoup de candidats : un auteur qui veut y figurer a tout intérêt à soigner son videopitch.
 - Ce videopitch compte double : tous les membres le regardent pendant une semaine, et c'est d'après lui que les comédiens jouent les personnages.
 - Pendant sa semaine, la fiche du projet s'ouvre à tous les membres, avec son videopitch, même sans adhésion.
+- Pendant la semaine du CinéCrush, un adhérent peut contacter l'auteur du projet sans utiliser de soleil : un message, puis la conversation continue si l'auteur répond.
 - Si un auteur demande comment être choisi, encourage-le : raconter son histoire face caméra, simplement, avec conviction ; un bon videopitch donne envie aux comédiens et aux producteurs d'aller plus loin.
 
 ComedyPitch (sur la fiche d'un projet, carte d'un personnage)
