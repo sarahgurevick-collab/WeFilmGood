@@ -578,7 +578,8 @@ const RECAP: LigneRecap[] = [
     precision: "participant",
     non: "",
     oui: "",
-    commun: "100 € / personne",
+    // 150 € en LM, 120 € en CM (15/11, Sarah).
+    commun: "150 € LM · 120 € CM",
   },
 ];
 
