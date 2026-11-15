@@ -345,8 +345,8 @@
   text-align: left;
 }
 
-/* Le bouton « Créez votre profil… » sous les chiffres de l'accueil. */
+/* Le bouton « Créez votre profil… » sous la sphère des témoignages. */
 .bandeInscription {
-  margin: 36px 0 0;
+  margin: 8px 0 48px;
   text-align: center;
 }

@@ -90,6 +90,15 @@ export default async function Home() {
             <CielEtoile />
             <div style={{ position: "relative", zIndex: 1 }}>
               <SpherePhotos photos={photosTemoignages} />
+              {/* Le bouton d'inscription (15/11, Sarah), sous la sphère, pour
+                  les visiteurs : le nombre est celui de l'anneau des chiffres. */}
+              {!auth?.user && chiffres && (
+                <p className={styles.bandeInscription}>
+                  <Link href="/connexion" className={formStyles.submit}>
+                    Créez votre profil et rejoignez les {chiffres.talents.toLocaleString("fr-FR")} talents
+                  </Link>
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -159,16 +168,6 @@ export default async function Home() {
               { label: "Pays connectés", n: chiffres.pays, globe: true },
             ]}
           />
-        )}
-
-        {/* Le bouton d'inscription (15/11, Sarah), pour les visiteurs : le
-            nombre est celui des talents de l'anneau, toujours à jour. */}
-        {!auth?.user && chiffres && (
-          <p className={styles.bandeInscription}>
-            <Link href="/connexion" className={formStyles.submit}>
-              Créez votre profil et rejoignez les {chiffres.talents.toLocaleString("fr-FR")} talents
-            </Link>
-          </p>
         )}
 
         <div className={styles.bandeFinder}>
