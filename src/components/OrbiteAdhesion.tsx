@@ -81,7 +81,7 @@ const ADHESION: Noeud[] = [
     nomZero: "Les Galaxies Projets - Personnages - Talents",
     icone: "gravity",
     texte:
-      "Chaque jour tu as un nouveau soleil (crédit) pour trouver le projet de ton choix dans la Galaxie de projets. Tu pourras écouter l’auteur raconter son histoire (StoryPitch), un comédien qui donne vie aux personnages (ComedyPitch) ou un compositeur qui propose le thème ou on l’espère une chanson phare qui déclenchera la production du film (MusicPitch)\nEnregistre le projet dans tes favoris et contacte les Talents le moment venu.",
+      "Chaque jour un nouveau crédit soleil ouvre le projet de ton choix. StoryPitch, ComedyPitch, MusicPitch. Le projet reste visible dans tes favoris et les talents contactables.",
     aZero: "reste",
     texteZero: GALAXIES_ZERO,
   },
