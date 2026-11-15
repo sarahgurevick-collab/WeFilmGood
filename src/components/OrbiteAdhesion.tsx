@@ -778,18 +778,18 @@ export default function OrbiteAdhesion({
           "0 €"
         )}
       </span>
-      {/* La ligne « ou 84 €/an » existe aussi à gauche, invisible : les deux
+      {/* La ligne « ou 75 €/an » existe aussi à gauche, invisible : les deux
           boutons tombent ainsi à la même hauteur. */}
       <small className={plan === "oui" ? undefined : styles.reserve} aria-hidden={plan !== "oui"}>
-        ou 84 €/an
+        ou 75 €/an
       </small>
       {/* Les boutons (15/11, mots de Sarah) : « J'adhère » à 7 € ; à 0 €,
           « J'explore les Galaxies » avec un profil, « Je crée mon profil » sans. */}
       {plan === "oui" ? (
-        // Le paiement en ligne n'est pas ouvert : le message existant s'affiche.
+        // Choix du paiement (au mois ou à l'année), puis HelloAsso (15/11).
         // Sans profil, on passe d'abord par la connexion.
         <Link
-          href={connecte ? "/adhesion?paiement=bientot" : `/connexion?next=${encodeURIComponent("/adhesion?paiement=bientot")}`}
+          href={connecte ? "/adhesion/choix" : `/connexion?next=${encodeURIComponent("/adhesion/choix")}`}
           className={`${formStyles.submitWide} ${styles.boutonCarte}`}
           style={ROUGE_BOUTON}
         >

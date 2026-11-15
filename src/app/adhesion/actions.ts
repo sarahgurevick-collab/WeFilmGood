@@ -2,7 +2,8 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { creerIntention, modeHelloAsso } from "@/lib/helloasso";
+import { ADHESION_AU_MOIS } from "@/lib/adhesion-paiement";
+import { creerIntention, echeancesMensuelles, modeHelloAsso, testeurPaiement } from "@/lib/helloasso";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -25,7 +26,7 @@ export async function adherer(formData: FormData) {
 
   if (modeHelloAsso() === "sandbox") {
     const { data: estAdmin } = await supabase.rpc("is_admin");
-    if (!estAdmin) redirect("/adhesion?paiement=bientot");
+    if (!estAdmin && !testeurPaiement(user.id)) redirect("/adhesion?paiement=bientot");
   }
 
   const admin = createAdminClient();
@@ -71,6 +72,14 @@ export async function adherer(formData: FormData) {
       annulation: `${origine}/adhesion`,
       payeur: { email: user.email!, prenom: profil?.first_name, nom: profil?.last_name },
       metadata: { adhesion: adhesion.id, profil: user.id },
+      ...(plan.slug === ADHESION_AU_MOIS.slug
+        ? {
+            echeances: {
+              premierCentimes: ADHESION_AU_MOIS.premierCentimes,
+              suivantes: echeancesMensuelles(ADHESION_AU_MOIS.premierCentimes, ADHESION_AU_MOIS.suivantes),
+            },
+          }
+        : {}),
     });
     await admin
       .from("memberships")

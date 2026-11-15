@@ -20,9 +20,10 @@ export function modeHelloAsso(): ModeHelloAsso {
 /**
  * En mode test, qui d'autre que l'administration peut payer (avec une fausse
  * carte). Nicolas Zappi a fait l'essai de l'envoi à la lecture le 15/11 (réussi),
- * son accès est retiré. Ajouter ici l'identifiant d'un profil pour un nouvel essai.
+ * son accès est retiré, puis redonné le 15/11 pour l'essai de l'adhésion (Sarah).
+ * Ajouter ici l'identifiant d'un profil pour un nouvel essai.
  */
-const TESTEURS_PAIEMENT: string[] = [];
+const TESTEURS_PAIEMENT: string[] = ["2613adec-5637-40d0-b726-29ca92eae60a"];
 
 export function testeurPaiement(uid: string | null | undefined): boolean {
   return !!uid && TESTEURS_PAIEMENT.includes(uid);
@@ -96,6 +97,8 @@ export async function creerIntention(p: {
   annulation: string;
   payeur: { email: string; prenom?: string | null; nom?: string | null };
   metadata: Record<string, string>;
+  /** Paiement en plusieurs fois : le premier montant, puis les suivants. */
+  echeances?: { premierCentimes: number; suivantes: { montantCentimes: number; date: string }[] };
 }) {
   const { slug } = configuration();
   const demande = (avecNom: boolean) =>
@@ -103,7 +106,10 @@ export async function creerIntention(p: {
       method: "POST",
       body: JSON.stringify({
         totalAmount: p.montantCentimes,
-        initialAmount: p.montantCentimes,
+        initialAmount: p.echeances?.premierCentimes ?? p.montantCentimes,
+        ...(p.echeances
+          ? { terms: p.echeances.suivantes.map((e) => ({ amount: e.montantCentimes, date: e.date })) }
+          : {}),
         itemName: p.libelle.slice(0, 250),
         backUrl: p.annulation,
         errorUrl: p.erreur,
@@ -126,6 +132,20 @@ export async function creerIntention(p: {
     if (!(p.payeur.prenom || p.payeur.nom) || !String(e).includes(" 400 ")) throw e;
     return demande(false);
   }
+}
+
+/**
+ * Les prélèvements suivants d'un paiement au mois, selon les règles de
+ * HelloAsso : un par mois, jamais dans le mois du premier paiement, jamais
+ * après le 27, le dernier à moins de 12 mois. On garde le jour du premier
+ * paiement (ramené au 27 au plus).
+ */
+export function echeancesMensuelles(montantCentimes: number, nombre: number, depuis = new Date()) {
+  const jour = Math.min(depuis.getUTCDate(), 27);
+  return Array.from({ length: nombre }, (_, i) => {
+    const d = new Date(Date.UTC(depuis.getUTCFullYear(), depuis.getUTCMonth() + i + 1, jour, 10));
+    return { montantCentimes, date: d.toISOString() };
+  });
 }
 
 export type Intention = {

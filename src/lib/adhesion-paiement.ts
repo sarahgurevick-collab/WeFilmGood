@@ -4,6 +4,9 @@ import { envoyerEmail } from "@/lib/brevo";
 import { createAdminClient, emailDuMembre } from "@/lib/supabase/admin";
 import { lireIntention, montantPaye } from "@/lib/helloasso";
 
+/** L'adhésion au mois (15/11) : 12 paiements de 7 €, le premier tout de suite. */
+export const ADHESION_AU_MOIS = { slug: "mois_7", premierCentimes: 700, suivantes: 11 } as const;
+
 /**
  * Vérifie une adhésion en attente de paiement et l'active si HelloAsso
  * confirme l'encaissement du bon montant. Appelée par la page de retour,
@@ -26,7 +29,10 @@ export async function verifierAdhesion(membershipId: string): Promise<"active" |
 
   const intention = await lireIntention(m.payment_reference);
   const paye = montantPaye(intention);
-  if (paye < (m.amount_cents ?? Infinity)) return "en_attente";
+  // Au mois (15/11), le premier prélèvement de 7 € suffit : les suivants
+  // sont prélevés par HelloAsso, mois après mois.
+  const attendu = m.plan_slug === ADHESION_AU_MOIS.slug ? ADHESION_AU_MOIS.premierCentimes : (m.amount_cents ?? Infinity);
+  if (paye < attendu) return "en_attente";
 
   const debut = new Date();
   const fin = new Date(debut);
@@ -65,6 +71,7 @@ export async function verifierAdhesion(membershipId: string): Promise<"active" |
         htmlContent: `
           <p>Bonjour,</p>
           <p>Votre paiement est bien reçu : votre adhésion WeFilmGood est active pour un an, jusqu'au ${fin.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.</p>
+          ${m.plan_slug === ADHESION_AU_MOIS.slug ? `<p>Les 7 € suivants seront prélevés chaque mois par HelloAsso, pendant 11 mois.</p>` : ""}
           ${factureEmise ? `<p>Votre facture est disponible sur WeFilmGood, dans <a href="https://app.wefilmgood.com/profil/compte">Réglages du compte</a>.</p>` : ""}
           <p>Merci de votre soutien.</p>
         `,
