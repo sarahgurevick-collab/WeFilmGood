@@ -413,19 +413,9 @@ function NomLigne({ nom }: { nom: string }) {
   );
 }
 
-/** Lire (l'œil) et créer sans limite (l'infini), réunis par une accolade. */
+/** Lire (l'œil) et créer sans limite (l'infini). */
 const VALEUR_FICHES = (
   <span className={styles.fichesValeur}>
-    <svg viewBox="0 0 14 100" preserveAspectRatio="none" className={styles.fichesAccolade} aria-hidden="true">
-      <path
-        d="M1 1C8 1 7 6 7 12L7 42C7 47 8 50 13 50C8 50 7 53 7 58L7 88C7 94 8 99 1 99"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
     <span className={styles.fichesOeil} role="img" aria-label="lire">
       {ICONES.oeil}
     </span>
@@ -476,17 +466,17 @@ type LigneRecap = {
   pack?: boolean;
   /** Les ronds de l'animation dont l'explication s'ouvre sous la ligne (11/11). */
   bulles?: string[];
-  /** Avec l'adhésion, ces lignes voisines partagent une accolade et une enveloppe (15/11). */
+  /** Avec l'adhésion, la ligne porte une enveloppe verte : le contact (15/11). */
   contact?: boolean;
-  /** La ligne des fiches : accolade, œil (lire) et infini (créer) (15/11). */
+  /** Une ligne des fiches : l'œil (lire) et l'infini (créer) (15/11). */
   fiches?: boolean;
 };
 
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
 const RECAP: LigneRecap[] = [
   // CinéMatch et CinéCrush en tête des deux cartes (15/11, Sarah). À 0 €
-  // ils sont ensemble, chacun sa coche ; à 7 € une accolade les réunit
-  // devant une enveloppe : le contact vaut pour les deux (0280).
+  // ils sont ensemble, chacun sa coche ; à 7 €, chacun sa coche et son
+  // enveloppe (0280 ; l'accolade retirée le 15/11).
   {
     nom: "CinéMatch",
     icone: "cercles",
@@ -508,14 +498,24 @@ const RECAP: LigneRecap[] = [
   // Les Galaxies et le Finder restent ouverts à tous ; les fiches ne
   // s'ouvrent plus sans adhésion (décision de Sarah du 12/11).
   { nom: "Galaxie de Projets et Finder", icone: "galaxie", non: "✓", oui: "✓" },
-  // Lire et créer les fiches sur une seule ligne (15/11, Sarah : inutile de
-  // répéter « fiches » deux fois) : une accolade, l'œil pour lire, l'infini
-  // pour créer ; l'explication s'ouvre depuis l'icône.
+  // Les fiches sur deux lignes, chacune son icône et sa bulle, l'œil (lire)
+  // et l'infini (créer) sans accolade ; plus d'accolade CinéMatch/CinéCrush
+  // non plus, chaque ligne a son enveloppe (15/11, Sarah ; retour : étiquette
+  // adhesion-avant-sans-accolades).
   {
-    nom: "Fiches projet\n& personnages",
+    nom: "Fiches projets",
+    icone: "fiche",
+    avecIcone: true,
+    bulles: ["fiche-projet"],
+    non: "✕",
+    oui: "",
+    fiches: true,
+  },
+  {
+    nom: "Fiches personnages",
     icone: "identite",
     avecIcone: true,
-    bulles: ["fiche-projet", "fiche-personnage"],
+    bulles: ["fiche-personnage"],
     non: "✕",
     oui: "",
     fiches: true,
@@ -807,7 +807,7 @@ export default function OrbiteAdhesion({
       <>
         <strong className={plan === "oui" && l.oui === "∞" ? styles.recapInfini : plan === "oui" && l.ouiVert ? styles.valeurVerte : undefined}>
           <Symboles texte={plan === "oui" ? l.oui : l.non} />
-          {/* Sans l'accolade (téléphone, explication ouverte) : l'enveloppe sur chaque ligne. */}
+          {/* L'enveloppe du contact, sur chaque ligne. */}
           {groupe && <span className={styles.enveloppeLigne}>{ENVELOPPE}</span>}
         </strong>
         {(plan === "oui" ? l.ouiNote : l.nonNote) && (
@@ -928,15 +928,6 @@ export default function OrbiteAdhesion({
     NOMS_SERVICES.includes(l.nom) && l.precision !== "Spectateur";
   const lignesCartes = lignes.filter((l) => !estService(l));
   const lignesServices = lignes.filter(estService);
-  // L'accolade du contact : devant les lignes voisines qui le partagent
-  // (rang dans la grille : l'en-tête est au rang 1). Elle s'efface quand une
-  // explication est ouverte sous l'une d'elles.
-  const premierContact = lignesCartes.findIndex((l) => l.contact);
-  const nombreContact = lignesCartes.filter((l) => l.contact).length;
-  const rangContact = premierContact >= 0 ? premierContact + 2 : 0;
-  const accoladeOuverte = !lignesCartes.some(
-    (l) => l.contact && bulle === `oui-${l.nom}-${l.precision ?? ""}`,
-  );
 
   const ligneService = (l: LigneRecap) => {
     const cle = `service-${l.nom}-${l.precision ?? ""}`;
@@ -1236,32 +1227,13 @@ export default function OrbiteAdhesion({
         <div className={styles.recap}>
           <h2 className={styles.recapTitre}>Récapitulatif du pricing</h2>
           <div
-            className={`${styles.plans} ${accoladeOuverte ? "" : styles.sansAccolade}`}
+            className={`${styles.plans} ${styles.sansAccolade}`}
             style={{ "--lignes": lignesCartes.length + 1 } as React.CSSProperties}
           >
             {enteteCarte("non")}
             {lignesCartes.map((l, i) => celluleLigne("non", l, i === lignesCartes.length - 1))}
             {enteteCarte("oui")}
             {lignesCartes.map((l, i) => celluleLigne("oui", l, i === lignesCartes.length - 1))}
-            {rangContact > 0 && accoladeOuverte && (
-              <div
-                className={styles.accolade}
-                style={{ gridRow: `${rangContact} / span ${nombreContact}` }}
-                aria-hidden="true"
-              >
-                <svg viewBox="0 0 14 100" preserveAspectRatio="none" className={styles.accoladeTrait}>
-                  <path
-                    d="M1 1C8 1 7 6 7 12L7 42C7 47 8 50 13 50C8 50 7 53 7 58L7 88C7 94 8 99 1 99"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    vectorEffect="non-scaling-stroke"
-                  />
-                </svg>
-                {ENVELOPPE}
-              </div>
-            )}
           </div>
 
           <div className={styles.services}>
