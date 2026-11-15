@@ -438,6 +438,24 @@ type LigneRecap = {
 
 // Le récapitulatif du pricing, avec les mots de Sarah (10/11).
 const RECAP: LigneRecap[] = [
+  // CinéMatch et CinéCrush en tête des deux cartes (15/11, Sarah).
+  {
+    nom: "CinéMatch",
+    icone: "cercles",
+    avecIcone: true,
+    bulles: ["cinematch"],
+    non: "✓",
+    oui: "✓ ✉ talents contactables",
+  },
+  {
+    nom: "CinéCrush",
+    accroche: "Chaque semaine",
+    icone: "coeur",
+    avecIcone: true,
+    bulles: ["cinecrush"],
+    non: "✓",
+    oui: "✓",
+  },
   // Les Galaxies et le Finder restent ouverts à tous ; les fiches ne
   // s'ouvrent plus sans adhésion (décision de Sarah du 12/11).
   { nom: "Galaxie de Projets et Finder", icone: "galaxie", non: "✓", oui: "✓" },
@@ -465,23 +483,6 @@ const RECAP: LigneRecap[] = [
     bulles: ["galaxies"],
     non: "✕",
     oui: "✓ 1 projet au choix et ses Talents ✉ /jour",
-  },
-  {
-    nom: "CinéMatch",
-    icone: "cercles",
-    avecIcone: true,
-    bulles: ["cinematch"],
-    non: "✓",
-    oui: "✓ ✉ talents contactables",
-  },
-  {
-    nom: "CinéCrush",
-    accroche: "Chaque semaine",
-    icone: "coeur",
-    avecIcone: true,
-    bulles: ["cinecrush"],
-    non: "✓",
-    oui: "✓",
   },
   {
     nom: "Analyse d’un projet",
