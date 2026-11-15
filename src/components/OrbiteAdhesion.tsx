@@ -921,7 +921,10 @@ export default function OrbiteAdhesion({
     "Accompagnement personnalisé",
     "ScénarioLab",
   ];
-  const estService = (l: LigneRecap) => NOMS_SERVICES.includes(l.nom);
+  // Le ScénarioLab spectateur va dans les cartes : son prix change selon
+  // l'adhésion (15/11, Sarah ; retour : étiquette adhesion-avant-spectateur-dans-cartes).
+  const estService = (l: LigneRecap) =>
+    NOMS_SERVICES.includes(l.nom) && l.precision !== "Spectateur";
   const lignesCartes = lignes.filter((l) => !estService(l));
   const lignesServices = lignes.filter(estService);
   // L'accolade du contact : devant les lignes voisines qui le partagent
