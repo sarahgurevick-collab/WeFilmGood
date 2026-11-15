@@ -166,6 +166,9 @@ const SERVICES: Noeud[] = [
     icone: "gravity",
     texte:
       "Pack Soleils : 5, 10 ou 20 soleils à utiliser quand tu veux, pour ouvrir d’autres projets et contacter leurs Talents. Prix dégressif pour les adhérents.",
+    // À 0 €, sans le prix dégressif (15/11, mots de Sarah).
+    texteZero:
+      "Pack Soleils : 5, 10 ou 20 soleils à utiliser quand tu veux, pour ouvrir d’autres projets et contacter leurs Talents.",
   },
 ];
 
