@@ -89,7 +89,10 @@ const ADHESION: Noeud[] = [
     id: "cinecrush",
     nom: "CinéCrush",
     icone: "coeur",
+    // Adhésion : le contact des talents en plus (15/11, mots de Sarah) ; à 0 €, l'ancien texte.
     texte:
+      "Le chrono est lancé ! Ce videopitch mérite toute ton attention : tu as une semaine pour le découvrir, laisser un avis en commentaires et contacter les talents !",
+    texteZero:
       "Le chrono est lancé ! Ce videopitch mérite toute ton attention : tu as une semaine pour le découvrir. Laisse un avis en commentaires : ce sont de véritables tremplins magiques pour propulser les histoires !",
     aZero: "reste",
   },
