@@ -3,7 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { creerIntention, modeHelloAsso } from "@/lib/helloasso";
+import { creerIntention, modeHelloAsso, testeurPaiement } from "@/lib/helloasso";
 import { prixLectureCentimes } from "@/lib/lecture-paiement";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { chargerProjetAModifier } from "../../blocs";
@@ -160,7 +160,7 @@ export async function envoyerALaLecture(formData: FormData) {
   const { supabase, user, projet, estAdmin } = await chargerProjetAModifier(id, "documents");
   const page = `/projet/${id}/documents`;
 
-  if (modeHelloAsso() === "sandbox" && !estAdmin) redirect(`${page}?paiement=bientot`);
+  if (modeHelloAsso() === "sandbox" && !estAdmin && !testeurPaiement(user?.id)) redirect(`${page}?paiement=bientot`);
 
   const admin = createAdminClient();
   if (!admin) redirect(`${page}?paiement=erreur`);

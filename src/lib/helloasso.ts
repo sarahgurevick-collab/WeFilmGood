@@ -17,6 +17,16 @@ export function modeHelloAsso(): ModeHelloAsso {
   return process.env.HELLOASSO_MODE === "production" ? "production" : "sandbox";
 }
 
+/**
+ * En mode test, qui d'autre que l'administration peut payer (avec une fausse
+ * carte) : Nicolas Zappi, pour essayer l'envoi à la lecture (Sarah, 15/11).
+ */
+const TESTEURS_PAIEMENT = ["2613adec-5637-40d0-b726-29ca92eae60a"];
+
+export function testeurPaiement(uid: string | null | undefined): boolean {
+  return !!uid && TESTEURS_PAIEMENT.includes(uid);
+}
+
 function configuration() {
   const test = modeHelloAsso() === "sandbox";
   const clientId = test ? process.env.HELLOASSO_SANDBOX_CLIENT_ID : process.env.HELLOASSO_CLIENT_ID;

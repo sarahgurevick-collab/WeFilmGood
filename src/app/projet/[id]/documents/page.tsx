@@ -6,7 +6,7 @@ import BlocProjet from "../../BlocProjet";
 import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { signerImages } from "../fichiers";
-import { modeHelloAsso } from "@/lib/helloasso";
+import { modeHelloAsso, testeurPaiement } from "@/lib/helloasso";
 import { enregistrerDocuments, envoyerALaLecture } from "./actions";
 import BoutonRetirerPhoto from "./BoutonRetirerPhoto";
 import ImagePresentation from "./ImagePresentation";
@@ -28,7 +28,7 @@ export default async function DocumentsPage({
 }) {
   const { id } = await params;
   const { erreur, cree, enregistre, paiement } = await searchParams;
-  const { supabase, projet } = await chargerProjetAModifier(id, "documents");
+  const { supabase, projet, user } = await chargerProjetAModifier(id, "documents");
 
   const { data: fichiers } = await supabase
     .from("project_files")
@@ -87,7 +87,7 @@ export default async function DocumentsPage({
   const { data: enLecture } = await supabase.rpc("scenario_en_lecture", { p_project_id: id });
   const scenarioModifiable = estAdmin === true || enLecture !== true;
   const test = modeHelloAsso() === "sandbox";
-  const peutPayer = !test || estAdmin === true;
+  const peutPayer = !test || estAdmin === true || testeurPaiement(user?.id);
   const envoyeLe = (demandesPayees ?? [])[0]?.paid_at ?? null;
   const dejaEnvoye = (demandesPayees ?? []).length > 0;
   const dejaLu =
@@ -227,7 +227,7 @@ export default async function DocumentsPage({
               {test && (
                 <p className={formStyles.hint} style={{ marginTop: 8 }}>
                   Mode test : paiement sur le compte HelloAsso de test, avec une fausse carte.
-                  Visible de l&apos;administration seulement.
+                  Visible de l&apos;administration et des testeurs seulement.
                 </p>
               )}
             </>
