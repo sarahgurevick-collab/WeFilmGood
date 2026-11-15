@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import ChampsManquantsVisibles from "@/components/ChampsManquantsVisibles";
 import ContactOuAssistant from "@/components/ContactOuAssistant";
+import FlecheHaut from "@/components/FlecheHaut";
 import EnregistrerServiceWorker from "@/components/EnregistrerServiceWorker";
 import HorsAdmin from "@/components/HorsAdmin";
 import InviterInstallation from "@/components/InviterInstallation";
@@ -38,6 +39,7 @@ export default function RootLayout({
         {/* Contact (ou assistant) et traduction (posée par ContactOuAssistant) servent les membres, pas l'administration. */}
         <HorsAdmin>
           <ContactOuAssistant />
+          <FlecheHaut />
         </HorsAdmin>
         <ChampsManquantsVisibles />
         <EnregistrerServiceWorker />

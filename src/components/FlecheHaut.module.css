@@ -1,0 +1,28 @@
+.fleche {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #e5e5e5;
+  border-radius: 999px;
+  background: #fff;
+  color: #1a1a1a;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.fleche:hover {
+  transform: scale(1.08);
+}
+
+/* Mira reste en bas à droite : la flèche se pose juste au-dessus. */
+.auDessusDeMira {
+  bottom: 84px;
+}

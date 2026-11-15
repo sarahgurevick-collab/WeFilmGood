@@ -94,9 +94,10 @@ export default function EnTeteAnime({ connecte }: { connecte: boolean }) {
       </Link>
 
       <nav className={styles.nav}>
-        {/* Mira et la traduction, pour les membres connectés : ils viennent
-            s'y ranger (Assistant.tsx, Traduction.tsx). */}
-        {connecte && <div {...{ [EMPLACEMENT_ENTETE]: "" }} className={styles.outils} />}
+        {/* Mira et la traduction viennent s'y ranger (Assistant.tsx,
+            Traduction.tsx), pour les membres et, depuis le 15/11, pour les
+            visiteurs de l'accueil (Sarah). */}
+        <div {...{ [EMPLACEMENT_ENTETE]: "" }} className={styles.outils} />
 
         <div className={styles.menuConteneur} ref={menuRef}>
           <button
