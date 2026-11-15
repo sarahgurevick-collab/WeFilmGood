@@ -26,12 +26,14 @@ export default async function BarreNav({
   // « Mes favoris » (12/11, Sarah) : pour les adhérents, et pour qui a déjà
   // ouvert un projet (il doit pouvoir le retrouver même sans adhésion).
   let aDesFavoris = false;
+  // Le prénom du message « Bienvenue » (15/11, Sarah : comme sur WFG 1).
+  let prenom = "";
   if (connecte) {
     const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    const [{ data }, { data: admin }, { data: roleLecteur }, { data: adherent }, { count: ouverts }] = await Promise.all([
+    const [{ data }, { data: admin }, { data: roleLecteur }, { data: adherent }, { count: ouverts }, { data: moi }] = await Promise.all([
       supabase.rpc("compter_messages_non_lus"),
       supabase.rpc("is_admin"),
       supabase
@@ -45,7 +47,13 @@ export default async function BarreNav({
         .from("gravity_ouvertures")
         .select("project_id", { count: "exact", head: true })
         .eq("profile_id", user?.id ?? "00000000-0000-0000-0000-000000000000"),
+      supabase
+        .from("profiles")
+        .select("first_name, full_name")
+        .eq("id", user?.id ?? "00000000-0000-0000-0000-000000000000")
+        .maybeSingle<{ first_name: string | null; full_name: string | null }>(),
     ]);
+    prenom = (moi?.first_name ?? moi?.full_name?.split(" ")[0] ?? "").trim();
     aDesFavoris = adherent === true || (ouverts ?? 0) > 0;
     messagesNonLus = typeof data === "number" ? data : 0;
     estAdmin = admin === true;
@@ -113,6 +121,14 @@ export default async function BarreNav({
           </Link>
         ))}
       </div>
+
+      {/* « Bienvenue Prénom », comme sur WFG 1 (15/11, Sarah) : sur ordinateur
+          seulement, la barre du téléphone n'a pas la place. */}
+      {connecte && prenom && (
+        <span className={styles.bienvenue}>
+          Bienvenue <strong>{prenom}</strong>
+        </span>
+      )}
 
       {/* Mira et la traduction, au bout de la barre (sur ordinateur) pour les
           membres connectés : ils viennent s'y ranger (Assistant.tsx,

@@ -178,3 +178,20 @@
     display: none;
   }
 }
+
+/* Le message de bienvenue, au bout de la barre (ordinateur seulement). */
+.bienvenue {
+  font-size: 15px;
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+.bienvenue strong {
+  font-weight: 800;
+}
+
+@media (max-width: 1000px) {
+  .bienvenue {
+    display: none;
+  }
+}
