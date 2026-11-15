@@ -596,8 +596,8 @@ const RECAP: LigneRecap[] = [
     precision: "participant",
     non: "",
     oui: "",
-    // 150 € en LM, 120 € en CM (15/11, Sarah).
-    commun: "150 € LM · 120 € CM",
+    // 150 € en LM, 120 € en CM, sur deux lignes (15/11, Sarah).
+    commun: "120 € Court Métrage\n150 € Long Métrage",
   },
 ];
 
@@ -1014,7 +1014,9 @@ export default function OrbiteAdhesion({
         <div className={styles.serviceValeurs}>
           {l.commun ? (
             <div className={`${styles.serviceValeur} ${styles.serviceCommune}`}>
-              <strong>{l.commun}</strong>
+              <strong>
+                <NomLigne nom={l.commun} />
+              </strong>
             </div>
           ) : (
             <>
