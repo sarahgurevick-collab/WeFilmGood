@@ -147,7 +147,7 @@ const SERVICES: Noeud[] = [
   },
   {
     id: "analyse",
-    nom: "Projet analysé",
+    nom: "Dépôt de projet + Analyse",
     icone: "nuage",
     // 60 € sans adhésion, 50 € adhérent (11/11, Sarah) ; texte du 15/11.
     texte:
@@ -565,7 +565,7 @@ const RECAP: LigneRecap[] = [
     oui: "✓ ▶",
   },
   {
-    nom: "Projet analysé",
+    nom: "Dépôt de projet + Analyse",
     icone: "nuage",
     avecIcone: true,
     bulles: ["analyse"],
