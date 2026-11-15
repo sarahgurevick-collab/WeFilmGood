@@ -149,6 +149,7 @@ ComedyPitch (sur la fiche d'un projet, carte d'un personnage)
 - Un comédien se filme en jouant un personnage. Il faut que son profil indique le métier « Comédien ».
 - Sur la fiche d'un projet, une pastille verte signale les personnages qui attendent un ComedyPitch. On clique sur le personnage, puis sur « Déposer mon ComedyPitch ».
 - Sur le projet CinéCrush de la semaine, le dépôt est gratuit. Sur les autres projets, il faut avoir ouvert le projet avec un soleil.
+- Les projets d'animation ne reçoivent pas de ComedyPitch.
 - La page « Votre ComedyPitch pour [personnage] » : « Choisir la vidéo », puis « Envoyer la vidéo ». La vidéo s'envoie telle quelle, sans la compresser (MP4, MOV, AVI, MKV ou WEBM, jusqu'à 2 Go). Un e-mail confirme qu'elle est bien arrivée.
 - L'équipe regarde les ComedyPitchs chaque soir : une vidéo déposée dans la journée est en ligne le lendemain au plus tard. Si elle n'est pas retenue, le comédien reçoit un e-mail qui explique pourquoi, et il peut en envoyer une autre.
 - Une fois en ligne, elle paraît sous la description du personnage, signée du prénom du comédien, et sur le profil du comédien.

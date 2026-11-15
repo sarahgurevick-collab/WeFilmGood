@@ -9,7 +9,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
  * carte du personnage. La mécanique est celle du videopitch
  * (src/lib/videopitch.ts) ; ici, les règles propres au ComedyPitch.
  *
- * QUELS PERSONNAGES en reçoivent (la pastille verte) :
+ * QUELS PERSONNAGES en reçoivent (la pastille verte) — jamais ceux d'un
+ * projet d'animation (15/11) :
  *  - ceux d'un auteur adhérent, ou du projet CinéCrush de la semaine
  *    (gratuit « dans un premier temps », même si l'auteur n'adhère pas) ;
  *  - assez décrits pour être joués. Le critère n'a pas été fixé par Sarah :
@@ -41,13 +42,19 @@ export async function estLeCinecrush(admin: Admin, projectId: string): Promise<b
   return !!data;
 }
 
-/** Le projet accepte-t-il de nouveaux ComedyPitchs ? (auteur adhérent, ou CinéCrush de la semaine) */
+/**
+ * Le projet accepte-t-il de nouveaux ComedyPitchs ? (auteur adhérent, ou
+ * CinéCrush de la semaine). Jamais pour un projet d'animation (15/11, Sarah) :
+ * on ne joue pas un personnage dessiné face caméra.
+ */
 export async function projetAccepte(admin: Admin, projet: { id: string; owner_id: string }) {
-  const [cinecrush, { data: adherent }] = await Promise.all([
+  const [cinecrush, { data: adherent }, { data: techniques }] = await Promise.all([
     estLeCinecrush(admin, projet.id),
     admin.rpc("a_une_adhesion_active", { p_profile_id: projet.owner_id }),
+    admin.from("projects").select("techniques").eq("id", projet.id).maybeSingle<{ techniques: string[] | null }>(),
   ]);
-  return { cinecrush, accepte: cinecrush || adherent === true };
+  const animation = (techniques?.techniques ?? []).includes("animation");
+  return { cinecrush, accepte: !animation && (cinecrush || adherent === true) };
 }
 
 /** Ce personnage se prête-t-il à l'exercice ? */
