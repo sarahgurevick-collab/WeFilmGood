@@ -859,16 +859,10 @@ export default function OrbiteAdhesion({
                                 {/* Les deux textes, comme les deux colonnes
                                     (11/11, Sarah). Le Crédit Soleil n'en a
                                     qu'un : sans adhésion, il n'existe pas. */}
-                                {r.texteZero && r.id !== "galaxies" ? (
-                                  <>
-                                    <p>
-                                      <strong>Sans adhésion :</strong>{" "}
-                                      {r.texteZero}
-                                    </p>
-                                    <p>
-                                      <strong>Adhésion :</strong> {r.texte}
-                                    </p>
-                                  </>
+                                {/* Un seul texte, celui de la carte (15/11,
+                                    Sarah : « enlever la partie non adhésion »). */}
+                                {plan === "non" && r.texteZero && r.id !== "galaxies" ? (
+                                  <p>{r.texteZero}</p>
                                 ) : (
                                   r.texte.split("\n").map((ligne, i) => (
                                     <p key={i}>{ligne}</p>
@@ -1033,24 +1027,10 @@ export default function OrbiteAdhesion({
                                 </button>
                               </div>
                               <div className={styles.ficheTexte}>
-                                {/* Les deux textes, comme les deux colonnes
-                                    (11/11, Sarah). Le Crédit Soleil n'en a
-                                    qu'un : sans adhésion, il n'existe pas. */}
-                                {r.texteZero && r.id !== "galaxies" ? (
-                                  <>
-                                    <p>
-                                      <strong>Sans adhésion :</strong>{" "}
-                                      {r.texteZero}
-                                    </p>
-                                    <p>
-                                      <strong>Adhésion :</strong> {r.texte}
-                                    </p>
-                                  </>
-                                ) : (
-                                  r.texte.split("\n").map((ligne, i) => (
+                                {/* Le texte de l'adhésion seul (15/11, Sarah). */}
+                                {r.texte.split("\n").map((ligne, i) => (
                                     <p key={i}>{ligne}</p>
-                                  ))
-                                )}
+                                  ))}
                               </div>
                               <div className={styles.actions}>
                                 <Link
