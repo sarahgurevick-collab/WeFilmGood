@@ -1281,3 +1281,18 @@
 .services > .service:first-of-type {
   border-top: 0;
 }
+
+/* Les boutons des cartes, au style de la plateforme (form.module.css),
+   posés sur le blanc : texte foncé au repos, blanc au survol (15/11). */
+.cellule .boutonCarte {
+  display: block;
+  margin-top: 8px;
+  font-size: 15px;
+  color: #1a1a1a;
+  text-decoration: none;
+}
+
+.cellule .boutonCarte:hover,
+.cellule .boutonCarte:focus-visible {
+  color: #ffffff;
+}

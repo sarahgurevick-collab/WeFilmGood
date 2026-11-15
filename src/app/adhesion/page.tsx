@@ -88,7 +88,7 @@ export default async function AdhesionPage({
         </p>
       )}
       {/* L'adhésion en orbite, avant le détail des paliers (05/10, idée de Sarah). */}
-      <OrbiteAdhesion motsCles={motsCles} />
+      <OrbiteAdhesion motsCles={motsCles} connecte={!!user} />
     </PageShell>
   );
 }

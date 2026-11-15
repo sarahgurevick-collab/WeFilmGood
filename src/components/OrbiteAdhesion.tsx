@@ -11,6 +11,7 @@ import {
 import { ICONES } from "./AvantageAdhesion";
 import { EVENEMENT_CONTACT } from "./BoutonDevis";
 import styles from "./OrbiteAdhesion.module.css";
+import formStyles from "./form.module.css";
 
 /**
  * L'adhésion racontée comme la galaxie de l'accueil (05/10, idée de Sarah,
@@ -609,6 +610,11 @@ const GRILLE_CREDITS: { nombre: number; prix: number }[] = [
 ];
 
 
+// Les boutons des cartes : ceux de la plateforme (contour, point qui
+// remplit au survol, flèche), rouge pour l'adhésion, bleu pour 0 € (15/11).
+const ROUGE_BOUTON = { "--engagement": "#da2c25", "--engagement-texte": "#ffffff" } as React.CSSProperties;
+const BLEU_BOUTON = { "--engagement": "#3b8ef5", "--engagement-texte": "#ffffff" } as React.CSSProperties;
+
 const ETIQUETTE: Record<Cercle, string> = {
   adhesion: "Adhésion",
   service: "Services",
@@ -616,8 +622,11 @@ const ETIQUETTE: Record<Cercle, string> = {
 
 export default function OrbiteAdhesion({
   motsCles = 0,
+  connecte = false,
 }: {
   motsCles?: number;
+  /** A-t-on un profil (connecté) ? Change le bouton de la carte à 0 €. */
+  connecte?: boolean;
 }) {
   const [mode, setMode] = useState<Mode>("adhesion");
   const [choix, setChoix] = useState<Rond | null>(null);
@@ -774,14 +783,25 @@ export default function OrbiteAdhesion({
       <small className={plan === "oui" ? undefined : styles.reserve} aria-hidden={plan !== "oui"}>
         ou 84 €/an
       </small>
+      {/* Les boutons (15/11, mots de Sarah) : « J'adhère » à 7 € ; à 0 €,
+          « J'explore les Galaxies » avec un profil, « Je crée mon profil » sans. */}
       {plan === "oui" ? (
         // Le paiement en ligne n'est pas ouvert : le message existant s'affiche.
-        <Link href="/adhesion?paiement=bientot" className={styles.planBouton}>
-          Adhérer
+        // Sans profil, on passe d'abord par la connexion.
+        <Link
+          href={connecte ? "/adhesion?paiement=bientot" : `/connexion?next=${encodeURIComponent("/adhesion?paiement=bientot")}`}
+          className={`${formStyles.submitWide} ${styles.boutonCarte}`}
+          style={ROUGE_BOUTON}
+        >
+          J’adhère
+        </Link>
+      ) : connecte ? (
+        <Link href="/galaxies" className={`${formStyles.submitWide} ${styles.boutonCarte}`} style={BLEU_BOUTON}>
+          J’explore les Galaxies
         </Link>
       ) : (
-        <Link href="/galaxies" className={`${styles.planBouton} ${styles.planBoutonClair}`}>
-          Aller aux Galaxies
+        <Link href="/connexion" className={`${formStyles.submitWide} ${styles.boutonCarte}`} style={BLEU_BOUTON}>
+          Je crée mon profil
         </Link>
       )}
     </div>
