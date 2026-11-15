@@ -761,31 +761,53 @@
 
 .plans {
   display: grid;
+  grid-auto-flow: column;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px;
-  align-items: start;
+  grid-template-rows: repeat(var(--lignes, 10), auto);
+  column-gap: 22px;
 }
 
-.planCarte {
-  overflow: hidden;
-  border: 2px solid #dcdcdc;
-  border-radius: 22px;
+/* Une cellule : un morceau de la carte blanche ; empilées, elles forment
+   la carte, et deux lignes semblables se font face. */
+.cellule {
+  padding: 16px 24px;
+  border-top: 1px solid #ececec;
+  border-left: 2px solid #dcdcdc;
+  border-right: 2px solid #dcdcdc;
   background: #ffffff;
   color: #1a1a1a;
 }
 
-.planMiseEnAvant {
-  border-color: #c4241e;
-  box-shadow: 0 8px 28px rgba(196, 36, 30, 0.22);
+.droite {
+  border-left-color: #c4241e;
+  border-right-color: #c4241e;
 }
 
-.planEntete {
+.celluleEntete {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
   padding: 24px 24px 20px;
-  border-bottom: 1px solid #e6e6e6;
+  border-top: 2px solid #dcdcdc;
+  border-radius: 22px 22px 0 0;
+}
+
+.celluleEntete.droite {
+  border-top-color: #c4241e;
+}
+
+.derniere {
+  border-bottom: 2px solid #dcdcdc;
+  border-radius: 0 0 22px 22px;
+}
+
+.derniere.droite {
+  border-bottom-color: #c4241e;
+}
+
+.vide {
+  min-height: 56px;
 }
 
 .planNom {
@@ -794,7 +816,7 @@
   color: #1d6fd8;
 }
 
-.planMiseEnAvant .planNom {
+.droite .planNom {
   color: #c4241e;
 }
 
@@ -813,25 +835,36 @@
   color: #666666;
 }
 
-.planEntete small {
+.celluleEntete small {
   font-size: 14px;
   font-weight: 600;
   color: #666666;
 }
 
-.planListe {
-  margin: 0;
-  padding: 4px 24px 14px;
-  list-style: none;
+.reserve {
+  visibility: hidden;
 }
 
-.planLigne {
-  padding: 16px 0;
-  border-top: 1px solid #ececec;
+.planBouton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  min-height: 48px;
+  margin-top: 8px;
+  padding: 0 20px;
+  border: 2px solid #1a1a1a;
+  border-radius: 12px;
+  background: #1a1a1a;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 800;
+  text-decoration: none;
 }
 
-.planLigne:first-child {
-  border-top: 0;
+.planBoutonClair {
+  background: #ffffff;
+  color: #1a1a1a;
 }
 
 .planAccroche {
@@ -887,20 +920,20 @@
   color: #666666;
 }
 
-.planCarte .recapIcone,
-.planCarte .recapSymbole {
+.cellule .recapIcone,
+.cellule .recapSymbole {
   color: #1a1a1a;
 }
 
-.planCarte .recapIcone.recapRond {
+.cellule .recapIcone.recapRond {
   background: #f1f1f1;
 }
 
-.planCarte .recapBouton:hover {
+.cellule .recapBouton:hover {
   color: #000000;
 }
 
-.planCarte .recapSelect {
+.cellule .recapSelect {
   color: #1a1a1a;
   background: #ffffff;
   border-color: #c9c9c9;
@@ -914,12 +947,29 @@
   color: #ededed;
 }
 
+/* Téléphone : une carte, puis l'autre ; les cases vides disparaissent. */
 @media (max-width: 720px) {
   .plans {
+    grid-auto-flow: row;
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    row-gap: 0;
+  }
+
+  .vide {
+    display: none;
+  }
+
+  .celluleEntete.droite {
+    margin-top: 24px;
   }
 
   .planPrix {
     font-size: 44px;
+  }
+
+  .cellule:nth-last-child(1),
+  .plans > .gauche.derniere {
+    border-bottom: 2px solid #dcdcdc;
   }
 }

@@ -668,107 +668,118 @@ export default function OrbiteAdhesion({
 
   // Le récapitulatif en deux cartes de tarif, à la manière de Brevo (15/11,
   // Sarah) : « Sans adhésion » ne garde que ce qui est possible sans adhésion ;
-  // « Adhésion annuelle » garde tout. Retour : étiquette git
-  // adhesion-avant-deux-cartes (tableau d'avant).
-  const carteTarif = (plan: "non" | "oui") => {
-    const visibles = lignes.filter((l) => plan === "oui" || l.non !== "✕");
-    return (
-      <section
-        className={`${styles.planCarte} ${plan === "oui" ? styles.planMiseEnAvant : ""}`}
-        aria-label={plan === "oui" ? "Adhésion annuelle" : "Sans adhésion"}
+  // « Adhésion annuelle » garde tout. Une ligne présente des deux côtés se
+  // trouve à la même hauteur dans les deux cartes. Retour : étiquette git
+  // adhesion-avant-lignes-alignees (cartes d'avant), puis
+  // adhesion-avant-deux-cartes (tableau).
+  const enteteCarte = (plan: "non" | "oui") => (
+    <div
+      key={`entete-${plan}`}
+      className={`${styles.cellule} ${styles.celluleEntete} ${plan === "oui" ? styles.droite : styles.gauche}`}
+    >
+      <span className={styles.planNom}>
+        {plan === "oui" ? "Adhésion annuelle" : "Sans adhésion"}
+      </span>
+      <span className={styles.planPrix}>
+        {plan === "oui" ? (
+          <>
+            7 €<span className={styles.planUnite}>/mois</span>
+          </>
+        ) : (
+          "0 €"
+        )}
+      </span>
+      {/* La ligne « ou 84 €/an » existe aussi à gauche, invisible : les deux
+          boutons tombent ainsi à la même hauteur. */}
+      <small className={plan === "oui" ? undefined : styles.reserve} aria-hidden={plan !== "oui"}>
+        ou 84 €/an
+      </small>
+      {plan === "oui" ? (
+        // Le paiement en ligne n'est pas ouvert : le message existant s'affiche.
+        <Link href="/adhesion?paiement=bientot" className={styles.planBouton}>
+          Adhérer
+        </Link>
+      ) : (
+        <Link href="/galaxies" className={`${styles.planBouton} ${styles.planBoutonClair}`}>
+          Aller aux Galaxies
+        </Link>
+      )}
+    </div>
+  );
+
+  const celluleLigne = (plan: "non" | "oui", l: LigneRecap, dernier: boolean) => {
+    const cote = plan === "oui" ? styles.droite : styles.gauche;
+    const classe = `${styles.cellule} ${cote} ${dernier ? styles.derniere : ""}`;
+    if (plan === "non" && l.non === "✕") {
+      return <div key={`${plan}-${l.nom}-${l.precision ?? ""}`} className={`${classe} ${styles.vide}`} aria-hidden="true" />;
+    }
+    const cle = `${plan}-${l.nom}-${l.precision ?? ""}`;
+    const ronds = (l.bulles ?? [])
+      .map((id) => RONDS.find((r) => r.id === id))
+      .filter((r): r is Rond => !!r);
+    const ouverte = bulle === cle;
+    const nom = ronds.length ? (
+      <button
+        type="button"
+        className={styles.recapBouton}
+        aria-expanded={ouverte}
+        onClick={() => setBulle(ouverte ? null : cle)}
       >
-        <div className={styles.planEntete}>
-          <span className={styles.planNom}>
-            {plan === "oui" ? "Adhésion annuelle" : "Sans adhésion"}
-          </span>
-          <span className={styles.planPrix}>
-            {plan === "oui" ? (
-              <>
-                7 €<span className={styles.planUnite}>/mois</span>
-              </>
-            ) : (
-              "0 €"
-            )}
-          </span>
-          {plan === "oui" && <small>ou 84 €/an</small>}
-        </div>
-        <ul className={styles.planListe}>
-          {visibles.map((l) => {
-            const cle = `${plan}-${l.nom}-${l.precision ?? ""}`;
-            const ronds = (l.bulles ?? [])
-              .map((id) => RONDS.find((r) => r.id === id))
-              .filter((r): r is Rond => !!r);
-            const ouverte = bulle === cle;
-            const nom = ronds.length ? (
-              <button
-                type="button"
-                className={styles.recapBouton}
-                aria-expanded={ouverte}
-                onClick={() => setBulle(ouverte ? null : cle)}
+        <span
+          className={`${styles.recapIcone} ${styles.recapRond} ${styles[ronds[0].origine]}`}
+        >
+          {ICONES[l.icone]}
+        </span>
+        {l.nom}
+      </button>
+    ) : (
+      <>
+        {l.avecIcone && <span className={styles.recapIcone}>{ICONES[l.icone]}</span>}
+        {l.nom}
+      </>
+    );
+    const valeur = l.pack ? (
+      <strong>{plan === "oui" ? prixAdherent : nombreCredits * 5} €</strong>
+    ) : l.commun ? (
+      <strong>{l.commun}</strong>
+    ) : (
+      <>
+        <strong className={plan === "oui" && l.oui === "∞" ? styles.recapInfini : undefined}>
+          <Symboles texte={plan === "oui" ? l.oui : l.non} />
+        </strong>
+        {(plan === "oui" ? l.ouiNote : l.nonNote) && (
+          <small>{plan === "oui" ? l.ouiNote : l.nonNote}</small>
+        )}
+      </>
+    );
+    return (
+      <div key={cle} className={classe}>
+        {l.accroche && <p className={styles.planAccroche}>{l.accroche}</p>}
+        <div className={styles.planLigneCorps}>
+          <div className={styles.planLigneNom}>
+            {nom}
+            {l.precision && <em> ({l.precision})</em>}
+            {l.suite && <small>{l.suite}</small>}
+            {l.pack && (
+              <select
+                aria-label="Nombre de crédits"
+                className={styles.recapSelect}
+                value={nombreCredits}
+                onChange={(e) => setNombreCredits(Number(e.target.value))}
               >
-                <span
-                  className={`${styles.recapIcone} ${styles.recapRond} ${styles[ronds[0].origine]}`}
-                >
-                  {ICONES[l.icone]}
-                </span>
-                {l.nom}
-              </button>
-            ) : (
-              <>
-                {l.avecIcone && (
-                  <span className={styles.recapIcone}>{ICONES[l.icone]}</span>
-                )}
-                {l.nom}
-              </>
-            );
-            const valeur = l.pack ? (
-              <strong>
-                {plan === "oui" ? prixAdherent : nombreCredits * 5} €
-              </strong>
-            ) : l.commun ? (
-              <strong>{l.commun}</strong>
-            ) : (
-              <>
-                <strong
-                  className={
-                    plan === "oui" && l.oui === "∞" ? styles.recapInfini : undefined
-                  }
-                >
-                  <Symboles texte={plan === "oui" ? l.oui : l.non} />
-                </strong>
-                {(plan === "oui" ? l.ouiNote : l.nonNote) && (
-                  <small>{plan === "oui" ? l.ouiNote : l.nonNote}</small>
-                )}
-              </>
-            );
-            return (
-              <li key={cle} className={styles.planLigne}>
-                {l.accroche && <p className={styles.planAccroche}>{l.accroche}</p>}
-                <div className={styles.planLigneCorps}>
-                  <div className={styles.planLigneNom}>
-                    {nom}
-                    {l.precision && <em> ({l.precision})</em>}
-                    {l.suite && <small>{l.suite}</small>}
-                    {l.pack && (
-                      <select
-                        aria-label="Nombre de crédits"
-                        className={styles.recapSelect}
-                        value={nombreCredits}
-                        onChange={(e) => setNombreCredits(Number(e.target.value))}
-                      >
-                        {GRILLE_CREDITS.map((g) => (
-                          <option key={g.nombre} value={g.nombre}>
-                            {g.nombre} {g.nombre > 1 ? "crédits" : "crédit"}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                  </div>
-                  <div className={styles.planValeur}>{valeur}</div>
-                </div>
-                {ouverte && (
-                  <div className={styles.planBulle}>
-                    {ronds.map((r) => (
+                {GRILLE_CREDITS.map((g) => (
+                  <option key={g.nombre} value={g.nombre}>
+                    {g.nombre} {g.nombre > 1 ? "crédits" : "crédit"}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+          <div className={styles.planValeur}>{valeur}</div>
+        </div>
+        {ouverte && (
+          <div className={styles.planBulle}>
+            {ronds.map((r) => (
                             <div
                               key={r.id}
                               className={`${styles.fiche} ${styles.ficheTableau}`}
@@ -843,13 +854,9 @@ export default function OrbiteAdhesion({
                               </div>
                             </div>
                           ))}
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </section>
+          </div>
+        )}
+      </div>
     );
   };
 
@@ -997,9 +1004,14 @@ export default function OrbiteAdhesion({
 
         <div className={styles.recap}>
           <h2 className={styles.recapTitre}>Récapitulatif du pricing</h2>
-          <div className={styles.plans}>
-            {carteTarif("non")}
-            {carteTarif("oui")}
+          <div
+            className={styles.plans}
+            style={{ "--lignes": lignes.length + 1 } as React.CSSProperties}
+          >
+            {enteteCarte("non")}
+            {lignes.map((l, i) => celluleLigne("non", l, i === lignes.length - 1))}
+            {enteteCarte("oui")}
+            {lignes.map((l, i) => celluleLigne("oui", l, i === lignes.length - 1))}
           </div>
         </div>
       </div>
