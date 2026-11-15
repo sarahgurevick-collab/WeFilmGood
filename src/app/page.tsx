@@ -3,7 +3,6 @@ import BarreNav from "@/components/BarreNav";
 import AnneauChiffres from "@/components/AnneauChiffres";
 import GalerieSucces from "@/components/GalerieSucces";
 import CielEtoile from "@/components/CielEtoile";
-import DefilementEngagements from "@/components/DefilementEngagements";
 import EnTeteAnime from "@/components/EnTeteAnime";
 import FeuArtificeAuPassage from "@/components/FeuArtificeAuPassage";
 import GalaxieAccueil from "@/components/GalaxieAccueil";
@@ -167,9 +166,10 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ESSAI : les quatre engagements en défilement horizontal. */}
-      <DefilementEngagements />
-
+      {/* Les quatre engagements en défilement (rouge, vert, jaune, bleu)
+          retirés de l'accueil le 15/11 (Sarah). Composant gardé :
+          DefilementEngagements. Retour : étiquette
+          accueil-avant-retrait-engagements. */}
     </>
   );
 }
