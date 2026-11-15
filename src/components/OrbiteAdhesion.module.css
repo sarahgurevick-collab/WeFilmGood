@@ -1069,7 +1069,10 @@
   color: #c4241e;
 }
 
-.service {
+/* Une ligne du bloc des services. Limitée au bloc : « service » est aussi
+   la couleur bleue des ronds de l'orbite, qui prenaient ces marges et
+   n'avaient plus la place de montrer leur dessin (15/11). */
+.services .service {
   padding: 16px 24px;
   border-top: 1px solid #ececec;
 }
