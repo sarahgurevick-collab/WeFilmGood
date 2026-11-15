@@ -915,11 +915,10 @@ export default function OrbiteAdhesion({
   // Les services « à la demande » (15/11, Sarah) : valables avec ou sans
   // adhésion, ils forment un troisième bloc sous les deux cartes, sur toute
   // leur largeur ; chaque prix tombe sous la carte qui le concerne.
-  // L'analyse passe dans les deux cartes (15/11, Sarah ; retour : étiquette
-  // adhesion-avant-analyse-dans-cartes).
+  // L'analyse puis le Pack Soleils passent dans les deux cartes (15/11, Sarah ;
+  // retour : étiquettes adhesion-avant-analyse-dans-cartes, adhesion-avant-pack-dans-cartes).
   const NOMS_SERVICES = [
     "Accompagnement personnalisé",
-    "Pack Soleils",
     "ScénarioLab",
   ];
   const estService = (l: LigneRecap) => NOMS_SERVICES.includes(l.nom);
