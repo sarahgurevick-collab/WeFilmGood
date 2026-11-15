@@ -859,18 +859,9 @@ export default function OrbiteAdhesion({
                                 {/* Les deux textes, comme les deux colonnes
                                     (11/11, Sarah). Le Crédit Soleil n'en a
                                     qu'un : sans adhésion, il n'existe pas. */}
-                                {/* Dans la colonne Adhésion, le texte de l'adhésion seul (15/11,
-                                    Sarah) ; sans adhésion, les deux textes. */}
+                                {/* Chaque colonne, son texte seul (15/11, Sarah). */}
                                 {plan === "non" && r.texteZero && r.id !== "galaxies" ? (
-                                  <>
-                                    <p>
-                                      <strong>Sans adhésion :</strong>{" "}
-                                      {r.texteZero}
-                                    </p>
-                                    <p>
-                                      <strong>Adhésion :</strong> {r.texte}
-                                    </p>
-                                  </>
+                                  <p>{r.texteZero}</p>
                                 ) : (
                                   r.texte.split("\n").map((ligne, i) => (
                                     <p key={i}>{ligne}</p>
