@@ -524,7 +524,7 @@ const RECAP: LigneRecap[] = [
   // non plus, chaque ligne a son enveloppe (15/11, Sarah ; retour : étiquette
   // adhesion-avant-sans-accolades).
   {
-    nom: "Fiches projets",
+    nom: "Accès fiches projets",
     icone: "fiche",
     avecIcone: true,
     bulles: ["fiche-projet"],
@@ -533,7 +533,7 @@ const RECAP: LigneRecap[] = [
     fiches: true,
   },
   {
-    nom: "Fiches personnages",
+    nom: "Accès aux fiches personnages",
     icone: "identite",
     avecIcone: true,
     bulles: ["fiche-personnage"],
