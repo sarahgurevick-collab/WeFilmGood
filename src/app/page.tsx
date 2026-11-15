@@ -161,7 +161,7 @@ export default async function Home() {
             compteurs={[
               { label: "Scénarios analysés", n: chiffres.fiches },
               { label: "Projets labellisés", n: chiffres.labellises },
-              { label: "Contrats signés", n: chiffres.signes },
+              { label: "Contrats signés et films réalisés", n: chiffres.signes },
               // Un clic ouvre le globe des drapeaux (13/11, Sarah).
               { label: "Pays connectés", n: chiffres.pays, globe: true },
             ]}
