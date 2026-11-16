@@ -12,6 +12,7 @@ export default function EditeurFiche({
 }) {
   return (
     <RichTextEditor
+      fiche
       name="content"
       defaultValue={brouillon}
       onDraft={(html) => saveDraft(assignmentId, html)}

@@ -24,9 +24,12 @@ export default function RichTextEditor({
   name,
   defaultValue = "",
   onDraft,
+  fiche = false,
 }: {
   name: string;
   defaultValue?: string;
+  /** Fiche de lecture : Times New Roman 12 pt, comme sous Word (16/11, Sarah). */
+  fiche?: boolean;
   /** Appelé après une pause dans la frappe, pour conserver le brouillon. */
   onDraft?: (html: string) => Promise<string | null>;
 }) {
@@ -60,7 +63,7 @@ export default function RichTextEditor({
     content: defaultValue,
     immediatelyRender: false,
     editorProps: {
-      attributes: { class: styles.surface },
+      attributes: { class: fiche ? `${styles.surface} ${styles.surfaceFiche}` : styles.surface },
     },
     onUpdate: ({ editor }) => {
       const valeur = editor.getHTML();

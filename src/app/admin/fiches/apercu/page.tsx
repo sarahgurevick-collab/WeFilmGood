@@ -35,7 +35,7 @@ export default async function ApercuRelecturePage() {
       <div className={formStyles.form} style={{ marginTop: 32 }}>
         <div className={formStyles.field}>
           <span>Texte publié à l&apos;auteur</span>
-          <RichTextEditor name="content" defaultValue="" />
+          <RichTextEditor fiche name="content" defaultValue="" />
         </div>
 
         <label className={formStyles.field}>
