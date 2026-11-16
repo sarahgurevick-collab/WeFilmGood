@@ -603,11 +603,9 @@ export function CarteTalent({ t }: { t: TalentTrouve }) {
       {t.ville && <span className={styles.detail}>{t.ville}</span>}
     </>
   );
-  // Masqué : pas de lien vers le profil, dont la biographie cite souvent
-  // le nom (02/10).
-  return t.masque ? (
-    <div className={styles.talent}>{contenu}</div>
-  ) : (
+  // Depuis le 16/11 (Sarah : contacter un talent sans passer par un projet),
+  // toute carte mène au profil : masqué, il s'y ouvre avec un soleil (0285).
+  return (
     <Link href={`/membres/${t.id}`} className={styles.talent}>
       {contenu}
     </Link>

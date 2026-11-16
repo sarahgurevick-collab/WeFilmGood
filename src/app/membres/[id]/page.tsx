@@ -210,7 +210,7 @@ export default async function ProfilMembrePage({
       ) : (
         <p className={formStyles.hint} style={{ marginTop: 16 }}>
           {adherent ? GRAVITY.dejaUtilise : GRAVITY.profilSansSoleil}{" "}
-          <Link href="/adhesion#pack-soleils">{GRAVITY.packAdherent}</Link>
+          <Link href="/adhesion#pack-soleils">{adherent ? GRAVITY.packAdherent : "Pack Soleils"}</Link>
         </p>
       );
   }
