@@ -53,6 +53,8 @@ export async function ecrire(formData: FormData) {
     // Messagerie fermée entre l'ouverture de l'écran et l'envoi : retour à la fiche, ou au profil.
     if (error.message.includes("indisponible")) redirect(projectId ? `/projet/${projectId}` : `/membres/${recipientId}`);
     if (error.message.includes("objet")) redirect(avecParametre(ici, "message", "objet"));
+    // Profil pas encore ouvert avec un soleil (16/11) : retour au profil, où est le bouton.
+    if (error.message.includes("profil à ouvrir")) redirect(`/membres/${recipientId}`);
     console.error("Envoi du message refusé :", error.message);
     redirect("/mes-messages");
   }

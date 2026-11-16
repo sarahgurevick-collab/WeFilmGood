@@ -214,7 +214,8 @@ export default async function ProfilMembrePage({
         </p>
       );
   }
-  const enveloppe = peutEcrire ? (
+  // Profil fermé : pas d'enveloppe, c'est le soleil qui ouvre le contact (16/11).
+  const enveloppe = peutEcrire && !masque ? (
     <div style={{ marginTop: 16 }}>
       {message === "envoye" && <p className={formStyles.hint}>Message envoyé.</p>}
       <ContactEnveloppe
