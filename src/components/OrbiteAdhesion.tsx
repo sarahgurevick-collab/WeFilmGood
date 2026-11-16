@@ -114,7 +114,7 @@ const ADHESION: Noeud[] = [
     // Texte de Sarah du 16/11. L'ancien (« Ne laisse aucun scénario dans ton
     // tiroir… ») parlait de la création : voir l'historique git.
     texte:
-      "Toutes les fiches projets et fiches personnages des Galaxies s’ouvrent. Tu peux y lire les loglines et découvrir les personnages. En utilisant ton crédit « soleil », tu peux voir le videopitch (et bientôt des « MusicPitch » et des « ComedyPitch »), contacter l’auteur et les autres talents connectés au projet.",
+      "Toutes les fiches projets et fiches personnages des Galaxies s’ouvrent. Tu peux y lire les loglines et découvrir les personnages. En utilisant ton crédit « soleil », tu peux voir le StoryPitch (et bientôt des « MusicPitch » et des « ComedyPitch »), contacter l’auteur et les autres talents connectés au projet.",
     aZero: "payant",
   },
   {
