@@ -166,6 +166,13 @@ export default async function ProjetsEnAttentePage() {
         (a.profile?.full_name ?? "").localeCompare(b.profile?.full_name ?? ""),
       );
 
+  // Les lecteurs sans aucune case cochée (16/11, Sarah : « je ne les utilise
+  // qu'en dernier recours ») : jamais proposés d'office, mais toujours
+  // attribuables à la main, tout en bas du menu.
+  const dernierRecours = (readers ?? [])
+    .filter((r) => formatsDe.get(r.profile_id)?.length === 0)
+    .sort((a, b) => (a.profile?.full_name ?? "").localeCompare(b.profile?.full_name ?? ""));
+
   const GROUPES = [
     { couleur: "vert", libelle: "Disponibles" },
     { couleur: "orange", libelle: "Peu disponibles" },
@@ -255,6 +262,16 @@ export default async function ProjetsEnAttentePage() {
                             </optgroup>
                           );
                         })}
+                        {dernierRecours.length > 0 && (
+                          <optgroup label="En dernier recours">
+                            {dernierRecours.map((r) => (
+                              <option key={r.profile_id} value={r.profile_id}>
+                                {r.profile?.full_name ?? r.profile_id.slice(0, 8)}
+                                {emailDe.get(r.profile_id) ? ` - ${emailDe.get(r.profile_id)}` : ""}
+                              </option>
+                            ))}
+                          </optgroup>
+                        )}
                       </select>
                       <button type="submit" className={adminStyles.boutonAssigner}>
                         Assigner
