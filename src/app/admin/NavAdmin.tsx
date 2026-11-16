@@ -9,6 +9,7 @@ const PAGES = [
   { href: "/admin/fiches-a-valider", libelle: "Fiches à valider" },
   { href: "/admin/videopitchs", libelle: "Videopitchs" },
   { href: "/admin/membres", libelle: "Membres" },
+  { href: "/admin/mailing", libelle: "Mailing" },
   { href: "/admin/cinecrush", libelle: "CinéCrush" },
   { href: "/admin/auteurs-selectionnes", libelle: "Auteurs sélectionnés sans profil" },
   { href: "/admin/fiches", libelle: "Projets" },

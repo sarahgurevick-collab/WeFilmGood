@@ -13,6 +13,8 @@ const CHEMINS_LECTEUR = [
   "/connexion",
   "/auth",
   "/cguv",
+  // Le lien de désinscription des mailings, ouvert à tous.
+  "/desinscription",
   // L'application installable (PWA) : manifeste, service worker et page
   // hors ligne, sans données. Sans cette exception, le service worker
   // d'un lecteur garderait en cache son espace privé au lieu de la page
