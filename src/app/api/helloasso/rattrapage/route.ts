@@ -1,5 +1,6 @@
 import { rattraperAdhesions } from "@/lib/adhesion-paiement";
 import { rattraperDemandesLecture } from "@/lib/lecture-paiement";
+import { rattraperAchatsSoleils } from "@/lib/soleils-paiement";
 
 /**
  * Le rattrapage horaire : appelé toutes les heures par le serveur
@@ -14,5 +15,6 @@ export async function POST(request: Request) {
   }
   const adhesions = await rattraperAdhesions();
   const lectures = await rattraperDemandesLecture();
-  return Response.json({ ...adhesions, lectures });
+  const soleils = await rattraperAchatsSoleils();
+  return Response.json({ ...adhesions, lectures, soleils });
 }

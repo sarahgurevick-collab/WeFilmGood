@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { ADHESION_AU_MOIS } from "@/lib/adhesion-paiement";
+import { prixPackCentimes } from "@/lib/soleils-paiement";
 import { creerIntention, echeancesMensuelles, modeHelloAsso, testeurPaiement } from "@/lib/helloasso";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -89,6 +90,66 @@ export async function adherer(formData: FormData) {
   } catch (e) {
     console.error("HelloAsso : création du paiement", e);
     await admin.from("memberships").update({ status: "annulee" }).eq("id", adhesion.id);
+    redirect("/adhesion?paiement=erreur");
+  }
+  redirect(pageDePaiement);
+}
+
+/**
+ * « Acheter » un Pack Soleils (16/11/2026) : 5, 10 ou 20 soleils, au prix
+ * adhérent ou non selon l'adhésion du moment. Les soleils sont ajoutés une
+ * fois le paiement relu chez HelloAsso (lib/soleils-paiement).
+ */
+export async function acheterSoleils(formData: FormData) {
+  const nombre = Number(formData.get("nombre"));
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/connexion?next=/adhesion");
+
+  if (modeHelloAsso() === "sandbox") {
+    const { data: estAdmin } = await supabase.rpc("is_admin");
+    if (!estAdmin && !testeurPaiement(user.id)) redirect("/adhesion?paiement=bientot");
+  }
+
+  const admin = createAdminClient();
+  if (!admin) redirect("/adhesion?paiement=erreur");
+
+  const [{ data: adherent }, { data: profil }] = await Promise.all([
+    supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id }),
+    admin.from("profiles").select("first_name, last_name").eq("id", user.id).maybeSingle(),
+  ]);
+  const prix = prixPackCentimes(nombre, adherent === true);
+  if (!prix) redirect("/adhesion?paiement=erreur");
+
+  const { data: achat, error } = await admin
+    .from("soleils_achats")
+    .insert({ profile_id: user.id, nombre, amount_cents: prix, adherent: adherent === true })
+    .select("id")
+    .single();
+  if (error || !achat) redirect("/adhesion?paiement=erreur");
+
+  const h = await headers();
+  const origine = `https://${h.get("host") ?? "app.wefilmgood.com"}`;
+  const retour = `${origine}/adhesion/soleils?achat=${achat.id}`;
+
+  let pageDePaiement: string;
+  try {
+    const intention = await creerIntention({
+      montantCentimes: prix,
+      libelle: `Pack ${nombre} soleils WeFilmGood`,
+      retour,
+      erreur: `${retour}&erreur=1`,
+      annulation: `${origine}/adhesion`,
+      payeur: { email: user.email!, prenom: profil?.first_name, nom: profil?.last_name },
+      metadata: { soleils: achat.id, profil: user.id },
+    });
+    await admin.from("soleils_achats").update({ payment_reference: String(intention.id) }).eq("id", achat.id);
+    pageDePaiement = intention.redirectUrl;
+  } catch (e) {
+    console.error("HelloAsso : achat de soleils", e);
+    await admin.from("soleils_achats").update({ status: "annulee" }).eq("id", achat.id);
     redirect("/adhesion?paiement=erreur");
   }
   redirect(pageDePaiement);

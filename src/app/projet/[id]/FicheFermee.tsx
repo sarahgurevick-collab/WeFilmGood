@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
-import { GRAVITY } from "@/lib/gravity-textes";
+import { GRAVITY, soleilsRestants } from "@/lib/gravity-textes";
+import { ouvrirAvecGravity } from "./gravity-actions";
 import { clientCartes } from "@/lib/supabase/admin";
 import styles from "./ficheFermee.module.css";
 
@@ -26,6 +27,9 @@ export default async function FicheFermee({
     .eq("is_public", true)
     .maybeSingle<{ tagline: string | null; files: { storage_path: string; kind: string }[] | null }>();
 
+  // Des soleils achetés (Pack Soleils, 16/11) ouvrent le projet, même sans adhésion.
+  const { data: restants } = await supabase.rpc("soleils_pack_restants");
+
   const chemin = (carte?.files ?? []).find((f) => f.kind === "vignette")?.storage_path;
   const { data: signe } = chemin
     ? await supabase.storage.from("project-media").createSignedUrl(chemin, 60 * 60)
@@ -39,10 +43,24 @@ export default async function FicheFermee({
           <img src={signe.signedUrl} alt="" className={styles.image} />
         )}
         {carte?.tagline && <p className={styles.tagline}>{carte.tagline}</p>}
-        <p className={styles.message}>{GRAVITY.sansAdhesion}</p>
-        <Link href="/adhesion" className={formStyles.submit}>
-          Découvrir l&apos;adhésion
-        </Link>
+        {(restants ?? 0) > 0 ? (
+          <>
+            <form action={ouvrirAvecGravity}>
+              <input type="hidden" name="projet" value={projetId} />
+              <button type="submit" className={formStyles.submit}>
+                {GRAVITY.boutonPack}
+              </button>
+            </form>
+            <p className={styles.message}>{soleilsRestants(restants as number)}</p>
+          </>
+        ) : (
+          <>
+            <p className={styles.message}>{GRAVITY.sansAdhesion}</p>
+            <Link href="/adhesion" className={formStyles.submit}>
+              Découvrir l&apos;adhésion
+            </Link>
+          </>
+        )}
       </div>
     </PageShell>
   );

@@ -1,5 +1,6 @@
 import { rattraperAdhesions } from "@/lib/adhesion-paiement";
 import { rattraperDemandesLecture } from "@/lib/lecture-paiement";
+import { rattraperAchatsSoleils } from "@/lib/soleils-paiement";
 
 /**
  * L'adresse que HelloAsso appelle après chaque paiement (à renseigner
@@ -19,6 +20,11 @@ export async function POST() {
     await rattraperDemandesLecture();
   } catch (e) {
     console.error("notification HelloAsso (lecture)", e);
+  }
+  try {
+    await rattraperAchatsSoleils();
+  } catch (e) {
+    console.error("notification HelloAsso (soleils)", e);
   }
   return Response.json({ ok: true });
 }

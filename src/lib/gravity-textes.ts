@@ -7,6 +7,8 @@
 export const GRAVITY = {
   /** Le bouton, pour un adhérent qui a encore son soleil du jour. */
   bouton: "Ouvrir ce projet avec mon soleil du jour",
+  /** Le bouton quand le soleil du jour n'est plus là (ou sans adhésion) mais qu'il reste des soleils achetés (16/11, à valider). */
+  boutonPack: "Ouvrir ce projet avec un soleil de mon pack",
   /** Sous le bouton : ce que l'ouverture donne (mots du pricing : videopitch, contact des Talents). */
   ceQuiSOuvre: "Le videopitch s’ouvre, vous voyez l’équipe et vous pouvez contacter ses Talents.",
   /** Adhérent, soleil du jour déjà dépensé sur un autre projet. */
@@ -30,3 +32,8 @@ export const GRAVITY = {
     aucunDeCote: "Vous n’avez mis aucun projet de côté.",
   },
 } as const;
+
+/** Ce qui reste du Pack Soleils (16/11, à valider). */
+export function soleilsRestants(n: number) {
+  return n > 1 ? `Il vous reste ${n} soleils dans votre pack.` : "Il vous reste 1 soleil dans votre pack.";
+}

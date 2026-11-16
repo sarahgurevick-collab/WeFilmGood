@@ -10,6 +10,7 @@ import {
 } from "react";
 import { ICONES } from "./AvantageAdhesion";
 import { EVENEMENT_CONTACT } from "./BoutonDevis";
+import { acheterSoleils } from "@/app/adhesion/actions";
 import styles from "./OrbiteAdhesion.module.css";
 import formStyles from "./form.module.css";
 
@@ -632,10 +633,13 @@ const ETIQUETTE: Record<Cercle, string> = {
 export default function OrbiteAdhesion({
   motsCles = 0,
   connecte = false,
+  adherent = false,
 }: {
   motsCles?: number;
   /** A-t-on un profil (connecté) ? Change le bouton de la carte à 0 €. */
   connecte?: boolean;
+  /** Adhésion active : le bouton « Acheter » du Pack Soleils est dans la colonne de son prix (16/11). */
+  adherent?: boolean;
 }) {
   const [mode, setMode] = useState<Mode>("adhesion");
   const [choix, setChoix] = useState<Rond | null>(null);
@@ -891,6 +895,22 @@ export default function OrbiteAdhesion({
           </div>
           <div className={styles.planValeur}>{valeur}</div>
         </div>
+        {/* Acheter le Pack Soleils (16/11) : dans la colonne de son prix —
+            adhérent à 7 €, sinon à 0 €. Sans profil : la connexion d'abord. */}
+        {l.pack && (plan === "oui") === adherent && (
+          connecte ? (
+            <form action={acheterSoleils} className={styles.packAchat}>
+              <input type="hidden" name="nombre" value={nombreCredits} />
+              <button type="submit" className={`${formStyles.submitWide} ${styles.boutonCarte}`} style={plan === "oui" ? ROUGE_BOUTON : BLEU_BOUTON}>
+                Acheter
+              </button>
+            </form>
+          ) : (
+            <Link href="/connexion?next=/adhesion" className={`${formStyles.submitWide} ${styles.boutonCarte} ${styles.packAchat}`} style={BLEU_BOUTON}>
+              Acheter
+            </Link>
+          )
+        )}
         {ouverte && (
           <div className={styles.planBulle} data-bulle-ouverte>
             {ronds.map((r) => (

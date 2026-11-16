@@ -1296,3 +1296,12 @@
 .cellule .boutonCarte:focus-visible {
   color: #ffffff;
 }
+
+/* Le bouton « Acheter » du Pack Soleils (16/11). */
+.packAchat {
+  display: block;
+  margin-top: 8px;
+}
+.packAchat .boutonCarte {
+  margin-top: 0;
+}

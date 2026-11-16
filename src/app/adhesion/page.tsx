@@ -20,6 +20,11 @@ export default async function AdhesionPage({
     supabase.rpc("compter_fonds"),
   ]);
 
+  // Le bouton « Acheter » du Pack Soleils se pose dans la colonne de son prix (16/11).
+  const { data: adherent } = user
+    ? await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id })
+    : { data: false };
+
   const motsCles =
     ((fonds ?? [])[0] as { mots_cles: number } | undefined)?.mots_cles ?? 0;
 
@@ -50,7 +55,7 @@ export default async function AdhesionPage({
         </p>
       )}
       {/* L'adhésion en orbite, avant le détail des paliers (05/10, idée de Sarah). */}
-      <OrbiteAdhesion motsCles={motsCles} connecte={!!user} />
+      <OrbiteAdhesion motsCles={motsCles} connecte={!!user} adherent={adherent === true} />
     </PageShell>
   );
 }

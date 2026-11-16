@@ -369,10 +369,15 @@ export default async function ProjetPage({
   let favori: boolean | null = null;
   if (user && !chezSoi) {
     if (ouverture) gravity = { etat: "ouvert", le: ouverture.ouvert_le };
-    else if (adherent !== true) gravity = { etat: "sans_adhesion" };
     else {
-      const { data: dispo } = await supabase.rpc("gravity_du_jour_disponible");
-      gravity = dispo === true ? { etat: "disponible" } : { etat: "utilise" };
+      // Le soleil du jour d'abord (adhérent), puis le Pack Soleils (16/11).
+      const [{ data: dispo }, { data: restants }] = await Promise.all([
+        adherent === true ? supabase.rpc("gravity_du_jour_disponible") : Promise.resolve({ data: false }),
+        supabase.rpc("soleils_pack_restants"),
+      ]);
+      if (dispo === true) gravity = { etat: "disponible" };
+      else if ((restants ?? 0) > 0) gravity = { etat: "pack", restants: restants as number };
+      else gravity = adherent === true ? { etat: "utilise" } : { etat: "sans_adhesion" };
     }
     if (adherent === true) {
       const { data: f } = await supabase.from("favoris").select("project_id").eq("profile_id", user.id).eq("project_id", id).maybeSingle();

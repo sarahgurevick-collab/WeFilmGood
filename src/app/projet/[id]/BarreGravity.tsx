@@ -1,6 +1,6 @@
 import Link from "next/link";
 import formStyles from "@/components/form.module.css";
-import { GRAVITY } from "@/lib/gravity-textes";
+import { GRAVITY, soleilsRestants } from "@/lib/gravity-textes";
 import { basculerFavori, ouvrirAvecGravity } from "./gravity-actions";
 import styles from "./gravity.module.css";
 
@@ -13,6 +13,7 @@ const COEUR = (
 export type EtatGravity =
   | { etat: "ouvert"; le: string }
   | { etat: "disponible" }
+  | { etat: "pack"; restants: number }
   | { etat: "utilise" }
   | { etat: "sans_adhesion" };
 
@@ -43,6 +44,19 @@ export default function BarreGravity({
             </button>
           </form>
           <p className={styles.texte}>{GRAVITY.ceQuiSOuvre}</p>
+        </>
+      )}
+      {gravity.etat === "pack" && (
+        <>
+          <form action={ouvrirAvecGravity}>
+            <input type="hidden" name="projet" value={projetId} />
+            <button type="submit" className={formStyles.submit}>
+              {GRAVITY.boutonPack}
+            </button>
+          </form>
+          <p className={styles.texte}>
+            {GRAVITY.ceQuiSOuvre} {soleilsRestants(gravity.restants)}
+          </p>
         </>
       )}
       {gravity.etat === "utilise" && (
