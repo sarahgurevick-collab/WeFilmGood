@@ -405,7 +405,9 @@ export default async function ProjetPage({
     const cible = m.cle === project.owner_id ? `projet=${project.id}` : `membre=${m.profileId}`;
     m.contact = {
       href: user ? `/mes-messages/nouveau?${cible}` : `/connexion?next=/projet/${project.id}`,
-      adhesionRequise: restreint,
+      // Sans adhésion, un projet ouvert avec un soleil laisse écrire à son
+      // auteur seulement (Pack Soleils, 16/11) ; les autres talents demandent l'adhésion.
+      adhesionRequise: restreint || (adherent !== true && estAdmin !== true && m.cle !== project.owner_id),
       // Adhérent qui n'a pas ouvert le projet : la bulle parle du Gravity, pas de l'adhésion.
       gravityRequis: restreint && adherent === true,
       indisponible: fermees.get(m.profileId),

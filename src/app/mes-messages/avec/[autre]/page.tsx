@@ -45,7 +45,11 @@ export default async function ConversationPage({
   }
 
   const { data: adherent } = await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id });
-  if (adherent !== true) redirect("/mes-messages");
+  // Sans adhésion : la conversation d'un projet ouvert avec un soleil (Pack Soleils, 16/11).
+  const { data: ouvertParSoleil } = projetId
+    ? await supabase.rpc("projet_ouvert_par_soleil", { p_projet: projetId })
+    : { data: false };
+  if (adherent !== true && ouvertParSoleil !== true) redirect("/mes-messages");
 
   // Ouvrir la conversation marque lus les messages reçus.
   const { data: messages } = await supabase.rpc("ouvrir_conversation", {

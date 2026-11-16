@@ -44,23 +44,25 @@ export default async function MesMessagesPage() {
 
   const { data: adherent } = await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id });
 
-  const conversations =
-    adherent === true
-      ? ((await supabase.rpc("mes_conversations")).data as Conversation[] | null) ?? []
-      : [];
+  // Sans adhésion, la base ne renvoie que les conversations des projets
+  // ouverts avec un soleil (Pack Soleils, 16/11, 0284).
+  const conversations = ((await supabase.rpc("mes_conversations")).data as Conversation[] | null) ?? [];
+  const projetsOuverts = new Set(conversations.map((c) => c.projet_id).filter(Boolean));
   // Les photos (20/10) : seulement avec une adhésion, comme les noms.
   const avatars = await avatarsDe(supabase, conversations.map((c) => c.autre_id));
   // Sans adhésion : les messages en attente, sans leur expéditeur.
   const enAttente =
     adherent === true
       ? []
-      : (((await supabase.from("mes_messages_recus").select("id, project_title, objet, created_at")).data as
-          | MessageEnAttente[]
-          | null) ?? []);
+      : (
+          (((await supabase.from("mes_messages_recus").select("id, project_id, project_title, objet, created_at")).data as
+            | (MessageEnAttente & { project_id: string | null })[]
+            | null) ?? [])
+        ).filter((m) => !m.project_id || !projetsOuverts.has(m.project_id));
 
   return (
     <PageShell eyebrow="Mon profil" title="Mes messages" connecte nav="messages">
-      {adherent === true ? (
+      {adherent === true || conversations.length > 0 ? (
         conversations.length === 0 ? (
           <p className={formStyles.hint}>Aucun message pour l&apos;instant.</p>
         ) : (
@@ -123,7 +125,8 @@ export default async function MesMessagesPage() {
             ))}
           </ul>
         )
-      ) : enAttente.length === 0 ? (
+      ) : null}
+      {adherent === true ? null : conversations.length > 0 && enAttente.length === 0 ? null : enAttente.length === 0 ? (
         <p className={formStyles.hint}>Aucun message pour l&apos;instant.</p>
       ) : (
         <ul className={styles.liste}>
