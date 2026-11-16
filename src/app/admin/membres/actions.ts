@@ -27,8 +27,8 @@ export async function choisirFormatsLecteur(formData: FormData) {
 
 /**
  * L'adhésion d'un membre, choisie dans le tableau des membres (27/09,
- * comme la colonne Adhésion de WFG 1) : aucune, 5 € (un mois), 50 € ou 500 €
- * (un an, comme celle payée en ligne).
+ * comme la colonne Adhésion de WFG 1) : aucune, 7 € par mois (un mois) ou
+ * 75 € par an (un an), les deux formules de l'adhésion payée en ligne (16/11).
  */
 export async function changerAdhesion(formData: FormData) {
   const supabase = await createClient();
@@ -46,10 +46,10 @@ export async function changerAdhesion(formData: FormData) {
     .eq("profile_id", profileId)
     .eq("status", "active");
 
-  if (plan === "palier_5" || plan === "palier_50" || plan === "palier_500") {
-    // 5 € : un mois ; 50 € et 500 € : un an.
+  if (plan === "mois_7" || plan === "annee_75") {
+    // 7 € par mois : un mois ; 75 € par an : un an.
     const fin = new Date(maintenant);
-    if (plan === "palier_5") fin.setMonth(fin.getMonth() + 1);
+    if (plan === "mois_7") fin.setMonth(fin.getMonth() + 1);
     else fin.setFullYear(fin.getFullYear() + 1);
     const { error } = await supabase.from("memberships").insert({
       profile_id: profileId,
