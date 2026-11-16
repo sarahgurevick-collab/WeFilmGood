@@ -183,6 +183,19 @@ export default async function MembresPage({
     formats: string[] | null;
     availability_status: string | null;
   }[];
+  // Les adhésions offertes (montant 0, posées par l'administration, 16/11) :
+  // pour le filtre « Adhésion offerte ».
+  const { data: lignesOffertes } = service
+    ? await service
+        .from("memberships")
+        .select("profile_id")
+        .eq("status", "active")
+        .eq("amount_cents", 0)
+        .eq("payment_reference", "offerte")
+        .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
+    : { data: null };
+  const offertes = new Set(((lignesOffertes ?? []) as { profile_id: string }[]).map((r) => r.profile_id));
+
   const formatsDe = new Map(lignesLecteur.map((r) => [r.profile_id, r.formats]));
   const dispoDe = new Map(lignesLecteur.map((r) => [r.profile_id, r.availability_status]));
 
@@ -288,6 +301,7 @@ export default async function MembresPage({
     if (pays && m.country !== pays) return false;
     if (adhesion === "active" && !m.adhesion) return false;
     if (adhesion === "aucune" && m.adhesion) return false;
+    if (adhesion === "offerte" && !offertes.has(m.profile_id)) return false;
     if (projets === "0" && m.nb_projets !== 0) return false;
     if (projets === "1" && m.nb_projets !== 1) return false;
     if (projets === "2" && m.nb_projets !== 2) return false;
@@ -430,6 +444,7 @@ export default async function MembresPage({
         <select name="adhesion" defaultValue={adhesion} className={styles.menu}>
           <option value="">Adhésions : toutes</option>
           <option value="active">Adhésion active</option>
+          <option value="offerte">Adhésion offerte</option>
           <option value="aucune">Sans adhésion</option>
         </select>
 
