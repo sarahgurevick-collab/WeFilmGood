@@ -166,12 +166,19 @@ export async function envoyerALaLecture(formData: FormData) {
   if (!admin) redirect(`${page}?paiement=erreur`);
 
   // Sans scénario, rien à lire ; et une lecture déjà payée ne se paie pas deux fois.
-  const [{ count: scenarios }, { count: dejaPayees }, { data: profil }] = await Promise.all([
+  const [{ count: scenarios }, { count: images }, { count: dejaPayees }, { data: profil }] = await Promise.all([
     supabase
       .from("project_files")
       .select("id", { count: "exact", head: true })
       .eq("project_id", id)
       .eq("kind", "scenario"),
+    // Sans image, pas de lecture (16/11, Sarah) : un projet sélectionné ou lu
+    // doit avoir sa vignette.
+    supabase
+      .from("project_files")
+      .select("id", { count: "exact", head: true })
+      .eq("project_id", id)
+      .eq("kind", "vignette"),
     admin
       .from("lecture_demandes")
       .select("id", { count: "exact", head: true })
@@ -180,6 +187,7 @@ export async function envoyerALaLecture(formData: FormData) {
     admin.from("profiles").select("first_name, last_name").eq("id", user.id).maybeSingle(),
   ]);
   if (!scenarios) redirect(`${page}?paiement=sans-scenario`);
+  if (!images) redirect(`${page}?paiement=sans-image`);
   if (dejaPayees) redirect(page);
 
   // 60 €, ou 50 € si le porteur du projet est adhérent (11/11, Sarah).

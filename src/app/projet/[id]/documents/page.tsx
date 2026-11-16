@@ -212,7 +212,7 @@ export default async function DocumentsPage({
                   Le paiement n&apos;a pas pu démarrer. Réessayez dans un instant, ou écrivez-nous.
                 </p>
               )}
-              {scenario ? (
+              {scenario && vignette ? (
                 <form action={envoyerALaLecture} style={{ marginTop: 12 }}>
                   <input type="hidden" name="project_id" value={projet.id} />
                   <button type="submit" className={formStyles.submit}>
@@ -221,7 +221,9 @@ export default async function DocumentsPage({
                 </form>
               ) : (
                 <p className={formStyles.hint}>
-                  Enregistrez d&apos;abord votre scénario (PDF) pour l&apos;envoyer à la lecture.
+                  {!scenario
+                    ? "Enregistrez d'abord votre scénario (PDF) pour l'envoyer à la lecture."
+                    : "Enregistrez d'abord l'image de présentation de votre projet pour l'envoyer à la lecture."}
                 </p>
               )}
               {test && (

@@ -58,11 +58,16 @@ export default async function RedactionFichePage({
 
   const { data: files } = await supabase
     .from("project_files")
-    .select("storage_path, original_name")
+    .select("storage_path, original_name, kind")
     .eq("project_id", assignment.project.id)
-    .eq("kind", "scenario");
+    .in("kind", ["scenario", "vignette"]);
 
-  const scenario = files?.[0];
+  const scenario = files?.find((f) => f.kind === "scenario");
+  // La même image que sur « Mes lectures » (16/11, Sarah).
+  const cheminImage = (files ?? []).filter((f) => f.kind === "vignette").at(-1)?.storage_path;
+  const { data: imageSignee } = cheminImage
+    ? await supabase.storage.from("project-media").createSignedUrl(cheminImage, 60 * 60)
+    : { data: null };
   let lireUrl: string | null = null;
   let telechargerUrl: string | null = null;
 
@@ -81,6 +86,10 @@ export default async function RedactionFichePage({
 
   return (
     <PageShell eyebrow="Fiche de lecture" title={assignment.project.title} theme="clair">
+      {imageSignee?.signedUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={imageSignee.signedUrl} alt="" className={styles.image} style={{ marginBottom: 12 }} />
+      )}
       <p className={formStyles.hint}>
         {[assignment.project.format, nomDeLangue(assignment.project.language)].filter(Boolean).join(" · ")}
       </p>
