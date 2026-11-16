@@ -1305,3 +1305,16 @@
 .packAchat .boutonCarte {
   margin-top: 0;
 }
+
+/* Le tutoriel pas à pas, déroulé sous les boutons (16/11). */
+.etapes {
+  margin: 12px 0 0;
+  padding-left: 22px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #bdb7b0;
+}
+
+.etapes li {
+  margin-bottom: 6px;
+}

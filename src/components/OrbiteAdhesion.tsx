@@ -69,6 +69,9 @@ type Noeud = {
   texteZero?: string;
   /** Le titre du palier 0 €, quand il diffère de celui de l'adhésion. */
   nomZero?: string;
+  /** Le tutoriel pas à pas, déroulé dans la bulle par le bouton « Tutoriel »
+   *  (textes validés par Sarah le 16/11). Sans étapes, pas de bouton. */
+  tutoriel?: string[];
 };
 
 const GALAXIES_ZERO =
@@ -86,6 +89,13 @@ const ADHESION: Noeud[] = [
       "Chaque jour un nouveau crédit soleil ouvre le projet de ton choix. StoryPitch, ComedyPitch, MusicPitch. Le projet reste visible dans tes favoris et les talents contactables.",
     aZero: "reste",
     texteZero: GALAXIES_ZERO,
+    tutoriel: [
+      "Va dans « Galaxies » et clique sur un projet.",
+      "Clique sur « Ouvrir ce projet avec mon soleil du jour ».",
+      "Le videopitch s’ouvre, tu vois l’équipe et tu peux écrire aux talents.",
+      "Le projet reste dans « Mes favoris », rubrique « Projets ouverts ».",
+      "Un nouveau soleil t’attend chaque jour.",
+    ],
   },
   {
     id: "cinecrush",
@@ -97,6 +107,12 @@ const ADHESION: Noeud[] = [
     texteZero:
       "Le chrono est lancé ! Ce videopitch mérite toute ton attention : tu as une semaine pour le découvrir. Laisse un avis en commentaires : ce sont de véritables tremplins magiques pour propulser les histoires !",
     aZero: "reste",
+    tutoriel: [
+      "Ouvre le « Menu » et choisis « CinéCrush ».",
+      "Regarde le videopitch de la semaine.",
+      "Écris ton avis dans « Votre avis sur ce videopitch », puis clique sur « Publier mon avis ».",
+      "Pour écrire à l’équipe, clique sur le titre du projet, puis sur le portrait d’un talent et sur l’enveloppe.",
+    ],
   },
   {
     id: "cinematch",
@@ -107,6 +123,12 @@ const ADHESION: Noeud[] = [
     texteZero:
       "Chaque jour un nouveau talent vibre sur la même longueur d’onde que toi grâce à un portrait chinois en 20 questions. Le contact coûte 1 soleil.",
     aZero: "payant",
+    tutoriel: [
+      "Ouvre le « Menu » et choisis « CinéMatch ».",
+      "Réponds à au moins 12 questions « si j’étais… », puis clique sur « Enregistrer ».",
+      "Découvre ton meilleur match : le pourcentage, le métier et le pays.",
+      "Clique sur « Voir son profil » pour le découvrir.",
+    ],
   },
   {
     id: "fiche-projet",
@@ -117,6 +139,13 @@ const ADHESION: Noeud[] = [
     texte:
       "Toutes les fiches projets et fiches personnages des Galaxies s’ouvrent. Tu peux y lire les loglines et découvrir les personnages. En utilisant ton crédit « soleil », tu peux voir le StoryPitch (et bientôt des « MusicPitch » et des « ComedyPitch »), contacter l’auteur et les autres talents connectés au projet.",
     aZero: "payant",
+    tutoriel: [
+      "Dans « Galaxies », clique sur une carte projet.",
+      "Lis la tagline, puis « Lire le résumé ».",
+      "Descends jusqu’à « Les personnages » et clique sur une carte pour lire sa biographie.",
+      "Avec ton soleil, ouvre le projet : le bouton ▶ lance le StoryPitch.",
+      "Clique sur le portrait de l’auteur, puis sur l’enveloppe pour lui écrire.",
+    ],
   },
   {
     id: "fiche-personnage",
@@ -128,6 +157,13 @@ const ADHESION: Noeud[] = [
     // Créer une fiche personnage suppose une fiche projet, qui n'est jamais
     // gratuite : à 0 €, on voit les personnages, on n'en crée pas (Sarah, 05/10).
     aZero: "payant",
+    tutoriel: [
+      "Va dans « Mes projets », puis « + Nouvelle fiche projet ».",
+      "Remplis le titre, le format, le genre, la tagline et l’image, puis clique sur « Créer ma fiche projet ».",
+      "Dans « Documents », ajoute ton moodboard et ton StoryPitch : choisis la vidéo, puis « Envoyer la vidéo ».",
+      "Dans « Les personnages », ajoute le portrait, le nom et quelques lignes de biographie, puis « + Ajouter un personnage ».",
+      "Clique sur « Tout enregistrer ».",
+    ],
   },
   {
     id: "scenariolab-spectateur",
@@ -158,6 +194,13 @@ const SERVICES: Noeud[] = [
       "50 € : 1 analyse de document PDF (LM : traitement de 8 à 10 pages – CM : analyse du scénario – Série : une prébible de 15 pages environ). Optionnel : note d’intention, annexes.\nParticipation automatique aux appels à projets.",
     texteZero:
       "60 € : 1 analyse de document PDF (LM : traitement de 8 à 10 pages – CM : analyse du scénario – Série : une prébible de 15 pages environ). Optionnel : note d’intention, annexes.\nParticipation automatique aux appels à projets.",
+    tutoriel: [
+      "Dans ta fiche, ouvre « Documents ».",
+      "Ajoute ton scénario en PDF et clique sur « Enregistrer ».",
+      "Dans « Envoyer à la lecture », clique sur « Envoyer » et paie sur HelloAsso.",
+      "Suis l’avancement sur ta fiche : « Projet reçu », « Lecture en cours », puis « Analyse disponible ».",
+      "Clique sur « Lire l’analyse ».",
+    ],
   },
   {
     id: "accompagnement",
@@ -174,6 +217,13 @@ const SERVICES: Noeud[] = [
     // À 0 €, sans le prix dégressif (15/11, mots de Sarah).
     texteZero:
       "Pack Soleils : 5, 10 ou 20 soleils à utiliser quand tu veux, pour ouvrir d’autres projets et contacter leurs Talents.",
+    tutoriel: [
+      "Dans la ligne « Pack Soleils », choisis 5, 10 ou 20.",
+      "Clique sur « Acheter » et paie sur HelloAsso.",
+      "Tes soleils s’affichent en haut de page, à côté du ☀.",
+      "Sur un projet ou un profil, clique sur « Ouvrir … avec un soleil de mon pack ».",
+      "Ton soleil du jour passe toujours en premier, et ceux du pack ne se perdent pas.",
+    ],
   },
 ];
 
@@ -422,6 +472,52 @@ const ENVELOPPE = (
 );
 
 /** Un nom sur deux lignes quand il porte un retour à la ligne. */
+/**
+ * Sous chaque explication : « Tutoriel », qui déroule les étapes dans la
+ * bulle même (16/11, Sarah : « mets-les »), et la question à Mira.
+ */
+function ActionsBulle({ nom, etapes }: { nom: string; etapes?: string[] }) {
+  const [ouvert, setOuvert] = useState(false);
+  return (
+    <>
+      <div className={styles.actions}>
+        {etapes?.length ? (
+          <button
+            type="button"
+            className={styles.action}
+            aria-expanded={ouvert}
+            onClick={() => setOuvert((o) => !o)}
+          >
+            {ICONE_TUTORIEL}
+            Tutoriel
+          </button>
+        ) : null}
+        <button
+          type="button"
+          className={styles.action}
+          onClick={() =>
+            window.dispatchEvent(
+              new CustomEvent(EVENEMENT_CONTACT, {
+                detail: { message: `À propos de « ${nom} » : ` },
+              }),
+            )
+          }
+        >
+          {ICONE_MIRA}
+          Poser une question à Mira
+        </button>
+      </div>
+      {ouvert && etapes?.length ? (
+        <ol className={styles.etapes}>
+          {etapes.map((e) => (
+            <li key={e}>{e}</li>
+          ))}
+        </ol>
+      ) : null}
+    </>
+  );
+}
+
 function NomLigne({ nom }: { nom: string }) {
   const morceaux = nom.split("\n");
   return (
@@ -951,31 +1047,7 @@ export default function OrbiteAdhesion({
                                   : r.texte
                                 ).split("\n").map((ligne, i) => <p key={i}>{ligne}</p>)}
                               </div>
-                              <div className={styles.actions}>
-                                <Link
-                                  href={`/tutoriels#${r.id}`}
-                                  className={styles.action}
-                                >
-                                  {ICONE_TUTORIEL}
-                                  Tutoriel
-                                </Link>
-                                <button
-                                  type="button"
-                                  className={styles.action}
-                                  onClick={() =>
-                                    window.dispatchEvent(
-                                      new CustomEvent(EVENEMENT_CONTACT, {
-                                        detail: {
-                                          message: `À propos de « ${r.nom} » : `,
-                                        },
-                                      }),
-                                    )
-                                  }
-                                >
-                                  {ICONE_MIRA}
-                                  Poser une question à Mira
-                                </button>
-                              </div>
+                              <ActionsBulle nom={r.nom} etapes={r.tutoriel} />
                             </div>
                           ))}
           </div>
@@ -1122,31 +1194,7 @@ export default function OrbiteAdhesion({
                                   ))
                                 )}
                               </div>
-                              <div className={styles.actions}>
-                                <Link
-                                  href={`/tutoriels#${r.id}`}
-                                  className={styles.action}
-                                >
-                                  {ICONE_TUTORIEL}
-                                  Tutoriel
-                                </Link>
-                                <button
-                                  type="button"
-                                  className={styles.action}
-                                  onClick={() =>
-                                    window.dispatchEvent(
-                                      new CustomEvent(EVENEMENT_CONTACT, {
-                                        detail: {
-                                          message: `À propos de « ${r.nom} » : `,
-                                        },
-                                      }),
-                                    )
-                                  }
-                                >
-                                  {ICONE_MIRA}
-                                  Poser une question à Mira
-                                </button>
-                              </div>
+                              <ActionsBulle nom={r.nom} etapes={r.tutoriel} />
                             </div>
                           ))}
           </div>
@@ -1260,28 +1308,7 @@ export default function OrbiteAdhesion({
                     <p key={i}>{ligne}</p>
                   ))}
               </div>
-              <div className={styles.actions}>
-                <Link href={`/tutoriels#${choix.id}`} className={styles.action}>
-                  {ICONE_TUTORIEL}
-                  Tutoriel
-                </Link>
-                <button
-                  type="button"
-                  className={styles.action}
-                  onClick={() =>
-                    window.dispatchEvent(
-                      new CustomEvent(EVENEMENT_CONTACT, {
-                        detail: {
-                          message: `À propos de « ${titre(choix, mode)} » : `,
-                        },
-                      }),
-                    )
-                  }
-                >
-                  {ICONE_MIRA}
-                  Poser une question à Mira
-                </button>
-              </div>
+              <ActionsBulle key={choix.id} nom={titre(choix, mode)} etapes={choix.tutoriel} />
             </div>
           )}
         </div>
