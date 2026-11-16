@@ -26,6 +26,24 @@ export async function choisirFormatsLecteur(formData: FormData) {
 }
 
 /**
+ * La disponibilité d'un lecteur, mise en ON (vert) ou OFF (rouge) depuis le
+ * tableau des membres (16/11, Sarah). Comme pour le lecteur lui-même, cela ne
+ * touche pas aux projets déjà proposés.
+ */
+export async function changerDisponibiliteLecteur(profileId: string, valeur: "vert" | "rouge") {
+  const supabase = await createClient();
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  if (!isAdmin || (valeur !== "vert" && valeur !== "rouge")) return;
+  const admin = createAdminClient();
+  if (!admin) return;
+  await admin
+    .from("reader_profiles")
+    .upsert({ profile_id: profileId, availability_status: valeur, updated_at: new Date().toISOString() });
+  revalidatePath("/admin/membres");
+  revalidatePath("/admin/projets-en-attente");
+}
+
+/**
  * L'adhésion d'un membre, choisie dans le tableau des membres (27/09,
  * comme la colonne Adhésion de WFG 1) : aucune, 7 € par mois (un mois) ou
  * 75 € par an (un an), les deux formules de l'adhésion payée en ligne (16/11).

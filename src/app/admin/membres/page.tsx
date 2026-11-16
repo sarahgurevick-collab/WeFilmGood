@@ -13,6 +13,7 @@ import AnciensLecteurs from "./AnciensLecteurs";
 import { EMOJIS_SATISFACTION } from "@/lib/satisfaction";
 import FiltresAuto from "./FiltresAuto";
 import FormatsLecteur from "./FormatsLecteur";
+import DisponibiliteLecteur from "./DisponibiliteLecteur";
 import AdhesionMembre from "./AdhesionMembre";
 import BoutonValidation from "./BoutonValidation";
 import CategorieMembre from "./CategorieMembre";
@@ -238,7 +239,6 @@ export default async function MembresPage({
       }
     }
   }
-  const DISPO: Record<string, string> = { vert: "Disponible", orange: "Peu disponible", rouge: "Indisponible" };
 
   // Les filtres, lus dans l'adresse : la page se partage et se recharge.
   // La recherche ignore les accents, la casse et les espaces en trop
@@ -310,12 +310,22 @@ export default async function MembresPage({
   });
 
   const nbFiches = (m: Membre) => fichesDe.get(m.profile_id)?.n ?? 0;
+  // Les lecteurs (16/11, Sarah) : les disponibles d'abord, puis les peu
+  // disponibles, puis les indisponibles ; tout en bas, ceux qui n'ont aucun
+  // format coché (ils ne reçoivent rien).
+  const rangLecteur = (m: Membre) => {
+    const formats = formatsDe.get(m.profile_id);
+    if (formats && formats.length === 0) return 3;
+    const dispo = dispoDe.get(m.profile_id) ?? "vert";
+    return dispo === "rouge" ? 2 : dispo === "orange" ? 1 : 0;
+  };
   filtres.sort((a, b) =>
-    tri === "fiches"
+    (metier === "Lecteur" ? rangLecteur(a) - rangLecteur(b) : 0) ||
+    (tri === "fiches"
       ? nbFiches(b) - nbFiches(a) || b.inscrit_le.localeCompare(a.inscrit_le)
       : tri === "anciens"
         ? a.inscrit_le.localeCompare(b.inscrit_le)
-        : b.inscrit_le.localeCompare(a.inscrit_le),
+        : b.inscrit_le.localeCompare(a.inscrit_le)),
   );
 
   const nbPages = Math.max(1, Math.ceil(filtres.length / PAR_PAGE));
@@ -611,7 +621,11 @@ export default async function MembresPage({
                 <td>
                   <AdhesionMembre profileId={m.profile_id} plan={m.adhesion} />
                 </td>
-                {metier === "Lecteur" && <td>{DISPO[dispoDe.get(m.profile_id) ?? "vert"]}</td>}
+                {metier === "Lecteur" && (
+                  <td>
+                    <DisponibiliteLecteur profileId={m.profile_id} statut={dispoDe.get(m.profile_id) ?? "vert"} />
+                  </td>
+                )}
                 {metier === "Lecteur" && (
                   <td>
                     <Link href={`/admin/lecteurs/${m.profile_id}`}>{fichesDe.get(m.profile_id)?.n ?? 0}</Link>
