@@ -6,12 +6,15 @@
 // touchées : celles-ci sont rangées dans un dossier à part, et leur nom
 // commence par « WFG 2 – ».
 //
-// Relançable : node scripts/brevo-listes-metiers.mjs
+// Lancé chaque nuit (crontab, 3 h 40 UTC) : node scripts/brevo-listes-metiers.mjs
 //  - les listes existantes sont réutilisées, les nouveaux membres ajoutés ;
-//  - les membres désinscrits des mailings sur WFG 2 en sont retirés ;
+//  - ceux qui n'y ont plus leur place en sont retirés (désinscrit sur
+//    WFG 2, métier changé, compte supprimé) : chaque liste est le reflet
+//    exact du site ;
 //  - mêmes exclusions que les mailings du site (fonction
 //    mailing_destinataires) : lecteurs, adresses fictives, désinscrits.
-// Un membre qui change de métier n'est pas retiré de son ancienne liste.
+// Garde-fou : si plus d'un cinquième d'une liste devait partir d'un coup,
+// rien n'est retiré (une lecture ratée de la base ne vide pas les listes).
 
 import { readFileSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
@@ -57,12 +60,14 @@ console.log(`Dossier « ${DOSSIER} » : ${dossier.id}`);
 
 const { lists: existantes = [] } = await brevo(`/contacts/folders/${dossier.id}/lists?limit=50`);
 
-// Les désinscrits de WFG 2, à retirer des listes où ils seraient encore.
-const { data: desinscrits } = await supabase.from("mailing_desinscriptions").select("profile_id").eq("source", "lien");
-const emailsDesinscrits = [];
-for (const d of desinscrits ?? []) {
-  const { data } = await supabase.auth.admin.getUserById(d.profile_id);
-  if (data?.user?.email) emailsDesinscrits.push(data.user.email);
+/** Les adresses déjà dans une liste Brevo. */
+async function contactsDeLaListe(id) {
+  const emails = [];
+  for (let debut = 0; ; debut += 500) {
+    const { contacts = [] } = await brevo(`/contacts/lists/${id}/contacts?limit=500&offset=${debut}`);
+    emails.push(...contacts.map((c) => c.email).filter(Boolean));
+    if (contacts.length < 500) return emails;
+  }
 }
 
 const { data: roles } = await supabase.from("roles").select("slug, label_fr").neq("slug", "lecteur").order("position");
@@ -85,14 +90,23 @@ for (const role of roles) {
     },
   });
 
-  for (let i = 0; i < emailsDesinscrits.length; i += 150) {
-    await brevo(`/contacts/lists/${liste.id}/contacts/remove`, {
-      method: "POST",
-      body: { emails: emailsDesinscrits.slice(i, i + 150) },
-    }).catch(() => {}); // aucun d'eux dans la liste : Brevo répond par une erreur, sans gravité
+  // Ceux qui sont dans la liste Brevo mais plus parmi les membres du métier.
+  const attendus = new Set(membres.map((m) => m.email.toLowerCase()));
+  const enTrop = (await contactsDeLaListe(liste.id)).filter((e) => !attendus.has(e.toLowerCase()));
+  let retires = 0;
+  if (enTrop.length > attendus.size / 5) {
+    console.log(`${nom} : ${enTrop.length} contacts en trop, c'est anormal — rien n'est retiré.`);
+  } else {
+    for (let i = 0; i < enTrop.length; i += 150) {
+      await brevo(`/contacts/lists/${liste.id}/contacts/remove`, {
+        method: "POST",
+        body: { emails: enTrop.slice(i, i + 150) },
+      });
+      retires += Math.min(150, enTrop.length - i);
+    }
   }
 
-  bilan.push({ liste: nom, id: liste.id, membres: membres.length, import: import_.processId });
-  console.log(`${nom} : ${membres.length} membres envoyés (liste ${liste.id}, import ${import_.processId})`);
+  bilan.push({ liste: nom, id: liste.id, membres: membres.length, retires, import: import_.processId });
+  console.log(`${nom} : ${membres.length} membres, ${retires} retirés (liste ${liste.id}, import ${import_.processId})`);
 }
-console.log(JSON.stringify(bilan));
+console.log(`${new Date().toISOString()} — ${bilan.length} listes mises à jour.`);
