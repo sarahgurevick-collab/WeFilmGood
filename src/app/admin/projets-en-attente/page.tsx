@@ -99,9 +99,10 @@ export default async function ProjetsEnAttentePage() {
     .eq("status", "payee")
     .returns<{ project_id: string }[]>();
   const idsNouveaux = new Set((nouveaux ?? []).map((n) => n.project_id));
-  const projects = ((pendingRows ?? []) as PendingProject[]).filter((p) =>
-    idsNouveaux.has(p.project_id),
-  );
+  // Du plus récent au plus ancien (16/11, Sarah).
+  const projects = ((pendingRows ?? []) as PendingProject[])
+    .filter((p) => idsNouveaux.has(p.project_id))
+    .sort((a, b) => new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime());
 
   const { data: readers } = await supabase
     .from("profile_roles")
