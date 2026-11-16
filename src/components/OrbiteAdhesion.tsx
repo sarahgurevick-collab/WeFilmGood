@@ -109,15 +109,17 @@ const ADHESION: Noeud[] = [
   },
   {
     id: "fiche-projet",
-    nom: "Accès fiches projets",
+    nom: "Accès fiches projets & personnages",
     icone: "fiche",
+    // Texte de Sarah du 16/11. L'ancien (« Ne laisse aucun scénario dans ton
+    // tiroir… ») parlait de la création : voir l'historique git.
     texte:
-      "Ne laisse aucun scénario dans ton tiroir : tes projets en développement, même anciens, sont la vitrine et la richesse de ton univers qui attise la curiosité des producteurs, inspire les comédiens (ComedyPitch) et les compositeurs (MusicPitch). Tu peux ajouter un StoryPitch pour chacun de tes projets.",
+      "Toutes les fiches projets et fiches personnages des Galaxies s’ouvrent. Tu peux y lire les loglines et découvrir les personnages. En utilisant ton crédit « soleil », tu peux voir le videopitch (et bientôt des « MusicPitch » et des « ComedyPitch »), contacter l’auteur et les autres talents connectés au projet.",
     aZero: "payant",
   },
   {
     id: "fiche-personnage",
-    nom: "Accès aux fiches personnages",
+    nom: "Création fiches projets & personnages",
     icone: "identite",
     texte:
       "Donne vie à tes personnages avec une biographie si vibrante qu’un comédien n’aura qu’une envie… s’en emparer face caméra ! Ajoute la photo d’un inconnu ou d’une personne célèbre. Reçois une notification dès qu’un ComedyPitch est associé à ton personnage et échange avec le comédien.",
