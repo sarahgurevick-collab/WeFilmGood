@@ -75,6 +75,15 @@ export async function respondToAssignment(formData: FormData) {
   const decision = formData.get("decision") as string;
   const accepte = decision === "accepte";
 
+  // Refuser un projet déjà accepté (changement de planning, 16/11, Sarah) :
+  // le voyant orange s'éteint, le lecteur redevient disponible.
+  const { data: avant } = await supabase
+    .from("reading_assignments")
+    .select("status")
+    .eq("id", assignmentId)
+    .eq("reader_id", user.id)
+    .maybeSingle<{ status: string }>();
+
   await supabase
     .from("reading_assignments")
     .update({
@@ -90,6 +99,10 @@ export async function respondToAssignment(formData: FormData) {
     await supabase
       .from("reader_profiles")
       .upsert({ profile_id: user.id, availability_status: "orange", updated_at: new Date().toISOString() });
+  } else if (avant?.status === "en_cours") {
+    await supabase
+      .from("reader_profiles")
+      .upsert({ profile_id: user.id, availability_status: "vert", updated_at: new Date().toISOString() });
   }
 
   revalidatePath("/lecteur");

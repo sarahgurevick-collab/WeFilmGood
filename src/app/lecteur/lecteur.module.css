@@ -69,8 +69,10 @@
 
 /* L'image du projet, à gauche du titre. */
 .image {
-  width: 96px;
-  height: 128px;
+  width: 192px;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
   object-fit: cover;
   flex: none;
 }

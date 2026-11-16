@@ -163,9 +163,23 @@ export default async function LecteurPage() {
                   </form>
                 </div>
               ) : (
-                <Link href={`/lecteur/${a.id}`} className={formStyles.submit}>
-                  Rédiger la fiche
-                </Link>
+                <div className={styles.actions}>
+                  <Link href={`/lecteur/${a.id}`} className={formStyles.submit}>
+                    Rédiger la fiche
+                  </Link>
+                  {/* Refuser un projet déjà accepté : une confirmation d'abord,
+                      pour qu'un clic de trop ne le fasse pas perdre. */}
+                  <details>
+                    <summary className={styles.linkButton}>Refuser le projet</summary>
+                    <form action={respondToAssignment}>
+                      <input type="hidden" name="assignment_id" value={a.id} />
+                      <input type="hidden" name="decision" value="refuse" />
+                      <button type="submit" className={styles.linkButton}>
+                        Confirmer le refus
+                      </button>
+                    </form>
+                  </details>
+                </div>
               )}
             </li>
           ))}
