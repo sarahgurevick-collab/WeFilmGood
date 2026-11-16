@@ -12,7 +12,13 @@ type Assignment = {
   id: string;
   status: string;
   assigned_at: string;
-  project: { id: string; title: string; format: string | null; language: string | null } | null;
+  project: {
+    id: string;
+    title: string;
+    format: string | null;
+    language: string | null;
+    files: { storage_path: string; kind: string }[] | null;
+  } | null;
 };
 
 export default async function LecteurPage() {
@@ -53,11 +59,22 @@ export default async function LecteurPage() {
 
   const { data: assignments } = await supabase
     .from("reading_assignments")
-    .select("id, status, assigned_at, project:projects(id, title, format, language)")
+    .select("id, status, assigned_at, project:projects(id, title, format, language, files:project_files(storage_path, kind))")
     .eq("reader_id", user.id)
     .in("status", ["proposee", "en_cours"])
     .order("assigned_at", { ascending: true })
     .returns<Assignment[]>();
+
+  // L'image du projet, visible dès la proposition, avant d'accepter (16/11, Sarah).
+  const images = new Map<string, string>();
+  await Promise.all(
+    (assignments ?? []).map(async (a) => {
+      const chemin = (a.project?.files ?? []).filter((f) => f.kind === "vignette").at(-1)?.storage_path;
+      if (!chemin) return;
+      const { data } = await supabase.storage.from("project-media").createSignedUrl(chemin, 60 * 60);
+      if (data?.signedUrl) images.set(a.id, data.signedUrl);
+    }),
+  );
 
   const accepte = (readerProfile?.availability_status ?? "vert") === "vert";
   const enLecture = (assignments ?? []).some((a) => a.status === "en_cours");
@@ -121,7 +138,11 @@ export default async function LecteurPage() {
         <ul className={styles.list}>
           {(assignments ?? []).map((a) => (
             <li key={a.id} className={styles.card}>
-              <div>
+              {images.get(a.id) && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={images.get(a.id)} alt="" className={styles.image} />
+              )}
+              <div className={styles.texte}>
                 <strong>{a.project?.title ?? "Projet supprimé"}</strong>
                 <p className={formStyles.hint}>
                   {[a.project?.format, nomDeLangue(a.project?.language)].filter(Boolean).join(" · ")}

@@ -67,6 +67,18 @@
   margin: 6px 0 0;
 }
 
+/* L'image du projet, à gauche du titre. */
+.image {
+  width: 96px;
+  height: 128px;
+  object-fit: cover;
+  flex: none;
+}
+
+.texte {
+  flex: 1 1 200px;
+}
+
 .actions {
   display: flex;
   align-items: center;
