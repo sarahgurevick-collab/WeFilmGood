@@ -56,16 +56,10 @@ export async function updateAvailability(formData: FormData) {
     redirect("/lecteur");
   }
 
-  // Se déclarer indisponible vaut refus des projets encore en attente de
-  // réponse : c'est le geste du lecteur qui a oublié de fermer sa porte et
-  // découvre qu'on lui a confié un texte.
-  if (status === "rouge") {
-    await supabase
-      .from("reading_assignments")
-      .update({ status: "refusee", responded_at: new Date().toISOString() })
-      .eq("reader_id", user.id)
-      .eq("status", "proposee");
-  }
+  // Se déclarer indisponible ne touche que les prochains projets (16/11,
+  // Sarah) : un projet déjà proposé reste proposé, le lecteur l'accepte ou le
+  // refuse lui-même. Avant, décocher refusait aussitôt le projet proposé
+  // (Jean Sebald, « Plus jamais walk »).
 
   await supabase
     .from("reader_profiles")

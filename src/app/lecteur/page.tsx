@@ -78,7 +78,6 @@ export default async function LecteurPage() {
 
   const accepte = (readerProfile?.availability_status ?? "vert") === "vert";
   const enLecture = (assignments ?? []).some((a) => a.status === "en_cours");
-  const enAttente = (assignments ?? []).filter((a) => a.status === "proposee").length;
 
   return (
     <PageShell title="Mes lectures" nav="lectures" theme="clair">
@@ -118,11 +117,6 @@ export default async function LecteurPage() {
               <span className={styles.interrupteurRond} aria-hidden="true" />
             </button>
           </div>
-          {enAttente > 0 && (
-            <span className={formStyles.hint}>
-              Refuser de recevoir des lectures refusera le projet qui vous est proposé.
-            </span>
-          )}
         </form>
       )}
 
