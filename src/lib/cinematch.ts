@@ -131,6 +131,8 @@ export type ResultatCineMatch = {
   adherent: boolean;
   /** Profil complété à 100 % : avec l'adhésion, donne droit au nom et à la photo nette. */
   complet: boolean;
+  /** Ce qui manque au profil pour être complet (intitulés de « Mon profil »). */
+  manquants: string[];
   category: string | null;
   nom: string | null;
   /** La photo du match : nette si le nom est visible, floutée sinon (même règle que la Galaxie de Talents, 02/10). */
@@ -186,6 +188,7 @@ export async function resultatCineMatch(
     match,
     adherent,
     complet,
+    manquants: completion.manquants,
     category: (fiche?.category as string | null) ?? null,
     nom,
     photo,

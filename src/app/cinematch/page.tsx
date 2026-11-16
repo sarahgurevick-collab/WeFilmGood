@@ -6,6 +6,7 @@ import QuestionnaireCineMatch from "@/app/profil/cinematch/QuestionnaireCineMatc
 import { MIN_REPONSES, lireBrouillon, resultatCineMatch, type Reponses } from "@/lib/cinematch";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import BulleCineMatch from "./BulleCineMatch";
 import RemonterEnHaut from "./RemonterEnHaut";
 import ResultatMatch from "./ResultatMatch";
 import TitreCineMatch from "./TitreCineMatch";
@@ -74,12 +75,17 @@ export default async function CineMatchPage({
     await admin.auth.admin.updateUserById(user.id, { user_metadata: { reponses_cinematch: null } });
   }
 
-  const { nbReponses, assez, match, adherent, category, nom, photo, questionsMatchees } =
+  const { nbReponses, assez, match, adherent, category, nom, photo, questionsMatchees, manquants } =
     await resultatCineMatch(supabase, user.id);
 
   return (
     <PageShell title={<TitreCineMatch />} theme="clair" enTeteAnime connecte>
       {(enregistre || bienvenue) && <RemonterEnHaut />}
+      <BulleCineMatch
+        nomCache={assez && !!match && adherent && !nom}
+        manquants={manquants}
+        sansCategorie={!category}
+      />
       {/* L'état des réponses, tout en haut et visible d'emblée : le bouton
           d'enregistrement est tout en bas, la page se recharge sur cet encadré. */}
       <div

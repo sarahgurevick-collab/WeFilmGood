@@ -1,0 +1,73 @@
+.bulle {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: min(460px, calc(100vw - 32px));
+  padding: 16px 18px;
+  border-radius: 12px;
+  border-left: 4px solid var(--rouge-wfg, #da2c25);
+  background: #1a1a1a;
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1.45;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  animation: arrivee 0.4s ease-out;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.part {
+  opacity: 0;
+  transform: translate(-50%, 12px);
+}
+
+.texte {
+  flex: 1;
+}
+
+.texte p {
+  margin: 0 0 8px;
+}
+
+.texte p:last-child {
+  margin-bottom: 0;
+}
+
+.texte a {
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.fermer {
+  flex: none;
+  border: 0;
+  background: none;
+  color: #ffffff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+@keyframes arrivee {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bulle {
+    animation: none;
+    transition: none;
+  }
+}

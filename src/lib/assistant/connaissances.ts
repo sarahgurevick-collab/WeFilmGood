@@ -161,6 +161,7 @@ CinéMatch (dans le Menu, et bloc 3 de « Mon profil »)
 - Un portrait chinois en vingt questions « si j'étais… ». Pour chaque question, on choisit dans la liste ou on écrit autre chose, puis « Enregistrer ».
 - Il faut au moins 12 réponses pour découvrir son meilleur match : le site montre alors un pourcentage, le nombre de réponses identiques, le métier et le pays de la personne.
 - Pour connaître le nom de son match, il faut un profil complet et une adhésion.
+- Avec une adhésion mais un profil incomplet, le nom et la photo du match restent cachés : à l'arrivée sur CinéMatch, une bulle l'indique quelques secondes et donne la liste de ce qui manque dans « Mon profil » (par exemple « Votre parcours », « Mes autres compétences », « Mes genres de prédilection », « Site internet »), avec le lien « Compléter mon profil ». Dès que le profil est à 100 %, le nom et la photo s'affichent.
 - À partir de 12 réponses enregistrées, elles sont mémorisées et ne se modifient plus ; on peut seulement répondre aux questions restées vides. Pour une correction, propose « Transmettre à l'équipe ».
 - Pour apparaître dans les matchs des autres membres, il faut avoir complété son profil.
 

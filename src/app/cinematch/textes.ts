@@ -43,6 +43,9 @@ export const TEXTES = {
   nomReserve: "Pour connaître son nom, il faut un profil complet et une adhésion.",
   nomProfilIncomplet: "Complétez votre profil pour connaître son nom.",
   voirProfilIncomplet: "Compléter mon profil",
+  // La bulle d'arrivée (validée par Sarah le 16/11) ; suivie de la liste de ce qui manque.
+  bulleProfilIncomplet:
+    "Votre adhésion est active. Pour voir le nom et la photo de votre match, il reste à compléter votre profil :",
   voirAdhesion: "Découvrir l'adhésion",
   voirProfil: "Voir son profil",
   reponsesVerrouillees:

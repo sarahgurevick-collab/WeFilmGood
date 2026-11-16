@@ -29,6 +29,8 @@ export const BLOCS: { cle: Bloc; numero: number; titre: string; resume: string; 
 
 export type Completion = {
   pourcent: number;
+  /** Les intitulés des champs qui manquent pour atteindre 100 %. */
+  manquants: string[];
   pourcentBloc: Record<Bloc, number>;
   fait: Record<Bloc, boolean>;
   profil: {
@@ -110,18 +112,21 @@ export async function calculerCompletion(
   const siteRenseigne =
     profil?.category === "auteur" ? profil?.site_reponse === false || !!profil?.website : !!profil?.website;
 
-  const reperes = [
-    !!profil?.category,
-    !!profil?.city,
-    !!profil?.country,
-    !!profil?.biofilmo,
-    siteRenseigne,
-    metierRenseigne,
-    (langues ?? 0) > 0,
-    genreRenseigne,
-    portrait >= 10,
+  // Chaque repère porte l'intitulé du champ dans « Mon profil » : la bulle
+  // de CinéMatch dit au membre ce qui lui manque (Sarah, 16/11/2026).
+  const reperes: [boolean, string][] = [
+    [!!profil?.category, "Je suis…"],
+    [!!profil?.city, "Ville"],
+    [!!profil?.country, "Pays"],
+    [!!profil?.biofilmo, "Votre parcours"],
+    [siteRenseigne, profil?.category === "auteur" ? "Site internet" : "Votre référence professionnelle"],
+    [metierRenseigne, "Mes autres compétences"],
+    [(langues ?? 0) > 0, "Langues parlées"],
+    [genreRenseigne, "Mes genres de prédilection"],
+    [portrait >= 10, "CinéMatch"],
   ];
-  const pourcent = Math.round((reperes.filter(Boolean).length / reperes.length) * 100);
+  const manquants = reperes.filter(([fait]) => !fait).map(([, intitule]) => intitule);
+  const pourcent = Math.round(((reperes.length - manquants.length) / reperes.length) * 100);
 
   // La référence professionnelle ne compte que pour un producteur ou un
   // autre talent : un auteur n'a rien à prouver, et ne devrait jamais
@@ -145,6 +150,7 @@ export async function calculerCompletion(
 
   return {
     pourcent,
+    manquants,
     pourcentBloc: {
       identite: arrondi(criteresIdentite.filter(Boolean).length, criteresIdentite.length),
       parcours: arrondi(criteresParcours.filter(Boolean).length, criteresParcours.length),

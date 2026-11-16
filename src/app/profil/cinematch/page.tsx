@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import BulleCineMatch from "@/app/cinematch/BulleCineMatch";
 import ResultatMatch from "@/app/cinematch/ResultatMatch";
 import { resultatCineMatch } from "@/lib/cinematch";
 import { createClient } from "@/lib/supabase/server";
@@ -19,10 +20,11 @@ export default async function GoutsPage() {
 
   // Le même résultat que sur la page CinéMatch du Menu (21/10, Sarah) :
   // le match et, en couleur, les réponses communes.
-  const { assez, match, adherent, nom, photo, questionsMatchees } = await resultatCineMatch(supabase, user.id);
+  const { assez, match, adherent, nom, photo, questionsMatchees, manquants } = await resultatCineMatch(supabase, user.id);
 
   return (
     <BlocProfil actif="cinematch">
+      <BulleCineMatch nomCache={assez && !!match && adherent && !nom} manquants={manquants} />
       {assez && <ResultatMatch match={match} adherent={adherent} nom={nom} photo={photo} connecte />}
       <QuestionnaireCineMatch userId={user.id} questionsMatchees={questionsMatchees} />
     </BlocProfil>
