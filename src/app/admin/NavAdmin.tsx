@@ -5,18 +5,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./admin.module.css";
 
-// Les cinq premières, les plus utilisées, sont plus grosses et seules sur la première ligne.
-const NB_PRINCIPALES = 5;
+// Les six premières, les plus utilisées, sont plus grosses et seules sur la première ligne.
+const NB_PRINCIPALES = 6;
 
 const PAGES = [
   { href: "/admin/projets-en-attente", libelle: "Projets en attente" },
   { href: "/admin/fiches-a-valider", libelle: "Fiches à valider" },
+  { href: "/admin/fiches", libelle: "Projets" },
   { href: "/admin/videopitchs", libelle: "Videopitchs" },
   { href: "/admin/membres", libelle: "Membres" },
   { href: "/admin/cinecrush", libelle: "CinéCrush" },
   { href: "/admin/mailing", libelle: "Mailing" },
   { href: "/admin/auteurs-selectionnes", libelle: "Auteurs sélectionnés sans profil" },
-  { href: "/admin/fiches", libelle: "Projets" },
   { href: "/admin/archives-lecture", libelle: "Archives de lecture" },
   { href: "/admin/statistiques", libelle: "Statistiques" },
   { href: "/admin/portraits", libelle: "Portraits" },
