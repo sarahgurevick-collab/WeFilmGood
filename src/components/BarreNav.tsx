@@ -26,6 +26,10 @@ export default async function BarreNav({
   // « Mes favoris » (12/11, Sarah) : pour les adhérents, et pour qui a déjà
   // ouvert un projet (il doit pouvoir le retrouver même sans adhésion).
   let aDesFavoris = false;
+  // Les soleils qui restent (16/11, Sarah : « mentionner ses crédits restants
+  // sur la barre en haut de page ») : le soleil du jour s'il n'est pas
+  // dépensé, plus ceux du Pack Soleils. null : rien à montrer.
+  let soleils: { jour: boolean; pack: number } | null = null;
   if (connecte) {
     const supabase = await createClient();
     const {
@@ -47,6 +51,12 @@ export default async function BarreNav({
         .eq("profile_id", user?.id ?? "00000000-0000-0000-0000-000000000000"),
     ]);
     aDesFavoris = adherent === true || (ouverts ?? 0) > 0;
+    const [{ data: jour }, { data: pack }] = await Promise.all([
+      adherent === true ? supabase.rpc("gravity_du_jour_disponible") : Promise.resolve({ data: false }),
+      supabase.rpc("soleils_pack_restants"),
+    ]);
+    const restePack = typeof pack === "number" ? pack : 0;
+    if (adherent === true || restePack > 0) soleils = { jour: jour === true, pack: restePack };
     messagesNonLus = typeof data === "number" ? data : 0;
     estAdmin = admin === true;
     // Un lecteur n'a pas accès à la plateforme : sa barre n'a que ses deux pages.
@@ -113,6 +123,22 @@ export default async function BarreNav({
           </Link>
         ))}
       </div>
+
+      {soleils && !estLecteur && (
+        <Link
+          href="/adhesion"
+          className={styles.soleils}
+          title={`${soleils.jour ? "Soleil du jour disponible" : "Soleil du jour utilisé"} · Pack : ${soleils.pack} soleil${soleils.pack > 1 ? "s" : ""}`}
+        >
+          <span className={styles.soleilIcone} aria-hidden="true">☀</span>
+          {(soleils.jour ? 1 : 0) + soleils.pack}
+          <span className={styles.lecteurEcran}>
+            {" "}
+            soleil{(soleils.jour ? 1 : 0) + soleils.pack > 1 ? "s" : ""} restant
+            {(soleils.jour ? 1 : 0) + soleils.pack > 1 ? "s" : ""}
+          </span>
+        </Link>
+      )}
 
       {/* « Bienvenue Prénom » quitte la barre (15/11, Sarah : coupé sous Mira) :
           il devient le titre de « Mon profil ». Retour : étiquette bienvenue-avant-profil. */}
