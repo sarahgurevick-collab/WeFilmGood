@@ -31,11 +31,17 @@ export async function GET(requete: Request, { params }: { params: Promise<{ nom:
   }
 
   let taille: number;
-  const chemin = join(DOSSIER_TUTORIELS, `${base}.${extension}`);
+  let chemin = join(DOSSIER_TUTORIELS, `${base}.${extension}`);
   try {
     taille = (await stat(chemin)).size;
   } catch {
-    return new Response("Introuvable.", { status: 404 });
+    // Pas encore de version anglaise (films du 16/11) : le film français.
+    try {
+      chemin = join(DOSSIER_TUTORIELS, `${slug}.${extension}`);
+      taille = (await stat(chemin)).size;
+    } catch {
+      return new Response("Introuvable.", { status: 404 });
+    }
   }
 
   const entetes: Record<string, string> = {

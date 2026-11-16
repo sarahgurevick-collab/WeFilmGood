@@ -8,7 +8,9 @@ import {
   useState,
   type CSSProperties,
 } from "react";
+import { createPortal } from "react-dom";
 import { ICONES } from "./AvantageAdhesion";
+import { useLangueDuGlobe } from "@/lib/langue-globe";
 import { EVENEMENT_CONTACT } from "./BoutonDevis";
 import { acheterSoleils } from "@/app/adhesion/actions";
 import styles from "./OrbiteAdhesion.module.css";
@@ -72,6 +74,10 @@ type Noeud = {
   /** Le tutoriel pas à pas, déroulé dans la bulle par le bouton « Tutoriel »
    *  (textes validés par Sarah le 16/11). Sans étapes, pas de bouton. */
   tutoriel?: string[];
+  /** Le film du tutoriel (/home/wfg/tutoriels/<film>.mp4), ouvert dans une
+   *  bulle par-dessus la page (16/11, Sarah : « un tutoriel vidéo qui
+   *  s'ouvre comme une bulle, comme les autres »). */
+  film?: string;
 };
 
 const GALAXIES_ZERO =
@@ -89,6 +95,7 @@ const ADHESION: Noeud[] = [
       "Chaque jour un nouveau crédit soleil ouvre le projet de ton choix. StoryPitch, ComedyPitch, MusicPitch. Le projet reste visible dans tes favoris et les talents contactables.",
     aZero: "reste",
     texteZero: GALAXIES_ZERO,
+    film: "credit-soleil",
     tutoriel: [
       "Va dans « Galaxies » et clique sur un projet.",
       "Clique sur « Ouvrir ce projet avec mon soleil du jour ».",
@@ -123,6 +130,7 @@ const ADHESION: Noeud[] = [
     texteZero:
       "Chaque jour un nouveau talent vibre sur la même longueur d’onde que toi grâce à un portrait chinois en 20 questions. Le contact coûte 1 soleil.",
     aZero: "payant",
+    film: "cinematch",
     tutoriel: [
       "Ouvre le « Menu » et choisis « CinéMatch ».",
       "Réponds à au moins 12 questions « si j’étais… », puis clique sur « Enregistrer ».",
@@ -139,6 +147,7 @@ const ADHESION: Noeud[] = [
     texte:
       "Toutes les fiches projets et fiches personnages des Galaxies s’ouvrent. Tu peux y lire les loglines et découvrir les personnages. En utilisant ton crédit « soleil », tu peux voir le StoryPitch (et bientôt des « MusicPitch » et des « ComedyPitch »), contacter l’auteur et les autres talents connectés au projet.",
     aZero: "payant",
+    film: "acces-fiches",
     tutoriel: [
       "Dans « Galaxies », clique sur une carte projet.",
       "Lis la tagline, puis « Lire le résumé ».",
@@ -157,6 +166,7 @@ const ADHESION: Noeud[] = [
     // Créer une fiche personnage suppose une fiche projet, qui n'est jamais
     // gratuite : à 0 €, on voit les personnages, on n'en crée pas (Sarah, 05/10).
     aZero: "payant",
+    film: "fiche-projet",
     tutoriel: [
       "Va dans « Mes projets », puis « + Nouvelle fiche projet ».",
       "Remplis le titre, le format, le genre, la tagline et l’image, puis clique sur « Créer ma fiche projet ».",
@@ -217,6 +227,7 @@ const SERVICES: Noeud[] = [
     // À 0 €, sans le prix dégressif (15/11, mots de Sarah).
     texteZero:
       "Pack Soleils : 5, 10 ou 20 soleils à utiliser quand tu veux, pour ouvrir d’autres projets et contacter leurs Talents.",
+    film: "pack-soleils",
     tutoriel: [
       "Dans la ligne « Pack Soleils », choisis 5, 10 ou 20.",
       "Clique sur « Acheter » et paie sur HelloAsso.",
@@ -476,12 +487,26 @@ const ENVELOPPE = (
  * Sous chaque explication : « Tutoriel », qui déroule les étapes dans la
  * bulle même (16/11, Sarah : « mets-les »), et la question à Mira.
  */
-function ActionsBulle({ nom, etapes }: { nom: string; etapes?: string[] }) {
+function ActionsBulle({
+  nom,
+  etapes,
+  film,
+  connecte,
+}: {
+  nom: string;
+  etapes?: string[];
+  film?: string;
+  connecte: boolean;
+}) {
   const [ouvert, setOuvert] = useState(false);
+  // Les films montrent l'intérieur du site : ils sont réservés aux membres
+  // connectés. Un visiteur garde les étapes écrites.
+  const enFilm = !!film && connecte;
+  const aTutoriel = enFilm || !!etapes?.length;
   return (
     <>
       <div className={styles.actions}>
-        {etapes?.length ? (
+        {aTutoriel ? (
           <button
             type="button"
             className={styles.action}
@@ -507,7 +532,9 @@ function ActionsBulle({ nom, etapes }: { nom: string; etapes?: string[] }) {
           Poser une question à Mira
         </button>
       </div>
-      {ouvert && etapes?.length ? (
+      {ouvert && enFilm ? (
+        <BulleFilm film={film!} nom={nom} onFermer={() => setOuvert(false)} />
+      ) : ouvert && etapes?.length ? (
         <ol className={styles.etapes}>
           {etapes.map((e) => (
             <li key={e}>{e}</li>
@@ -515,6 +542,45 @@ function ActionsBulle({ nom, etapes }: { nom: string; etapes?: string[] }) {
         </ol>
       ) : null}
     </>
+  );
+}
+
+/** Le film du tutoriel, dans une bulle par-dessus la page. */
+function BulleFilm({ film, nom, onFermer }: { film: string; nom: string; onFermer: () => void }) {
+  const langue = useLangueDuGlobe();
+  const fichier = langue === "en" ? `${film}-en` : film;
+  useEffect(() => {
+    const touche = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onFermer();
+    };
+    window.addEventListener("keydown", touche);
+    return () => window.removeEventListener("keydown", touche);
+  }, [onFermer]);
+  return createPortal(
+    <div className={styles.filmVoile} onClick={onFermer}>
+      <div
+        className={styles.filmBulle}
+        role="dialog"
+        aria-label={nom}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.filmHaut}>
+          <span className={styles.ficheNom}>{nom}</span>
+          <button type="button" className={styles.fermer} onClick={onFermer} aria-label="Fermer">
+            ×
+          </button>
+        </div>
+        <video
+          className={styles.filmVideo}
+          controls
+          autoPlay
+          playsInline
+          poster={`/tutoriels/video/${fichier}.jpg`}
+          src={`/tutoriels/video/${fichier}.mp4`}
+        />
+      </div>
+    </div>,
+    document.body,
   );
 }
 
@@ -1047,7 +1113,7 @@ export default function OrbiteAdhesion({
                                   : r.texte
                                 ).split("\n").map((ligne, i) => <p key={i}>{ligne}</p>)}
                               </div>
-                              <ActionsBulle nom={r.nom} etapes={r.tutoriel} />
+                              <ActionsBulle nom={r.nom} etapes={r.tutoriel} film={r.film} connecte={connecte} />
                             </div>
                           ))}
           </div>
@@ -1194,7 +1260,7 @@ export default function OrbiteAdhesion({
                                   ))
                                 )}
                               </div>
-                              <ActionsBulle nom={r.nom} etapes={r.tutoriel} />
+                              <ActionsBulle nom={r.nom} etapes={r.tutoriel} film={r.film} connecte={connecte} />
                             </div>
                           ))}
           </div>
@@ -1308,7 +1374,7 @@ export default function OrbiteAdhesion({
                     <p key={i}>{ligne}</p>
                   ))}
               </div>
-              <ActionsBulle key={choix.id} nom={titre(choix, mode)} etapes={choix.tutoriel} />
+              <ActionsBulle key={choix.id} nom={titre(choix, mode)} etapes={choix.tutoriel} film={choix.film} connecte={connecte} />
             </div>
           )}
         </div>

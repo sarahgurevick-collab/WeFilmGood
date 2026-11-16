@@ -16,6 +16,11 @@ export const TUTORIELS: Tutoriel[] = [
   { slug: "mon-profil", titre: "Mon profil", titreEn: "My profile", membres: true },
   { slug: "fiche-projet", titre: "Créer une fiche projet", titreEn: "Create a project sheet", membres: true },
   { slug: "galaxies", titre: "Les Galaxies", titreEn: "The Galaxies", membres: true },
+  // Films des bulles de l'adhésion (16/11) : titre = nom de la bulle.
+  { slug: "credit-soleil", titre: "Crédit Soleil", titreEn: "Sun credit", membres: true },
+  { slug: "acces-fiches", titre: "Accès fiches projets & personnages", titreEn: "Project & character sheets", membres: true },
+  { slug: "cinematch", titre: "CinéMatch", titreEn: "CinéMatch", membres: true },
+  { slug: "pack-soleils", titre: "Pack Soleils", titreEn: "Sun pack", membres: true },
 ];
 
 /**
