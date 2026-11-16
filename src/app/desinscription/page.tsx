@@ -10,7 +10,7 @@ export const metadata = { robots: { index: false } };
  * s'ouvre sans compte ; la désinscription demande un clic sur le bouton,
  * pour qu'un antivirus qui visite les liens d'un email ne désinscrive
  * personne. Les emails du fonctionnement du site continuent d'arriver.
- * TEXTES : propositions, à faire valider par Sarah.
+ * Textes validés par Sarah le 16/11/2026.
  */
 export default async function DesinscriptionPage({
   searchParams,
