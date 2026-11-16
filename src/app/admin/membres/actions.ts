@@ -56,6 +56,10 @@ export async function changerAdhesion(formData: FormData) {
       plan_slug: plan,
       status: "active",
       payment_provider: "admin",
+      // Pour la comptabilité (16/11) : adhésion accordée, rien n'a été payé.
+      amount_cents: 0,
+      currency: "EUR",
+      payment_reference: "offerte",
       started_at: maintenant.toISOString(),
       expires_at: fin.toISOString(),
     });
