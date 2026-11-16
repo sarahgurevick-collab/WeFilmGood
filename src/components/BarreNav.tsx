@@ -126,7 +126,7 @@ export default async function BarreNav({
 
       {soleils && !estLecteur && (
         <Link
-          href="/adhesion"
+          href="/favoris"
           className={styles.soleils}
           title={`${soleils.jour ? "Soleil du jour disponible" : "Soleil du jour utilisé"} · Pack : ${soleils.pack} soleil${soleils.pack > 1 ? "s" : ""}`}
         >

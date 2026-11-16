@@ -336,7 +336,7 @@ export type TalentTrouve = {
   photo: string | null;
   metiers: string[];
   ville: string | null;
-  /** Nom retiré et photo floutée : tout le monde sauf l'administration (02/10). */
+  /** Nom retiré et photo floutée : tout le monde sauf l'administration (02/10), et sauf un profil ouvert avec un soleil (16/11). */
   masque: boolean;
 };
 
@@ -393,7 +393,11 @@ async function fichesTalents(
   // sont pas visibles et les photos sont floutées. Le nom n'est pas envoyé
   // du tout au navigateur ; seule l'administration voit tout.
   const { data: estAdmin } = await supabase.rpc("is_admin");
-  const masque = estAdmin !== true;
+  // Les profils ouverts avec un soleil se montrent en entier (16/11, 0285).
+  const { data: ouverts } = estAdmin === true
+    ? { data: [] }
+    : await supabase.from("soleil_profils").select("membre_id").in("membre_id", lignes.map((l) => l.id));
+  const ouvertsIds = new Set((ouverts ?? []).map((o: { membre_id: string }) => o.membre_id));
 
   const { data: profils } = await clientProfils(supabase)
     .from("profiles")
@@ -407,6 +411,7 @@ async function fichesTalents(
   const talents = lignes.flatMap((l) => {
     const p = parId.get(l.id);
     if (!p) return [];
+    const masque = estAdmin !== true && !ouvertsIds.has(p.id);
     return [{
       id: p.id,
       nom: masque ? "" : (p.display_name ?? p.full_name ?? "Membre"),

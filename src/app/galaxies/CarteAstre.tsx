@@ -5,8 +5,7 @@ import styles from "./duo.module.css";
 /**
  * Un talent dans la constellation (essai du 12/11/2026, Sarah) : un grand
  * portrait rond qui flotte doucement, le nom (quand il est visible), les
- * métiers et la ville dessous. Mêmes règles que la carte d'avant : nom
- * masqué = pas de lien vers le profil.
+ * métiers et la ville dessous.
  */
 export default function CarteAstre({ t }: { t: TalentTrouve }) {
   const contenu = (
@@ -29,9 +28,9 @@ export default function CarteAstre({ t }: { t: TalentTrouve }) {
       {t.ville && <span className={styles.astreDetail}>{t.ville}</span>}
     </>
   );
-  return t.masque ? (
-    <div className={styles.astre}>{contenu}</div>
-  ) : (
+  // Depuis le 16/11 (Sarah : contacter un talent sans passer par un projet),
+  // toute carte mène au profil : masqué, il s'y ouvre avec un soleil.
+  return (
     <Link href={`/membres/${t.id}`} className={styles.astre}>
       {contenu}
     </Link>

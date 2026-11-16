@@ -9,6 +9,7 @@ import gravityStyles from "@/app/projet/[id]/gravity.module.css";
 import { basculerFavori } from "@/app/projet/[id]/gravity-actions";
 import { GRAVITY } from "@/lib/gravity-textes";
 import { createClient } from "@/lib/supabase/server";
+import { clientProfils } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "Mes favoris — WeFilmGood" };
 
@@ -48,6 +49,21 @@ export default async function FavorisPage() {
       .order("ajoute_le", { ascending: false })
       .returns<{ project_id: string; ajoute_le: string }[]>(),
   ]);
+  // Les talents ouverts avec un soleil, depuis la recherche de Talents (16/11).
+  const { data: profilsOuverts } = await supabase
+    .from("soleil_profils")
+    .select("membre_id, ouvert_le")
+    .eq("profile_id", user.id)
+    .order("ouvert_le", { ascending: false })
+    .returns<{ membre_id: string; ouvert_le: string }[]>();
+  const { data: nomsTalents } = (profilsOuverts ?? []).length
+    ? await clientProfils(supabase)
+        .from("profiles")
+        .select("id, display_name, full_name")
+        .in("id", (profilsOuverts ?? []).map((o) => o.membre_id))
+        .returns<{ id: string; display_name: string | null; full_name: string | null }[]>()
+    : { data: [] };
+  const nomDe = new Map((nomsTalents ?? []).map((n) => [n.id, n.display_name ?? n.full_name ?? "Membre"]));
   const idsOuverts = (ouvertures ?? []).map((o) => o.project_id);
   // Un projet mis de côté puis ouvert n'apparaît plus que parmi les ouverts.
   const idsDeCote = (favoris ?? []).map((f) => f.project_id).filter((id) => !idsOuverts.includes(id));
@@ -126,6 +142,21 @@ export default async function FavorisPage() {
         <p className={formStyles.hint}>{GRAVITY.favoris.aucunOuvert}</p>
       ) : (
         <ul className={styles.grille}>{idsOuverts.map((id) => carte(id, false))}</ul>
+      )}
+      {(profilsOuverts ?? []).length > 0 && (
+        <>
+          <h2>{GRAVITY.favoris.talentsOuverts}</h2>
+          <ul>
+            {(profilsOuverts ?? []).map((o) => (
+              <li key={o.membre_id} className={formStyles.hint}>
+                <Link href={`/membres/${o.membre_id}`}>{nomDe.get(o.membre_id) ?? "Membre"}</Link>
+                {" — "}
+                {GRAVITY.ouvertLe.toLowerCase().replace("projet ", "")}{" "}
+                {new Date(o.ouvert_le).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" })}
+              </li>
+            ))}
+          </ul>
+        </>
       )}
       <h2>{GRAVITY.favoris.deCote}</h2>
       {idsDeCote.length === 0 ? (

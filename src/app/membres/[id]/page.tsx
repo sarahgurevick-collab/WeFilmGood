@@ -21,6 +21,8 @@ import { createClient } from "@/lib/supabase/server";
 import ChangerAdresseMembre from "@/app/admin/membres/ChangerAdresseMembre";
 import ChangerTelephoneMembre from "@/app/admin/membres/ChangerTelephoneMembre";
 import styles from "./membre.module.css";
+import { ouvrirProfilAvecSoleil } from "./soleil-actions";
+import { GRAVITY, soleilsRestants } from "@/lib/gravity-textes";
 import { photoNette } from "@/lib/photo";
 import { clientCartes, clientProfils } from "@/lib/supabase/admin";
 import { accesAuxFiches } from "@/lib/acces-fiches";
@@ -80,6 +82,7 @@ export default async function ProfilMembrePage({
 
   let masque = false;
   let estAdmin = false;
+  let profilOuvert = false;
   if (membre.id !== user.id) {
     const [{ data: lecteur }, { data: isAdmin }] = await Promise.all([
       supabase
@@ -91,7 +94,10 @@ export default async function ProfilMembrePage({
       supabase.rpc("is_admin"),
     ]);
     if (lecteur && !isAdmin) notFound();
-    masque = isAdmin !== true;
+    // Un profil ouvert avec un soleil se montre en entier (16/11, 0285).
+    const { data: ouvert } = isAdmin === true ? { data: false } : await supabase.rpc("profil_ouvert_par_soleil", { p_membre: membre.id });
+    profilOuvert = ouvert === true;
+    masque = isAdmin !== true && !profilOuvert;
     estAdmin = isAdmin === true;
   }
 
@@ -178,12 +184,42 @@ export default async function ProfilMembrePage({
       indisponible = `${(await clientProfils(supabase).from("profiles").select("first_name").eq("id", membre.id).maybeSingle<{ first_name: string | null }>()).data?.first_name ?? "Ce talent"} est indisponible momentanément, messagerie saturée.`;
     }
   }
+  // Profil masqué : l'ouvrir avec un soleil (16/11, Sarah : contacter un
+  // talent sans passer par un projet, « Oui, 1 soleil »).
+  let soleil: React.ReactNode = null;
+  if (masque && peutEcrire) {
+    const [{ data: jour }, { data: pack }] = await Promise.all([
+      adherent ? supabase.rpc("gravity_du_jour_disponible") : Promise.resolve({ data: false }),
+      supabase.rpc("soleils_pack_restants"),
+    ]);
+    const restePack = typeof pack === "number" ? pack : 0;
+    soleil =
+      jour === true || restePack > 0 ? (
+        <div style={{ marginTop: 16 }}>
+          <form action={ouvrirProfilAvecSoleil}>
+            <input type="hidden" name="membre" value={membre.id} />
+            <button type="submit" className={formStyles.submit}>
+              {jour === true ? GRAVITY.boutonProfil : GRAVITY.boutonProfilPack}
+            </button>
+          </form>
+          <p className={formStyles.hint}>
+            {GRAVITY.profilCeQuiSOuvre}
+            {jour !== true && ` ${soleilsRestants(restePack)}`}
+          </p>
+        </div>
+      ) : (
+        <p className={formStyles.hint} style={{ marginTop: 16 }}>
+          {adherent ? GRAVITY.dejaUtilise : GRAVITY.profilSansSoleil}{" "}
+          <Link href="/adhesion#pack-soleils">{GRAVITY.packAdherent}</Link>
+        </p>
+      );
+  }
   const enveloppe = peutEcrire ? (
     <div style={{ marginTop: 16 }}>
       {message === "envoye" && <p className={formStyles.hint}>Message envoyé.</p>}
       <ContactEnveloppe
         href={`/mes-messages/nouveau?membre=${membre.id}`}
-        adhesionRequise={!estAdmin && !adherent}
+        adhesionRequise={!estAdmin && !adherent && !profilOuvert}
         indisponible={indisponible}
       />
     </div>
@@ -257,6 +293,7 @@ export default async function ProfilMembrePage({
         </div>
       )}
 
+      {soleil}
       {enveloppe}
 
       {/* La société du producteur (14/11, Sarah). */}

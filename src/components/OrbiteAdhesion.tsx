@@ -871,7 +871,7 @@ export default function OrbiteAdhesion({
       </>
     );
     return (
-      <div key={cle} className={classe}>
+      <div key={cle} className={classe} id={l.pack && plan === (adherent ? "oui" : "non") ? "pack-soleils" : undefined}>
         {l.accroche && <p className={styles.planAccroche}>{l.accroche}</p>}
         <div className={styles.planLigneCorps}>
           <div className={styles.planLigneNom}>

@@ -49,10 +49,10 @@ export default async function NouveauMessagePage({
   const destinataireId = projet?.owner_id ?? (membreId as string);
   // Soi-même : rien à s'écrire.
   if (destinataireId === user.id) redirect(projet ? `/projet/${projet.id}` : "/profil");
-  // Sans adhésion : écrire à l'auteur d'un projet ouvert avec un soleil (Pack Soleils, 16/11).
+  // Sans adhésion : écrire à l'auteur d'un projet, ou à un talent, ouvert avec un soleil (16/11).
   const { data: ouvertParSoleil } = projet
     ? await supabase.rpc("projet_ouvert_par_soleil", { p_projet: projet.id })
-    : { data: false };
+    : await supabase.rpc("profil_ouvert_par_soleil", { p_membre: destinataireId });
   if (adherent !== true && estAdmin !== true && ouvertParSoleil !== true) redirect("/adhesion");
   // Écrire au porteur d'un projet demande de l'avoir ouvert avec un soleil
   // (12/11), ou d'être adhérent pendant sa semaine CinéCrush (15/11 : un

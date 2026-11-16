@@ -48,6 +48,8 @@ export default async function MesMessagesPage() {
   // ouverts avec un soleil (Pack Soleils, 16/11, 0284).
   const conversations = ((await supabase.rpc("mes_conversations")).data as Conversation[] | null) ?? [];
   const projetsOuverts = new Set(conversations.map((c) => c.projet_id).filter(Boolean));
+  // Hors projet : les talents dont le profil est ouvert avec un soleil (16/11).
+  const profilsOuverts = new Set(conversations.filter((c) => !c.projet_id).map((c) => c.autre_id));
   // Les photos (20/10) : seulement avec une adhésion, comme les noms.
   const avatars = await avatarsDe(supabase, conversations.map((c) => c.autre_id));
   // Sans adhésion : les messages en attente, sans leur expéditeur.
@@ -55,10 +57,12 @@ export default async function MesMessagesPage() {
     adherent === true
       ? []
       : (
-          (((await supabase.from("mes_messages_recus").select("id, project_id, project_title, objet, created_at")).data as
-            | (MessageEnAttente & { project_id: string | null })[]
+          (((await supabase.from("mes_messages_recus").select("id, project_id, sender_id, project_title, objet, created_at")).data as
+            | (MessageEnAttente & { project_id: string | null; sender_id: string | null })[]
             | null) ?? [])
-        ).filter((m) => !m.project_id || !projetsOuverts.has(m.project_id));
+        ).filter((m) =>
+          m.project_id ? !projetsOuverts.has(m.project_id) : !(m.sender_id && profilsOuverts.has(m.sender_id)),
+        );
 
   return (
     <PageShell eyebrow="Mon profil" title="Mes messages" connecte nav="messages">
