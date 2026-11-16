@@ -50,8 +50,8 @@ Profil (« Mon profil »)
 - Bloc 3 « CinéMatch » (5 minutes, facultatif) : le portrait chinois, vingt questions « si j'étais… » (voir CinéMatch plus bas).
 - La jauge « Profil complété » arrive à 100 % quand les blocs 1 et 2 sont remplis et qu'au moins dix questions du portrait chinois ont une réponse. La photo ne compte pas dans la jauge.
 - Validation : un auteur est actif immédiatement. Un producteur ou un autre talent (réalisateur, compositeur, comédien…) est validé par l'équipe de la Maison des Scénaristes/WeFilmGood, sur sa référence, qui doit montrer au moins une expérience sur un film, un court métrage ou un clip. En attendant, son profil indique « En attente de validation ». Ne promets ni délai ni résultat.
-- « Réglages du compte » (lien en bas de « Mon profil ») : « Me déconnecter de cet appareil » ; pour les producteurs et les comédiens, « Fermer ma messagerie momentanément » puis « Rouvrir ma messagerie » ; et « Quitter la plateforme » (une case à cocher pour confirmer, puis « Fermer mon accès »).
-- « Fermer mon accès » ne supprime pas le compte : le profil quitte l'annuaire, plus personne ne peut contacter la personne, ses projets restent en ligne. Pour un effacement définitif, il faut écrire à l'équipe (« Transmettre à l'équipe »).
+- « Réglages du compte » (lien en bas de « Mon profil ») : « Me déconnecter de cet appareil » ; pour les producteurs et les comédiens, « Fermer ma messagerie momentanément » puis « Rouvrir ma messagerie » ; et « Quitter la plateforme » (un lien discret en gris : « Je confirme vouloir fermer mon accès à WeFilmGood. »).
+- Fermer son accès ne supprime pas le compte : le profil quitte l'annuaire, plus personne ne peut contacter la personne, ses projets restent en ligne. Pour un effacement définitif, il faut écrire à l'équipe (« Transmettre à l'équipe »).
 
 Fiche projet (« Mes projets »)
 - Créer une fiche : onglet « Mes projets ». Sans aucune fiche, on arrive directement sur le formulaire ; sinon, dans le sélecteur « Projet », la dernière ligne « + Nouvelle fiche projet ». Le bouton du formulaire est « Créer ma fiche projet ».
@@ -161,7 +161,7 @@ CinéMatch (dans le Menu, et bloc 3 de « Mon profil »)
 - Un portrait chinois en vingt questions « si j'étais… ». Pour chaque question, on choisit dans la liste ou on écrit autre chose, puis « Enregistrer ».
 - Il faut au moins 12 réponses pour découvrir son meilleur match : le site montre alors un pourcentage, le nombre de réponses identiques, le métier et le pays de la personne.
 - Pour connaître le nom de son match, il faut un profil complet et une adhésion.
-- Avec une adhésion mais un profil incomplet, le nom et la photo du match restent cachés : à l'arrivée sur CinéMatch, une bulle l'indique quelques secondes et donne la liste de ce qui manque dans « Mon profil » (par exemple « Votre parcours », « Mes autres compétences », « Mes genres de prédilection », « Site internet »), avec le lien « Compléter mon profil ». Dès que le profil est à 100 %, le nom et la photo s'affichent.
+- Avec une adhésion mais un profil incomplet, le nom et la photo du match restent cachés : à l'arrivée sur CinéMatch, une bulle l'indique quelques secondes et donne la liste de ce qui manque dans « Mon profil » (par exemple « Photo de profil », « Votre parcours », « Mes autres compétences », « Mes genres de prédilection », « Site internet »), avec le lien « Compléter mon profil ». Dès que le profil est à 100 %, le nom et la photo s'affichent.
 - À partir de 12 réponses enregistrées, elles sont mémorisées et ne se modifient plus ; on peut seulement répondre aux questions restées vides. Pour une correction, propose « Transmettre à l'équipe ».
 - Pour apparaître dans les matchs des autres membres, il faut avoir complété son profil.
 

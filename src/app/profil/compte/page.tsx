@@ -116,12 +116,25 @@ export default async function ComptePage({
             <span>Pourquoi partez-vous ? (facultatif)</span>
             <textarea name="reason" rows={3} />
           </label>
-          <label className={formStyles.checkline}>
-            <input type="checkbox" name="confirmation" value="1" required />
-            <span>Je confirme vouloir fermer mon accès à WeFilmGood.</span>
-          </label>
-          <button type="submit" className={formStyles.submit}>
-            Fermer mon accès
+          {/* Plus de gros bouton (16/11, Sarah : « il peut se confondre avec
+              l'autre ») : la phrase en gris, discrète, est le lien. */}
+          <input type="hidden" name="confirmation" value="1" />
+          <button
+            type="submit"
+            className={formStyles.hint}
+            style={{
+              alignSelf: "flex-start",
+              padding: 0,
+              border: 0,
+              background: "none",
+              font: "inherit",
+              cursor: "pointer",
+              textAlign: "left",
+              textDecoration: "underline",
+              textUnderlineOffset: 3,
+            }}
+          >
+            Je confirme vouloir fermer mon accès à WeFilmGood.
           </button>
         </form>
       </div>
