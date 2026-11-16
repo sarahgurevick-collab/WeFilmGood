@@ -15,12 +15,15 @@ export default function MenuCases({
   choisies,
   resume,
   onChange,
+  onFerme,
 }: {
   libelle: string;
   options: OptionCase[];
   choisies: string[];
   resume: string;
   onChange: (suivantes: string[]) => void;
+  /** Appelé quand la liste se referme. */
+  onFerme?: () => void;
 }) {
   const ref = useRef<HTMLDetailsElement>(null);
 
@@ -36,7 +39,13 @@ export default function MenuCases({
   return (
     <div className={styles.colonneEnPlus}>
       <span>{libelle}</span>
-      <details ref={ref} className={styles.menuCases}>
+      <details
+        ref={ref}
+        className={styles.menuCases}
+        onToggle={(e) => {
+          if (!e.currentTarget.open) onFerme?.();
+        }}
+      >
         <summary>{resume}</summary>
         <div className={styles.menuListe}>
           {options.map((o) => {

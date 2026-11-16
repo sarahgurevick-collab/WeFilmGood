@@ -288,6 +288,8 @@ export default async function TableauFichesPage({
   type Trouve = { id: string; title: string; created_at: string; owner: { full_name: string | null } | null };
   let trouves: Trouve[] = [];
   const scenarioTrouve = new Map<string, string>();
+  // Les années des fiches de lecture de chaque projet trouvé (16/11, Sarah).
+  const anneesDe = new Map<string, Map<number, number>>();
   let archivesTrouvees: { id: string; titre: string; auteurs: string | null; appel: string | null; project_id: string | null }[] = [];
   if (q.length >= 2) {
     const motif = `%${q.replace(/[%_,()]/g, " ")}%`;
@@ -308,6 +310,22 @@ export default async function TableauFichesPage({
     const vus = new Set<string>();
     trouves = [...(parTitre ?? []), ...(parAuteur ?? [])].filter((p) => (vus.has(p.id) ? false : (vus.add(p.id), true)));
     archivesTrouvees = arch ?? [];
+    if (trouves.length) {
+      const ids = trouves.map((t) => t.id);
+      const [{ data: hers }, { data: rend }] = await Promise.all([
+        admin.from("legacy_reading_reports").select("project_id, read_at").in("project_id", ids).limit(2000),
+        admin.from("reading_reports").select("project_id, submitted_at").in("project_id", ids).limit(2000),
+      ]);
+      const compter = (id: string, date: string | null) => {
+        if (!date) return;
+        const an = Number(date.slice(0, 4));
+        const m = anneesDe.get(id) ?? new Map<number, number>();
+        m.set(an, (m.get(an) ?? 0) + 1);
+        anneesDe.set(id, m);
+      };
+      for (const h of (hers ?? []) as { project_id: string; read_at: string | null }[]) compter(h.project_id, h.read_at);
+      for (const r of (rend ?? []) as { project_id: string; submitted_at: string | null }[]) compter(r.project_id, r.submitted_at);
+    }
     // Le scénario à côté de chaque projet trouvé (01/11, Sarah) : plus besoin
     // de passer par l'écran des membres.
     if (trouves.length) {
@@ -374,6 +392,22 @@ export default async function TableauFichesPage({
                   <li key={p.id}>
                     <Link href={`/projet/${p.id}`}>{p.title}</Link>
                     {p.owner?.full_name ? ` — ${p.owner.full_name}` : ""}
+                    {anneesDe.has(p.id) && (
+                      <>
+                        {" · fiches de lecture : "}
+                        {[...anneesDe.get(p.id)!.entries()]
+                          .sort((x, y) => y[0] - x[0])
+                          .map(([an, n], i) => (
+                            <span key={an}>
+                              {i > 0 && ", "}
+                              <Link href={`/admin/fiches?annees=${an}&q=${encodeURIComponent(q)}`}>
+                                {an}
+                                {n > 1 ? ` (${n})` : ""}
+                              </Link>
+                            </span>
+                          ))}
+                      </>
+                    )}
                     {scenarioTrouve.has(p.id) && (
                       <>
                         {" "}
