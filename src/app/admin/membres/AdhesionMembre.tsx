@@ -18,7 +18,7 @@ export default function AdhesionMembre({ profileId, plan }: { profileId: string;
         style={{ fontSize: 12, padding: "4px 6px" }}
       >
         <option value="">Aucune</option>
-        <option value="mois_7">7 € par mois</option>
+        <option value="mois_7">1 mois offert</option>
         <option value="annee_75">75 € par an</option>
         {actuel === "autre" && (
           <option value="autre" disabled>
