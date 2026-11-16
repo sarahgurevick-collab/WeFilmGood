@@ -321,6 +321,10 @@ export default async function MembresPage({
   };
   filtres.sort((a, b) =>
     (metier === "Lecteur" ? rangLecteur(a) - rangLecteur(b) : 0) ||
+    // À rang égal, les plus actifs d'abord : dernière fiche la plus récente.
+    (metier === "Lecteur"
+      ? (fichesDe.get(b.profile_id)?.derniere ?? "").localeCompare(fichesDe.get(a.profile_id)?.derniere ?? "")
+      : 0) ||
     (tri === "fiches"
       ? nbFiches(b) - nbFiches(a) || b.inscrit_le.localeCompare(a.inscrit_le)
       : tri === "anciens"

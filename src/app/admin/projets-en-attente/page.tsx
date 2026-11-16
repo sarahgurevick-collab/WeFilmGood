@@ -160,12 +160,19 @@ export default async function ProjetsEnAttentePage() {
   const voyantDe = new Map(
     (voyants ?? []).map((v) => [v.profile_id, v.availability_status]),
   );
+  // Les plus actifs d'abord (16/11, Sarah) : celui qui a rendu une fiche le
+  // plus récemment est en tête, ceux qui n'ont jamais lu sont en queue.
+  const { data: dernieres } = await supabase.rpc("derniere_lecture_par_lecteur");
+  const derniereDe = new Map(
+    ((dernieres ?? []) as { profile_id: string; derniere: string | null }[]).map((d) => [d.profile_id, d.derniere ?? ""]),
+  );
+  const plusActifs = (a: { profile_id: string; profile: { full_name: string | null } | null }, b: typeof a) =>
+    (derniereDe.get(b.profile_id) ?? "").localeCompare(derniereDe.get(a.profile_id) ?? "") ||
+    (a.profile?.full_name ?? "").localeCompare(b.profile?.full_name ?? "");
   const parVoyant = (couleur: string) =>
     (readers ?? [])
       .filter((r) => (voyantDe.get(r.profile_id) ?? "vert") === couleur)
-      .sort((a, b) =>
-        (a.profile?.full_name ?? "").localeCompare(b.profile?.full_name ?? ""),
-      );
+      .sort(plusActifs);
 
   // Les lecteurs sans aucune case cochée (16/11, Sarah : « je ne les utilise
   // qu'en dernier recours ») : jamais proposés d'office, mais toujours
