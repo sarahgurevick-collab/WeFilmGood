@@ -224,6 +224,17 @@
   border-bottom: 2px solid transparent;
 }
 
+/* Les cinq pages les plus utilisées : lettrage plus gros. */
+.navPrincipal {
+  font-size: 18px;
+}
+
+/* Retour à la ligne avant les autres pages. */
+.navSaut {
+  flex-basis: 100%;
+  height: 0;
+}
+
 .navLien:hover {
   color: var(--fg);
 }

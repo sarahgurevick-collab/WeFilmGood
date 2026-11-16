@@ -1,16 +1,20 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./admin.module.css";
+
+// Les cinq premières, les plus utilisées, sont plus grosses et seules sur la première ligne.
+const NB_PRINCIPALES = 5;
 
 const PAGES = [
   { href: "/admin/projets-en-attente", libelle: "Projets en attente" },
   { href: "/admin/fiches-a-valider", libelle: "Fiches à valider" },
   { href: "/admin/videopitchs", libelle: "Videopitchs" },
   { href: "/admin/membres", libelle: "Membres" },
-  { href: "/admin/mailing", libelle: "Mailing" },
   { href: "/admin/cinecrush", libelle: "CinéCrush" },
+  { href: "/admin/mailing", libelle: "Mailing" },
   { href: "/admin/auteurs-selectionnes", libelle: "Auteurs sélectionnés sans profil" },
   { href: "/admin/fiches", libelle: "Projets" },
   { href: "/admin/archives-lecture", libelle: "Archives de lecture" },
@@ -39,15 +43,19 @@ export default function NavAdmin() {
 
   return (
     <nav className={styles.navAdmin} aria-label="Administration">
-      {PAGES.map((p) => (
-        <Link
-          key={p.href}
-          href={p.href}
-          className={actif(p.href) ? styles.navActif : styles.navLien}
-          aria-current={actif(p.href) ? "page" : undefined}
-        >
-          {p.libelle}
-        </Link>
+      {PAGES.map((p, i) => (
+        <Fragment key={p.href}>
+          <Link
+            href={p.href}
+            className={`${actif(p.href) ? styles.navActif : styles.navLien} ${
+              i < NB_PRINCIPALES ? styles.navPrincipal : ""
+            }`}
+            aria-current={actif(p.href) ? "page" : undefined}
+          >
+            {p.libelle}
+          </Link>
+          {i === NB_PRINCIPALES - 1 && <span className={styles.navSaut} aria-hidden="true" />}
+        </Fragment>
       ))}
       <Link
         href="/admin/codes"
