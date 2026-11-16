@@ -55,6 +55,35 @@ export async function publishReport(formData: FormData) {
     updated_at: new Date().toISOString(),
   });
 
+  // Publiée : le brouillon n'a plus lieu d'être.
+  await supabase.from("fiches_brouillons_admin").delete().eq("reading_report_id", reportId);
+
   revalidatePath("/admin/fiches-a-valider");
   redirect("/admin/fiches-a-valider");
+}
+
+/**
+ * « Enregistrer » (16/11, Sarah) : garde les corrections, la note et le
+ * lecteur choisi, sans rien publier ni changer pour le lecteur ou l'auteur.
+ */
+export async function enregistrerBrouillon(formData: FormData) {
+  const supabase = await requireAdmin();
+  const reportId = formData.get("report_id") as string;
+  const content = sanitizeFiche((formData.get("content") as string) ?? "");
+  const brut = formData.get("score");
+  const score = brut === null || brut === "" ? null : Number(brut);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  await supabase.from("fiches_brouillons_admin").upsert({
+    reading_report_id: reportId,
+    content,
+    score: score !== null && Number.isInteger(score) && score >= 0 && score <= 200 ? score : null,
+    reader_id: (formData.get("reader_id") as string) || null,
+    enregistre_par: user?.id ?? null,
+    enregistre_le: new Date().toISOString(),
+  });
+
+  redirect(`/admin/fiches/${reportId}?enregistre=1`);
 }

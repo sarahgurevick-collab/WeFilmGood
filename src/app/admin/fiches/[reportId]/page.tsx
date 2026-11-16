@@ -7,7 +7,7 @@ import adminStyles from "../../admin.module.css";
 import RichTextEditor from "@/components/RichTextEditor";
 import { sanitizeFiche } from "@/lib/sanitize";
 import { createClient } from "@/lib/supabase/server";
-import { publishReport } from "./actions";
+import { enregistrerBrouillon, publishReport } from "./actions";
 
 type Report = {
   id: string;
@@ -23,10 +23,13 @@ type Report = {
 
 export default async function FicheAdminPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ reportId: string }>;
+  searchParams: Promise<{ enregistre?: string }>;
 }) {
   const { reportId } = await params;
+  const { enregistre } = await searchParams;
 
   const supabase = await createClient();
   const { data: isAdmin } = await supabase.rpc("is_admin");
@@ -53,10 +56,18 @@ export default async function FicheAdminPage({
     .eq("reading_report_id", reportId)
     .maybeSingle();
 
+  // Les corrections enregistrées sans être publiées (bouton « Enregistrer »,
+  // 16/11) passent avant tout le reste.
+  const { data: brouillon } = await supabase
+    .from("fiches_brouillons_admin")
+    .select("content, score, reader_id, enregistre_le")
+    .eq("reading_report_id", reportId)
+    .maybeSingle<{ content: string; score: number | null; reader_id: string | null; enregistre_le: string }>();
+
   // Passé par le filtre avant d'entrer dans l'éditeur : c'est là que
   // l'ancienne mise en forme est traduite, sans quoi l'éditeur la
   // supprimerait en silence.
-  const content = sanitizeFiche(publication?.content ?? report.content ?? "");
+  const content = sanitizeFiche(brouillon?.content ?? publication?.content ?? report.content ?? "");
 
   // Le lecteur peut être changé au moment de la validation (27/09) : fiche
   // refaite par un autre, lecteur malade… C'est lui qui sera payé.
@@ -68,7 +79,7 @@ export default async function FicheAdminPage({
   const lecteurs = (roles ?? [])
     .map((r) => ({ id: r.profile_id, nom: r.profile?.full_name ?? r.profile_id.slice(0, 8) }))
     .sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
-  const score = publication?.score ?? report.score ?? 0;
+  const score = brouillon?.score ?? publication?.score ?? report.score ?? 0;
 
   return (
     <PageShell nav="admin"
@@ -83,6 +94,8 @@ export default async function FicheAdminPage({
         lecteur {report.score ?? "—"} / 200
         {publication &&
           ` · publiée le ${new Date(publication.published_at).toLocaleDateString("fr-FR")}`}
+        {brouillon &&
+          ` · enregistrée le ${new Date(brouillon.enregistre_le).toLocaleString("fr-FR", { timeZone: "Europe/Paris", dateStyle: "short", timeStyle: "short" })}`}
       </p>
 
       {report.label_motivation && (
@@ -106,7 +119,7 @@ export default async function FicheAdminPage({
 
         <label className={formStyles.field}>
           <span>Lecteur (celui qui sera payé pour cette fiche)</span>
-          <select name="reader_id" defaultValue={report.reader_id}>
+          <select name="reader_id" defaultValue={brouillon?.reader_id ?? report.reader_id}>
             {lecteurs.map((l) => (
               <option key={l.id} value={l.id}>
                 {l.nom}
@@ -132,9 +145,15 @@ export default async function FicheAdminPage({
           />
         </label>
 
-        <button type="submit" className={formStyles.submit}>
-          {publication ? "Republier" : "Valider et publier"}
-        </button>
+        {enregistre && <p className={formStyles.hint}>Enregistré.</p>}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+          <button type="submit" formAction={enregistrerBrouillon} formNoValidate className={formStyles.submit}>
+            Enregistrer
+          </button>
+          <button type="submit" className={formStyles.submit}>
+            {publication ? "Republier" : "Valider et publier"}
+          </button>
+        </div>
       </form>
 
       <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
