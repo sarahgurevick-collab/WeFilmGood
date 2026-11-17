@@ -77,28 +77,6 @@ export default async function LecteurPage() {
     }),
   );
 
-  // Le téléchargement du scénario, à côté de « Rédiger la fiche » (17/11, Sarah).
-  // Seulement une fois le projet accepté, comme sur la page de la fiche.
-  const telechargements = new Map<string, string>();
-  await Promise.all(
-    (assignments ?? [])
-      .filter((a) => a.status === "en_cours")
-      .map(async (a) => {
-        const { data: fichiers } = await supabase
-          .from("project_files")
-          .select("storage_path, original_name")
-          .eq("project_id", a.project?.id ?? "")
-          .eq("kind", "scenario")
-          .limit(1);
-        const f = fichiers?.[0];
-        if (!f) return;
-        const { data } = await supabase.storage
-          .from("scenarios")
-          .createSignedUrl(f.storage_path, 60 * 60, { download: f.original_name ?? "scenario.pdf" });
-        if (data?.signedUrl) telechargements.set(a.id, data.signedUrl);
-      }),
-  );
-
   const prenoms = await prenomsDesAuteurs(
     (assignments ?? []).flatMap((a) => (a.project ? [a.project.id] : [])),
   );
@@ -198,22 +176,8 @@ export default async function LecteurPage() {
               ) : (
                 <div className={styles.actions}>
                   <Link href={`/lecteur/${a.id}`} className={formStyles.submit}>
-                    Rédiger la fiche
+                    Accéder au projet et rédiger la fiche
                   </Link>
-                  {telechargements.get(a.id) && (
-                    <a
-                      href={telechargements.get(a.id)}
-                      className={styles.telecharger}
-                      title="Télécharger le scénario"
-                      aria-label="Télécharger le scénario"
-                    >
-                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M12 3v12" />
-                        <path d="m7 11 5 5 5-5" />
-                        <path d="M5 21h14" />
-                      </svg>
-                    </a>
-                  )}
                   {/* Refuser un projet déjà accepté : une confirmation d'abord,
                       pour qu'un clic de trop ne le fasse pas perdre. */}
                   <details>
