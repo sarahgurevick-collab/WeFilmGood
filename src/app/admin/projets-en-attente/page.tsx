@@ -5,7 +5,7 @@ import formStyles from "@/components/form.module.css";
 import adminStyles from "../admin.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { reassignReader } from "./actions";
+import FormulaireAttribuer from "./FormulaireAttribuer";
 import LienScenario from "../LienScenario";
 
 type PendingProject = {
@@ -280,9 +280,7 @@ export default async function ProjetsEnAttentePage() {
                   </td>
                   <td>{p.reader_refusal_count ?? 0}</td>
                   <td>
-                    <form action={reassignReader} className={adminStyles.attribuer}>
-                      <input type="hidden" name="project_id" value={p.project_id} />
-                      <select name="reader_id" defaultValue="" required>
+                    <FormulaireAttribuer projectId={p.project_id}>
                         <option value="" disabled>
                           Email du lecteur
                         </option>
@@ -310,11 +308,7 @@ export default async function ProjetsEnAttentePage() {
                             ))}
                           </optgroup>
                         )}
-                      </select>
-                      <button type="submit" className={adminStyles.boutonAssigner}>
-                        Assigner
-                      </button>
-                    </form>
+                    </FormulaireAttribuer>
                   </td>
                 </tr>
               );
