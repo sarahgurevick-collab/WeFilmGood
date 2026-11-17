@@ -6,6 +6,7 @@ import styles from "./lecteur.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { respondToAssignment, updateAvailability } from "./actions";
 import { nomDeLangue } from "@/lib/langues";
+import { prenomsDesAuteurs } from "@/lib/prenom-auteur";
 import FichesDuLecteur from "./FichesDuLecteur";
 
 type Assignment = {
@@ -76,6 +77,10 @@ export default async function LecteurPage() {
     }),
   );
 
+  const prenoms = await prenomsDesAuteurs(
+    (assignments ?? []).flatMap((a) => (a.project ? [a.project.id] : [])),
+  );
+
   const accepte = (readerProfile?.availability_status ?? "vert") === "vert";
   const enLecture = (assignments ?? []).some((a) => a.status === "en_cours");
 
@@ -139,7 +144,13 @@ export default async function LecteurPage() {
               <div className={styles.texte}>
                 <strong>{a.project?.title ?? "Projet supprimé"}</strong>
                 <p className={formStyles.hint}>
-                  {[a.project?.format, nomDeLangue(a.project?.language)].filter(Boolean).join(" · ")}
+                  {[
+                    a.project?.format,
+                    nomDeLangue(a.project?.language),
+                    a.project && prenoms.get(a.project.id) ? `de ${prenoms.get(a.project.id)}` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
                   {" — attribué le "}
                   {new Date(a.assigned_at).toLocaleDateString("fr-FR")}
                 </p>

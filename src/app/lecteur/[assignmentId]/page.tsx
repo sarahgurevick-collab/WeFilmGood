@@ -7,6 +7,7 @@ import EditeurFiche from "./EditeurFiche";
 import { sanitizeFiche } from "@/lib/sanitize";
 import { submitReadingReport } from "./actions";
 import ScoreSlider from "./ScoreSlider";
+import { prenomsDesAuteurs } from "@/lib/prenom-auteur";
 import { nomDeLangue } from "@/lib/langues";
 
 type Assignment = {
@@ -68,6 +69,7 @@ export default async function RedactionFichePage({
   const { data: imageSignee } = cheminImage
     ? await supabase.storage.from("project-media").createSignedUrl(cheminImage, 60 * 60)
     : { data: null };
+  const prenomAuteur = (await prenomsDesAuteurs([assignment.project.id])).get(assignment.project.id);
   let lireUrl: string | null = null;
   let telechargerUrl: string | null = null;
 
@@ -91,7 +93,9 @@ export default async function RedactionFichePage({
         <img src={imageSignee.signedUrl} alt="" className={styles.image} style={{ marginBottom: 12 }} />
       )}
       <p className={formStyles.hint}>
-        {[assignment.project.format, nomDeLangue(assignment.project.language)].filter(Boolean).join(" · ")}
+        {[assignment.project.format, nomDeLangue(assignment.project.language), prenomAuteur ? `de ${prenomAuteur}` : null]
+          .filter(Boolean)
+          .join(" · ")}
       </p>
 
       {lireUrl ? (
