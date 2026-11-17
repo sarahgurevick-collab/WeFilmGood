@@ -145,7 +145,10 @@ type Envoi = { profileId: string; email: string; prenom: string | null };
 
 /** Un appel à Brevo pour plusieurs destinataires, chacun avec son email. */
 async function envoyerLot(m: Mailing, envois: Envoi[]): Promise<string | null> {
-  const expediteur = process.env.BREVO_SENDER_EMAIL;
+  // Les mailings partent du sous-domaine news.wefilmgood.com, à part des mails
+  // du site (liens de connexion…) : un mailing signalé comme indésirable
+  // n'abîme pas leur réputation.
+  const expediteur = process.env.BREVO_MAILING_SENDER_EMAIL || process.env.BREVO_SENDER_EMAIL;
   if (!process.env.BREVO_API_KEY || !expediteur) return "Brevo n'est pas configuré.";
   try {
     const r = await fetch(`${BREVO}/smtp/email`, {
