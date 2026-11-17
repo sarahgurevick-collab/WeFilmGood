@@ -176,7 +176,7 @@ export default async function LecteurPage() {
               ) : (
                 <div className={styles.actions}>
                   <Link href={`/lecteur/${a.id}`} className={formStyles.submit}>
-                    Accéder au projet et rédiger la fiche
+                    J&apos;accède au projet et je rédige la fiche
                   </Link>
                   {/* Refuser un projet déjà accepté : une confirmation d'abord,
                       pour qu'un clic de trop ne le fasse pas perdre. */}
