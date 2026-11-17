@@ -6,7 +6,7 @@ import adminStyles from "../admin.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { reassignReader } from "./actions";
-import ScenarioLink from "./ScenarioLink";
+import LienScenario from "../LienScenario";
 
 type PendingProject = {
   project_id: string;
@@ -147,6 +147,34 @@ export default async function ProjetsEnAttentePage() {
       missionDe.set(m.project_id, { status: m.status, recu: m.responded_at ?? m.assigned_at ?? m.created_at });
   }
   const service = createAdminClient();
+
+  // Les liens signés (1 h) vers les scénarios, demandés en une seule fois.
+  // Un lien demandé ligne par ligne (17/11) : avec une centaine de projets,
+  // une partie des demandes échouait et le carré vert manquait au hasard.
+  const lienScenario = new Map<string, string>();
+  if (projects.length) {
+    const { data: fichiers } = await (service ?? supabase)
+      .from("project_files")
+      .select("project_id, storage_path, uploaded_at")
+      .in("project_id", projects.map((p) => p.project_id))
+      .eq("kind", "scenario")
+      .order("uploaded_at", { ascending: false })
+      .returns<{ project_id: string; storage_path: string }[]>();
+    const cheminDe = new Map<string, string>();
+    for (const f of fichiers ?? []) {
+      if (!cheminDe.has(f.project_id)) cheminDe.set(f.project_id, f.storage_path);
+    }
+    const chemins = [...cheminDe.values()];
+    const { data: signes } = chemins.length
+      ? await (service ?? supabase).storage.from("scenarios").createSignedUrls(chemins, 60 * 60)
+      : { data: [] };
+    const urlDe = new Map((signes ?? []).map((u) => [u.path, u.signedUrl]));
+    for (const [projet, chemin] of cheminDe) {
+      const url = urlDe.get(chemin);
+      if (url) lienScenario.set(projet, url);
+    }
+  }
+
   const emailDe = new Map<string, string>();
   if (service) {
     await Promise.all(
@@ -224,7 +252,9 @@ export default async function ProjetsEnAttentePage() {
                   </td>
                   <td>{p.title}</td>
                   <td>
-                    <ScenarioLink projectId={p.project_id} />
+                    {lienScenario.has(p.project_id) && (
+                      <LienScenario href={lienScenario.get(p.project_id)!} />
+                    )}
                   </td>
                   <td>{formatCourt(p.format, p.language)}</td>
                   <td
