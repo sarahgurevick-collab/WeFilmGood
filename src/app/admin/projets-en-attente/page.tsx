@@ -6,6 +6,7 @@ import adminStyles from "../admin.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import FormulaireAttribuer from "./FormulaireAttribuer";
+import MemoProjet from "./MemoProjet";
 import LienScenario from "../LienScenario";
 
 type PendingProject = {
@@ -103,6 +104,13 @@ export default async function ProjetsEnAttentePage() {
   const projects = ((pendingRows ?? []) as PendingProject[])
     .filter((p) => idsNouveaux.has(p.project_id))
     .sort((a, b) => new Date(b.submitted_at).getTime() - new Date(a.submitted_at).getTime());
+
+  // Les mémos de l'administration, une ligne par projet (17/11).
+  const { data: memosRows } = await supabase
+    .from("projet_memos_admin")
+    .select("project_id, memo")
+    .returns<{ project_id: string; memo: string }[]>();
+  const memoDe = new Map((memosRows ?? []).map((m) => [m.project_id, m.memo]));
 
   const { data: readers } = await supabase
     .from("profile_roles")
@@ -260,7 +268,10 @@ export default async function ProjetsEnAttentePage() {
                     <br />
                     <em className={formStyles.hint}>{p.author_email}</em>
                   </td>
-                  <td>{p.title}</td>
+                  <td>
+                    {p.title}
+                    <MemoProjet projectId={p.project_id} memo={memoDe.get(p.project_id) ?? null} />
+                  </td>
                   <td>
                     {lienScenario.has(p.project_id) && (
                       <LienScenario href={lienScenario.get(p.project_id)!} />

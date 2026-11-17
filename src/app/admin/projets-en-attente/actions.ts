@@ -69,3 +69,24 @@ export async function markReportPaid(formData: FormData) {
   revalidatePath("/admin/projets-en-attente");
   revalidatePath("/admin/fiches-a-valider");
 }
+
+/**
+ * Le mémo de l'administration sur un projet (17/11) : un texte libre, vide =
+ * effacé. Visible de l'administration seulement.
+ */
+export async function enregistrerMemo(_etat: EtatAttribution, formData: FormData): Promise<EtatAttribution> {
+  const supabase = await requireAdmin();
+  const projectId = formData.get("project_id") as string;
+  const memo = ((formData.get("memo") as string) ?? "").trim().slice(0, 1000);
+  if (!projectId) return { message: "Projet introuvable.", erreur: true };
+
+  const { error } = memo
+    ? await supabase
+        .from("projet_memos_admin")
+        .upsert({ project_id: projectId, memo, updated_at: new Date().toISOString() })
+    : await supabase.from("projet_memos_admin").delete().eq("project_id", projectId);
+  if (error) return { message: "Le mémo n'a pas été enregistré. Réessayez.", erreur: true };
+
+  revalidatePath("/admin/projets-en-attente");
+  return { message: memo ? "Mémo enregistré." : "Mémo effacé." };
+}
