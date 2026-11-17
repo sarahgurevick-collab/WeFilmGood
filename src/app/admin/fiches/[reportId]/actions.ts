@@ -14,6 +14,14 @@ async function requireAdmin() {
   return supabase;
 }
 
+
+/** Le mot pour le label : facultatif, modifiable, rédigé après la fiche. */
+async function poserMotivation(supabase: Awaited<ReturnType<typeof requireAdmin>>, reportId: string, formData: FormData) {
+  if (!formData.has("label_motivation")) return;
+  const motivation = ((formData.get("label_motivation") as string) ?? "").trim() || null;
+  await supabase.from("reading_reports").update({ label_motivation: motivation }).eq("id", reportId);
+}
+
 export async function publishReport(formData: FormData) {
   const supabase = await requireAdmin();
 
@@ -55,6 +63,8 @@ export async function publishReport(formData: FormData) {
     updated_at: new Date().toISOString(),
   });
 
+  await poserMotivation(supabase, reportId, formData);
+
   // Publiée : le brouillon n'a plus lieu d'être.
   await supabase.from("fiches_brouillons_admin").delete().eq("reading_report_id", reportId);
 
@@ -75,6 +85,8 @@ export async function enregistrerBrouillon(formData: FormData) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  await poserMotivation(supabase, reportId, formData);
 
   await supabase.from("fiches_brouillons_admin").upsert({
     reading_report_id: reportId,

@@ -70,12 +70,11 @@ export default function ScoreSlider({
 
       {labellise && (
         <div className={formStyles.field}>
-          <span>Pourquoi ce projet mérite le label</span>
+          <span>Pourquoi ce projet mérite le label (facultatif)</span>
           <textarea
             id="label_motivation"
             name="label_motivation"
             rows={3}
-            required
             placeholder="Trois lignes suffisent : ce qui vous a plu, ce qui distingue ce texte."
           />
         </div>

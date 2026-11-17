@@ -54,9 +54,6 @@ export async function submitReadingReport(formData: FormData) {
   if (!Number.isInteger(score) || score < 0 || score > 200) {
     fail("La note doit être comprise entre 0 et 200.");
   }
-  if (score > 150 && !motivation) {
-    fail("Une note au-delà de 150 labellise le projet : dites en quelques lignes pourquoi.");
-  }
 
   const { error } = await supabase.from("reading_reports").insert({
     assignment_id: assignmentId,

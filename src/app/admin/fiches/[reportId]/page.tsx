@@ -98,13 +98,6 @@ export default async function FicheAdminPage({
           ` · enregistrée le ${new Date(brouillon.enregistre_le).toLocaleString("fr-FR", { timeZone: "Europe/Paris", dateStyle: "short", timeStyle: "short" })}`}
       </p>
 
-      {report.label_motivation && (
-        <div className={adminStyles.motivation}>
-          <strong>Pourquoi le lecteur labellise ce projet</strong>
-          <p>{report.label_motivation}</p>
-        </div>
-      )}
-
       <p className={formStyles.hint} style={{ marginTop: 16 }}>
         Vos corrections ne sont pas visibles par le lecteur : il voit sa version
         et le fait que le projet a été validé, rien d&apos;autre.
@@ -132,6 +125,16 @@ export default async function FicheAdminPage({
           <span>Texte publié à l&apos;auteur</span>
           <RichTextEditor fiche name="content" defaultValue={content} />
         </div>
+
+        <label className={formStyles.field}>
+          <span>Pourquoi le lecteur labellise ce projet (facultatif)</span>
+          <textarea
+            name="label_motivation"
+            rows={4}
+            defaultValue={report.label_motivation ?? ""}
+            placeholder="À rédiger à la fin, une fois la fiche terminée."
+          />
+        </label>
 
         <label className={formStyles.field}>
           <span>Note publiée (au-delà de 150, le projet est labellisé)</span>
