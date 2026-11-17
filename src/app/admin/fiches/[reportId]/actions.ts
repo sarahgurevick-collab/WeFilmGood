@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { prevenirAuteurFichePrete } from "@/lib/email-fiche-prete";
 import { ficheEstVide, sanitizeFiche } from "@/lib/sanitize";
 
 async function requireAdmin() {
@@ -52,6 +53,13 @@ export async function publishReport(formData: FormData) {
     }
   }
 
+  // Première publication seulement : une republication ne re-prévient pas l'auteur.
+  const { data: dejaPubliee } = await supabase
+    .from("reading_report_publications")
+    .select("reading_report_id")
+    .eq("reading_report_id", reportId)
+    .maybeSingle();
+
   // La publication déclenche en base la labellisation du projet selon la
   // note publiée, le passage de la fiche en « validée » et la libération
   // du lecteur.
@@ -64,6 +72,11 @@ export async function publishReport(formData: FormData) {
   });
 
   await poserMotivation(supabase, reportId, formData);
+
+  if (!dejaPubliee) {
+    const { data: fiche } = await supabase.from("reading_reports").select("project_id").eq("id", reportId).maybeSingle<{ project_id: string }>();
+    if (fiche) await prevenirAuteurFichePrete(fiche.project_id);
+  }
 
   // Publiée : le brouillon n'a plus lieu d'être.
   await supabase.from("fiches_brouillons_admin").delete().eq("reading_report_id", reportId);
