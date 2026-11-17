@@ -197,17 +197,8 @@ export default async function ProjetsEnAttentePage() {
   const plusActifs = (a: { profile_id: string; profile: { full_name: string | null } | null }, b: typeof a) =>
     (derniereDe.get(b.profile_id) ?? "").localeCompare(derniereDe.get(a.profile_id) ?? "") ||
     (a.profile?.full_name ?? "").localeCompare(b.profile?.full_name ?? "");
-  // Un lecteur qui a déjà un projet proposé ou en cours n'est plus dans le
-  // menu (17/11, Sarah) : un projet à la fois.
-  const { data: occupes } = await supabase
-    .from("reading_assignments")
-    .select("reader_id")
-    .in("status", ["proposee", "en_cours"])
-    .returns<{ reader_id: string }[]>();
-  const aDejaUnProjet = new Set((occupes ?? []).map((o) => o.reader_id));
   const parVoyant = (couleur: string) =>
     (readers ?? [])
-      .filter((r) => !aDejaUnProjet.has(r.profile_id))
       .filter((r) => (voyantDe.get(r.profile_id) ?? "vert") === couleur)
       .sort(plusActifs);
 
@@ -215,7 +206,6 @@ export default async function ProjetsEnAttentePage() {
   // qu'en dernier recours ») : jamais proposés d'office, mais toujours
   // attribuables à la main, tout en bas du menu.
   const dernierRecours = (readers ?? [])
-    .filter((r) => !aDejaUnProjet.has(r.profile_id))
     .filter((r) => formatsDe.get(r.profile_id)?.length === 0)
     .sort((a, b) => (a.profile?.full_name ?? "").localeCompare(b.profile?.full_name ?? ""));
 
