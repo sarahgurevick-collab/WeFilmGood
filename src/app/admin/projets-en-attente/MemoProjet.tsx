@@ -24,6 +24,7 @@ export default function MemoProjet({ projectId, memo }: { projectId: string; mem
             margin: "0 0 4px",
             padding: "4px 8px",
             background: "#fff4c2",
+            color: "#000",
             borderLeft: "3px solid #e0a800",
             fontSize: 12,
             whiteSpace: "pre-wrap",
@@ -41,7 +42,7 @@ export default function MemoProjet({ projectId, memo }: { projectId: string; mem
             rows={3}
             maxLength={1000}
             autoFocus
-            style={{ width: "100%", fontSize: 12 }}
+            style={{ width: "100%", fontSize: 12, color: "#000", background: "#fff" }}
           />
           <button type="submit" disabled={enCours} style={{ fontSize: 12 }}>
             {enCours ? "…" : "Enregistrer"}
