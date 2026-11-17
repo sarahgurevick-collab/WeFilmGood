@@ -684,6 +684,13 @@ export default async function MembresPage({
                       Prendre sa place
                     </button>
                   </form>
+                  <Link
+                    href={`/admin/membres/ecrire/${m.profile_id}`}
+                    className={adminStyles.linkButton}
+                    style={{ display: "block", marginTop: 6 }}
+                  >
+                    Écrire
+                  </Link>
                   <DeverrouillerCineMatch profileId={m.profile_id} />
                   <SupprimerMembre profileId={m.profile_id} />
                 </td>
