@@ -197,6 +197,16 @@ export default async function ProjetsEnAttentePage() {
   const plusActifs = (a: { profile_id: string; profile: { full_name: string | null } | null }, b: typeof a) =>
     (derniereDe.get(b.profile_id) ?? "").localeCompare(derniereDe.get(a.profile_id) ?? "") ||
     (a.profile?.full_name ?? "").localeCompare(b.profile?.full_name ?? "");
+  // Le nombre de projets déjà proposés ou en cours chez chaque lecteur (17/11,
+  // Sarah) : affiché à côté de son nom dans le menu.
+  const { data: occupes } = await supabase
+    .from("reading_assignments")
+    .select("reader_id")
+    .in("status", ["proposee", "en_cours"])
+    .returns<{ reader_id: string }[]>();
+  const projetsDe = new Map<string, number>();
+  for (const o of occupes ?? []) projetsDe.set(o.reader_id, (projetsDe.get(o.reader_id) ?? 0) + 1);
+  const pastille = (id: string) => (projetsDe.get(id) ? ` 🔴 ${projetsDe.get(id)}` : "");
   const parVoyant = (couleur: string) =>
     (readers ?? [])
       .filter((r) => (voyantDe.get(r.profile_id) ?? "vert") === couleur)
@@ -293,6 +303,7 @@ export default async function ProjetsEnAttentePage() {
                                 <option key={r.profile_id} value={r.profile_id}>
                                   {r.profile?.full_name ?? r.profile_id.slice(0, 8)}
                                   {emailDe.get(r.profile_id) ? ` - ${emailDe.get(r.profile_id)}` : ""}
+                                  {pastille(r.profile_id)}
                                 </option>
                               ))}
                             </optgroup>
@@ -304,6 +315,7 @@ export default async function ProjetsEnAttentePage() {
                               <option key={r.profile_id} value={r.profile_id}>
                                 {r.profile?.full_name ?? r.profile_id.slice(0, 8)}
                                 {emailDe.get(r.profile_id) ? ` - ${emailDe.get(r.profile_id)}` : ""}
+                                  {pastille(r.profile_id)}
                               </option>
                             ))}
                           </optgroup>
