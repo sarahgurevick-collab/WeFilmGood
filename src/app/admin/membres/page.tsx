@@ -447,7 +447,7 @@ export default async function MembresPage({
         <select name="pays" defaultValue={pays} className={styles.menu}>
           <option value="">Tous les pays</option>
           {[...paysPresents.entries()]
-            .sort((a, b) => b[1] - a[1])
+            .sort((a, b) => (nomDuPays(a[0]) ?? a[0]).localeCompare(nomDuPays(b[0]) ?? b[0], "fr"))
             .map(([code, n]) => (
               <option key={code} value={code}>
                 {nomDuPays(code)} ({n})
