@@ -93,13 +93,9 @@ export async function respondToAssignment(formData: FormData) {
     .eq("id", assignmentId)
     .eq("reader_id", user.id);
 
-  // Accepter un projet met le voyant en « travail » ; le refuser ne change
-  // rien, le lecteur reste disponible pour un autre texte.
-  if (accepte) {
-    await supabase
-      .from("reader_profiles")
-      .upsert({ profile_id: user.id, availability_status: "orange", updated_at: new Date().toISOString() });
-  } else if (avant?.status === "en_cours") {
+  // Accepter un projet ne change plus le voyant (18/11, Sarah) : un lecteur
+  // peut avoir plusieurs projets d'avance, le nombre dans le menu suffit.
+  if (!accepte && avant?.status === "en_cours") {
     await supabase
       .from("reader_profiles")
       .upsert({ profile_id: user.id, availability_status: "vert", updated_at: new Date().toISOString() });
