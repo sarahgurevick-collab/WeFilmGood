@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import Bandeau from "@/components/Bandeau";
 import LogoComplet from "@/components/LogoComplet";
-import VignetteEau from "@/components/VignetteEau";
 import ContactEnveloppe from "@/app/projet/[id]/ContactEnveloppe";
 import projetsStyles from "@/app/galaxies/projets.module.css";
 import EquipeCarte from "@/components/EquipeCarte";
@@ -353,7 +352,10 @@ export default async function ProfilMembrePage({
                   <Link href={`/projet/${p.id}`} className={`${projetsStyles.carte} ${projetsStyles.eau}`}>
                     <div className={projetsStyles.vignette}>
                       <Bandeau valeur={p.bandeau} />
-                      {vignette && <VignetteEau src={vignette} />}
+                      {vignette && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={vignette} alt="" loading="lazy" />
+                      )}
                     </div>
                     <div className={projetsStyles.legende}>
                       <strong>
