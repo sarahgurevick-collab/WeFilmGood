@@ -104,7 +104,7 @@ export default async function ProfilMembrePage({
   // membre, à corriger ici sans se mettre à sa place. Le téléphone est
   // celui du formulaire « Qui êtes-vous ? », sinon celui des coordonnées
   // de dépôt, comme dans l'écran des membres.
-  let coordonnees: { email: string | null; telephone: string | null } | null = null;
+  let coordonnees: { email: string | null; telephone: string | null; telephone2: string | null } | null = null;
   // Le SIREN de sa société, repris de WFG 1 et contrôlé dans l'annuaire des
   // entreprises (14/11, Sarah) : pour l'administration seulement.
   let siren: { siren: string; etat: string | null; denomination: string | null; fermee_le: string | null } | null = null;
@@ -113,7 +113,7 @@ export default async function ProfilMembrePage({
     if (service) {
       const [{ data: compte }, { data: prive }, { data: contact }, { data: societe }] = await Promise.all([
         service.auth.admin.getUserById(membre.id),
-        service.from("profile_private_details").select("phone").eq("profile_id", membre.id).maybeSingle(),
+        service.from("profile_private_details").select("phone, phone_2").eq("profile_id", membre.id).maybeSingle(),
         service.from("profile_contact_info").select("phone").eq("profile_id", membre.id).maybeSingle(),
         service.from("societes_siren").select("siren, etat, denomination, fermee_le").eq("profile_id", membre.id).maybeSingle(),
       ]);
@@ -122,6 +122,7 @@ export default async function ProfilMembrePage({
       coordonnees = {
         email: email && email.endsWith("@sans-adresse.invalid") ? null : email,
         telephone: prive?.phone?.trim() || contact?.phone?.trim() || null,
+        telephone2: prive?.phone_2?.trim() || null,
       };
     }
   }
@@ -275,6 +276,7 @@ export default async function ProfilMembrePage({
             <>
               <ChangerAdresseMembre profileId={membre.id} email={coordonnees.email} />
               <ChangerTelephoneMembre profileId={membre.id} telephone={coordonnees.telephone} />
+              <ChangerTelephoneMembre profileId={membre.id} telephone={coordonnees.telephone2} second />
             </>
           )}
           {siren && (

@@ -225,7 +225,7 @@ export async function deverrouillerCineMatch(profileId: string): Promise<string 
  * Même endroit que le formulaire « Qui êtes-vous ? » : réservé à l'équipe.
  * Vide = retiré. Renvoie un message d'erreur, ou rien.
  */
-export async function changerTelephoneMembre(profileId: string, brut: string): Promise<string | null> {
+export async function changerTelephoneMembre(profileId: string, brut: string, second = false): Promise<string | null> {
   const supabase = await createClient();
   const { data: isAdmin } = await supabase.rpc("is_admin");
   if (!isAdmin) return "Réservé à l'administration.";
@@ -234,7 +234,7 @@ export async function changerTelephoneMembre(profileId: string, brut: string): P
   const phone = brut.trim() || null;
   const { error } = await admin
     .from("profile_private_details")
-    .upsert({ profile_id: profileId, phone, updated_at: new Date().toISOString() }, { onConflict: "profile_id" });
+    .upsert({ profile_id: profileId, [second ? "phone_2" : "phone"]: phone, updated_at: new Date().toISOString() }, { onConflict: "profile_id" });
   if (error) return "Le téléphone n'a pas pu être enregistré. Réessayez dans un instant.";
   revalidatePath(`/membres/${profileId}`);
   revalidatePath("/admin/membres");

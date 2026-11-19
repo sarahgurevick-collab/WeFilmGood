@@ -9,7 +9,7 @@ import { changerTelephoneMembre } from "./actions";
  * profil (06/11, Sarah) : « Modifier » ouvre un champ, « Enregistrer »
  * l'écrit sur-le-champ, comme l'adresse email dans l'écran des membres.
  */
-export default function ChangerTelephoneMembre({ profileId, telephone }: { profileId: string; telephone: string | null }) {
+export default function ChangerTelephoneMembre({ profileId, telephone, second = false }: { profileId: string; telephone: string | null; second?: boolean }) {
   const [ouvert, setOuvert] = useState(false);
   const [actuel, setActuel] = useState(telephone ?? "");
   const [valeur, setValeur] = useState(telephone ?? "");
@@ -21,7 +21,7 @@ export default function ChangerTelephoneMembre({ profileId, telephone }: { profi
   if (!ouvert) {
     return (
       <span>
-        <span className={formStyles.hint}>{actuel ? `Tél. ${actuel}` : "Pas de téléphone"}</span>{" "}
+        <span className={formStyles.hint}>{actuel ? `Tél. ${second ? "2 " : ""}${actuel}` : second ? "Pas de second téléphone" : "Pas de téléphone"}</span>{" "}
         <button type="button" onClick={() => setOuvert(true)} className={formStyles.hint} style={lien}>
           Modifier
         </button>
@@ -31,7 +31,7 @@ export default function ChangerTelephoneMembre({ profileId, telephone }: { profi
 
   const enregistrer = () =>
     demarrer(async () => {
-      const echec = await changerTelephoneMembre(profileId, valeur);
+      const echec = await changerTelephoneMembre(profileId, valeur, second);
       setErreur(echec);
       if (!echec) {
         setActuel(valeur.trim());
