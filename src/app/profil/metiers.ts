@@ -22,6 +22,7 @@ export const METIERS_AUTRES = [
   "chef_decorateur",
   "sfx_digitaux",
   "animateur_2d_3d",
+  "distributeur",
 ];
 
 export function metiersPourCategorie(category: string | null | undefined): string[] {

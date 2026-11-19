@@ -82,6 +82,7 @@ const METIERS: Record<string, string> = {
   chef_decorateur: "Chef décorateur",
   sfxcreator: "Créateur SFX/IA",
   sfx_digitaux: "Créateur SFX/IA",
+  distributeur: "Distributeur",
   institutional: "Institutionnel",
   cinefan: "Cinéphile",
   cinephile: "StoryLighter",
