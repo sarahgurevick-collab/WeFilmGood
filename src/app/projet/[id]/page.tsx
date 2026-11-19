@@ -221,10 +221,10 @@ export default async function ProjetPage({
 
   const { data: fichiers } = await supabase
     .from("project_files")
-    .select("id, kind, storage_path")
+    .select("id, kind, storage_path, original_name")
     .eq("project_id", id)
     .order("uploaded_at", { ascending: true })
-    .returns<{ id: string; kind: string; storage_path: string }[]>();
+    .returns<{ id: string; kind: string; storage_path: string; original_name: string | null }[]>();
 
   // L'image de présentation (la dernière déposée), le mood board et les
   // portraits : le stockage est privé, on signe les adresses pour une heure.
@@ -260,6 +260,22 @@ export default async function ProjetPage({
     estAdmin === true && scenario
       ? (await supabase.storage.from("scenarios").createSignedUrl(scenario.storage_path, 60 * 60)).data?.signedUrl ?? null
       : null;
+  // Les autres documents joints au projet (synopsis, dossiers, annexes) : des
+  // liens signés pour l'administration, nommés d'après le fichier (19/11).
+  const documentsJoints =
+    estAdmin === true
+      ? (
+          await Promise.all(
+            (fichiers ?? [])
+              .filter((f) => f.kind === "document")
+              .map(async (f) => ({
+                id: f.id,
+                nom: f.original_name ?? "Document",
+                url: (await supabase.storage.from("scenarios").createSignedUrl(f.storage_path, 60 * 60)).data?.signedUrl ?? null,
+              })),
+          )
+        ).filter((d) => d.url)
+      : [];
   // Les fiches de lecture (héritées et publiées) : la base ne les rend
   // qu'à l'auteur et à l'administration. Un bouton y mène s'il y en a.
   const fiches = isOwner || estAdmin ? await chargerFiches(supabase, id) : [];
@@ -653,6 +669,17 @@ export default async function ProjetPage({
               Ouvrir le scénario
             </a>
           )}
+          {documentsJoints.map((d) => (
+            <a key={d.id} href={d.url ?? "#"} target="_blank" rel="noopener noreferrer" className={presentation.telechargerScenario}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
+                <path d="M14 2v6h6" />
+                <path d="M12 18v-6" />
+                <path d="m9 15 3 3 3-3" />
+              </svg>
+              {d.nom}
+            </a>
+          ))}
         </div>
       )}
 

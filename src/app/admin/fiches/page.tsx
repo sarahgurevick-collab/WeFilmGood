@@ -292,7 +292,8 @@ export default async function TableauFichesPage({
   const anneesDe = new Map<string, Map<number, number>>();
   let archivesTrouvees: { id: string; titre: string; auteurs: string | null; appel: string | null; project_id: string | null }[] = [];
   if (q.length >= 2) {
-    const motif = `%${q.replace(/[%_,()]/g, " ")}%`;
+    // Une virgule ou une parenthèse du titre devient un joker : « Lupin, gentleman » trouve « Lupin gentleman » comme « Lupin, gentleman » (19/11).
+    const motif = `%${q.replace(/[%_,()]+/g, "%")}%`;
     const COL = "id, title, created_at, owner:profiles!projects_owner_id_fkey(full_name)";
     const { data: auteurs } = await admin.from("profiles").select("id").ilike("full_name", motif).limit(200);
     const idsAuteurs = (auteurs ?? []).map((a) => a.id);
