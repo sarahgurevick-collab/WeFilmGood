@@ -10,11 +10,15 @@ import CaseAutre from "./CaseAutre";
 import OuiNon from "./OuiNon";
 import ReseauxSociaux from "./ReseauxSociaux";
 
+// Des liens professionnels seulement (20/11, Sarah) : Vimeo, Viadeo et
+// Instagram ne sont plus proposés. « Site internet » est le champ libre ;
+// l'auteur ne l'a pas ici, il a sa propre question juste au-dessus.
 const RESEAUX = [
-  { slug: "vimeo", label: "Vimeo" },
+  { slug: "imdb", label: "IMDb" },
+  { slug: "unifrance", label: "Unifrance" },
+  { slug: "wikipedia", label: "Wikipédia" },
   { slug: "linkedin", label: "LinkedIn" },
-  { slug: "viadeo", label: "Viadeo" },
-  { slug: "instagram", label: "Instagram" },
+  { slug: "site", label: "Site internet" },
 ];
 
 export default async function ParcoursPage({
@@ -175,7 +179,10 @@ export default async function ParcoursPage({
           nom="reseaux_reponse"
           initial={profil?.reseaux_reponse ?? Object.keys(valeursReseaux).length > 0}
         >
-          <ReseauxSociaux reseaux={RESEAUX} valeurs={valeursReseaux} />
+          <ReseauxSociaux
+            reseaux={RESEAUX.filter((r) => r.slug !== "site" || profil?.category !== "auteur")}
+            valeurs={valeursReseaux}
+          />
         </OuiNon>
 
         <div className={styles.pied}>

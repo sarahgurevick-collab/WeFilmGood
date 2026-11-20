@@ -9,7 +9,9 @@ import sharp from "sharp";
 import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import { metiersPourCategorie } from "./metiers";
 
-const RESEAUX = ["vimeo", "linkedin", "viadeo", "instagram"];
+// Les liens proposés dans « Votre parcours ». Vimeo, Viadeo et Instagram
+// n'y sont plus (20/11) : leurs liens déjà saisis restent en base, intacts.
+const RESEAUX = ["imdb", "unifrance", "wikipedia", "linkedin", "site"];
 const CATEGORIES = ["auteur", "producteur", "talent"];
 
 async function requireUser(retour = "/profil") {
@@ -202,7 +204,9 @@ export async function saveParcours(formData: FormData) {
   }
 
   for (const reseau of RESEAUX) {
-    const url = texte(formData, `social_${reseau}`);
+    // « imdb.com/name/… » vaut « https://imdb.com/name/… » : on complète.
+    const brut = texte(formData, `social_${reseau}`);
+    const url = brut && !/^https?:\/\//i.test(brut) ? `https://${brut}` : brut;
     if (url) {
       await supabase
         .from("profile_social_links")

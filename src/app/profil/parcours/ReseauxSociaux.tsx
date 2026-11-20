@@ -46,7 +46,8 @@ export default function ReseauxSociaux({
           <div key={slug} className={styles.ligne}>
             <span className={styles.nom}>{reseau.label}</span>
             <input
-              type="url"
+              type="text"
+              inputMode="url"
               name={`social_${slug}`}
               defaultValue={valeurs[slug] ?? ""}
               placeholder="https://"
