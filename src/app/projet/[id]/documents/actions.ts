@@ -166,7 +166,7 @@ export async function envoyerALaLecture(formData: FormData) {
   if (!admin) redirect(`${page}?paiement=erreur`);
 
   // Sans scénario, rien à lire ; et une lecture déjà payée ne se paie pas deux fois.
-  const [{ count: scenarios }, { count: images }, { count: dejaPayees }, { data: profil }] = await Promise.all([
+  const [{ count: scenarios }, { count: images }, { data: enCours }, { data: etatBrut }, { data: profil }] = await Promise.all([
     supabase
       .from("project_files")
       .select("id", { count: "exact", head: true })
@@ -179,16 +179,20 @@ export async function envoyerALaLecture(formData: FormData) {
       .select("id", { count: "exact", head: true })
       .eq("project_id", id)
       .eq("kind", "vignette"),
-    admin
-      .from("lecture_demandes")
-      .select("id", { count: "exact", head: true })
-      .eq("project_id", id)
-      .eq("status", "payee"),
+    // Une lecture payée dont l'analyse n'est pas encore rendue : on ne paie
+    // pas deux fois. Une fois l'analyse rendue, la « nouvelle analyse »
+    // (version retravaillée, même fiche) peut se payer.
+    supabase.rpc("lecture_demande_en_cours", { p_project_id: id }),
+    supabase.rpc("etat_de_lecture", { p_project_id: id }),
     admin.from("profiles").select("first_name, last_name").eq("id", user.id).maybeSingle(),
   ]);
   if (!scenarios) redirect(`${page}?paiement=sans-scenario`);
   if (!images) redirect(`${page}?paiement=sans-image`);
-  if (dejaPayees) redirect(page);
+  if (enCours) redirect(page);
+  // Une lecture déjà commencée (attribuée, en relecture) ne se repaie pas ;
+  // seule une analyse disponible ouvre la nouvelle analyse.
+  const etat = ((etatBrut ?? []) as { etat: string }[])[0]?.etat;
+  if (etat && etat !== "disponible") redirect(page);
 
   // 60 €, ou 50 € si le porteur du projet est adhérent (11/11, Sarah).
   const { data: adherent } = await supabase.rpc("a_une_adhesion_active", {

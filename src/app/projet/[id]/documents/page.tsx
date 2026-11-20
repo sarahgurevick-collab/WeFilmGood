@@ -67,7 +67,7 @@ export default async function DocumentsPage({
   // paraît quand le scénario est là, tant que le projet n'a pas déjà été
   // envoyé ou lu. En mode test (compte HelloAsso de test), seule
   // l'administration le voit : personne d'autre ne paie avec une fausse carte.
-  const [{ data: statutProjet }, { data: etatBrut }, { data: demandesPayees }] = await Promise.all([
+  const [{ data: statutProjet }, { data: etatBrut }, { data: demandesPayees }, { data: enCoursLe }] = await Promise.all([
     supabase.from("projects").select("status").eq("id", id).maybeSingle<{ status: string }>(),
     supabase.rpc("etat_de_lecture", { p_project_id: id }),
     supabase
@@ -78,6 +78,8 @@ export default async function DocumentsPage({
       .order("paid_at", { ascending: false })
       .limit(1)
       .returns<{ paid_at: string | null }[]>(),
+    // La lecture payée dont l'analyse n'est pas encore rendue.
+    supabase.rpc("lecture_demande_en_cours", { p_project_id: id }),
   ]);
   // Pendant la lecture (de l'envoi, quelques minutes de vérification
   // passées, jusqu'à la publication de l'analyse), l'auteur ne peut plus
@@ -89,10 +91,14 @@ export default async function DocumentsPage({
   const test = modeHelloAsso() === "sandbox";
   const peutPayer = !test || estAdmin === true || testeurPaiement(user?.id);
   const envoyeLe = (demandesPayees ?? [])[0]?.paid_at ?? null;
-  const dejaEnvoye = (demandesPayees ?? []).length > 0;
+  // « Envoyé » = une lecture payée attend encore son analyse.
+  const dejaEnvoye = !!enCoursLe;
+  const etatLecture = ((etatBrut ?? []) as { etat: string }[])[0]?.etat ?? null;
   const dejaLu =
-    ((etatBrut ?? []) as unknown[]).length > 0 ||
-    !["brouillon", "depose"].includes(statutProjet?.status ?? "");
+    etatLecture !== null || !["brouillon", "depose"].includes(statutProjet?.status ?? "");
+  // « Nouvelle analyse » : l'analyse est rendue, l'auteur a retravaillé sa
+  // version et la renvoie sur la même fiche.
+  const nouvelleAnalyse = !dejaEnvoye && etatLecture === "disponible";
 
   // Qui peut déposer un videopitch (09/11, Sarah : « Quand on paye 50 euros,
   // on a un retour de lecture et on doit mettre un vidéo pitch associé au
@@ -186,7 +192,7 @@ export default async function DocumentsPage({
 
       {/* « Envoyer » : à part du formulaire, parce qu'il mène à la page de
           paiement et n'enregistre rien. */}
-      {peutPayer && (dejaEnvoye || !dejaLu) && (
+      {peutPayer && (dejaEnvoye || !dejaLu || nouvelleAnalyse) && (
         <div style={{ marginTop: 32 }}>
           <h2 className={styles.sousTitre}>Envoyer à la lecture</h2>
           {dejaEnvoye ? (
@@ -205,7 +211,10 @@ export default async function DocumentsPage({
           ) : (
             <>
               <p className={formStyles.hint}>
-                Lecture et analyse de votre scénario : {adherent === true ? "50 €" : "60 €"}. Le paiement passe par HelloAsso.
+                {nouvelleAnalyse
+                  ? "Nouvelle lecture et analyse de votre scénario retravaillé"
+                  : "Lecture et analyse de votre scénario"}{" "}
+                : {adherent === true ? "50 €" : "60 €"}. Le paiement passe par HelloAsso.
               </p>
               {paiement === "erreur" && (
                 <p className={formStyles.error}>
