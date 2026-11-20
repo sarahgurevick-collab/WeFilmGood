@@ -9,7 +9,7 @@ import Bandeau from "@/components/Bandeau";
  * Le côté « La fiche » du comparateur : l'image de présentation seule, sans
  * texte dessus (demande de Sarah, 24/09), et le bouton play en transparence
  * (repris de WFG 1) :
- * le videopitch prend alors la place de l'image.
+ * le StoryPitch prend alors la place de l'image.
  */
 export default function CoteFiche({
   image,
@@ -66,7 +66,7 @@ export default function CoteFiche({
             setVideo(true);
             onVideo?.();
           }}
-          aria-label="Voir le videopitch"
+          aria-label="Voir le StoryPitch"
         >
           <svg viewBox="0 0 100 100" aria-hidden="true">
             <circle cx="50" cy="50" r="48" />

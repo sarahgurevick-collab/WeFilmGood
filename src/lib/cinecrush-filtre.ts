@@ -15,7 +15,7 @@ import { MODELES_OPENROUTER } from "@/lib/assistant/modele";
  * ne doit jamais bloquer la conversation.
  */
 
-const CONSIGNE = `Tu relis un commentaire laissé par un membre de WeFilmGood, une plateforme de scénaristes et de producteurs, sous le videopitch d'un projet de film mis en avant cette semaine (le « CinéCrush »). Les commentaires sont des avis libres : enthousiastes, critiques, courts, maladroits, en français ou en anglais — tout cela est acceptable.
+const CONSIGNE = `Tu relis un commentaire laissé par un membre de WeFilmGood, une plateforme de scénaristes et de producteurs, sous le StoryPitch d'un projet de film mis en avant cette semaine (le « CinéCrush »). Les commentaires sont des avis libres : enthousiastes, critiques, courts, maladroits, en français ou en anglais — tout cela est acceptable.
 Mets de côté SEULEMENT : une insulte ou une attaque personnelle ; un propos haineux ou obscène ; une publicité ou un lien sans rapport ; un numéro de téléphone, une adresse postale ou une adresse email ; un texte sans aucun rapport avec le cinéma ou le projet.
 Réponds UNIQUEMENT par un objet JSON : {"ok": true} si le commentaire peut paraître, ou {"ok": false, "motif": "<raison en quelques mots, en français>"} sinon.`;
 

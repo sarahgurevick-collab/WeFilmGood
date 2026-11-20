@@ -83,10 +83,10 @@ export type MembreEquipe = {
 
 /**
  * Le cadre de la fiche projet (ESSAI du 24/09/2026) : un comparateur, la
- * fiche à gauche (image, bouton play du videopitch comme sur
+ * fiche à gauche (image, bouton play du StoryPitch comme sur
  * WFG 1), les personnages à droite — à défaut, les talents —, la barre au
  * milieu qu'on tire par sa poignée. Sous le cadre, l'« Avis WeFilmGood »
- * s'il y en a un (le bandeau de l'équipe a été retiré le 24/09). Remplace les onglets « Videopitch » / « L'auteur »
+ * s'il y en a un (le bandeau de l'équipe a été retiré le 24/09). Remplace les onglets « StoryPitch » / « L'auteur »
  * (OngletsCadre, gardé pour un retour en arrière).
  *
  * Le nombre de fiches de lecture n'est plus affiché sous le cadre (retiré
@@ -96,7 +96,7 @@ export type MembreEquipe = {
  * se comprenait pas), un cadre par contenu, chacun avec son titre fixe et
  * sans bouton pour passer de l'un à l'autre : le moodboard (s'il y a des
  * photos), les personnages, puis l'équipe. Dans le grand cadre, la pastille
- * FR | ENG du videopitch, visible dès l'arrivée (FR par défaut, 25/10).
+ * FR | ENG du StoryPitch, visible dès l'arrivée (FR par défaut, 25/10).
  */
 export default function CadreEquipe({
   equipe,
@@ -131,12 +131,12 @@ export default function CadreEquipe({
   image: string | null;
   /** Le bandeau posé par l'administration (Signé, Tourné…), s'il y en a un. */
   bandeau?: string | null;
-  /** Le videopitch (identifiants Vimeo), s'il y en a un. */
+  /** Le StoryPitch (identifiants Vimeo), s'il y en a un. */
   videopitch?: { fr: string | null; en: string | null; titre: string };
   /** La bande-annonce d'un film tourné (adresse du lecteur) : elle prend la
-      place du videopitch dans le cadre (29/10, Sarah). */
+      place du StoryPitch dans le cadre (29/10, Sarah). */
   bandeAnnonce?: string | null;
-  /** La langue du projet (« fr », « en »…) : choisit le videopitch gardé
+  /** La langue du projet (« fr », « en »…) : choisit le StoryPitch gardé
       en second choix à côté de la bande-annonce. */
   langueProjet?: string | null;
   /** Pour l'auteur et l'admin : la page de saisie où ramène un clic sur l'image. */
@@ -302,7 +302,7 @@ export default function CadreEquipe({
             pour un projet anglophone, sinon français). */}
         {bandeAnnonce ? (
           <div className={styles.pastilleLangue} role="group" aria-label="Vidéo">
-            {([["ba", "Bande-annonce"], ...(vpSecond ? [["vp", "Videopitch"]] : [])] as [string, string][]).map(([cle, libelle]) => (
+            {([["ba", "Bande-annonce"], ...(vpSecond ? [["vp", "StoryPitch"]] : [])] as [string, string][]).map(([cle, libelle]) => (
               <button
                 key={cle}
                 type="button"
@@ -316,11 +316,11 @@ export default function CadreEquipe({
             ))}
           </div>
         ) : (
-        /* La langue du videopitch, visible dès l'arrivée (25/10, Sarah :
+        /* La langue du StoryPitch, visible dès l'arrivée (25/10, Sarah :
             « on ne comprend pas qu'en cliquant dessus, on a la vidéo en
             français ») : FR par défaut, la langue en cours en rouge. */
         videopitch && (videopitch.fr || videopitch.en) && (
-          <div className={styles.pastilleLangue} role="group" aria-label="Langue du videopitch">
+          <div className={styles.pastilleLangue} role="group" aria-label="Langue du StoryPitch">
             {(["fr", "en"] as const)
               .filter((l) => videopitch[l])
               .map((l) => (

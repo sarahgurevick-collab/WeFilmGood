@@ -21,7 +21,7 @@ import { createClient } from "@/lib/supabase/server";
  * les fiches de WFG 1 », puis « crée toujours la fiche du projet avec son
  * titre, même sans lien Vimeo ») : chaque titre crée la fiche du projet (titre de la sélection, statut brouillon = aucune lecture
  * demandée, visible des membres), avec sa sélection (bandeau automatique)
- * et le videopitch s'il y a un lien Vimeo. Si la fiche existe déjà (co-auteur créé avant), le
+ * et le StoryPitch s'il y a un lien Vimeo. Si la fiche existe déjà (co-auteur créé avant), le
  * videopitch y est seulement ajouté s'il manque.
  */
 export type FicheAuteur = { titre: string; selections: string[]; vimeo: string; langue: "fr" | "en" };

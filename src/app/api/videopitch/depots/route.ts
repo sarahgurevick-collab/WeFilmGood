@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   if (!corps?.project_id) return Response.json({ erreur: "Projet manquant." }, { status: 400 });
 
   const acces = await peutDeposer(corps.project_id);
-  if (!acces) return Response.json({ erreur: "Vous ne pouvez pas déposer de videopitch sur ce projet." }, { status: 403 });
+  if (!acces) return Response.json({ erreur: "Vous ne pouvez pas déposer de StoryPitch sur ce projet." }, { status: 403 });
   const admin = createAdminClient();
   if (!admin) return Response.json({ erreur: "Indisponible." }, { status: 500 });
 

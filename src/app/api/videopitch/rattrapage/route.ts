@@ -1,7 +1,7 @@
 import { rattrapage } from "@/lib/videopitch";
 
 /**
- * Le rattrapage des videopitchs (crontab, toutes les 10 minutes, même
+ * Le rattrapage des StoryPitchs (crontab, toutes les 10 minutes, même
  * jeton que les autres rattrapages) : convertit ce qui attend, remet en
  * file ce qu'un redémarrage a interrompu, efface les envois abandonnés.
  */

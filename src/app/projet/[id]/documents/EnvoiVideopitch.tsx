@@ -19,7 +19,7 @@ const TAILLE_MAX = 2 * 1024 * 1024 * 1024;
 const ACCEPT = "video/*,.mp4,.mov,.m4v,.avi,.mkv,.webm,.mpg,.mpeg,.wmv,.3gp,.mts,.m2ts";
 
 /**
- * L'envoi du videopitch depuis le bloc Documents (22/10/2026). La vidéo
+ * L'envoi du StoryPitch depuis le bloc Documents (22/10/2026). La vidéo
  * part telle quelle, par morceaux de 8 Mo — une connexion qui saute
  * reprend au morceau suivant —, puis le serveur l'allège et l'équipe la
  * regarde avant de la mettre en ligne. Rien à compresser côté auteur.
@@ -122,9 +122,9 @@ export default function EnvoiVideopitch({
       case "preparation":
         return "Vidéo reçue. Nous la préparons pour la lecture en ligne : cela prend quelques minutes.";
       case "a_valider":
-        return "Votre videopitch est entre les mains de l'équipe, qui le regarde avant de le mettre en ligne.";
+        return "Votre StoryPitch est entre les mains de l'équipe, qui le regarde avant de le mettre en ligne.";
       case "refuse":
-        return `Votre videopitch n'a pas été retenu${d.motif_refus ? ` : ${d.motif_refus}` : "."} Vous pouvez en envoyer un autre.`;
+        return `Votre StoryPitch n'a pas été retenu${d.motif_refus ? ` : ${d.motif_refus}` : "."} Vous pouvez en envoyer un autre.`;
       case "echec":
         return "Nous n'avons pas réussi à lire cette vidéo. Réessayez avec un autre fichier, en MP4 de préférence.";
       default:
@@ -141,7 +141,7 @@ export default function EnvoiVideopitch({
         if (enLigne[l] && (!d || d.etat === "valide")) {
           return (
             <p key={l} className={formStyles.hint} style={{ color: "#1a1a1a" }}>
-              ✓ Votre videopitch {libelleLangue(l)} est en ligne sur votre fiche.{" "}
+              ✓ Votre StoryPitch {libelleLangue(l)} est en ligne sur votre fiche.{" "}
               <Link href={`/projet/${projectId}`}>Le voir</Link>
             </p>
           );

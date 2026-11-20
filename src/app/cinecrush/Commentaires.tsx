@@ -16,7 +16,7 @@ const quand = (iso: string) =>
   new Date(iso).toLocaleString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 
 /**
- * Les avis sous le videopitch : tout membre connecté écrit, signé de son
+ * Les avis sous le StoryPitch : tout membre connecté écrit, signé de son
  * prénom et de son nom ; l'auteur du projet répond (en rouge) ; chacun peut
  * retirer le sien. Un commentaire mis de côté par le filtre n'est visible
  * que de son auteur, en pointillé, le temps que l'administration tranche.
@@ -47,7 +47,7 @@ export default function Commentaires({
         name="contenu"
         maxLength={2000}
         required
-        placeholder={parentId ? "Votre réponse" : "Votre avis sur ce videopitch"}
+        placeholder={parentId ? "Votre réponse" : "Votre avis sur ce StoryPitch"}
         aria-label={parentId ? "Votre réponse" : "Votre avis"}
       />
       <button type="submit" className={styles.envoyer}>

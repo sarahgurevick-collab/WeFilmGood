@@ -140,7 +140,7 @@ export default async function ProjetPage({
 
   const isOwner = user?.id === project.owner_id;
 
-  // Le videopitch réservé à certains métiers (27/09) : un porteur adhérent
+  // Le StoryPitch réservé à certains métiers (27/09) : un porteur adhérent
   // peut le cacher aux autres. La fiche, elle, reste visible de tous.
   let videopitchVisible = true;
   if (project.visible_pour) {
@@ -344,7 +344,7 @@ export default async function ProjetPage({
     }
   }
 
-  // Sans adhésion (02/10, décision de Sarah) : pas de videopitch, pas de
+  // Sans adhésion (02/10, décision de Sarah) : pas de StoryPitch, pas de
   // message à l'auteur, pas de noms ni de liens vers les profils, et les
   // photos de l'équipe floutées. L'auteur, son équipe, l'administration
   // et les adhérents voient tout.
@@ -546,7 +546,7 @@ export default async function ProjetPage({
     }
   }
 
-  // Les videopitchs sont dans une table à part, sous verrou (migration
+  // Les StoryPitchs sont dans une table à part, sous verrou (migration
   // 0125) : la base ne les rend qu'à l'auteur, son équipe, l'administration
   // et les adhérents. Pour les autres, rien ne revient.
   const { data: videopitch } = await supabase
@@ -732,7 +732,7 @@ export default async function ProjetPage({
         bandeau={project.bandeau ?? null}
         avis={(avisWfg as string | null) ?? null}
         videopitch={
-          // Pendant sa semaine de CinéCrush, le videopitch s'ouvre à tous (13/11,
+          // Pendant sa semaine de CinéCrush, le StoryPitch s'ouvre à tous (13/11,
           // Sarah : le comédien doit savoir de quelle histoire il s'agit).
           (!restreint || reglesComedy.cinecrush) && videopitchVisible && (videopitch?.videopitch_fr || videopitch?.videopitch_en)
             ? { fr: videopitch.videopitch_fr, en: videopitch.videopitch_en, titre: project.title }
@@ -862,15 +862,15 @@ export default async function ProjetPage({
 
       {isOwner && (
         <>
-          {/* Qui voit le videopitch (27/09) : réservé aux porteurs adhérents ;
+          {/* Qui voit le StoryPitch (27/09) : réservé aux porteurs adhérents ;
               pour les autres, le bloc n'apparaît pas du tout. */}
           {porteurAdherent && (
             <>
               <h2 style={{ marginTop: 40, fontWeight: 600, fontSize: 15 }}>
-                Qui peut voir votre videopitch
+                Qui peut voir votre StoryPitch
               </h2>
               <p className={formStyles.hint}>
-                Par défaut, votre videopitch est visible de tous les membres. Vous pouvez le
+                Par défaut, votre StoryPitch est visible de tous les membres. Vous pouvez le
                 réserver à certains talents en décochant les autres. Votre fiche projet reste
                 visible de tous car elle contient très peu d&apos;informations.
               </p>

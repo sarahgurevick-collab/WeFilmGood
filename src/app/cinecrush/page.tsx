@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "CinéCrush — WeFilmGood" };
 
 /**
  * CinéCrush (24/10/2026, Sarah) : le coup de pouce de la semaine. En haut,
- * le projet choisi, son videopitch (visible de tous les membres, gratuit),
+ * le projet choisi, son StoryPitch (visible de tous les membres, gratuit),
  * le chrono jusqu'à dimanche minuit et les avis des membres. En dessous,
  * la frise des CinéCrush : celui de la semaine d'abord, puis les anciens,
  * de plus en plus anciens vers la droite. Les semaines programmées à
@@ -41,7 +41,7 @@ const dateCourte = (iso: string) =>
 
 /** La phrase de Sarah dans l'orbite d'adhésion (06/10), reprise telle quelle. */
 const ACCROCHE =
-  "Le chrono est lancé ! Ce videopitch mérite toute ton attention : tu as une semaine pour le découvrir. Laisse un avis en commentaires : ce sont de véritables tremplins magiques pour propulser les histoires !";
+  "Le chrono est lancé ! Ce StoryPitch mérite toute ton attention : tu as une semaine pour le découvrir. Laisse un avis en commentaires : ce sont de véritables tremplins magiques pour propulser les histoires !";
 
 export default async function CineCrushPage({
   searchParams,
@@ -112,7 +112,7 @@ export default async function CineCrushPage({
     return chemin ? (urlDe.get(chemin) ?? null) : null;
   };
 
-  // Le videopitch de la semaine : la base le rend à tout membre connecté
+  // Le StoryPitch de la semaine : la base le rend à tout membre connecté
   // (peut_voir_videopitch, migration 0204).
   const { data: videopitch } = enCours
     ? await supabase

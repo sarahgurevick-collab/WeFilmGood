@@ -10,7 +10,7 @@ const TAILLE_MAX = 2 * 1024 * 1024 * 1024;
 const ACCEPT = "video/*,.mp4,.mov,.m4v,.avi,.mkv,.webm,.mpg,.mpeg,.wmv,.3gp,.mts,.m2ts";
 
 /**
- * L'envoi d'un ComedyPitch (13/11/2026) : le même que celui du videopitch
+ * L'envoi d'un ComedyPitch (13/11/2026) : le même que celui du StoryPitch
  * de l'auteur, pour un personnage. Tous les textes ont été validés par
  * Sarah le 12/11.
  */

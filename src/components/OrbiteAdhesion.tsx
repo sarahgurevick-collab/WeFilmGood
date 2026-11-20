@@ -81,7 +81,7 @@ type Noeud = {
 };
 
 const GALAXIES_ZERO =
-  "La Galaxie WeFilmGood (accès limité pour les videopitchs et les Talents)";
+  "La Galaxie WeFilmGood (accès limité pour les StoryPitchs et les Talents)";
 
 // Les phrases sont celles de Sarah (06/10), au « tu » : « le tu rapproche, le
 // vous met de la distance ». Un retour à la ligne (\n) fait un paragraphe.
@@ -99,7 +99,7 @@ const ADHESION: Noeud[] = [
     tutoriel: [
       "Va dans « Galaxies » et clique sur un projet.",
       "Clique sur « Ouvrir ce projet avec mon soleil du jour ».",
-      "Le videopitch s’ouvre, tu vois l’équipe et tu peux écrire aux talents.",
+      "Le StoryPitch s’ouvre, tu vois l’équipe et tu peux écrire aux talents.",
       "Le projet reste dans « Mes favoris », rubrique « Projets ouverts ».",
       "Un nouveau soleil t’attend chaque jour.",
     ],
@@ -110,14 +110,14 @@ const ADHESION: Noeud[] = [
     icone: "coeur",
     // Adhésion : le contact des talents en plus (15/11, mots de Sarah) ; à 0 €, l'ancien texte.
     texte:
-      "Le chrono est lancé ! Ce videopitch mérite toute ton attention : tu as une semaine pour le découvrir, laisser un avis en commentaires et contacter les talents !",
+      "Le chrono est lancé ! Ce StoryPitch mérite toute ton attention : tu as une semaine pour le découvrir, laisser un avis en commentaires et contacter les talents !",
     texteZero:
-      "Le chrono est lancé ! Ce videopitch mérite toute ton attention : tu as une semaine pour le découvrir. Laisse un avis en commentaires : ce sont de véritables tremplins magiques pour propulser les histoires !",
+      "Le chrono est lancé ! Ce StoryPitch mérite toute ton attention : tu as une semaine pour le découvrir. Laisse un avis en commentaires : ce sont de véritables tremplins magiques pour propulser les histoires !",
     aZero: "reste",
     tutoriel: [
       "Ouvre le « Menu » et choisis « CinéCrush ».",
-      "Regarde le videopitch de la semaine.",
-      "Écris ton avis dans « Votre avis sur ce videopitch », puis clique sur « Publier mon avis ».",
+      "Regarde le StoryPitch de la semaine.",
+      "Écris ton avis dans « Votre avis sur ce StoryPitch », puis clique sur « Publier mon avis ».",
       "Pour écrire à l’équipe, clique sur le titre du projet, puis sur le portrait d’un talent et sur l’enveloppe.",
     ],
   },

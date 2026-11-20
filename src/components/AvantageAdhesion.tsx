@@ -331,7 +331,7 @@ export const ICONES = {
       <line x1="8" y1="17" x2="16" y2="17" />
     </svg>
   ),
-  // La caméra : l'accompagnement au vidéopitch.
+  // La caméra : l'accompagnement au StoryPitch.
   camera: (
     <svg
       width="20"

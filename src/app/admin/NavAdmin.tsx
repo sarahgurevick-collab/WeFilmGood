@@ -12,7 +12,7 @@ const PAGES = [
   { href: "/admin/projets-en-attente", libelle: "Projets en attente" },
   { href: "/admin/fiches-a-valider", libelle: "Fiches à valider" },
   { href: "/admin/fiches", libelle: "Projets" },
-  { href: "/admin/videopitchs", libelle: "Videopitchs" },
+  { href: "/admin/videopitchs", libelle: "StoryPitchs" },
   { href: "/admin/membres", libelle: "Membres" },
   { href: "/admin/cinecrush", libelle: "CinéCrush" },
   { href: "/admin/mailing", libelle: "Mailing" },

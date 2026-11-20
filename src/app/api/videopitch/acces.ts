@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { COLONNES, type Depot } from "@/lib/videopitch";
 
 /**
- * Qui a le droit de quoi sur les dépôts de videopitch. Les lectures et les
+ * Qui a le droit de quoi sur les dépôts de StoryPitch. Les lectures et les
  * écritures passent par le client à privilèges : la base n'ouvre la table
  * qu'en lecture aux auteurs (migration 0192).
  */
@@ -21,11 +21,11 @@ export async function utilisateur() {
 }
 
 /**
- * Déposer un videopitch : le porteur du projet, si la lecture de ce projet
+ * Déposer un StoryPitch : le porteur du projet, si la lecture de ce projet
  * est payée (les 50 €) ou s'il est adhérent, ou l'administration à sa place
  * (Sarah, 09/11 : « Quand on paye 50 euros, on a un retour de lecture et on
- * doit mettre un vidéo pitch associé au projet. Quand on est adhérent […] on
- * peut ajouter un vidéo pitch sans avoir à rien repayer »).
+ * doit mettre un StoryPitch associé au projet. Quand on est adhérent […] on
+ * peut ajouter un StoryPitch sans avoir à rien repayer »).
  */
 export async function peutDeposer(projectId: string) {
   const u = await utilisateur();

@@ -4,7 +4,7 @@
  *
  * Sur l'ancienne plateforme, les fiches bien remplies remontaient dans
  * la pitchothèque, et les auteurs le savaient : il y avait un enjeu à
- * soigner sa fiche. Le classement y pesait surtout le videopitch (+18
+ * soigner sa fiche. Le classement y pesait surtout le StoryPitch (+18
  * points sur 51) et les fiches personnages (+11). Les personnages se
  * saisissent désormais (bloc 3 de la fiche) et comptent ici ; le
  * videopitch attend encore son écran de dépôt.

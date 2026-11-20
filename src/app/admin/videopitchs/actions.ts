@@ -23,7 +23,7 @@ const retour = (message?: string): never =>
 
 async function depotAValider(admin: NonNullable<ReturnType<typeof createAdminClient>>, id: string) {
   const { data } = await admin.from("videopitch_depots").select(COLONNES).eq("id", id).maybeSingle<Depot>();
-  if (!data || data.etat !== "a_valider") retour("Ce videopitch n'est plus en attente.");
+  if (!data || data.etat !== "a_valider") retour("Ce StoryPitch n'est plus en attente.");
   return data as Depot;
 }
 

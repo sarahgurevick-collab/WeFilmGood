@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import styles from "./cadre.module.css";
 
 /**
- * Les onglets posés sur la bordure du cadre. Le videopitch s'affiche
+ * Les onglets posés sur la bordure du cadre. Le StoryPitch s'affiche
  * d'abord ; « Mon équipe » le remplace : soit il a déjà été vu, soit le
  * producteur s'intéresse plutôt aux talents. L'onglet à cliquer est blanc
  * et saute aux yeux ; celui qu'on regarde est plein rouge.

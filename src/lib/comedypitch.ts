@@ -6,7 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 /**
  * Le ComedyPitch (13/11/2026 ; règles posées par Sarah le 12/11) : un
  * comédien se filme en jouant un personnage et dépose la vidéo depuis la
- * carte du personnage. La mécanique est celle du videopitch
+ * carte du personnage. La mécanique est celle du StoryPitch
  * (src/lib/videopitch.ts) ; ici, les règles propres au ComedyPitch.
  *
  * QUELS PERSONNAGES en reçoivent (la pastille verte) — jamais ceux d'un

@@ -49,7 +49,7 @@ export default async function DocumentsPage({
   ]);
   const accept = "image/jpeg,image/png,image/webp";
 
-  // Le videopitch (22/10) : ce qui est en ligne (Vimeo), ce qui attend, et
+  // Le StoryPitch (22/10) : ce qui est en ligne (Vimeo), ce qui attend, et
   // si la personne peut en déposer un — voir plus bas.
   const [{ data: videopitchEnLigne }, { data: depots }, { data: adherent }, { data: estAdmin }] = await Promise.all([
     supabase.from("project_videopitchs").select("videopitch_fr, videopitch_en").eq("project_id", id).maybeSingle(),
@@ -100,9 +100,9 @@ export default async function DocumentsPage({
   // version et la renvoie sur la même fiche.
   const nouvelleAnalyse = !dejaEnvoye && etatLecture === "disponible";
 
-  // Qui peut déposer un videopitch (09/11, Sarah : « Quand on paye 50 euros,
-  // on a un retour de lecture et on doit mettre un vidéo pitch associé au
-  // projet. Quand on est adhérent […] on peut ajouter un vidéo pitch sans
+  // Qui peut déposer un StoryPitch (09/11, Sarah : « Quand on paye 50 euros,
+  // on a un retour de lecture et on doit mettre un StoryPitch associé au
+  // projet. Quand on est adhérent […] on peut ajouter un StoryPitch sans
   // avoir à rien repayer ») : le porteur dont la lecture de ce projet est
   // payée, le porteur adhérent, ou l'administration.
   const peutDeposerVideopitch = dejaEnvoye || adherent === true || estAdmin === true;
@@ -112,7 +112,7 @@ export default async function DocumentsPage({
     .filter((d): d is DepotAffiche => Boolean(d));
 
   // « Envoyer » (20/11, Sarah) : sous le scénario, dans le même formulaire,
-  // pour qu'on ne le prenne pas pour le bouton du videopitch. Il enregistre
+  // pour qu'on ne le prenne pas pour le bouton du StoryPitch. Il enregistre
   // d'abord le scénario choisi, puis mène à la page de paiement. Quand le
   // scénario n'est plus modifiable (lecture en cours), il reste après le
   // formulaire.
@@ -255,9 +255,9 @@ export default async function DocumentsPage({
         <p className={formStyles.hint}>Le paiement en ligne ouvre très bientôt.</p>
       )}
 
-      {/* Le videopitch s'envoie à part du formulaire : la vidéo part par
+      {/* Le StoryPitch s'envoie à part du formulaire : la vidéo part par
           morceaux dès le clic, sans passer par « Enregistrer ». */}
-      <h2 className={styles.sousTitre} style={{ marginTop: 32 }}>Le videopitch</h2>
+      <h2 className={styles.sousTitre} style={{ marginTop: 32 }}>Le StoryPitch</h2>
       <p className={formStyles.hint}>
         Deux minutes face caméra pour donner envie de lire votre scénario. Visible des membres
         adhérents sur votre fiche, après un regard de l&apos;équipe.
@@ -270,7 +270,7 @@ export default async function DocumentsPage({
         />
       ) : (
         <p className={formStyles.hint}>
-          L&apos;envoi d&apos;un videopitch est compris dans les 60 € de la lecture, et dans
+          L&apos;envoi d&apos;un StoryPitch est compris dans les 60 € de la lecture, et dans
           l&apos;adhésion. <Link href="/adhesion">Adhérer</Link>
         </p>
       )}

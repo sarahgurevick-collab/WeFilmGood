@@ -44,7 +44,7 @@ export default async function ConnexionPage({
         <p className={formStyles.hint}>
           Il vous suffit d&apos;ajouter ce lien à l&apos;écran d&apos;accueil de votre
           téléphone pour accéder au site comme une app, bien plus pratique pour
-          les messages et regarder les videopitchs n&apos;importe où.
+          les messages et regarder les StoryPitchs n&apos;importe où.
         </p>
         <p className={formStyles.hint}>
           Rien reçu après quelques minutes ? Regardez dans les indésirables, ou{" "}

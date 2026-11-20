@@ -10,13 +10,13 @@ import { createAdminClient, emailDuMembre } from "@/lib/supabase/admin";
 const run = promisify(execFile);
 
 /**
- * Le dépôt des videopitchs par les auteurs (22/10/2026, migration 0192).
+ * Le dépôt des StoryPitchs par les auteurs (22/10/2026, migration 0192).
  *
  * L'auteur envoie sa vidéo telle quelle ; le serveur l'allège en 720p
  * avec ffmpeg (sous 100 Mo), puis elle attend dans l'admin que Sarah la
  * dépose sur Vimeo et colle le lien, ou la refuse. Les fichiers vivent
  * sur le disque, dans un dossier par dépôt ; l'original disparaît dès que
- * la version allégée est prête, la version allégée dès que le videopitch
+ * la version allégée est prête, la version allégée dès que le StoryPitch
  * est validé ou refusé.
  */
 
@@ -73,7 +73,7 @@ export async function supprimerFichiers(id: string) {
   try {
     await fs.rm(dossierDepot(id), { recursive: true, force: true });
   } catch (e) {
-    console.error("Videopitch : dossier non effacé", id, e);
+    console.error("StoryPitch : dossier non effacé", id, e);
   }
 }
 
@@ -169,7 +169,7 @@ export async function convertir(id: string): Promise<void> {
     await prevenirRecu({ ...reserve, taille_allegee: size, duree_secondes: duree });
   } catch (e) {
     const message = e instanceof Error ? e.message.slice(0, 500) : String(e).slice(0, 500);
-    console.error("Videopitch : conversion ratée", id, message);
+    console.error("StoryPitch : conversion ratée", id, message);
     await admin.from("videopitch_depots").update({ etat: "echec", erreur: message }).eq("id", id);
     await supprimerFichiers(id);
     await prevenirEchec(reserve);
@@ -178,7 +178,7 @@ export async function convertir(id: string): Promise<void> {
 
 /** Lance la conversion sans attendre : la réponse part tout de suite à l'auteur. */
 export function lancerConversion(id: string) {
-  convertir(id).catch((e) => console.error("Videopitch : conversion interrompue", id, e));
+  convertir(id).catch((e) => console.error("StoryPitch : conversion interrompue", id, e));
 }
 
 /**
@@ -285,11 +285,11 @@ async function prevenirRecu(depot: Depot) {
   }
   await envoyerEmail({
     to: [{ email: d.email, name: d.prenom ?? undefined }],
-    subject: `Votre videopitch pour « ${d.titre} » est bien arrivé`,
+    subject: `Votre StoryPitch pour « ${d.titre} » est bien arrivé`,
     htmlContent: gabarit(d.prenom, [
-      `Nous avons bien reçu le videopitch de « ${echapper(d.titre)} »${depot.langue === "en" ? " (version anglaise)" : ""}. Il a été préparé pour la lecture en ligne.`,
+      `Nous avons bien reçu le StoryPitch de « ${echapper(d.titre)} »${depot.langue === "en" ? " (version anglaise)" : ""}. Il a été préparé pour la lecture en ligne.`,
       "L'équipe le regarde avant de le mettre en ligne sur votre fiche projet.",
-    ], { href: `${SITE}/projet/${depot.project_id}/documents`, texte: "Suivre mon videopitch" }),
+    ], { href: `${SITE}/projet/${depot.project_id}/documents`, texte: "Suivre mon StoryPitch" }),
   });
 }
 
@@ -312,7 +312,7 @@ async function prevenirEchec(depot: Depot) {
   }
   await envoyerEmail({
     to: [{ email: d.email, name: d.prenom ?? undefined }],
-    subject: `Votre videopitch pour « ${d.titre} » n'a pas pu être lu`,
+    subject: `Votre StoryPitch pour « ${d.titre} » n'a pas pu être lu`,
     htmlContent: gabarit(
       d.prenom,
       [
@@ -348,15 +348,15 @@ export async function prevenirRefuse(depot: Depot, motif: string) {
   }
   await envoyerEmail({
     to: [{ email: d.email, name: d.prenom ?? undefined }],
-    subject: `Votre videopitch pour « ${d.titre} » n'a pas été retenu`,
+    subject: `Votre StoryPitch pour « ${d.titre} » n'a pas été retenu`,
     htmlContent: gabarit(
       d.prenom,
       [
-        `Nous avons regardé le videopitch envoyé pour « ${echapper(d.titre)} », et nous ne le mettons pas en ligne tel quel.`,
+        `Nous avons regardé le StoryPitch envoyé pour « ${echapper(d.titre)} », et nous ne le mettons pas en ligne tel quel.`,
         `<em>${echapper(motif)}</em>`,
         "Vous pouvez en envoyer un autre depuis votre fiche projet, bloc Documents.",
       ],
-      { href: `${SITE}/projet/${depot.project_id}/documents`, texte: "Envoyer un autre videopitch" },
+      { href: `${SITE}/projet/${depot.project_id}/documents`, texte: "Envoyer un autre StoryPitch" },
     ),
   });
 }

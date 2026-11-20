@@ -4,7 +4,7 @@ import { useState } from "react";
 import styles from "./VideopitchLecteur.module.css";
 
 /**
- * Le videopitch d'un projet, lu depuis Vimeo en marque blanche, comme
+ * Le StoryPitch d'un projet, lu depuis Vimeo en marque blanche, comme
  * les masterclass. Quand l'auteur en a tourné deux — en français et en
  * anglais — un bouton permet de passer de l'un à l'autre.
  */
@@ -54,7 +54,7 @@ export default function VideopitchLecteur({
           type="button"
           role="switch"
           aria-checked={langue === "en"}
-          aria-label="Videopitch en anglais"
+          aria-label="StoryPitch en anglais"
           title={langue === "fr" ? "Voir la version anglaise" : "Voir la version française"}
           className={`${styles.interrupteur} ${langue === "en" ? styles.anglais : ""}`}
           onClick={() => setLangue(langue === "fr" ? "en" : "fr")}
@@ -69,7 +69,7 @@ export default function VideopitchLecteur({
           src={`https://player.vimeo.com/video/${vimeoId}`}
           allow="autoplay; fullscreen; picture-in-picture"
           allowFullScreen
-          title={`Videopitch — ${titre}`}
+          title={`StoryPitch — ${titre}`}
         />
       </div>
     </div>

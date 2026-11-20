@@ -14,7 +14,7 @@ import styles from "./ComparateurAvantApres.module.css";
  *
  * Essayé sur la page Appels à projets (Clermont / Cannes), où l'effet ne
  * convenait pas ; à l'essai depuis le 24/09/2026 sur la fiche projet :
- * le videopitch d'un côté, l'auteur de l'autre (`poigneeSeule`).
+ * le StoryPitch d'un côté, l'auteur de l'autre (`poigneeSeule`).
  */
 
 const RAIDEUR = 140;

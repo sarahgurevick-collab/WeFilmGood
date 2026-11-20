@@ -10,7 +10,7 @@ import adminStyles from "../admin.module.css";
 import { refuserVideopitch, validerVideopitch } from "./actions";
 
 /**
- * Les videopitchs déposés par les auteurs (22/10/2026). Pour chacun : la
+ * Les StoryPitchs déposés par les auteurs (22/10/2026). Pour chacun : la
  * vidéo allégée à regarder sur place, le bouton pour la télécharger et la
  * déposer sur Vimeo, puis le lien Vimeo à coller — ou le refus, avec motif.
  */
@@ -81,7 +81,7 @@ export default async function VideopitchsAdminPage({
   const langue = (l: Ligne) => (l.genre === "comedypitch" ? "—" : l.langue.toUpperCase());
 
   return (
-    <PageShell nav="admin" avantTitre={<NavAdmin />} title={`Videopitchs à valider${aValider?.length ? ` (${aValider.length})` : ""}`} theme="clair">
+    <PageShell nav="admin" avantTitre={<NavAdmin />} title={`StoryPitchs à valider${aValider?.length ? ` (${aValider.length})` : ""}`} theme="clair">
       {erreur && <p className={formStyles.error}>{erreur}</p>}
       <p className={formStyles.hint}>
         Chaque vidéo a été allégée par le serveur (720p, moins de 100 Mo). Regardez-la ici, puis

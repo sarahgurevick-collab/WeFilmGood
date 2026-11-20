@@ -168,7 +168,7 @@ export default function CreerProfil({
             <div style={{ fontSize: 12, opacity: 0.75, marginBottom: 4 }}>{f.lignes.join(" ; ")}</div>
             <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", gap: 8 }}>
               {champVideo(i, "titre", "Titre du projet", 240)}
-              {champVideo(i, "vimeo", "Lien Vimeo du videopitch (facultatif)", 240)}
+              {champVideo(i, "vimeo", "Lien Vimeo du StoryPitch (facultatif)", 240)}
               <select
                 value={videos[i].langue}
                 onChange={(e) =>
