@@ -68,7 +68,10 @@ export default async function FichesDuLecteur({
             "legacy_review_id, final_mark, read_at, author_rating, project:projects(title)",
           )
           .eq("reader_legacy_id", moi.legacy_user_id)
-          .eq("statut", 2)
+          // Rédigées (1) comme validées (2) : c'est un mémo de ce qu'il a lu,
+          // une fiche pas encore validée par Sarah y figure déjà (20/11,
+          // Simon Desimpel : ses 5 fiches de novembre manquaient).
+          .in("statut", [1, 2])
           .order("read_at", { ascending: false })
           .returns<
             {
