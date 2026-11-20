@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { prenomEtNomProposes } from "@/lib/noms";
 import { redirect } from "next/navigation";
 import formStyles from "@/components/form.module.css";
 import { PAYS } from "@/lib/pays";
@@ -71,7 +72,7 @@ export default async function IdentitePage({
               name="first_name"
               required
               autoComplete="given-name"
-              defaultValue={profil?.first_name ?? ""}
+              defaultValue={prenomEtNomProposes(profil).prenom}
             />
           </label>
           <label className={formStyles.field}>
@@ -82,7 +83,7 @@ export default async function IdentitePage({
               name="last_name"
               required
               autoComplete="family-name"
-              defaultValue={profil?.last_name ?? ""}
+              defaultValue={prenomEtNomProposes(profil).nom}
             />
           </label>
         </div>

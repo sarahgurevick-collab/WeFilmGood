@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { prenomEtNomProposes } from "@/lib/noms";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { LANGUES_LECTURE, nomDeLangue } from "@/lib/langues";
@@ -75,11 +76,11 @@ export default async function ProfilLecteurPage({
           <div className={styles.coordonnees}>
             <label className={formStyles.field}>
               <span>Prénom</span>
-              <input type="text" name="first_name" required autoComplete="given-name" defaultValue={profil?.first_name ?? ""} />
+              <input type="text" name="first_name" required autoComplete="given-name" defaultValue={prenomEtNomProposes(profil).prenom} />
             </label>
             <label className={formStyles.field}>
               <span>Nom</span>
-              <input type="text" name="last_name" required autoComplete="family-name" defaultValue={profil?.last_name ?? ""} />
+              <input type="text" name="last_name" required autoComplete="family-name" defaultValue={prenomEtNomProposes(profil).nom} />
             </label>
             <label className={formStyles.field}>
               <span>Téléphone (avec indicatif)</span>
