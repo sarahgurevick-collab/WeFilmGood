@@ -21,9 +21,11 @@ type Report = {
 };
 
 const STATUTS: Record<string, string> = {
-  soumise: "En attente de validation",
-  validee_admin: "Validée",
-  rejetee_admin: "Rejetée",
+  // Le lecteur ne voit jamais la validation : pour lui, sa fiche est rendue
+  // dès qu'il l'a envoyée.
+  soumise: "Rendue",
+  validee_admin: "Rendue",
+  rejetee_admin: "Rendue",
 };
 
 /**
@@ -129,7 +131,9 @@ export default async function FichesDuLecteur({
                     )}
                   </td>
                   <td>
-                    {r.project?.title ?? "—"}
+                    <Link href={`/lecteur/fiche/${r.id}`}>
+                      {r.project?.title ?? "—"}
+                    </Link>
                     {r.labellise && (
                       <span className={styles.badge}>Labellisé</span>
                     )}
