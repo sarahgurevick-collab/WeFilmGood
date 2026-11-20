@@ -228,3 +228,34 @@
     gap: 10px;
   }
 }
+
+/* Téléphone (20/11, Sarah : « toujours trop serré en largeur, le logo pour se
+   connecter est coupé ») : les bulles de survol n'existent pas au doigt et
+   dépassaient à droite ; l'en-tête ne déborde plus jamais de l'écran. */
+@media (max-width: 620px) {
+  .bande {
+    overflow-x: clip;
+  }
+  .etiquette,
+  .etiquetteLogo {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .bande {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .zoneAccroche {
+    margin-left: 6px;
+  }
+  .gabaritAccroche,
+  .accroche {
+    font-size: 11px;
+  }
+  .nav,
+  .outils {
+    gap: 8px;
+  }
+}
