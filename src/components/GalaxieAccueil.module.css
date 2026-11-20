@@ -16,6 +16,9 @@
   padding: 110px 48px 64px;
   background: #0b0b0b;
   color: #ededed;
+  /* Les anneaux tournent : leur boîte carrée dépasse de l'écran du téléphone
+     et élargissait toute la page (en-tête et profil poussés à droite). */
+  overflow-x: clip;
 }
 
 .texte {
