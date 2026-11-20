@@ -7,7 +7,7 @@ import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { signerImages } from "../fichiers";
 import { modeHelloAsso, testeurPaiement } from "@/lib/helloasso";
-import { enregistrerDocuments, envoyerALaLecture } from "./actions";
+import { enregistrerDocuments } from "./actions";
 import BoutonRetirerPhoto from "./BoutonRetirerPhoto";
 import ImagePresentation from "./ImagePresentation";
 import EnvoiVideopitch, { type DepotAffiche } from "./EnvoiVideopitch";
@@ -111,6 +111,65 @@ export default async function DocumentsPage({
     .map((l) => (depots ?? []).find((d) => d.langue === l))
     .filter((d): d is DepotAffiche => Boolean(d));
 
+  // « Envoyer » (20/11, Sarah) : sous le scénario, dans le même formulaire,
+  // pour qu'on ne le prenne pas pour le bouton du videopitch. Il enregistre
+  // d'abord le scénario choisi, puis mène à la page de paiement. Quand le
+  // scénario n'est plus modifiable (lecture en cours), il reste après le
+  // formulaire.
+  const blocEnvoi =
+    peutPayer && (dejaEnvoye || !dejaLu || nouvelleAnalyse) ? (
+      <div style={{ marginTop: 24 }}>
+              <h2 className={styles.sousTitre}>Envoyer à la lecture</h2>
+              {dejaEnvoye ? (
+                <p className={formStyles.hint}>
+                  Projet envoyé à la lecture
+                  {envoyeLe
+                    ? ` le ${new Date(envoyeLe).toLocaleDateString("fr-FR", {
+                        timeZone: "Europe/Paris",
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}`
+                    : ""}
+                  .
+                </p>
+              ) : (
+                <>
+                  <p className={formStyles.hint}>
+                    {nouvelleAnalyse
+                      ? "Nouvelle lecture et analyse de votre scénario retravaillé"
+                      : "Lecture et analyse de votre scénario"}{" "}
+                    : {adherent === true ? "50 €" : "60 €"}. Le paiement passe par HelloAsso.
+                  </p>
+                  {paiement === "erreur" && (
+                    <p className={formStyles.error}>
+                      Le paiement n&apos;a pas pu démarrer. Réessayez dans un instant, ou écrivez-nous.
+                    </p>
+                  )}
+                  {scenario && vignette ? (
+                    <div style={{ marginTop: 12 }}>
+                      <button type="submit" name="envoyer" value="1" className={formStyles.submit}>
+                        Envoyer
+                      </button>
+                    </div>
+                  ) : (
+                    <p className={formStyles.hint}>
+                      {!scenario
+                        ? "Enregistrez d'abord votre scénario (PDF) pour l'envoyer à la lecture."
+                        : "Enregistrez d'abord l'image de présentation de votre projet pour l'envoyer à la lecture."}
+                    </p>
+                  )}
+                  {test && (
+                    <p className={formStyles.hint} style={{ marginTop: 8 }}>
+                      Mode test : paiement sur le compte HelloAsso de test, avec une fausse carte.
+                      Visible de l&apos;administration et des testeurs seulement.
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+    ) : null;
+
   return (
     <BlocProjet actif="documents" projet={projet}>
       {cree && (
@@ -178,6 +237,7 @@ export default async function DocumentsPage({
             </label>
           </>
         )}
+        {scenarioModifiable && blocEnvoi}
 
         <div className={profilStyles.pied}>
           {/* Rien n'est enregistré sans le bouton : la flèche ramène à « Mes projets » (01/10). */}
@@ -190,61 +250,7 @@ export default async function DocumentsPage({
         </div>
       </form>
 
-      {/* « Envoyer » : à part du formulaire, parce qu'il mène à la page de
-          paiement et n'enregistre rien. */}
-      {peutPayer && (dejaEnvoye || !dejaLu || nouvelleAnalyse) && (
-        <div style={{ marginTop: 32 }}>
-          <h2 className={styles.sousTitre}>Envoyer à la lecture</h2>
-          {dejaEnvoye ? (
-            <p className={formStyles.hint}>
-              Projet envoyé à la lecture
-              {envoyeLe
-                ? ` le ${new Date(envoyeLe).toLocaleDateString("fr-FR", {
-                    timeZone: "Europe/Paris",
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}`
-                : ""}
-              .
-            </p>
-          ) : (
-            <>
-              <p className={formStyles.hint}>
-                {nouvelleAnalyse
-                  ? "Nouvelle lecture et analyse de votre scénario retravaillé"
-                  : "Lecture et analyse de votre scénario"}{" "}
-                : {adherent === true ? "50 €" : "60 €"}. Le paiement passe par HelloAsso.
-              </p>
-              {paiement === "erreur" && (
-                <p className={formStyles.error}>
-                  Le paiement n&apos;a pas pu démarrer. Réessayez dans un instant, ou écrivez-nous.
-                </p>
-              )}
-              {scenario && vignette ? (
-                <form action={envoyerALaLecture} style={{ marginTop: 12 }}>
-                  <input type="hidden" name="project_id" value={projet.id} />
-                  <button type="submit" className={formStyles.submit}>
-                    Envoyer
-                  </button>
-                </form>
-              ) : (
-                <p className={formStyles.hint}>
-                  {!scenario
-                    ? "Enregistrez d'abord votre scénario (PDF) pour l'envoyer à la lecture."
-                    : "Enregistrez d'abord l'image de présentation de votre projet pour l'envoyer à la lecture."}
-                </p>
-              )}
-              {test && (
-                <p className={formStyles.hint} style={{ marginTop: 8 }}>
-                  Mode test : paiement sur le compte HelloAsso de test, avec une fausse carte.
-                  Visible de l&apos;administration et des testeurs seulement.
-                </p>
-              )}
-            </>
-          )}
-        </div>
-      )}
+      {!scenarioModifiable && blocEnvoi}
       {paiement === "bientot" && (
         <p className={formStyles.hint}>Le paiement en ligne ouvre très bientôt.</p>
       )}

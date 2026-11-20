@@ -119,6 +119,9 @@ export async function enregistrerDocuments(formData: FormData) {
   }
 
   revalidatePath(`/projet/${id}`);
+  // Le bouton « Envoyer » du formulaire (20/11) : tout est enregistré, puis
+  // on passe au paiement.
+  if (formData.get("envoyer") === "1") return envoyerALaLecture(formData);
   redirect(`/projet/${id}/documents?enregistre=1`);
 }
 
