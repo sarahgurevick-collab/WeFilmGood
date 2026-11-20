@@ -243,3 +243,18 @@ export async function envoyerALaLecture(formData: FormData) {
   }
   redirect(pageDePaiement);
 }
+
+/** Admin : ouvre (ou referme) le dépôt de StoryPitch à un projet, sans lecture payée ni adhésion. */
+export async function basculerAutorisationStoryPitch(formData: FormData) {
+  const id = formData.get("project_id") as string;
+  const { supabase } = await chargerProjetAModifier(id, "documents");
+  const { data: estAdmin } = await supabase.rpc("is_admin");
+  if (estAdmin !== true) redirect(`/projet/${id}/documents`);
+  if (formData.get("autoriser") === "oui") {
+    await supabase.from("storypitch_autorises").upsert({ project_id: id });
+  } else {
+    await supabase.from("storypitch_autorises").delete().eq("project_id", id);
+  }
+  revalidatePath(`/projet/${id}/documents`);
+  redirect(`/projet/${id}/documents`);
+}

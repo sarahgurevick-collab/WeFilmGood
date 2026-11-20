@@ -38,15 +38,17 @@ export async function peutDeposer(projectId: string) {
   if (!projet) return null;
   if (u.estAdmin) return { ...u, projet };
   if (projet.owner_id !== u.id) return null;
-  const [{ data: adherent }, { count: lecturesPayees }] = await Promise.all([
+  const [{ data: adherent }, { count: lecturesPayees }, { count: accorde }] = await Promise.all([
     u.supabase.rpc("a_une_adhesion_active", { p_profile_id: u.id }),
     u.supabase
       .from("lecture_demandes")
       .select("id", { count: "exact", head: true })
       .eq("project_id", projectId)
       .eq("status", "payee"),
+    // Dépôt accordé par l'administration à ce projet (migration 0295).
+    u.supabase.from("storypitch_autorises").select("project_id", { count: "exact", head: true }).eq("project_id", projectId),
   ]);
-  return adherent === true || (lecturesPayees ?? 0) > 0 ? { ...u, projet } : null;
+  return adherent === true || (lecturesPayees ?? 0) > 0 || (accorde ?? 0) > 0 ? { ...u, projet } : null;
 }
 
 /** Un dépôt, si la personne connectée en est l'auteur (ou l'admin). */

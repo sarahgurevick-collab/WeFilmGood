@@ -7,7 +7,7 @@ import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../blocs.module.css";
 import { signerImages } from "../fichiers";
 import { modeHelloAsso, testeurPaiement } from "@/lib/helloasso";
-import { enregistrerDocuments } from "./actions";
+import { basculerAutorisationStoryPitch, enregistrerDocuments } from "./actions";
 import BoutonRetirerPhoto from "./BoutonRetirerPhoto";
 import ImagePresentation from "./ImagePresentation";
 import EnvoiVideopitch, { type DepotAffiche } from "./EnvoiVideopitch";
@@ -51,7 +51,7 @@ export default async function DocumentsPage({
 
   // Le StoryPitch (22/10) : ce qui est en ligne (Vimeo), ce qui attend, et
   // si la personne peut en déposer un — voir plus bas.
-  const [{ data: videopitchEnLigne }, { data: depots }, { data: adherent }, { data: estAdmin }] = await Promise.all([
+  const [{ data: videopitchEnLigne }, { data: depots }, { data: adherent }, { data: estAdmin }, { data: autorisation }] = await Promise.all([
     supabase.from("project_videopitchs").select("videopitch_fr, videopitch_en").eq("project_id", id).maybeSingle(),
     supabase
       .from("videopitch_depots")
@@ -62,6 +62,7 @@ export default async function DocumentsPage({
       .returns<DepotAffiche[]>(),
     supabase.rpc("a_une_adhesion_active", { p_profile_id: projet.owner_id }),
     supabase.rpc("is_admin"),
+    supabase.from("storypitch_autorises").select("project_id").eq("project_id", id).maybeSingle(),
   ]);
   // « Envoyer » (09/11) : la lecture se paie 60 €, 50 € pour un adhérent (11/11). Le bouton
   // paraît quand le scénario est là, tant que le projet n'a pas déjà été
@@ -105,7 +106,7 @@ export default async function DocumentsPage({
   // projet. Quand on est adhérent […] on peut ajouter un StoryPitch sans
   // avoir à rien repayer ») : le porteur dont la lecture de ce projet est
   // payée, le porteur adhérent, ou l'administration.
-  const peutDeposerVideopitch = dejaEnvoye || adherent === true || estAdmin === true;
+  const peutDeposerVideopitch = dejaEnvoye || adherent === true || estAdmin === true || !!autorisation;
 
   const dernierParLangue = (["fr", "en"] as const)
     .map((l) => (depots ?? []).find((d) => d.langue === l))
@@ -273,6 +274,17 @@ export default async function DocumentsPage({
           L&apos;envoi d&apos;un StoryPitch est compris dans les 60 € de la lecture, et dans
           l&apos;adhésion. <Link href="/adhesion">Adhérer</Link>
         </p>
+      )}
+      {estAdmin === true && (
+        <form action={basculerAutorisationStoryPitch} style={{ marginTop: 16 }}>
+          <input type="hidden" name="project_id" value={projet.id} />
+          <input type="hidden" name="autoriser" value={autorisation ? "non" : "oui"} />
+          <button type="submit" className={formStyles.submit}>
+            {autorisation
+              ? "Admin : retirer l'accès au dépôt de StoryPitch"
+              : "Admin : ouvrir le dépôt de StoryPitch à ce projet"}
+          </button>
+        </form>
       )}
     </BlocProjet>
   );
