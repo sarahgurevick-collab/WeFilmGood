@@ -294,8 +294,8 @@ export default async function TableauFichesPage({
   if (q.length >= 2) {
     // Les mots tapés, dans l'ordre, séparés par un joker : « Lupin gentleman »
     // trouve « Lupin, gentleman cambrioleur » (virgules, tirets, parenthèses
-    // du titre ne gênent plus, 19/11).
-    const motif = `%${q.split(/[\s%_,()]+/).filter(Boolean).join("%")}%`;
+    // du titre ne gênent plus, 19/11) ; ni l'apostrophe droite ou courbe (20/11).
+    const motif = `%${q.split(/[\s%_,()'’‘ʼ`]+/).filter(Boolean).join("%")}%`;
     const COL = "id, title, created_at, owner:profiles!projects_owner_id_fkey(full_name)";
     const { data: auteurs } = await admin.from("profiles").select("id").ilike("full_name", motif).limit(200);
     const idsAuteurs = (auteurs ?? []).map((a) => a.id);
