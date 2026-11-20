@@ -32,13 +32,15 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   };
   if (telecharger) {
     const { data: projet } = await admin.from("projects").select("title").eq("id", depot.project_id).maybeSingle();
-    const base = (projet?.title ?? "videopitch")
-      .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "")
-      .replace(/[^a-zA-Z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")
-      .toLowerCase() || "videopitch";
-    entetes["Content-Disposition"] = `attachment; filename="${base}-${depot.genre === "comedypitch" ? "comedypitch" : `videopitch-${depot.langue}`}.mp4"`;
+    // Le titre du projet tel qu'il s'écrit sur WFG, accents, espaces et
+    // apostrophes compris (20/11, Sarah) : on le retrouve ainsi sur Vimeo, et
+    // le lien peut être recopié sur la bonne fiche. Seuls les signes qu'un
+    // nom de fichier ne supporte pas sont retirés. Une version anglaise
+    // porte « EN » derrière, pour ne pas écraser la française.
+    const titre = (projet?.title ?? "StoryPitch").replace(/[\\/:*?"<>|\u0000-\u001f]+/g, " ").replace(/\s+/g, " ").trim() || "StoryPitch";
+    const nom = `${titre}${depot.genre !== "comedypitch" && depot.langue === "en" ? " EN" : ""}.mp4`;
+    const secours = nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\x20-\x7e]/g, "_").replace(/"/g, "'");
+    entetes["Content-Disposition"] = `attachment; filename="${secours}"; filename*=UTF-8''${encodeURIComponent(nom).replace(/'/g, "%27")}`;
   }
 
   const plage = req.headers.get("range")?.match(/bytes=(\d*)-(\d*)/);
