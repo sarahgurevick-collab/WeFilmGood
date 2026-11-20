@@ -63,6 +63,13 @@
   display: block;
 }
 
+/* Vignette de projet (CinéCrush, 20/11) : toutes les vignettes sont en
+   16/9, le cadre portrait est réservé aux fiches personnages. */
+.imagePaysage {
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
 /* La zone des appels : ligne centrale, en-tête à gauche, colonnes. */
 .zone {
   position: relative;
@@ -566,6 +573,10 @@
   .image {
     height: 60%;
     border-radius: 5vw;
+  }
+
+  .imagePaysage {
+    height: auto;
   }
 
   .bout {

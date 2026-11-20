@@ -219,6 +219,7 @@ export default async function CineCrushPage({
             periode={annees.length > 1 ? `${annees[0]} — ${annees[annees.length - 1]}` : annees[0]}
             image={imageFrise}
             imageAlt={enCours ? enCours.project!.title : "CinéCrush"}
+            imagePaysage
           />
         </section>
       )}

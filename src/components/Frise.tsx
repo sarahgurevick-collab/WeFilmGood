@@ -208,6 +208,7 @@ export default function Frise({
   periode,
   image,
   imageAlt,
+  imagePaysage = false,
   feuilles = [],
 }: {
   etapes: EtapeFrise[];
@@ -217,6 +218,8 @@ export default function Frise({
   /** La grande image à gauche de la frise. */
   image: string;
   imageAlt: string;
+  /** Image de projet : cadre 16/9 au lieu du cadre portrait. */
+  imagePaysage?: boolean;
   /** Un bouton par feuille : son libellé, et le texte qu'il ouvre
       par-dessus la page (le texte de l'appel, les lecteurs…). */
   feuilles?: FeuilleFrise[];
@@ -407,7 +410,7 @@ export default function Frise({
       >
         <div className={styles.panneau}>
           <div ref={pisteRef} className={styles.piste}>
-            <div className={styles.image}>
+            <div className={`${styles.image} ${imagePaysage ? styles.imagePaysage : ""}`}>
               <img src={image} alt={imageAlt} draggable={false} />
             </div>
 
