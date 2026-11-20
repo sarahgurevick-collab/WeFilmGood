@@ -94,7 +94,9 @@ export default async function AuteursSelectionnesPage() {
             const c = parCle.get(k) ?? { cle: k, noms: [], selections: [] };
             const inverse = f.id === "cannes" && s.annee === 2014;
             if (!c.noms.some((n) => n.nom === nom)) c.noms.push({ nom, inverse });
-            c.selections.push({ festival: f.nom, libelle: `${LIBELLE_SELECTION[f.id] ?? f.nom} ${s.annee}`, annee: s.annee, titre });
+            // La Nuit blanche du scénario (Cannes) porte son propre libellé (Sarah, 20/11).
+            const famille = /Nuit blanche du scénario/i.test(b.titre) ? "Nuit blanche du scénario" : (LIBELLE_SELECTION[f.id] ?? f.nom);
+            c.selections.push({ festival: f.nom, libelle: `${famille} ${s.annee}`, annee: s.annee, titre });
             parCle.set(k, c);
           }
         }

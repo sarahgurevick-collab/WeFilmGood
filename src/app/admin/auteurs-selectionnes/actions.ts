@@ -103,7 +103,8 @@ export async function creerProfilAuteur(champs: {
     const { data: memeSelection } = await admin
       .from("project_selections")
       .select("project_id, projects(title)")
-      .in("libelle", f.selections)
+      // Les fiches d'avant le 20/11 portent encore « Cannes 2014 » pour une Nuit blanche.
+      .in("libelle", [...f.selections, ...f.selections.map((l) => l.replace(/^Nuit blanche du scénario /, "Cannes "))])
       .returns<{ project_id: string; projects: { title: string } | null }[]>();
     let projet = (memeSelection ?? []).find((m) => cleTitre(m.projects?.title ?? "") === cleTitre(f.titre))?.project_id;
     if (!projet) {
