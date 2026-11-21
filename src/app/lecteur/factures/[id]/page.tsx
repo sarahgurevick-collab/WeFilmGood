@@ -67,7 +67,7 @@ export default async function FacturePage({
   const euros = (c: number) => (c / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2 });
 
   return (
-    <PageShell eyebrow="Espace lecteur" title="Facture" theme="clair">
+    <PageShell eyebrow="Espace lecteur" title="Facture lecture" theme="clair">
       <div className={styles.entete}>
         <div>
           <strong>{profil?.full_name ?? "—"}</strong>
