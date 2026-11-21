@@ -4,13 +4,18 @@
 // plus vus et les mieux notés — avec leur résumé en français, leur
 // réalisateur et leur pays, et les écrit dans un fichier JSON hors du dépôt.
 //
-//   node scripts/recuperer-films-etrangers-tmdb.mjs <sortie.json> [combien=5000] [deja.json]
+//   node scripts/recuperer-films-etrangers-tmdb.mjs <sortie.json> [combien=5000] [deja.json] [recents|anciens]
+//
+// « anciens » (seconde vague, 21/11/2026) : les films d'avant 2001, français
+// compris (le CNC ne commence qu'en 2001), avec une part réservée aux films
+// non anglophones — la première vague était à 83 % en anglais.
 //
 // deja.json : tableau des identifiants TMDB déjà dans la base (à écarter).
 // Clé : TMDB_READ_TOKEN dans .env.local (usage gratuit non commercial).
 import { readFileSync, writeFileSync } from "node:fs";
 
-const [sortie, combienTxt = "5000", dejaChemin] = process.argv.slice(2);
+const [sortie, combienTxt = "5000", dejaChemin, vague = "recents"] = process.argv.slice(2);
+const anciens = vague === "anciens";
 const combien = Number(combienTxt);
 const jeton = readFileSync(new URL("../.env.local", import.meta.url), "utf8").match(/^TMDB_READ_TOKEN=(.+)$/m)[1].trim();
 const deja = new Set(dejaChemin ? JSON.parse(readFileSync(dejaChemin, "utf8")) : []);
@@ -30,11 +35,21 @@ async function parPaquets(liste, taille, fn) {
   return res;
 }
 
-const dates = "primary_release_date.gte=2001-01-01&primary_release_date.lte=2025-12-31&without_original_language=fr&language=fr-FR";
-const listes = [
-  { tri: `sort_by=vote_count.desc&vote_count.gte=150&${dates}`, pages: 330 },
-  { tri: `sort_by=vote_average.desc&vote_count.gte=300&${dates}`, pages: 200 },
-];
+const dates = anciens
+  ? "primary_release_date.lte=2000-12-31&language=fr-FR"
+  : "primary_release_date.gte=2001-01-01&primary_release_date.lte=2025-12-31&without_original_language=fr&language=fr-FR";
+const listes = anciens
+  ? [
+      { tri: `sort_by=vote_count.desc&vote_count.gte=80&${dates}`, pages: 250 },
+      { tri: `sort_by=vote_average.desc&vote_count.gte=200&${dates}`, pages: 150 },
+      // deux listes sur quatre hors anglais : les plus vus, puis les mieux notés
+      { tri: `sort_by=vote_count.desc&vote_count.gte=30&without_original_language=en&${dates}`, pages: 200 },
+      { tri: `sort_by=vote_average.desc&vote_count.gte=60&without_original_language=en&${dates}`, pages: 150 },
+    ]
+  : [
+      { tri: `sort_by=vote_count.desc&vote_count.gte=150&${dates}`, pages: 330 },
+      { tri: `sort_by=vote_average.desc&vote_count.gte=300&${dates}`, pages: 200 },
+    ];
 const rangs = [];
 for (const l of listes) {
   const pages = await parPaquets(Array.from({ length: l.pages }, (_, i) => i + 1), 10, (p) => tmdb(`/discover/movie?${l.tri}&page=${p}`));
@@ -42,10 +57,10 @@ for (const l of listes) {
 }
 // une de chaque liste tour à tour : les plus vus et les mieux notés avancent ensemble
 const retenus = new Map();
-for (let i = 0; retenus.size < combien && (i < rangs[0].length || i < rangs[1].length); i++) {
+for (let i = 0; retenus.size < combien && rangs.some((r) => i < r.length); i++) {
   for (const r of rangs) {
     const f = r[i];
-    if (!f || retenus.has(f.id) || deja.has(f.id) || f.original_language === "fr") continue;
+    if (!f || retenus.has(f.id) || deja.has(f.id) || (!anciens && f.original_language === "fr")) continue;
     if ((f.overview ?? "").trim().length < 80) continue;
     if (retenus.size < combien) retenus.set(f.id, f);
   }
@@ -57,7 +72,7 @@ const films = await parPaquets([...retenus.values()], 12, async (f) => {
   const d = await tmdb(`/movie/${f.id}?language=fr-FR&append_to_response=credits`);
   if (!d) return null;
   const pays = (d.production_countries ?? []).map((p) => p.iso_3166_1);
-  if (pays.includes("FR") && pays[0] === "FR") return null; // film d'abord français : pas « étranger »
+  if (!anciens && pays[0] === "FR") return null; // film d'abord français : déjà couvert par le CNC
   return {
     tmdb: f.id,
     titre: d.title,
