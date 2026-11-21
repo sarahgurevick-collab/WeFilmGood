@@ -67,7 +67,7 @@ export default async function FacturePage({
   const euros = (c: number) => (c / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2 });
 
   return (
-    <PageShell eyebrow="Espace lecteur" title={`Facture ${facture.numero}`} theme="clair">
+    <PageShell eyebrow="Espace lecteur" title="Facture" theme="clair">
       <div className={styles.entete}>
         <div>
           <strong>{profil?.full_name ?? "—"}</strong>
@@ -96,6 +96,10 @@ export default async function FacturePage({
           <strong>La Maison des Scénaristes</strong>
           <br />
           WeFilmGood
+          <br />
+          33 avenue Laplace
+          <br />
+          94110 Arcueil
         </div>
       </div>
 
