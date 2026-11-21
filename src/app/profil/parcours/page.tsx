@@ -13,12 +13,13 @@ import ReseauxSociaux from "./ReseauxSociaux";
 // Des liens professionnels seulement (20/11, Sarah) : Vimeo, Viadeo et
 // Instagram ne sont plus proposés. « Site internet » est le champ libre ;
 // l'auteur ne l'a pas ici, il a sa propre question juste au-dessus.
+// « exemple » s'affiche en gris dans la case : ce qu'on attend comme lien.
 const RESEAUX = [
-  { slug: "imdb", label: "IMDb" },
-  { slug: "unifrance", label: "Unifrance" },
-  { slug: "wikipedia", label: "Wikipédia" },
-  { slug: "linkedin", label: "LinkedIn" },
-  { slug: "site", label: "Site internet" },
+  { slug: "imdb", label: "IMDb", exemple: "https://www.imdb.com/name/nm…" },
+  { slug: "unifrance", label: "Unifrance", exemple: "https://www.unifrance.org/annuaires/personne/…" },
+  { slug: "wikipedia", label: "Wikipédia", exemple: "https://fr.wikipedia.org/wiki/…" },
+  { slug: "linkedin", label: "LinkedIn", exemple: "https://www.linkedin.com/in/…" },
+  { slug: "site", label: "Site internet", exemple: "www.votresite.com" },
 ];
 
 export default async function ParcoursPage({

@@ -4,7 +4,7 @@ import { useState } from "react";
 import formStyles from "@/components/form.module.css";
 import styles from "./ReseauxSociaux.module.css";
 
-type Reseau = { slug: string; label: string };
+type Reseau = { slug: string; label: string; exemple?: string };
 
 /**
  * Un menu déroulant pour choisir un réseau, et autant de lignes qu'on
@@ -51,7 +51,7 @@ export default function ReseauxSociaux({
               inputMode="url"
               name={`social_${slug}`}
               defaultValue={valeurs[slug] ?? ""}
-              placeholder="https://"
+              placeholder={reseau.exemple ?? "https://"}
               autoFocus={slug === dernier}
               className={styles.url}
             />
