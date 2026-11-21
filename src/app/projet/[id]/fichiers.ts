@@ -68,7 +68,18 @@ export async function deposerScenario(
   projectId: string,
   fichier: File,
 ): Promise<boolean> {
-  const chemin = `${ownerId}/${Date.now()}-${fichier.name}`;
+  // Le stockage refuse les accents et certains signes dans le nom du fichier
+  // (21/11 : « Réécriture.pdf » était rejeté). Le nom rangé est donc nettoyé ;
+  // le vrai nom reste dans original_name, c'est lui qu'on affiche.
+  const nomRange =
+    fichier.name
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/\.pdf$/i, "")
+      .replace(/[^A-Za-z0-9._-]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 120) || "scenario";
+  const chemin = `${ownerId}/${Date.now()}-${nomRange}.pdf`;
   const { error } = await supabase.storage
     .from("scenarios")
     .upload(chemin, fichier, { contentType: "application/pdf" });
