@@ -35,7 +35,31 @@ type Film = {
   diffusion_autorisee: boolean;
   partenaire: string | null;
   lien: string | null;
+  pays: string | null;
+  source: string;
 };
+
+const ORIGINES = [
+  { cle: "", libelle: "Tous les films" },
+  { cle: "france", libelle: "Films français" },
+  { cle: "etranger", libelle: "Films étrangers" },
+];
+
+// « US, GB » → « États-Unis, Royaume-Uni »
+const nomsPays = new Intl.DisplayNames(["fr"], { type: "region" });
+const paysEnFrancais = (codes: string | null) =>
+  (codes ?? "")
+    .split(",")
+    .map((c) => c.trim())
+    .filter(Boolean)
+    .map((c) => {
+      try {
+        return nomsPays.of(c) ?? c;
+      } catch {
+        return c;
+      }
+    })
+    .join(", ");
 
 const jour = (d: string) =>
   new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
@@ -43,13 +67,19 @@ const jour = (d: string) =>
 export default async function FilmsProchesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ projet?: string; titre?: string; themes?: string }>;
+  searchParams: Promise<{
+    projet?: string;
+    titre?: string;
+    themes?: string;
+    origine?: string;
+  }>;
 }) {
   const supabase = await createClient();
   const { data: estAdmin } = await supabase.rpc("is_admin");
   if (estAdmin !== true) redirect("/");
 
-  const { projet: p, titre: t, themes: th } = await searchParams;
+  const { projet: p, titre: t, themes: th, origine: o } = await searchParams;
+  const origine = ORIGINES.some((x) => x.cle === o) ? (o ?? "") : "";
   const projetId = /^[0-9a-f-]{36}$/i.test(p ?? "") ? p! : "";
   const titre = (t ?? "").trim();
   const themes = (th ?? "").trim();
@@ -109,12 +139,15 @@ export default async function FilmsProchesPage({
       p_project: projet?.id ?? null,
       p_mots: listeThemes.length ? listeThemes : null,
       p_limite: 40,
+      p_origine: origine || null,
     });
     films = (data ?? []) as Film[];
   }
 
-  const lien = (q: { projet?: string; themes?: string }) => {
+  const lien = (q: { projet?: string; themes?: string; origine?: string }) => {
     const u = new URLSearchParams();
+    const og = q.origine ?? origine;
+    if (og) u.set("origine", og);
     if (q.projet) u.set("projet", q.projet);
     if (q.themes) u.set("themes", q.themes);
     const s = u.toString();
@@ -147,7 +180,7 @@ export default async function FilmsProchesPage({
                 <strong>{f.titre}</strong>
                 <br />
                 <span style={{ color: "var(--dim)" }}>
-                  {[f.annee, f.realisateur, f.genre]
+                  {[f.annee, f.realisateur, paysEnFrancais(f.pays), f.genre]
                     .filter(Boolean)
                     .join(" · ")}
                 </span>
@@ -202,9 +235,9 @@ export default async function FilmsProchesPage({
       theme="clair"
     >
       <p className={formStyles.hint}>
-        Les films français déjà sortis qui portent les mêmes thèmes qu&apos;un
-        projet. La page dit quels films sont proches, pas s&apos;ils sont
-        disponibles. Visible de l&apos;administration seulement.
+        Les films déjà sortis, français et étrangers, qui portent les mêmes
+        thèmes qu&apos;un projet. La page dit quels films sont proches, pas
+        s&apos;ils sont disponibles. Visible de l&apos;administration seulement.
       </p>
 
       <div
@@ -222,6 +255,7 @@ export default async function FilmsProchesPage({
             placeholder="Le titre du projet"
           />
           {themes && <input type="hidden" name="themes" value={themes} />}
+          {origine && <input type="hidden" name="origine" value={origine} />}
           <button
             type="submit"
             className={formStyles.submit}
@@ -243,6 +277,7 @@ export default async function FilmsProchesPage({
             placeholder="deuil, fratrie, Bretagne"
           />
           {projetId && <input type="hidden" name="projet" value={projetId} />}
+          {origine && <input type="hidden" name="origine" value={origine} />}
           <button
             type="submit"
             className={formStyles.submit}
@@ -313,6 +348,22 @@ export default async function FilmsProchesPage({
               : "Ce projet n'a pas encore de mots-clés : ajoutez des thèmes à la main."}
           </p>
         </section>
+      )}
+
+      {cherche && (
+        <nav className={adminStyles.annees} aria-label="Origine des films">
+          {ORIGINES.map((x) => (
+            <Link
+              key={x.cle}
+              href={lien({ projet: projetId, themes, origine: x.cle })}
+              className={
+                x.cle === origine ? adminStyles.anneeActive : adminStyles.annee
+              }
+            >
+              {x.libelle}
+            </Link>
+          ))}
+        </nav>
       )}
 
       {cherche && films.length === 0 && (
