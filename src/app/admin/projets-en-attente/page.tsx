@@ -150,11 +150,41 @@ export default async function ProjetsEnAttentePage() {
         .order("created_at", { ascending: false })
     : { data: [] };
   const missionDe = new Map<string, { status: string; recu: string | null }>();
+  // Tous les lecteurs déjà passés sur chaque projet (21/11, Sarah) : sous le
+  // titre, pour ne pas reproposer un projet à celui qui l'a déjà lu.
+  const dejaLusPar = new Map<string, { reader_id: string; status: string }[]>();
+  for (const m of missions ?? []) {
+    const l = dejaLusPar.get(m.project_id) ?? [];
+    if (!l.some((x) => x.reader_id === m.reader_id)) l.push({ reader_id: m.reader_id, status: m.status });
+    dejaLusPar.set(m.project_id, l);
+  }
   for (const m of missions ?? []) {
     if (!missionDe.has(m.project_id))
       missionDe.set(m.project_id, { status: m.status, recu: m.responded_at ?? m.assigned_at ?? m.created_at });
   }
   const service = createAdminClient();
+
+  // Les noms des lecteurs déjà passés, et la bio de chaque auteur (21/11,
+  // Sarah : amateur ou pro, elle n'attribue pas les mêmes lecteurs).
+  const idsProjets = projects.map((p) => p.project_id);
+  const { data: proprios } = idsProjets.length
+    ? await (service ?? supabase).from("projects").select("id, owner_id").in("id", idsProjets).returns<{ id: string; owner_id: string }[]>()
+    : { data: [] };
+  const proprioDe = new Map((proprios ?? []).map((x) => [x.id, x.owner_id]));
+  const idsProfils = [
+    ...new Set([
+      ...(proprios ?? []).map((x) => x.owner_id),
+      ...[...dejaLusPar.values()].flat().map((x) => x.reader_id),
+    ]),
+  ];
+  const { data: profilsRows } = idsProfils.length
+    ? await (service ?? supabase)
+        .from("profiles")
+        .select("id, full_name, biofilmo")
+        .in("id", idsProfils)
+        .returns<{ id: string; full_name: string | null; biofilmo: string | null }[]>()
+    : { data: [] };
+  const profilDe = new Map((profilsRows ?? []).map((x) => [x.id, x]));
 
   // Les liens signés (1 h) vers les scénarios, demandés en une seule fois.
   // Un lien demandé ligne par ligne (17/11) : avec une centaine de projets,
@@ -264,13 +294,25 @@ export default async function ProjetsEnAttentePage() {
               return (
                 <tr key={p.project_id}>
                   <td>
-                    <strong>{p.author_name ?? "Sans nom"}</strong>
+                    <strong
+                      title={profilDe.get(proprioDe.get(p.project_id) ?? "")?.biofilmo?.slice(0, 800) || "Pas de bio renseignée"}
+                      style={{ cursor: "help" }}
+                    >
+                      {p.author_name ?? "Sans nom"}
+                    </strong>
                     <br />
                     <em className={formStyles.hint}>{p.author_email}</em>
                   </td>
                   <td>
-                    {p.title}
-                    <MemoProjet projectId={p.project_id} memo={memoDe.get(p.project_id) ?? null} />
+                    <MemoProjet projectId={p.project_id} memo={memoDe.get(p.project_id) ?? null} titre={p.title} />
+                    {(dejaLusPar.get(p.project_id) ?? []).length > 0 && (
+                      <div className={formStyles.hint} style={{ marginTop: 4, fontSize: 12 }}>
+                        Déjà vu par :{" "}
+                        {(dejaLusPar.get(p.project_id) ?? [])
+                          .map((x) => `${profilDe.get(x.reader_id)?.full_name ?? "?"} (${ETATS[x.status] ?? x.status})`)
+                          .join(", ")}
+                      </div>
+                    )}
                   </td>
                   <td>
                     {lienScenario.has(p.project_id) && (

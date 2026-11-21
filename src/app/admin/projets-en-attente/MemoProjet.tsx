@@ -8,7 +8,7 @@ import { enregistrerMemo, type EtatAttribution } from "./actions";
  * a un, il se lit sans cliquer, en couleur ; un clic sur « Modifier » ouvre
  * la zone de texte. Un texte vidé efface le mémo.
  */
-export default function MemoProjet({ projectId, memo }: { projectId: string; memo: string | null }) {
+export default function MemoProjet({ projectId, memo, titre }: { projectId: string; memo: string | null; titre: string }) {
   const [ouvert, setOuvert] = useState(false);
   const [etat, action, enCours] = useActionState<EtatAttribution, FormData>(async (e, f) => {
     const r = await enregistrerMemo(e, f);
@@ -17,7 +17,21 @@ export default function MemoProjet({ projectId, memo }: { projectId: string; mem
   }, null);
 
   return (
-    <div style={{ marginTop: 6 }}>
+    <div>
+      <div>
+        {titre}{" "}
+        {!ouvert && (
+          <button
+            type="button"
+            onClick={() => setOuvert(true)}
+            title={memo ? "Modifier le mémo" : "Ajouter un mémo"}
+            aria-label={memo ? "Modifier le mémo" : "Ajouter un mémo"}
+            style={{ background: "none", border: "none", padding: "0 4px", fontSize: 14, color: memo ? "#e0a800" : "#666", cursor: "pointer" }}
+          >
+            ✕
+          </button>
+        )}
+      </div>
       {memo && !ouvert && (
         <p
           style={{
@@ -51,15 +65,7 @@ export default function MemoProjet({ projectId, memo }: { projectId: string; mem
             Annuler
           </button>
         </form>
-      ) : (
-        <button
-          type="button"
-          onClick={() => setOuvert(true)}
-          style={{ background: "none", border: "none", padding: 0, fontSize: 12, color: "#666", textDecoration: "underline", cursor: "pointer" }}
-        >
-          {memo ? "Modifier le mémo" : "+ Mémo"}
-        </button>
-      )}
+      ) : null}
       {etat?.erreur && (
         <span role="status" style={{ fontSize: 12, color: "#e2231a", display: "block" }}>
           {etat.message}
