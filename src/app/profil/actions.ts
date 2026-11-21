@@ -9,9 +9,9 @@ import sharp from "sharp";
 import { PORTRAIT_Y_DEFAUT } from "@/lib/portrait";
 import { metiersPourCategorie } from "./metiers";
 
-// Les liens proposés dans « Votre parcours ». Vimeo, Viadeo et Instagram
-// n'y sont plus (20/11) : leurs liens déjà saisis restent en base, intacts.
-const RESEAUX = ["imdb", "unifrance", "wikipedia", "linkedin", "site"];
+// Le seul lien proposé dans « Votre parcours » (20/11). Les liens des
+// réseaux retirés (Instagram…) restent en base, intacts.
+const RESEAUX = ["linkedin"];
 const CATEGORIES = ["auteur", "producteur", "talent"];
 
 async function requireUser(retour = "/profil") {

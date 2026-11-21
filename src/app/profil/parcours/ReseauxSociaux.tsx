@@ -20,8 +20,11 @@ export default function ReseauxSociaux({
   reseaux: Reseau[];
   valeurs: Record<string, string>;
 }) {
+  // Un seul réseau proposé : sa ligne est ouverte d'office, sans menu ;
+  // la case laissée vide n'enregistre rien.
+  const seul = reseaux.length === 1;
   const [lignes, setLignes] = useState<string[]>(
-    reseaux.filter((r) => valeurs[r.slug]).map((r) => r.slug),
+    seul ? [reseaux[0].slug] : reseaux.filter((r) => valeurs[r.slug]).map((r) => r.slug),
   );
   const [dernier, setDernier] = useState("");
   const disponibles = reseaux.filter((r) => !lignes.includes(r.slug));
@@ -55,7 +58,8 @@ export default function ReseauxSociaux({
               autoFocus={slug === dernier}
               className={styles.url}
             />
-            <button
+{!seul && (
+              <button
               type="button"
               onClick={() => retirer(slug)}
               className={styles.retirer}
@@ -63,6 +67,7 @@ export default function ReseauxSociaux({
             >
               Retirer
             </button>
+            )}
           </div>
         );
       })}

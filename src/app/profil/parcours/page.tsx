@@ -10,17 +10,10 @@ import CaseAutre from "./CaseAutre";
 import OuiNon from "./OuiNon";
 import ReseauxSociaux from "./ReseauxSociaux";
 
-// Des liens professionnels seulement (20/11, Sarah) : Vimeo, Viadeo et
-// Instagram ne sont plus proposés. « Site internet » est le champ libre ;
-// l'auteur ne l'a pas ici, il a sa propre question juste au-dessus.
-// « exemple » s'affiche en gris dans la case : ce qu'on attend comme lien.
-const RESEAUX = [
-  { slug: "imdb", label: "IMDb", exemple: "https://www.imdb.com/name/nm…" },
-  { slug: "unifrance", label: "Unifrance", exemple: "https://www.unifrance.org/annuaires/personne/…" },
-  { slug: "wikipedia", label: "Wikipédia", exemple: "https://fr.wikipedia.org/wiki/…" },
-  { slug: "linkedin", label: "LinkedIn", exemple: "https://www.linkedin.com/in/…" },
-  { slug: "site", label: "Site internet", exemple: "www.votresite.com" },
-];
+// LinkedIn seul (20/11, Sarah) : Vimeo, Viadeo et Instagram ne sont pas des
+// liens professionnels ; le site, la page IMDb ou Unifrance vont dans
+// « Votre référence professionnelle », au bloc 1.
+const RESEAUX = [{ slug: "linkedin", label: "LinkedIn", exemple: "https://www.linkedin.com/in/…" }];
 
 export default async function ParcoursPage({
   searchParams,
@@ -180,10 +173,7 @@ export default async function ParcoursPage({
           nom="reseaux_reponse"
           initial={profil?.reseaux_reponse ?? Object.keys(valeursReseaux).length > 0}
         >
-          <ReseauxSociaux
-            reseaux={RESEAUX.filter((r) => r.slug !== "site" || profil?.category !== "auteur")}
-            valeurs={valeursReseaux}
-          />
+          <ReseauxSociaux reseaux={RESEAUX} valeurs={valeursReseaux} />
         </OuiNon>
 
         <div className={styles.pied}>
