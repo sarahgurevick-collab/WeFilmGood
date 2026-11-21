@@ -46,14 +46,22 @@ export default async function StatistiquesPage({
   type Annees = Map<number, { total: number; mots: Ligne[] }>;
   const charger = async (fonction: string, args?: Record<string, unknown>): Promise<Annees> => {
     const annees: Annees = new Map();
-    for (let debut = 0; ; debut += 1000) {
-      const { data } = await supabase.rpc(fonction, args).range(debut, debut + 999);
-      for (const l of (data ?? []) as Ligne[]) {
-        const a = annees.get(l.annee) ?? { total: l.total, mots: [] };
-        a.mots.push(l);
-        annees.set(l.annee, a);
+    // Les pages de 1 000 lignes sont demandées huit par huit, ensemble :
+    // une par une, la page mettait plus de dix secondes à s'ouvrir.
+    for (let debut = 0, fini = false; !fini; debut += 8000) {
+      const pages = await Promise.all(
+        Array.from({ length: 8 }, (_, i) =>
+          supabase.rpc(fonction, args).range(debut + i * 1000, debut + i * 1000 + 999),
+        ),
+      );
+      for (const { data } of pages) {
+        for (const l of (data ?? []) as Ligne[]) {
+          const a = annees.get(l.annee) ?? { total: l.total, mots: [] };
+          a.mots.push(l);
+          annees.set(l.annee, a);
+        }
+        if (!data || data.length < 1000) fini = true;
       }
-      if (!data || data.length < 1000) break;
     }
     return annees;
   };
