@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
-import { noterFacture } from "./actions";
+import { choisirTypeFacture, noterFacture } from "./actions";
 import styles from "./facture.module.css";
 
 type Facture = {
@@ -12,7 +12,14 @@ type Facture = {
   created_at: string;
   reader_id: string;
   note: string | null;
+  type_document: "facture" | "note_honoraires";
 };
+
+/** Les deux titres possibles du document, au choix du lecteur (21/11). */
+const TITRES = {
+  facture: "Facture lecture",
+  note_honoraires: "Note d’honoraires lecture",
+} as const;
 
 type Ligne = { id: string; submitted_at: string; project: { title: string } | null };
 
@@ -37,7 +44,7 @@ export default async function FacturePage({
 
   const { data: facture } = await supabase
     .from("reader_invoices")
-    .select("id, numero, tarif_cents, created_at, reader_id, note")
+    .select("id, numero, tarif_cents, created_at, reader_id, note, type_document")
     .eq("id", id)
     .maybeSingle<Facture>();
 
@@ -67,7 +74,26 @@ export default async function FacturePage({
   const euros = (c: number) => (c / 100).toLocaleString("fr-FR", { minimumFractionDigits: 2 });
 
   return (
-    <PageShell eyebrow="Espace lecteur" title="Facture lecture" theme="clair">
+    <PageShell eyebrow="Espace lecteur" title={TITRES[facture.type_document] ?? TITRES.facture} theme="clair">
+      {/* Le lecteur choisit le titre de son document ; le bouton ne
+          s'imprime pas. Seul le lecteur lui-même le voit. */}
+      {user.id === facture.reader_id && (
+        <form action={choisirTypeFacture} className={styles.choixTitre}>
+          <input type="hidden" name="facture_id" value={facture.id} />
+          {(Object.keys(TITRES) as (keyof typeof TITRES)[]).map((t) => (
+            <button
+              key={t}
+              type="submit"
+              name="type"
+              value={t}
+              className={t === facture.type_document ? styles.choixActif : styles.choix}
+              aria-pressed={t === facture.type_document}
+            >
+              {TITRES[t]}
+            </button>
+          ))}
+        </form>
+      )}
       <div className={styles.entete}>
         <div>
           <strong>{profil?.full_name ?? "—"}</strong>

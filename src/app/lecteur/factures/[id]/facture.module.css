@@ -69,3 +69,34 @@
   text-align: right;
   font-size: 0.9em;
 }
+
+/* Le choix du titre : « Facture lecture » ou « Note d'honoraires lecture ».
+   Deux boutons côte à côte, celui qui est retenu en noir. */
+.choixTitre {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 0;
+}
+
+.choix,
+.choixActif {
+  padding: 8px 16px;
+  border: 1px solid #1a1a1a;
+  border-radius: 999px;
+  background: #fff;
+  color: #1a1a1a;
+  font: inherit;
+  cursor: pointer;
+}
+
+.choixActif {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+@media print {
+  .choixTitre {
+    display: none;
+  }
+}
