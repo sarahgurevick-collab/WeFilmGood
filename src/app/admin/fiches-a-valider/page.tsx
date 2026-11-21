@@ -15,12 +15,32 @@ import Factures, { SELECTION_FACTURES, versFactures } from "../lecteurs/Factures
  * lisent bénévolement).
  */
 
+// Le format et l'auteur du projet, pour savoir d'un coup d'œil ce qu'on
+// valide (21/11, Sarah). Mêmes abréviations que « Projets en attente ».
+type ProjetFiche = {
+  id: string;
+  title: string;
+  format: string | null;
+  owner: { full_name: string | null } | null;
+};
+
+const FORMATS_COURTS: Record<string, string> = {
+  long_metrage: "LM",
+  court_metrage: "CM",
+  serie: "TV",
+  immersif_360_vr: "VR",
+  documentaire: "Doc",
+};
+
+const formatCourt = (format: string | null | undefined) =>
+  format ? (FORMATS_COURTS[format] ?? format) : "—";
+
 type PendingReport = {
   id: string;
   score: number | null;
   labellise: boolean;
   submitted_at: string;
-  project: { id: string; title: string } | null;
+  project: ProjetFiche | null;
   reader: { full_name: string | null } | null;
 };
 
@@ -32,7 +52,7 @@ export default async function FichesAValiderPage() {
   const { data: pendingReports } = await supabase
     .from("reading_reports")
     .select(
-      "id, score, labellise, submitted_at, project:projects(id, title), reader:profiles!reading_reports_reader_id_fkey(full_name)",
+      "id, score, labellise, submitted_at, project:projects(id, title, format, owner:profiles!projects_owner_id_fkey(full_name)), reader:profiles!reading_reports_reader_id_fkey(full_name)",
     )
     .eq("status", "soumise")
     .order("submitted_at", { ascending: true })
@@ -46,7 +66,7 @@ export default async function FichesAValiderPage() {
     ? await admin
         .from("legacy_reading_reports")
         .select(
-          "legacy_review_id, read_at, final_mark, reader_legacy_id, project:projects(id, title)",
+          "legacy_review_id, read_at, final_mark, reader_legacy_id, project:projects(id, title, format, owner:profiles!projects_owner_id_fkey(full_name))",
         )
         .eq("statut", 1)
         .order("read_at", { ascending: false })
@@ -56,7 +76,7 @@ export default async function FichesAValiderPage() {
             read_at: string | null;
             final_mark: number | null;
             reader_legacy_id: number | null;
-            project: { id: string; title: string } | null;
+            project: ProjetFiche | null;
           }[]
         >()
     : { data: null };
@@ -103,6 +123,8 @@ export default async function FichesAValiderPage() {
           <thead>
             <tr>
               <th>Projet</th>
+              <th>Auteur</th>
+              <th>Format</th>
               <th>Lecteur</th>
               <th>Note</th>
               <th>Rendue le</th>
@@ -121,6 +143,8 @@ export default async function FichesAValiderPage() {
                     "—"
                   )}
                 </td>
+                <td>{r.project?.owner?.full_name ?? "—"}</td>
+                <td>{formatCourt(r.project?.format)}</td>
                 <td>{r.reader?.full_name ?? "—"}</td>
                 <td>
                   {r.score ?? "—"} / 200
@@ -150,6 +174,8 @@ export default async function FichesAValiderPage() {
                     "—"
                   )}
                 </td>
+                <td>{f.project?.owner?.full_name ?? "—"}</td>
+                <td>{formatCourt(f.project?.format)}</td>
                 <td>
                   {(f.reader_legacy_id != null &&
                     nomLecteurWfg1.get(f.reader_legacy_id)) ||
