@@ -36,14 +36,6 @@
   line-height: 1.6;
 }
 
-/* Le message reçu sans adhésion (21/11) : lisible, sans expéditeur. */
-.corpsRecu {
-  margin: 0 0 12px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  line-height: 1.5;
-}
-
 .verrouille {
   display: flex;
   align-items: center;
