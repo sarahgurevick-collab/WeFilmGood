@@ -19,6 +19,7 @@ const PAGES = [
   { href: "/admin/auteurs-selectionnes", libelle: "Auteurs sélectionnés sans profil" },
   { href: "/admin/archives-lecture", libelle: "Archives de lecture" },
   { href: "/admin/statistiques", libelle: "Statistiques" },
+  { href: "/admin/films-proches", libelle: "Films proches" },
   { href: "/admin/portraits", libelle: "Portraits" },
   { href: "/admin/logos", libelle: "Logos" },
   { href: "/admin/photos", libelle: "Photos" },
