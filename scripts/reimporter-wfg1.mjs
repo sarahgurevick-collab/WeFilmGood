@@ -829,7 +829,9 @@ from public.projects p where p.id in (select wfg2_id from projets_complements un
 select 'sauvegarde', json_build_object('table', 'characters', 'ligne', row_to_json(c))::text
 from public.characters c where c.id in (select wfg2_id from personnages_complements);
 select 'sauvegarde', json_build_object('table', 'legacy_reading_reports', 'ligne', row_to_json(l))::text
-from public.legacy_reading_reports l where l.legacy_review_id in (select review_id from fiches where statut_a_monter);
+from public.legacy_reading_reports l where l.legacy_review_id in (select review_id from fiches where statut_a_monter)
+   or (coalesce(l.content, '') = '' and exists (select 1 from "${S}".projects_review s
+        where s.review_id = l.legacy_review_id and coalesce(s.analysis, '') <> ''));
 select 'sauvegarde', json_build_object('table', 'project_keywords', 'ligne', row_to_json(pk))::text
 from public.project_keywords pk where pk.project_id in (select project_id from liens_mc) and (pk.source is null or pk.source = 'ia');
 
@@ -904,6 +906,17 @@ on conflict (legacy_review_id) do nothing;
 insert into journal values ('fiches de lecture ajoutées', (select count(*) from fiches where a_creer));
 update public.legacy_reading_reports l set statut = f.s_status from fiches f where f.review_id = l.legacy_review_id and f.statut_a_monter and f.s_status in (0, 1, 2);
 insert into journal values ('statuts de fiches montés', (select count(*) from fiches where statut_a_monter));
+-- Fiche reprise vide (le lecteur venait de l'ouvrir) et rendue depuis sur
+-- WFG 1 : on pose son texte et sa note. Une fiche qui a déjà un texte sur
+-- WFG 2 n'est jamais touchée (cas de « La Clef », 21/11/2026).
+with remplies as (
+  update public.legacy_reading_reports l set content = s.analysis, final_mark = s.final_mark, marks = s.marks,
+         wfg_review = s.wfg_review, wfg_review_en = s.wfg_review_en, author_rating = s.author_rating,
+         read_at = pg_temp.date_paris(s.date)
+    from "${S}".projects_review s
+   where s.review_id = l.legacy_review_id and coalesce(l.content, '') = '' and coalesce(s.analysis, '') <> ''
+  returning 1)
+insert into journal select 'fiches vides remplies', count(*) from remplies;
 
 -- Messages.
 insert into public.project_messages (project_id, sender_id, recipient_id, body, created_at, read_at, legacy_chat_id)
