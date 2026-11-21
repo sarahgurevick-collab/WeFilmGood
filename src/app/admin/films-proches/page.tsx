@@ -7,18 +7,19 @@ import adminStyles from "../admin.module.css";
 import NavAdmin from "../NavAdmin";
 
 /**
- * Films proches (décision de Sarah, 21/11/2026) : les films français déjà
- * sortis qui portent les mêmes thèmes qu'un projet — pour choisir, par
- * exemple, le long métrage à diffuser avec le CinéCrush de la semaine.
- * Deux recherches : à partir d'un projet (ses mots-clés), ou à partir de
- * thèmes tapés à la main. Le rapprochement se fait dans la base
- * (films_proches, 0300) : les mots rares pèsent plus que les mots courants.
- * Administration seulement ; la page dit quels films sont proches, pas
- * s'ils sont disponibles. Libellés à faire valider.
+ * Films proches (Sarah, 21/11/2026) : un outil d'administration, pour
+ * toujours, qui l'aide à programmer le meilleur film en regard des projets
+ * de WFG — par exemple le long métrage diffusé avec le CinéCrush de la semaine.
  *
- * Les films que Sarah a l'autorisation de diffuser (ceux d'Artemondo, 0301)
- * sont dans la même liste que les autres, à leur rang, le titre en vert
- * (Sarah, 21/11/2026 : « plus simple », à la place d'un bloc à part).
+ * Un seul champ de recherche par mots-clés, comme celui des Galaxies. D'un
+ * côté les projets WFG qui y répondent, de l'autre les films de la base
+ * (CNC, TMDB, Artemondo), chacun rangé par pourcentage de pertinence, du
+ * plus fort au plus faible. Un projet choisi à gauche devient la recherche :
+ * ses mots-clés remplacent ceux tapés.
+ * Le calcul est dans la base (films_proches et projets_proches, 0307) : les
+ * mots rares pèsent plus que les mots courants ; 100 % = tous les mots
+ * cherchés retrouvés à l'identique.
+ * En vert : le titre d'un film que Sarah a l'autorisation de diffuser.
  */
 
 type Film = {
@@ -37,6 +38,16 @@ type Film = {
   lien: string | null;
   pays: string | null;
   source: string;
+  pourcent: number | null;
+};
+
+type Projet = {
+  project_id: string;
+  titre: string;
+  format: string | null;
+  score: number;
+  mots_communs: string[];
+  pourcent: number | null;
 };
 
 const ORIGINES = [
@@ -63,13 +74,18 @@ const paysEnFrancais = (codes: string | null) =>
 
 const jour = (d: string) =>
   new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
+const sansDoublon = (mots: string[]) => [
+  ...new Set(mots.map((m) => m.toLowerCase())),
+];
+const rouge = { color: "#DA2C25" };
+const vert = { color: "#1E8E3E" };
 
 export default async function FilmsProchesPage({
   searchParams,
 }: {
   searchParams: Promise<{
     projet?: string;
-    titre?: string;
+    q?: string;
     themes?: string;
     origine?: string;
   }>;
@@ -78,15 +94,24 @@ export default async function FilmsProchesPage({
   const { data: estAdmin } = await supabase.rpc("is_admin");
   if (estAdmin !== true) redirect("/");
 
-  const { projet: p, titre: t, themes: th, origine: o } = await searchParams;
-  const origine = ORIGINES.some((x) => x.cle === o) ? (o ?? "") : "";
+  const { projet: p, q: qq, themes: th, origine: o } = await searchParams;
   const projetId = /^[0-9a-f-]{36}$/i.test(p ?? "") ? p! : "";
-  const titre = (t ?? "").trim();
-  const themes = (th ?? "").trim();
-  const listeThemes = themes
+  const q = (qq ?? th ?? "").trim();
+  const origine = ORIGINES.some((x) => x.cle === o) ? (o ?? "") : "";
+  const mots = q
     .split(/[,;\n]+/)
     .map((x) => x.trim())
     .filter((x) => x.length >= 2);
+
+  const lien = (r: { projet?: string; q?: string; origine?: string }) => {
+    const u = new URLSearchParams();
+    if (r.projet) u.set("projet", r.projet);
+    if (r.q) u.set("q", r.q);
+    const og = r.origine ?? origine;
+    if (og) u.set("origine", og);
+    const t = u.toString();
+    return `/admin/films-proches${t ? `?${t}` : ""}`;
+  };
 
   // Les derniers CinéCrush, en raccourci.
   const { data: crushs } = await supabase
@@ -95,24 +120,10 @@ export default async function FilmsProchesPage({
     .order("semaine", { ascending: false })
     .limit(3);
 
-  // Les projets dont le titre (ou l'ancien titre) contient ce qui est tapé.
-  let trouves: { id: string; title: string; ancien_titre: string | null }[] =
-    [];
-  if (titre && !projetId) {
-    const motif = `%${titre.replace(/[%_,()]/g, " ")}%`;
-    const { data } = await supabase
-      .from("projects")
-      .select("id, title, ancien_titre")
-      .or(`title.ilike.${motif},ancien_titre.ilike.${motif}`)
-      .order("title")
-      .limit(30);
-    trouves = data ?? [];
-  }
-
   let projet: { id: string; title: string } | null = null;
   let motsProjet: string[] = [];
   if (projetId) {
-    const [{ data: pr }, { data: mots }] = await Promise.all([
+    const [{ data: pr }, { data: mk }] = await Promise.all([
       supabase
         .from("projects")
         .select("id, title")
@@ -125,110 +136,49 @@ export default async function FilmsProchesPage({
     ]);
     projet = pr;
     motsProjet = (
-      (mots ?? []) as unknown as { keywords: { label_fr: string } | null }[]
+      (mk ?? []) as unknown as { keywords: { label_fr: string } | null }[]
     )
       .map((m) => m.keywords?.label_fr ?? "")
       .filter(Boolean)
       .sort((a, b) => a.localeCompare(b, "fr"));
   }
 
+  const cherche = !!projet || mots.length > 0;
   let films: Film[] = [];
-  const cherche = !!projet || listeThemes.length > 0;
+  let projets: Projet[] = [];
+  let parTitre: { id: string; title: string; ancien_titre: string | null }[] =
+    [];
   if (cherche) {
-    const { data } = await supabase.rpc("films_proches", {
-      p_project: projet?.id ?? null,
-      p_mots: listeThemes.length ? listeThemes : null,
-      p_limite: 40,
-      p_origine: origine || null,
-    });
-    films = (data ?? []) as Film[];
+    const motif = `%${q.replace(/[%_,()]/g, " ")}%`;
+    const [f, pp, t] = await Promise.all([
+      supabase.rpc("films_proches", {
+        p_project: projet?.id ?? null,
+        p_mots: projet ? null : mots,
+        p_limite: 60,
+        p_origine: origine || null,
+      }),
+      supabase.rpc("projets_proches", {
+        p_project: projet?.id ?? null,
+        p_mots: projet ? null : mots,
+        p_limite: 60,
+      }),
+      // comme dans les Galaxies : ce qui est tapé peut aussi être un titre
+      !projet && q.length >= 3
+        ? supabase
+            .from("projects")
+            .select("id, title, ancien_titre")
+            .or(`title.ilike.${motif},ancien_titre.ilike.${motif}`)
+            .order("title")
+            .limit(8)
+        : Promise.resolve({ data: [] }),
+    ]);
+    films = (f.data ?? []) as Film[];
+    projets = (pp.data ?? []) as Projet[];
+    parTitre = (t.data ?? []) as typeof parTitre;
   }
 
-  const lien = (q: { projet?: string; themes?: string; origine?: string }) => {
-    const u = new URLSearchParams();
-    const og = q.origine ?? origine;
-    if (og) u.set("origine", og);
-    if (q.projet) u.set("projet", q.projet);
-    if (q.themes) u.set("themes", q.themes);
-    const s = u.toString();
-    return `/admin/films-proches${s ? `?${s}` : ""}`;
-  };
-
-  const tableau = (liste: Film[]) => (
-    <table className={adminStyles.table}>
-      <thead>
-        <tr>
-          <th>Film</th>
-          <th>Mots en commun</th>
-          <th>Résumé</th>
-        </tr>
-      </thead>
-      <tbody>
-        {liste.map((f) => {
-          const communs = [
-            ...new Set(f.mots_communs.map((m) => m.toLowerCase())),
-          ];
-          const autresMots = (f.mots_film ?? []).filter(
-            (m) => !communs.includes(m.toLowerCase()),
-          );
-          return (
-            <tr key={f.film_id}>
-              <td style={{ width: 220, verticalAlign: "top" }}>
-                {/* en vert : un film que Sarah a l'autorisation de diffuser */}
-                <strong
-                  style={
-                    f.diffusion_autorisee ? { color: "#1E8E3E" } : undefined
-                  }
-                >
-                  {f.titre}
-                </strong>
-                <br />
-                <span style={{ color: "var(--dim)" }}>
-                  {[f.annee, f.realisateur, paysEnFrancais(f.pays), f.genre]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </span>
-                {f.lien && (
-                  <>
-                    <br />
-                    <a href={f.lien} target="_blank" rel="noreferrer">
-                      Voir la page du film
-                      {f.partenaire ? ` (${f.partenaire})` : ""}
-                    </a>
-                  </>
-                )}
-                {f.tmdb_id && (
-                  <>
-                    <br />
-                    <a
-                      href={`https://www.themoviedb.org/movie/${f.tmdb_id}?language=fr`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Voir l&apos;affiche
-                    </a>
-                  </>
-                )}
-              </td>
-              <td style={{ width: 260, verticalAlign: "top" }}>
-                <strong style={{ color: "#DA2C25" }}>
-                  {communs.join(", ")}
-                </strong>
-                {autresMots.length > 0 && (
-                  <>
-                    <br />
-                    <span style={{ color: "var(--dim)" }}>
-                      {autresMots.join(", ")}
-                    </span>
-                  </>
-                )}
-              </td>
-              <td style={{ verticalAlign: "top" }}>{f.resume}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+  const pertinence = (n: number | null) => (
+    <span style={{ fontWeight: 700, whiteSpace: "nowrap" }}>{n ?? 0} %</span>
   );
 
   return (
@@ -238,59 +188,19 @@ export default async function FilmsProchesPage({
       title="Films proches"
       theme="clair"
     >
-      <p className={formStyles.hint}>
-        Les films déjà sortis, français et étrangers, qui portent les mêmes
-        thèmes qu&apos;un projet. La page dit quels films sont proches, pas
-        s&apos;ils sont disponibles. Visible de l&apos;administration seulement.
-      </p>
-
-      <div
-        style={{ display: "flex", flexWrap: "wrap", gap: 32, margin: "20px 0" }}
+      <form
+        className={formStyles.field}
+        style={{ margin: "8px 0 12px", maxWidth: 640 }}
       >
-        <form
-          className={formStyles.field}
-          style={{ flex: "1 1 320px", maxWidth: 460 }}
-        >
-          <span>À partir d&apos;un projet</span>
-          <input
-            name="titre"
-            aria-label="Le titre du projet"
-            defaultValue={titre}
-            placeholder="Le titre du projet"
-          />
-          {themes && <input type="hidden" name="themes" value={themes} />}
-          {origine && <input type="hidden" name="origine" value={origine} />}
-          <button
-            type="submit"
-            className={formStyles.submit}
-            style={{ marginTop: 8 }}
-          >
-            Chercher le projet
-          </button>
-        </form>
-
-        <form
-          className={formStyles.field}
-          style={{ flex: "1 1 320px", maxWidth: 460 }}
-        >
-          <span>À partir de thèmes</span>
-          <input
-            name="themes"
-            aria-label="Des thèmes, séparés par des virgules"
-            defaultValue={themes}
-            placeholder="deuil, fratrie, Bretagne"
-          />
-          {projetId && <input type="hidden" name="projet" value={projetId} />}
-          {origine && <input type="hidden" name="origine" value={origine} />}
-          <button
-            type="submit"
-            className={formStyles.submit}
-            style={{ marginTop: 8 }}
-          >
-            Chercher les films
-          </button>
-        </form>
-      </div>
+        <input
+          name="q"
+          defaultValue={projet ? "" : q}
+          placeholder="Chercher un projet, un thème, un mot-clé…"
+          aria-label="Chercher un projet, un thème, un mot-clé"
+          autoFocus={!cherche}
+        />
+        {origine && <input type="hidden" name="origine" value={origine} />}
+      </form>
 
       {(crushs ?? []).length > 0 && (
         <p className={formStyles.hint}>
@@ -310,71 +220,187 @@ export default async function FilmsProchesPage({
         </p>
       )}
 
-      {titre && !projetId && (
-        <section style={{ margin: "20px 0" }}>
-          {trouves.length === 0 ? (
-            <p>Aucun projet ne porte ce titre.</p>
-          ) : (
-            <>
-              <p className={formStyles.hint}>Choisissez le projet :</p>
-              <ul>
-                {trouves.map((x) => (
-                  <li key={x.id}>
-                    <Link href={lien({ projet: x.id, themes })}>{x.title}</Link>
-                    {x.ancien_titre && (
-                      <span style={{ color: "var(--dim)" }}>
-                        {" "}
-                        (ancien titre : {x.ancien_titre})
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-        </section>
-      )}
-
       {projet && (
-        <section style={{ margin: "20px 0" }}>
-          <h2>
+        <section style={{ margin: "16px 0" }}>
+          <h2 style={{ marginBottom: 4 }}>
             <Link href={`/projet/${projet.id}`}>{projet.title}</Link>{" "}
-            <Link
-              href={lien({ themes })}
-              style={{ fontSize: 14, fontWeight: 400 }}
-            >
+            <Link href={lien({})} style={{ fontSize: 14, fontWeight: 400 }}>
               Retirer
             </Link>
           </h2>
           <p className={formStyles.hint}>
             {motsProjet.length
               ? `Ses mots-clés : ${motsProjet.join(", ")}`
-              : "Ce projet n'a pas encore de mots-clés : ajoutez des thèmes à la main."}
+              : "Ce projet n'a pas encore de mots-clés : cherchez par thèmes."}
           </p>
         </section>
       )}
 
       {cherche && (
-        <nav className={adminStyles.annees} aria-label="Origine des films">
-          {ORIGINES.map((x) => (
-            <Link
-              key={x.cle}
-              href={lien({ projet: projetId, themes, origine: x.cle })}
-              className={
-                x.cle === origine ? adminStyles.anneeActive : adminStyles.annee
-              }
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 32,
+            alignItems: "flex-start",
+            marginTop: 20,
+          }}
+        >
+          <section style={{ flex: "1 1 340px", minWidth: 0 }}>
+            <h2>Projets WFG</h2>
+            {parTitre.length > 0 && (
+              <ul style={{ paddingLeft: 18, marginBottom: 12 }}>
+                {parTitre.map((x) => (
+                  <li key={x.id}>
+                    <Link href={lien({ projet: x.id })}>
+                      <strong>{x.title}</strong>
+                    </Link>
+                    {x.ancien_titre && (
+                      <span style={{ color: "var(--dim)" }}>
+                        {" "}
+                        (ancien titre : {x.ancien_titre})
+                      </span>
+                    )}
+                    <span style={{ color: "var(--dim)" }}>
+                      {" "}
+                      — par son titre
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {projets.length === 0 && parTitre.length === 0 && (
+              <p>Aucun projet ne porte ces thèmes.</p>
+            )}
+            {projets.length > 0 && (
+              <table className={adminStyles.table}>
+                <tbody>
+                  {projets.map((x) => (
+                    <tr key={x.project_id}>
+                      <td style={{ width: 56, verticalAlign: "top" }}>
+                        {pertinence(x.pourcent)}
+                      </td>
+                      <td style={{ verticalAlign: "top" }}>
+                        <Link href={`/projet/${x.project_id}`}>
+                          <strong>{x.titre}</strong>
+                        </Link>
+                        <br />
+                        <span style={rouge}>
+                          {sansDoublon(x.mots_communs).join(", ")}
+                        </span>
+                        <br />
+                        <Link
+                          href={lien({ projet: x.project_id })}
+                          style={{ fontSize: 13 }}
+                        >
+                          Ses films proches
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+
+          <section style={{ flex: "2 1 520px", minWidth: 0 }}>
+            <h2>Films</h2>
+            <nav
+              className={adminStyles.annees}
+              aria-label="Origine des films"
+              style={{ marginBottom: 12 }}
             >
-              {x.libelle}
-            </Link>
-          ))}
-        </nav>
+              {ORIGINES.map((x) => (
+                <Link
+                  key={x.cle}
+                  href={lien({
+                    projet: projetId,
+                    q: projet ? "" : q,
+                    origine: x.cle,
+                  })}
+                  className={
+                    x.cle === origine
+                      ? adminStyles.anneeActive
+                      : adminStyles.annee
+                  }
+                >
+                  {x.libelle}
+                </Link>
+              ))}
+            </nav>
+            {films.length === 0 && <p>Aucun film ne partage ces thèmes.</p>}
+            {films.length > 0 && (
+              <table className={adminStyles.table}>
+                <tbody>
+                  {films.map((f) => {
+                    const communs = sansDoublon(f.mots_communs);
+                    const autresMots = (f.mots_film ?? []).filter(
+                      (m) => !communs.includes(m.toLowerCase()),
+                    );
+                    return (
+                      <tr key={f.film_id}>
+                        <td style={{ width: 56, verticalAlign: "top" }}>
+                          {pertinence(f.pourcent)}
+                        </td>
+                        <td style={{ verticalAlign: "top" }}>
+                          {/* en vert : un film que Sarah a l'autorisation de diffuser */}
+                          <strong
+                            style={f.diffusion_autorisee ? vert : undefined}
+                          >
+                            {f.titre}
+                          </strong>{" "}
+                          <span style={{ color: "var(--dim)" }}>
+                            {[
+                              f.annee,
+                              f.realisateur,
+                              paysEnFrancais(f.pays),
+                              f.genre,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </span>
+                          <br />
+                          <span style={rouge}>{communs.join(", ")}</span>
+                          {autresMots.length > 0 && (
+                            <span style={{ color: "var(--dim)" }}>
+                              {" "}
+                              · {autresMots.join(", ")}
+                            </span>
+                          )}
+                          <details style={{ marginTop: 4 }}>
+                            <summary
+                              style={{ cursor: "pointer", fontSize: 13 }}
+                            >
+                              Résumé
+                            </summary>
+                            <p style={{ margin: "4px 0" }}>{f.resume}</p>
+                            {f.lien && (
+                              <a href={f.lien} target="_blank" rel="noreferrer">
+                                Voir la page du film
+                                {f.partenaire ? ` (${f.partenaire})` : ""}
+                              </a>
+                            )}
+                            {f.lien && f.tmdb_id && " · "}
+                            {f.tmdb_id && (
+                              <a
+                                href={`https://www.themoviedb.org/movie/${f.tmdb_id}?language=fr`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                Voir l&apos;affiche
+                              </a>
+                            )}
+                          </details>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </section>
+        </div>
       )}
-
-      {cherche && films.length === 0 && (
-        <p>Aucun film ne partage ces thèmes.</p>
-      )}
-
-      {films.length > 0 && tableau(films)}
     </PageShell>
   );
 }
