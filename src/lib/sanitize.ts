@@ -44,13 +44,57 @@ function convertirAncienneCouleur(html: string): string {
     .replace(/<\/font\s*>/gi, "</span>");
 }
 
-export function sanitizeFiche(html: string): string {
-  return DOMPurify.sanitize(convertirAncienneCouleur(html), {
-    ALLOWED_TAGS: BALISES,
-    // "style" ne porte que de la mise en forme, et DOMPurify en nettoie
-    // le contenu CSS au passage.
-    ALLOWED_ATTR: ["style"],
+/** Vrai si la couleur est trop sombre pour se lire sur le fond noir du site. */
+function couleurTropSombre(valeur: string): boolean {
+  const v = valeur.trim().toLowerCase();
+  if (["black", "windowtext", "navy", "darkblue", "midnightblue"].includes(v)) return true;
+  let rvb: number[] | null = null;
+  const hex = v.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/);
+  if (hex) {
+    const h = hex[1].length === 3 ? hex[1].replace(/./g, "$&$&") : hex[1];
+    rvb = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+  }
+  const rgb = v.match(/^rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)/);
+  if (rgb) rvb = [Number(rgb[1]), Number(rgb[2]), Number(rgb[3])];
+  if (!rvb) return false;
+  // Sombre = aucune des trois composantes n'est vive. Le rouge du site
+  // (#DA2C25) ou un rouge pur restent : ils se lisent sur le noir.
+  return Math.max(...rvb) < 130;
+}
+
+/**
+ * Un texte collé depuis Word ou un email arrive avec « couleur : noir »
+ * posée sur chaque paragraphe : sur le fond noir du site, la fiche
+ * devient invisible (21/11, « Martin prend son envol »). On retire donc
+ * les couleurs trop sombres et les fonds collés ; les couleurs voulues
+ * (le rouge des anciennes fiches) restent.
+ */
+function retirerCouleursIllisibles(html: string): string {
+  return html.replace(/\sstyle="([^"]*)"/gi, (_, style: string) => {
+    const gardees = style
+      .split(";")
+      .map((d) => d.trim())
+      .filter((d) => {
+        if (!d) return false;
+        const [prop, ...reste] = d.split(":");
+        const nom = prop.trim().toLowerCase();
+        if (nom === "background" || nom === "background-color") return false;
+        if (nom === "color") return !couleurTropSombre(reste.join(":"));
+        return true;
+      });
+    return gardees.length ? ` style="${gardees.join("; ")}"` : "";
   });
+}
+
+export function sanitizeFiche(html: string): string {
+  return retirerCouleursIllisibles(
+    DOMPurify.sanitize(convertirAncienneCouleur(html), {
+      ALLOWED_TAGS: BALISES,
+      // "style" ne porte que de la mise en forme, et DOMPurify en nettoie
+      // le contenu CSS au passage.
+      ALLOWED_ATTR: ["style"],
+    }),
+  );
 }
 
 /**
