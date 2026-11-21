@@ -1,11 +1,12 @@
 import Link from "next/link";
+import ChoixJauge from "@/components/ChoixJauge";
 import { rateReport } from "@/app/projet/[id]/fiche-lecture/actions";
-import { EMOJIS_SATISFACTION } from "@/lib/satisfaction";
 import { createClient } from "@/lib/supabase/server";
 import styles from "./BandeauFichesANoter.module.css";
 
 /**
- * Tant qu'un auteur n'a pas choisi d'emoji pour une fiche de lecture publiée,
+ * Tant qu'un auteur n'a pas noté une fiche de lecture publiée (un cercle à
+ * quatre positions depuis le 21/11),
  * ce bandeau reste en haut de Mes projets et de la fiche projet (04/11/2026,
  * Sarah). Il note d'un clic, sans quitter la page.
  */
@@ -41,13 +42,7 @@ export default async function BandeauFichesANoter({
               </>
             )}
           </p>
-          <div className={styles.emojis}>
-            {EMOJIS_SATISFACTION.map((emoji, i) => (
-              <button key={emoji} type="submit" name="stars" value={i + 1} className={styles.emoji} aria-label={`${i + 1} sur 5`}>
-                {emoji}
-              </button>
-            ))}
-          </div>
+          <ChoixJauge taille={64} envoiDirect surDisque />
         </form>
       ))}
     </div>

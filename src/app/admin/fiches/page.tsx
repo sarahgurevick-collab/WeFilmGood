@@ -5,6 +5,7 @@ import NavAdmin from "../NavAdmin";
 import formStyles from "@/components/form.module.css";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { positionDepuisCinq } from "@/lib/satisfaction";
 import SelecteurAnnees from "./SelecteurAnnees";
 import TableauFiches, { type LigneFiche } from "./TableauFiches";
 import LienScenario from "../LienScenario";
@@ -242,7 +243,7 @@ export default async function TableauFichesPage({
         statut: f.statut === 1 ? "À valider" : "Vérifiée",
         note: f.final_mark,
         analyse: texteBrut(f.content, true),
-        satisfaction: f.author_rating || null,
+        satisfaction: positionDepuisCinq(f.author_rating),
         // Relue sur WFG 1 jusqu'à la bascule : le A mène à la fiche, en
         // lecture seule.
         lienFiche:

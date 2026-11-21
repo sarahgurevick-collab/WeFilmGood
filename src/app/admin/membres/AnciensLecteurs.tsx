@@ -1,6 +1,7 @@
 import Link from "next/link";
 import formStyles from "@/components/form.module.css";
-import { EMOJIS_SATISFACTION } from "@/lib/satisfaction";
+import JaugeSatisfaction from "@/components/JaugeSatisfaction";
+import { COULEURS_SATISFACTION, positionDepuisCinq } from "@/lib/satisfaction";
 import { createAdminClient } from "@/lib/supabase/admin";
 import adminStyles from "../admin.module.css";
 import styles from "./page.module.css";
@@ -36,7 +37,8 @@ export default async function AnciensLecteurs({ satisfaction }: { satisfaction: 
     const e = parAncien.get(f.reader_legacy_id) ?? { n: 0, derniere: null, notes: [] };
     e.n += 1;
     if (f.read_at && (!e.derniere || f.read_at > e.derniere)) e.derniere = f.read_at;
-    if (f.author_rating && f.author_rating >= 1 && f.author_rating <= 5) e.notes.push(f.author_rating);
+    const position = positionDepuisCinq(f.author_rating);
+    if (position) e.notes.push(position);
     parAncien.set(f.reader_legacy_id, e);
   }
   // Ceux qui ont un compte sur le nouveau site sont déjà dans la liste du dessus.
@@ -99,11 +101,11 @@ export default async function AnciensLecteurs({ satisfaction }: { satisfaction: 
                 {satisfaction && (
                   <td className={styles.satisfaction}>
                     <Link href={`/admin/lecteurs/ancien/${l.id}`}>
-                      {EMOJIS_SATISFACTION.map((emoji, i) => {
+                      {COULEURS_SATISFACTION.map((couleur, i) => {
                         const n = l.notes.filter((x) => x === i + 1).length;
                         return (
-                          <span key={emoji} className={n ? undefined : styles.satisfactionZero}>
-                            {emoji} {n}
+                          <span key={couleur} className={n ? undefined : styles.satisfactionZero}>
+                            <JaugeSatisfaction position={i + 1} taille={18} sansChiffre /> {n}
                           </span>
                         );
                       })}

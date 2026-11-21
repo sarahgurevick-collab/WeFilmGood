@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { EMOJIS_SATISFACTION, emojiSatisfaction } from "@/lib/satisfaction";
+import ChoixJauge from "@/components/ChoixJauge";
+import JaugeSatisfaction from "@/components/JaugeSatisfaction";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -76,9 +77,7 @@ export default async function FicheLecturePage({
       {rating ? (
         <p className={formStyles.hint}>
           Vous avez attribué{" "}
-          <span className={styles.emojiDonne} role="img" aria-label={`${rating.stars} sur 5`}>
-            {emojiSatisfaction(rating.stars)}
-          </span>{" "}
+          <JaugeSatisfaction position={rating.stars} taille={36} />{" "}
           à cette fiche de lecture.
         </p>
       ) : (
@@ -87,15 +86,10 @@ export default async function FicheLecturePage({
           <input type="hidden" name="project_id" value={id} />
           <div className={formStyles.field}>
             <span>Notez cette analyse</span>
-            {/* Cinq emojis à la place des étoiles (04/11, Sarah, modèle « emoji radio
-                group » de 21st.dev) ; la note reste de 1 à 5. */}
-            <div className={styles.emojis} role="radiogroup" aria-label="Notez cette analyse">
-              {EMOJIS_SATISFACTION.map((emoji, i) => (
-                <label key={emoji} className={styles.emoji}>
-                  <input type="radio" name="stars" value={i + 1} required aria-label={`${i + 1} sur 5`} />
-                  <span aria-hidden="true">{emoji}</span>
-                </label>
-              ))}
+            {/* Un cercle à quatre positions, aux couleurs du logo, à la place des
+                cinq emojis (21/11, Sarah) ; la note va de 1 à 4. */}
+            <div>
+              <ChoixJauge taille={132} />
             </div>
           </div>
           <button type="submit" className={formStyles.submit}>

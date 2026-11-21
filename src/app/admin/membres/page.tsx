@@ -10,7 +10,8 @@ import { prendreLaPlace } from "../profils/prise-de-place";
 import styles from "./page.module.css";
 import CasesAffichage from "./CasesAffichage";
 import AnciensLecteurs from "./AnciensLecteurs";
-import { EMOJIS_SATISFACTION } from "@/lib/satisfaction";
+import JaugeSatisfaction from "@/components/JaugeSatisfaction";
+import { COULEURS_SATISFACTION, positionDepuisCinq, positionSatisfaction } from "@/lib/satisfaction";
 import FiltresAuto from "./FiltresAuto";
 import FormatsLecteur from "./FormatsLecteur";
 import DisponibiliteLecteur from "./DisponibiliteLecteur";
@@ -204,7 +205,8 @@ export default async function MembresPage({
   // Pour les lecteurs (27/09, l'ancienne page Lecteurs rejoint celle-ci) :
   // le nombre de fiches et la date de la dernière, WFG 1 et WFG 2 réunis.
   // Et, derrière « Affichage », la satisfaction des auteurs (04/11) : combien
-  // de fiches ont reçu chaque emoji.
+  // de fiches ont reçu chaque position (quatre depuis le 21/11 ; les notes
+  // sur cinq de WFG 1 sont converties).
   const fichesDe = new Map<string, { n: number; derniere: string | null; notes: number[] }>();
   if (service && (sp.metier === "Lecteur" || String(sp.aff ?? "").includes("satisfaction"))) {
     const ids = lignesLecteur.map((r) => r.profile_id);
@@ -219,11 +221,11 @@ export default async function MembresPage({
     const ajoute = (id: string, date: string | null, note: number | null | undefined) => {
       const e = fichesDe.get(id) ?? { n: 0, derniere: null, notes: [] };
       e.n += 1;
-      if (note && note >= 1 && note <= 5) e.notes.push(note);
+      if (note) e.notes.push(note);
       if (date && (!e.derniere || date > e.derniere)) e.derniere = date;
       fichesDe.set(id, e);
     };
-    for (const f of nouvelles ?? []) ajoute(f.reader_id, f.submitted_at, f.rating?.stars);
+    for (const f of nouvelles ?? []) ajoute(f.reader_id, f.submitted_at, positionSatisfaction(f.rating?.stars));
     const parAncien = new Map((anciensIds ?? []).map((p) => [p.legacy_user_id as number, p.id as string]));
     if (parAncien.size) {
       // Plus de 1 000 fiches : l'API n'en rend que 1 000 par lecture.
@@ -235,7 +237,7 @@ export default async function MembresPage({
           .neq("statut", 0)
           .order("legacy_review_id")
           .range(debut, debut + 999);
-        for (const f of anciennes ?? []) ajoute(parAncien.get(f.reader_legacy_id)!, f.read_at, f.author_rating);
+        for (const f of anciennes ?? []) ajoute(parAncien.get(f.reader_legacy_id)!, f.read_at, positionDepuisCinq(f.author_rating));
         if (!anciennes || anciennes.length < 1000) break;
       }
     }
@@ -660,11 +662,11 @@ export default async function MembresPage({
                   <td className={styles.satisfaction}>
                     {fichesDe.has(m.profile_id) ? (
                       <Link href={`/admin/lecteurs/${m.profile_id}`}>
-                        {EMOJIS_SATISFACTION.map((emoji, i) => {
+                        {COULEURS_SATISFACTION.map((couleur, i) => {
                           const n = fichesDe.get(m.profile_id)!.notes.filter((x) => x === i + 1).length;
                           return (
-                            <span key={emoji} className={n ? undefined : styles.satisfactionZero}>
-                              {emoji} {n}
+                            <span key={couleur} className={n ? undefined : styles.satisfactionZero}>
+                              <JaugeSatisfaction position={i + 1} taille={18} sansChiffre /> {n}
                             </span>
                           );
                         })}

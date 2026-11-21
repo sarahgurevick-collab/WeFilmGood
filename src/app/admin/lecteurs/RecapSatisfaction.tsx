@@ -1,35 +1,40 @@
-import { EMOJIS_SATISFACTION } from "@/lib/satisfaction";
+import JaugeSatisfaction from "@/components/JaugeSatisfaction";
+import { COULEURS_SATISFACTION, positionSatisfaction } from "@/lib/satisfaction";
 import styles from "./recap.module.css";
 
 /**
- * Combien d'auteurs ont répondu par chaque emoji aux fiches d'un lecteur
- * (04/11/2026, Sarah, d'après une capture en barres) : une barre par emoji,
- * le nombre au-dessus, l'emoji dessous ; les fiches sans réponse à part.
+ * Combien d'auteurs ont choisi chaque position pour les fiches d'un lecteur
+ * (04/11/2026, Sarah, d'après une capture en barres) : une barre par
+ * position, le nombre au-dessus, la jauge dessous ; les fiches sans réponse
+ * à part. Quatre positions aux couleurs du logo depuis le 21/11.
+ *
+ * `notes` : des positions de 1 à 4 (les notes sur cinq de WFG 1 sont
+ * converties avant, avec positionDepuisCinq).
  */
 export default function RecapSatisfaction({ notes }: { notes: (number | null | undefined)[] }) {
-  const comptes = EMOJIS_SATISFACTION.map((_, i) => notes.filter((n) => n === i + 1).length);
-  const sansNote = notes.filter((n) => !n || n < 1 || n > 5).length;
+  const comptes = COULEURS_SATISFACTION.map((_, i) => notes.filter((n) => n === i + 1).length);
+  const sansNote = notes.filter((n) => !positionSatisfaction(n)).length;
   const max = Math.max(1, ...comptes);
   const total = comptes.reduce((a, b) => a + b, 0);
 
   return (
     <figure className={styles.recap}>
       <div className={styles.barres} role="list" aria-label="Satisfaction des auteurs">
-        {EMOJIS_SATISFACTION.map((emoji, i) => (
+        {COULEURS_SATISFACTION.map((couleur, i) => (
           <div
-            key={emoji}
+            key={couleur}
             className={styles.colonne}
             role="listitem"
-            aria-label={`${emoji} ${i + 1} sur 5 : ${comptes[i]} fiche${comptes[i] > 1 ? "s" : ""}`}
+            aria-label={`${i + 1} sur 4 : ${comptes[i]} fiche${comptes[i] > 1 ? "s" : ""}`}
             title={`${comptes[i]} fiche${comptes[i] > 1 ? "s" : ""}${total ? ` (${Math.round((comptes[i] / total) * 100)} %)` : ""}`}
           >
             <span className={styles.nombre}>{comptes[i]}</span>
             <span
-              className={`${styles.barre} ${styles[`n${i + 1}`]}`}
-              style={{ height: `${Math.max(comptes[i] ? 4 : 0, (comptes[i] / max) * 100)}%` }}
+              className={styles.barre}
+              style={{ background: couleur, height: `${Math.max(comptes[i] ? 4 : 0, (comptes[i] / max) * 100)}%` }}
             />
             <span className={styles.emoji} aria-hidden="true">
-              {emoji}
+              <JaugeSatisfaction position={i + 1} taille={30} />
             </span>
           </div>
         ))}

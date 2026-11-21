@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { emojiSatisfaction } from "@/lib/satisfaction";
+import JaugeSatisfaction from "@/components/JaugeSatisfaction";
+import { positionDepuisCinq } from "@/lib/satisfaction";
 import { notFound, redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -186,7 +187,7 @@ export default async function FicheLecteurPage({
 
       <h2 className={adminStyles.subhead}>Satisfaction des auteurs</h2>
       <RecapSatisfaction
-        notes={[...(nouvelles ?? []).map((f) => f.rating?.stars), ...(anciennes ?? []).map((f) => f.author_rating)]}
+        notes={[...(nouvelles ?? []).map((f) => f.rating?.stars), ...(anciennes ?? []).map((f) => positionDepuisCinq(f.author_rating))]}
       />
 
       <h2 className={adminStyles.subhead}>Fiches du nouveau site</h2>
@@ -230,8 +231,8 @@ export default async function FicheLecteurPage({
                 </td>
                 <td>{new Date(f.submitted_at).toLocaleDateString("fr-FR")}</td>
                 <td>{f.score ?? "—"}</td>
-                <td className={adminStyles.emojiCellule} title={f.rating ? `${f.rating.stars} sur 5` : undefined}>
-                  {emojiSatisfaction(f.rating?.stars)}
+                <td className={adminStyles.emojiCellule} title={f.rating ? `${f.rating.stars} sur 4` : undefined}>
+                  <JaugeSatisfaction position={f.rating?.stars} />
                 </td>
                 <td>
                   <Link href={`/admin/fiches/${f.id}`}>
@@ -296,7 +297,7 @@ export default async function FicheLecteurPage({
                     )}
                   </td>
                   <td>{f.final_mark ?? "—"}</td>
-                  <td className={adminStyles.emojiCellule} title={f.author_rating ? `${f.author_rating} sur 5` : undefined}>{emojiSatisfaction(f.author_rating)}</td>
+                  <td className={adminStyles.emojiCellule} title={f.author_rating ? `${f.author_rating} étoile${f.author_rating > 1 ? "s" : ""} sur 5 sur WFG 1` : undefined}><JaugeSatisfaction position={positionDepuisCinq(f.author_rating)} /></td>
                   <td>
                     <Link
                       href={`/admin/fiches/ancienne/${f.legacy_review_id}`}

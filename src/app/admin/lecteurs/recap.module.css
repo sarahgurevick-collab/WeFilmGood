@@ -38,18 +38,10 @@
   border-radius: 4px 4px 0 0;
 }
 
-/* Du rouge (déçu) au vert (ravi), le gris au milieu. */
-.n1 { background: #b8322a; }
-.n2 { background: #e08a7c; }
-.n3 { background: #a3a3a3; }
-.n4 { background: #7fbf8f; }
-.n5 { background: #2f7d4f; }
-
 .emoji {
   position: absolute;
   bottom: -38px;
-  font-size: 28px;
-  line-height: 1;
+  line-height: 0;
 }
 
 .legende {

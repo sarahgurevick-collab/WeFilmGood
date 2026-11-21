@@ -28,36 +28,3 @@
   color: #fff;
   text-decoration: underline;
 }
-
-.emojis {
-  display: flex;
-  gap: 8px;
-}
-
-.emoji {
-  width: 46px;
-  height: 46px;
-  border: none;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.92);
-  font-size: 24px;
-  line-height: 1;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.emoji:hover,
-.emoji:focus-visible {
-  transform: scale(1.1);
-}
-
-.emoji:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .emoji {
-    transition: none;
-  }
-}

@@ -1,6 +1,6 @@
 "use client";
 
-import { emojiSatisfaction } from "@/lib/satisfaction";
+import JaugeSatisfaction from "@/components/JaugeSatisfaction";
 import { useMemo, useState, type ReactNode } from "react";
 import MenuCases from "./MenuCases";
 import adminStyles from "../admin.module.css";
@@ -289,10 +289,10 @@ export default function TableauFiches({
                   <td
                     className={`${styles.serre} ${styles.etoiles}`}
                     aria-label={
-                      l.satisfaction ? `${l.satisfaction} sur 5` : "Pas de note"
+                      l.satisfaction ? `${l.satisfaction} sur 4` : "Pas de note"
                     }
                   >
-                    {emojiSatisfaction(l.satisfaction)}
+                    <JaugeSatisfaction position={l.satisfaction} taille={28} />
                   </td>
                   )}
                   {colonne === "bandeau" && (

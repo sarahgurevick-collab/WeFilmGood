@@ -1,6 +1,7 @@
 import Link from "next/link";
 import RecapSatisfaction from "../../RecapSatisfaction";
-import { emojiSatisfaction } from "@/lib/satisfaction";
+import JaugeSatisfaction from "@/components/JaugeSatisfaction";
+import { positionDepuisCinq } from "@/lib/satisfaction";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -115,7 +116,7 @@ export default async function AncienLecteurPage({
       )}
 
       <h2 className={adminStyles.subhead}>Satisfaction des auteurs</h2>
-      <RecapSatisfaction notes={(fiches ?? []).map((f) => f.author_rating)} />
+      <RecapSatisfaction notes={(fiches ?? []).map((f) => positionDepuisCinq(f.author_rating))} />
 
       <h2 className={adminStyles.subhead}>Ses fiches</h2>
       {(fiches ?? []).length === 0 ? (
@@ -149,7 +150,7 @@ export default async function AncienLecteurPage({
                   )}
                 </td>
                 <td>{f.final_mark ?? "—"}</td>
-                <td className={adminStyles.emojiCellule} title={f.author_rating ? `${f.author_rating} sur 5` : undefined}>{emojiSatisfaction(f.author_rating)}</td>
+                <td className={adminStyles.emojiCellule} title={f.author_rating ? `${f.author_rating} étoile${f.author_rating > 1 ? "s" : ""} sur 5 sur WFG 1` : undefined}><JaugeSatisfaction position={positionDepuisCinq(f.author_rating)} /></td>
                 <td>
                   <Link
                     href={`/admin/fiches/ancienne/${f.legacy_review_id}`}

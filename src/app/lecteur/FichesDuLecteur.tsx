@@ -1,6 +1,7 @@
 import Link from "next/link";
 import RecapSatisfaction from "@/app/admin/lecteurs/RecapSatisfaction";
-import { emojiSatisfaction } from "@/lib/satisfaction";
+import JaugeSatisfaction from "@/components/JaugeSatisfaction";
+import { positionDepuisCinq } from "@/lib/satisfaction";
 import formStyles from "@/components/form.module.css";
 import styles from "./lecteur.module.css";
 import { etablirFacture } from "./mes-fiches/actions";
@@ -85,7 +86,7 @@ export default async function FichesDuLecteur({
       : { data: null };
   const lectures = anciennes ?? [];
 
-  const notes = [...(reports ?? []).map((r) => r.rating?.stars), ...lectures.map((f) => f.author_rating)];
+  const notes = [...(reports ?? []).map((r) => r.rating?.stars), ...lectures.map((f) => positionDepuisCinq(f.author_rating))];
 
   return (
     <>
@@ -146,7 +147,7 @@ export default async function FichesDuLecteur({
                   </td>
                   <td>{r.score ?? "—"} / 200</td>
                   <td>{STATUTS[r.status] ?? r.status}</td>
-                  <td className={styles.emojiCellule}>{emojiSatisfaction(r.rating?.stars)}</td>
+                  <td className={styles.emojiCellule}><JaugeSatisfaction position={r.rating?.stars} /></td>
                   <td>{r.payment_status === "payee" ? "Payée" : "Due"}</td>
                 </tr>
               ))}
@@ -195,7 +196,7 @@ export default async function FichesDuLecteur({
                       : "—"}
                   </td>
                   <td>{f.final_mark ?? "—"}</td>
-                  <td className={styles.emojiCellule}>{emojiSatisfaction(f.author_rating)}</td>
+                  <td className={styles.emojiCellule}><JaugeSatisfaction position={positionDepuisCinq(f.author_rating)} /></td>
                 </tr>
               ))}
             </tbody>

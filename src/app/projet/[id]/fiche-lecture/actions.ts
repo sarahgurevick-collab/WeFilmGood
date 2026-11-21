@@ -17,7 +17,7 @@ export async function rateReport(formData: FormData) {
   if (!user) {
     redirect(`/connexion?next=/projet/${projectId}/fiche-lecture`);
   }
-  if (!Number.isInteger(stars) || stars < 1 || stars > 5) {
+  if (!Number.isInteger(stars) || stars < 1 || stars > 4) {
     redirect(`/projet/${projectId}/fiche-lecture`);
   }
 
