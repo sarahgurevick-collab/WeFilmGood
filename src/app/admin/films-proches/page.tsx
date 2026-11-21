@@ -17,8 +17,8 @@ import NavAdmin from "../NavAdmin";
  * s'ils sont disponibles. Libellés à faire valider.
  *
  * Les films que Sarah a l'autorisation de diffuser (ceux d'Artemondo, 0301)
- * sont montrés à part, au-dessus : ce sont ceux qu'elle peut programmer,
- * pas forcément les plus proches — les mots en commun le disent.
+ * sont dans la même liste que les autres, à leur rang, le titre en vert
+ * (Sarah, 21/11/2026 : « plus simple », à la place d'un bloc à part).
  */
 
 type Film = {
@@ -154,9 +154,6 @@ export default async function FilmsProchesPage({
     return `/admin/films-proches${s ? `?${s}` : ""}`;
   };
 
-  const autorises = films.filter((f) => f.diffusion_autorisee);
-  const autres = films.filter((f) => !f.diffusion_autorisee);
-
   const tableau = (liste: Film[]) => (
     <table className={adminStyles.table}>
       <thead>
@@ -177,7 +174,14 @@ export default async function FilmsProchesPage({
           return (
             <tr key={f.film_id}>
               <td style={{ width: 220, verticalAlign: "top" }}>
-                <strong>{f.titre}</strong>
+                {/* en vert : un film que Sarah a l'autorisation de diffuser */}
+                <strong
+                  style={
+                    f.diffusion_autorisee ? { color: "#1E8E3E" } : undefined
+                  }
+                >
+                  {f.titre}
+                </strong>
                 <br />
                 <span style={{ color: "var(--dim)" }}>
                   {[f.annee, f.realisateur, paysEnFrancais(f.pays), f.genre]
@@ -370,19 +374,7 @@ export default async function FilmsProchesPage({
         <p>Aucun film ne partage ces thèmes.</p>
       )}
 
-      {autorises.length > 0 && (
-        <section style={{ marginBottom: 32 }}>
-          <h2>Films que vous pouvez diffuser</h2>
-          {tableau(autorises)}
-        </section>
-      )}
-
-      {autres.length > 0 && (
-        <section>
-          {autorises.length > 0 && <h2>Les autres films proches</h2>}
-          {tableau(autres)}
-        </section>
-      )}
+      {films.length > 0 && tableau(films)}
     </PageShell>
   );
 }
