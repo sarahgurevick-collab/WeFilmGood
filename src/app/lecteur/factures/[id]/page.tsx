@@ -97,6 +97,8 @@ export default async function FacturePage({
           <br />
           WeFilmGood
           <br />
+          Association loi 1901
+          <br />
           33 avenue Laplace
           <br />
           94110 Arcueil
@@ -142,6 +144,10 @@ export default async function FacturePage({
           </tr>
         </tfoot>
       </table>
+
+      <p className={styles.mentionTva}>
+        (Non assujetti à la TVA conformément à l&apos;article 293B du CGI)
+      </p>
 
       {facture.note && <p className={styles.note}>{facture.note}</p>}
 

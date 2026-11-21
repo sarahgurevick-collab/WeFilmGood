@@ -61,3 +61,11 @@
     display: none;
   }
 }
+
+/* La mention de TVA, sous le total, alignée sur les montants. */
+.mentionTva {
+  margin: 8px 0 0;
+  padding: 0 12px;
+  text-align: right;
+  font-size: 0.9em;
+}
