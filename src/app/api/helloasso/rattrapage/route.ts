@@ -1,4 +1,4 @@
-import { rattraperAdhesions } from "@/lib/adhesion-paiement";
+import { rattraperAdhesions, suivrePrelevements } from "@/lib/adhesion-paiement";
 import { rattraperDemandesLecture } from "@/lib/lecture-paiement";
 import { rattraperAchatsSoleils } from "@/lib/soleils-paiement";
 
@@ -6,7 +6,8 @@ import { rattraperAchatsSoleils } from "@/lib/soleils-paiement";
  * Le rattrapage horaire : appelé toutes les heures par le serveur
  * (crontab de l'utilisateur wfg), au cas où une notification de
  * HelloAsso se serait perdue. Protégé par un jeton. Il revérifie les
- * adhésions et les lectures en attente de paiement.
+ * adhésions et les lectures en attente de paiement, et suit les
+ * prélèvements des adhésions au mois (21/11).
  */
 export async function POST(request: Request) {
   const attendu = process.env.HELLOASSO_RATTRAPAGE_JETON;
@@ -16,5 +17,6 @@ export async function POST(request: Request) {
   const adhesions = await rattraperAdhesions();
   const lectures = await rattraperDemandesLecture();
   const soleils = await rattraperAchatsSoleils();
-  return Response.json({ ...adhesions, lectures, soleils });
+  const prelevements = await suivrePrelevements();
+  return Response.json({ ...adhesions, lectures, soleils, prelevements });
 }

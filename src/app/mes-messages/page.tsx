@@ -23,14 +23,15 @@ type MessageEnAttente = {
   id: string;
   project_title: string | null;
   objet: string | null;
+  body: string | null;
   created_at: string;
 };
 
 /**
  * Mes messages (03/10) : une conversation par correspondant et par
- * projet, avec les messages reçus et envoyés. Sans adhésion, on ne lit
- * rien et on ne sait pas qui a écrit : seul compte le fait qu'un message
- * attend, c'est la raison d'adhérer.
+ * projet, avec les messages reçus et envoyés. Sans adhésion (21/11,
+ * Sarah) : on lit le message reçu, mais on ne sait pas qui l'a écrit et
+ * on ne peut pas répondre ; pour cela, il faut régler son adhésion.
  */
 export default async function MesMessagesPage() {
   const supabase = await createClient();
@@ -57,7 +58,7 @@ export default async function MesMessagesPage() {
     adherent === true
       ? []
       : (
-          (((await supabase.from("mes_messages_recus").select("id, project_id, sender_id, project_title, objet, created_at")).data as
+          (((await supabase.from("mes_messages_recus").select("id, project_id, sender_id, project_title, objet, body, created_at")).data as
             | (MessageEnAttente & { project_id: string | null; sender_id: string | null })[]
             | null) ?? [])
         ).filter((m) =>
@@ -142,10 +143,8 @@ export default async function MesMessagesPage() {
                 </span>
                 <span className={styles.date}>{new Date(m.created_at).toLocaleDateString("fr-FR")}</span>
               </div>
+              {m.body && <p className={styles.corpsRecu}>{m.body}</p>}
               <div className={styles.verrouille}>
-                <p className={styles.verrouilleTexte}>
-                  Un membre vous a écrit. Votre adhésion doit être active pour lire ce message.
-                </p>
                 <Link href="/adhesion" className={styles.verrouilleBouton}>
                   Réactiver mon adhésion
                 </Link>

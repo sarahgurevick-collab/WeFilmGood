@@ -104,7 +104,8 @@ Messagerie (« Mes messages »)
 - L'enveloppe est barrée tant qu'on n'a pas d'adhésion (« Pour contacter cet auteur, vous avez besoin d'une adhésion. »). Elle est barrée aussi quand la personne a fermé momentanément sa messagerie (« … est indisponible momentanément, messagerie saturée. »).
 - Le destinataire reçoit un email qui le prévient d'un message, sans le texte ni le nom de l'expéditeur.
 - « Mes messages » regroupe les échanges en conversations (messages reçus et envoyés, une ligne par correspondant et par projet) et on peut y répondre.
-- Pour lire et répondre, il faut une adhésion active. Sans adhésion, on voit qu'un message attend, à propos de quel projet, mais pas qui l'a écrit : « Un membre vous a écrit. Votre adhésion doit être active pour lire ce message. »
+- Pour savoir qui a écrit et pour répondre, il faut une adhésion active. Sans adhésion, on lit le message reçu et on voit à propos de quel projet, mais pas qui l'a écrit, et on ne peut pas répondre ; le bouton « Réactiver mon adhésion » mène à la page Adhésion.
+- Adhésion au mois : si un prélèvement mensuel est refusé, HelloAsso écrit au membre avec un lien pour régulariser par carte. Sans régularisation dans les 7 jours, l'adhésion s'arrête : le membre perd ses droits d'adhérent, ses projets restent visibles. Dès que le paiement est régularisé, l'adhésion repart.
 - On ne peut pas écrire à un lecteur.
 
 Adhésion (page « Adhésion », dans le Menu)

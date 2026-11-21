@@ -198,6 +198,20 @@ export default async function MembresPage({
         .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
     : { data: null };
   const offertes = new Set(((lignesOffertes ?? []) as { profile_id: string }[]).map((r) => r.profile_id));
+  // Les adhésions au mois dont un prélèvement a été refusé (21/11) : le
+  // jour du refus, et l'arrêt 7 jours plus tard s'il n'est pas régularisé.
+  const { data: lignesImpayes } = service
+    ? await service
+        .from("memberships")
+        .select("profile_id, prelevement_refuse_le, arretee_pour_impaye_le")
+        .not("prelevement_refuse_le", "is", null)
+    : { data: null };
+  const impayes = new Map(
+    ((lignesImpayes ?? []) as { profile_id: string; prelevement_refuse_le: string; arretee_pour_impaye_le: string | null }[]).map(
+      (r) => [r.profile_id, r],
+    ),
+  );
+  const jourCourt = (d: string | Date) => new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long" });
 
   const formatsDe = new Map(lignesLecteur.map((r) => [r.profile_id, r.formats]));
   const dispoDe = new Map(lignesLecteur.map((r) => [r.profile_id, r.availability_status]));
@@ -627,6 +641,14 @@ export default async function MembresPage({
                 </td>
                 <td>
                   <AdhesionMembre profileId={m.profile_id} plan={m.adhesion} />
+                  {impayes.has(m.profile_id) && (
+                    <p style={{ margin: "4px 0 0", fontSize: 12, color: "#da2c25" }}>
+                      Prélèvement refusé le {jourCourt(impayes.get(m.profile_id)!.prelevement_refuse_le)}.{" "}
+                      {impayes.get(m.profile_id)!.arretee_pour_impaye_le
+                        ? `Adhésion arrêtée le ${jourCourt(impayes.get(m.profile_id)!.arretee_pour_impaye_le!)}.`
+                        : `Arrêt le ${jourCourt(new Date(new Date(impayes.get(m.profile_id)!.prelevement_refuse_le).getTime() + 7 * 24 * 3600 * 1000))}.`}
+                    </p>
+                  )}
                 </td>
                 {metier === "Lecteur" && (
                   <td>

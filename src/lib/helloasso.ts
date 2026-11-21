@@ -153,7 +153,7 @@ export type Intention = {
   metadata?: Record<string, string>;
   order?: {
     id: number;
-    payments?: { id: number; amount: number; state: string }[];
+    payments?: { id: number; amount: number; state: string; date?: string; installmentNumber?: number }[];
   };
 };
 
@@ -168,4 +168,17 @@ export function montantPaye(i: Intention) {
   return (i.order?.payments ?? [])
     .filter((p) => p.state === "Authorized" || p.state === "Processed")
     .reduce((n, p) => n + p.amount, 0);
+}
+
+/**
+ * Les états qu'HelloAsso donne à un prélèvement qui n'a pas abouti (21/11,
+ * d'après sa documentation) : refusé par la banque, échéance annulée,
+ * paiement contesté par le payeur. HelloAsso écrit lui-même au payeur,
+ * avec un lien pour régulariser par carte.
+ */
+const ETATS_REFUSES = ["Refused", "Canceled", "Contested"];
+
+/** Les prélèvements refusés d'un paiement en plusieurs fois. */
+export function prelevementsRefuses(i: Intention) {
+  return (i.order?.payments ?? []).filter((p) => ETATS_REFUSES.includes(p.state));
 }
