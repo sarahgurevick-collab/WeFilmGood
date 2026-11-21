@@ -33,7 +33,12 @@ export async function chargerFiches(
       final_mark: number | null;
       wfg_review: string | null;
       read_at: string | null;
-    }[]).map((f) => ({
+    }[])
+      // Une lecture attribuée sur WFG 1 mais jamais rédigée là-bas laisse
+      // une fiche vide (ni texte, ni avis, note à 0) : elle n'est ni
+      // montrée ni comptée (21/11, Sarah). Elle reste dans la base.
+      .filter((f) => (f.content ?? "").trim() || (f.wfg_review ?? "").trim() || (f.final_mark ?? 0) > 0)
+      .map((f) => ({
       cle: `h${f.legacy_review_id}`,
       date: f.read_at,
       note: f.final_mark,
