@@ -23,10 +23,10 @@ const ELEMENTS_MENU = [
   { label: "Nos appels à projets", href: "/appels-a-projets" },
   { label: "ScenarioLabs", href: "/ateliers" },
   { label: "Maison des Scénaristes", href: "/association" },
-  { label: "Tutoriels", href: "/tutoriels" },
   { label: "Masterclass", href: "/masterclass" },
   { label: "Notre histoire", href: "/notre-histoire" },
   { label: "Témoignages", href: "/temoignages" },
+  { label: "Tutoriels", href: "/tutoriels" },
 ];
 
 /**
