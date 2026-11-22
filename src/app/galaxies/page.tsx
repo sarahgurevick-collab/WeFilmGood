@@ -13,6 +13,7 @@ import Apparition from "./Apparition";
 import CarteAstre from "./CarteAstre";
 import { PERSONNAGES_PAR_PAGE, cartesPersonnages, lotDeCartes } from "./lot";
 import GrandNombre from "./GrandNombre";
+import CineCrushEnTete from "./CineCrushEnTete";
 import { createClient } from "@/lib/supabase/server";
 import RechercheAvancee from "./RechercheAvancee";
 import { adresse, lireFiltres, nombreDeFiltres } from "./filtres";
@@ -162,8 +163,7 @@ export default async function ProjetsPage({
     >
       {/* Le CinéCrush de la semaine, seul en haut (12/11, Sarah) : à l'arrivée
           seulement, pas sur les pages suivantes ni sur une liste filtrée. */}
-      {/* CinéCrush retiré le 22/11 (Sarah : « on le remettra plus tard ») */}
-      {/* {page === 1 && nbFiltres === 0 && typeof params.q !== "string" && <CineCrushEnTete supabase={supabase} />} */}
+      {page === 1 && nbFiltres === 0 && typeof params.q !== "string" && <CineCrushEnTete supabase={supabase} />}
       {/* La recherche avancée reste toujours là ; la liste des projets en dessous
           disparaît dès qu'un mot est cherché : ce qu'on ne demande pas ne
           revient pas après les résultats (03/10, demande de Sarah). */}
