@@ -39,6 +39,7 @@ type Film = {
   pays: string | null;
   source: string;
   pourcent: number | null;
+  prix: string[] | null;
 };
 
 type Projet = {
@@ -88,27 +89,30 @@ export default async function FilmsProchesPage({
     q?: string;
     themes?: string;
     origine?: string;
+    primes?: string;
   }>;
 }) {
   const supabase = await createClient();
   const { data: estAdmin } = await supabase.rpc("is_admin");
   if (estAdmin !== true) redirect("/");
 
-  const { projet: p, q: qq, themes: th, origine: o } = await searchParams;
+  const { projet: p, q: qq, themes: th, origine: o, primes: pr } = await searchParams;
   const projetId = /^[0-9a-f-]{36}$/i.test(p ?? "") ? p! : "";
   const q = (qq ?? th ?? "").trim();
   const origine = ORIGINES.some((x) => x.cle === o) ? (o ?? "") : "";
+  const primes = pr === "1";
   const mots = q
     .split(/[,;\n]+/)
     .map((x) => x.trim())
     .filter((x) => x.length >= 2);
 
-  const lien = (r: { projet?: string; q?: string; origine?: string }) => {
+  const lien = (r: { projet?: string; q?: string; origine?: string; primes?: boolean }) => {
     const u = new URLSearchParams();
     if (r.projet) u.set("projet", r.projet);
     if (r.q) u.set("q", r.q);
     const og = r.origine ?? origine;
     if (og) u.set("origine", og);
+    if (r.primes ?? primes) u.set("primes", "1");
     const t = u.toString();
     return `/admin/films-proches${t ? `?${t}` : ""}`;
   };
@@ -156,6 +160,7 @@ export default async function FilmsProchesPage({
         p_mots: projet ? null : mots,
         p_limite: 60,
         p_origine: origine || null,
+        p_primes: primes,
       }),
       supabase.rpc("projets_proches", {
         p_project: projet?.id ?? null,
@@ -200,6 +205,7 @@ export default async function FilmsProchesPage({
           autoFocus={!cherche}
         />
         {origine && <input type="hidden" name="origine" value={origine} />}
+        {primes && <input type="hidden" name="primes" value="1" />}
       </form>
 
       {(crushs ?? []).length > 0 && (
@@ -327,6 +333,17 @@ export default async function FilmsProchesPage({
                   {x.libelle}
                 </Link>
               ))}
+              {/* filtre : seulement les films ayant reçu au moins un prix */}
+              <Link
+                href={lien({
+                  projet: projetId,
+                  q: projet ? "" : q,
+                  primes: !primes,
+                })}
+                className={primes ? adminStyles.anneeActive : adminStyles.annee}
+              >
+                Films primés
+              </Link>
             </nav>
             {films.length === 0 && <p>Aucun film ne partage ces thèmes.</p>}
             {films.length > 0 && (
@@ -359,6 +376,12 @@ export default async function FilmsProchesPage({
                               .filter(Boolean)
                               .join(" · ")}
                           </span>
+                          {f.prix && f.prix.length > 0 && (
+                            <span style={{ fontSize: 13 }}>
+                              {" "}
+                              🏆 Primé ({f.prix.length})
+                            </span>
+                          )}
                           <br />
                           <span style={rouge}>{communs.join(", ")}</span>
                           {autresMots.length > 0 && (
@@ -374,6 +397,11 @@ export default async function FilmsProchesPage({
                               Résumé
                             </summary>
                             <p style={{ margin: "4px 0" }}>{f.resume}</p>
+                            {f.prix && f.prix.length > 0 && (
+                              <p style={{ margin: "4px 0" }}>
+                                <strong>Prix :</strong> {f.prix.join(" · ")}
+                              </p>
+                            )}
                             {f.lien && (
                               <a href={f.lien} target="_blank" rel="noreferrer">
                                 Voir la page du film
