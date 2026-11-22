@@ -186,6 +186,37 @@ export default async function ProjetsEnAttentePage() {
     : { data: [] };
   const profilDe = new Map((profilsRows ?? []).map((x) => [x.id, x]));
 
+  // Les analyses rendues sur WFG 1 comptent aussi (22/11, Sarah : « le
+  // projet a déjà été analysé mais tu ne le vois pas ») : elles sont dans
+  // les fiches héritées, avec le numéro de compte WFG 1 du lecteur.
+  const { data: heritees } = idsProjets.length
+    ? await (service ?? supabase)
+        .from("legacy_reading_reports")
+        .select("project_id, reader_legacy_id, final_mark, read_at")
+        .in("project_id", idsProjets)
+        .order("read_at", { ascending: false })
+        .returns<{ project_id: string; reader_legacy_id: number | null; final_mark: number | null; read_at: string | null }[]>()
+    : { data: [] };
+  const idsAnciens = [...new Set((heritees ?? []).map((h) => h.reader_legacy_id).filter((n): n is number => n != null))];
+  const nomAncien = new Map<number, string>();
+  if (idsAnciens.length) {
+    const [{ data: anciens }, { data: repris }] = await Promise.all([
+      (service ?? supabase).from("legacy_profiles").select("legacy_user_id, full_name").in("legacy_user_id", idsAnciens)
+        .returns<{ legacy_user_id: number; full_name: string | null }[]>(),
+      (service ?? supabase).from("profiles").select("legacy_user_id, full_name").in("legacy_user_id", idsAnciens)
+        .returns<{ legacy_user_id: number; full_name: string | null }[]>(),
+    ]);
+    for (const a of anciens ?? []) if (a.full_name) nomAncien.set(a.legacy_user_id, a.full_name);
+    for (const a of repris ?? []) if (a.full_name) nomAncien.set(a.legacy_user_id, a.full_name);
+  }
+  const analysesWfg1 = new Map<string, string[]>();
+  for (const h of heritees ?? []) {
+    const nom = (h.reader_legacy_id != null && nomAncien.get(h.reader_legacy_id)) || "?";
+    const jour = h.read_at ? new Date(h.read_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "2-digit" }) : null;
+    const detail = [ETATS.rendue, jour ? `le ${jour}` : null].filter(Boolean).join(" ") + (h.final_mark != null ? `, ${h.final_mark}` : "");
+    analysesWfg1.set(h.project_id, [...(analysesWfg1.get(h.project_id) ?? []), `${nom} (${detail})`]);
+  }
+
   // Les liens signés (1 h) vers les scénarios, demandés en une seule fois.
   // Un lien demandé ligne par ligne (17/11) : avec une centaine de projets,
   // une partie des demandes échouait et le carré vert manquait au hasard.
@@ -305,12 +336,15 @@ export default async function ProjetsEnAttentePage() {
                   </td>
                   <td>
                     <MemoProjet projectId={p.project_id} memo={memoDe.get(p.project_id) ?? null} titre={p.title} />
-                    {(dejaLusPar.get(p.project_id) ?? []).length > 0 && (
+                    {(dejaLusPar.get(p.project_id) ?? []).length + (analysesWfg1.get(p.project_id) ?? []).length > 0 && (
                       <div className={formStyles.hint} style={{ marginTop: 4, fontSize: 12 }}>
                         Déjà vu par :{" "}
-                        {(dejaLusPar.get(p.project_id) ?? [])
-                          .map((x) => `${profilDe.get(x.reader_id)?.full_name ?? "?"} (${ETATS[x.status] ?? x.status})`)
-                          .join(", ")}
+                        {[
+                          ...(dejaLusPar.get(p.project_id) ?? []).map(
+                            (x) => `${profilDe.get(x.reader_id)?.full_name ?? "?"} (${ETATS[x.status] ?? x.status})`,
+                          ),
+                          ...(analysesWfg1.get(p.project_id) ?? []),
+                        ].join(", ")}
                       </div>
                     )}
                   </td>

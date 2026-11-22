@@ -19,7 +19,10 @@ export default function MemoProjet({ projectId, memo, titre }: { projectId: stri
   return (
     <div>
       <div>
-        {titre}{" "}
+        {/* Le titre mène à la fiche du projet (22/11) : moodboard, personnages… */}
+        <a href={`/projet/${projectId}`} target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>
+          {titre}
+        </a>{" "}
         {!ouvert && (
           <button
             type="button"
