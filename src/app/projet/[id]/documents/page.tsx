@@ -224,6 +224,10 @@ export default async function DocumentsPage({
           lieux, visages — qui donnent le ton de votre film. Le Moodboard peut être consulté par
           les lecteurs en validant la case au moment du dépôt du projet à la lecture.
         </p>
+        {/* Phrase validée par Sarah le 22/11 : le cadre est fait pour des photos isolées. */}
+        <p className={formStyles.hint}>
+          Une photo par image : évitez les pages de dossier qui en regroupent plusieurs.
+        </p>
         {moodboard.length > 0 && (
           <ul className={styles.grilleImages}>
             {moodboard.map((m) => (
