@@ -9,6 +9,7 @@ import { signerImages } from "../fichiers";
 import { modeHelloAsso, testeurPaiement } from "@/lib/helloasso";
 import { basculerAutorisationStoryPitch, enregistrerDocuments } from "./actions";
 import BoutonRetirerPhoto from "./BoutonRetirerPhoto";
+import ZoneMoodboard from "./ZoneMoodboard";
 import ImagePresentation from "./ImagePresentation";
 import EnvoiVideopitch, { type DepotAffiche } from "./EnvoiVideopitch";
 import VideopitchLecteur from "@/components/VideopitchLecteur";
@@ -239,11 +240,11 @@ export default async function DocumentsPage({
           </ul>
         )}
         {/* Plus de limite au nombre de photos (14/10, Sarah). */}
-        <label className={formStyles.field}>
+        <div className={formStyles.field}>
           <span>{moodboard.length ? "Ajouter des photos" : "Choisir des photos"}</span>
-          <ChampFichier name="moodboard" accept={accept} multiple alleger />
-          <span className={formStyles.hint}>Vous pouvez en choisir plusieurs à la fois.</span>
-        </label>
+          <ZoneMoodboard projectId={projet.id} />
+          <span className={formStyles.hint}>Vous pouvez en glisser ou en choisir plusieurs à la fois.</span>
+        </div>
 
         {(scenarioModifiable || lienScenario) && <h2 className={styles.sousTitre}>Le scénario</h2>}
         {scenario && lienScenario && (

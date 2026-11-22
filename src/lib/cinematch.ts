@@ -129,7 +129,7 @@ export type ResultatCineMatch = {
   assez: boolean;
   match: Match | null;
   adherent: boolean;
-  /** Profil complété à 100 % : avec l'adhésion, donne droit au nom et à la photo nette. */
+  /** Profil complété à 100 % (photo de profil comprise) : avec l'adhésion, donne droit au nom et à la photo nette. */
   complet: boolean;
   /** Ce qui manque au profil pour être complet (intitulés de « Mon profil »). */
   manquants: string[];
@@ -159,6 +159,7 @@ export async function resultatCineMatch(
   const nbReponses = Object.keys(reponses).length;
   const assez = nbReponses >= MIN_REPONSES;
   const adherent = adhesion === true;
+  // La photo de profil compte dans la jauge depuis le 17/11/2026 (Sarah).
   const complet = completion.pourcent === 100;
   const match = assez ? await meilleurMatch(reponses, userId) : null;
 

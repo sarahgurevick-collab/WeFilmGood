@@ -258,3 +258,24 @@ export async function basculerAutorisationStoryPitch(formData: FormData) {
   revalidatePath(`/projet/${id}/documents`);
   redirect(`/projet/${id}/documents`);
 }
+
+/**
+ * Une photo du Moodboard, envoyée seule (22/11) : la zone de dépôt envoie les
+ * photos une par une, sans limite de nombre ni de poids total, et chacune
+ * apparaît dès qu'elle est enregistrée.
+ */
+export async function ajouterPhotoMoodboard(formData: FormData): Promise<{ ok: boolean }> {
+  const id = formData.get("project_id") as string;
+  const image = formData.get("photo") as File | null;
+  const { supabase, projet } = await chargerProjetAModifier(id, "documents");
+  if (!image || image.size === 0 || !IMAGES.includes(image.type)) return { ok: false };
+  const chemin = await deposerImage(supabase, projet.owner_id, id, image, "moodboard");
+  if (!chemin) return { ok: false };
+  const { error } = await supabase.from("project_files").insert({
+    project_id: id,
+    storage_path: chemin,
+    kind: "moodboard",
+    original_name: image.name,
+  });
+  return { ok: !error };
+}

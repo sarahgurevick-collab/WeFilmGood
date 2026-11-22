@@ -17,7 +17,7 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "className"> &
 
 const LARGEUR_MAX = 1600;
 
-async function reduire(f: File): Promise<File> {
+export async function reduireImage(f: File): Promise<File> {
   if (!f.type.startsWith("image/") || f.size < 400 * 1024) return f;
   try {
     const bmp = await createImageBitmap(f, { imageOrientation: "from-image" });
@@ -69,7 +69,7 @@ export default function ChampFichier({ onChange, multiple, alleger, "data-visite
           let fichiers = Array.from(champ.files ?? []);
           if (alleger && fichiers.length) {
             setNoms(fichiers.map((f) => f.name));
-            fichiers = await Promise.all(fichiers.map(reduire));
+            fichiers = await Promise.all(fichiers.map(reduireImage));
             const lot = new DataTransfer();
             fichiers.forEach((f) => lot.items.add(f));
             champ.files = lot.files;

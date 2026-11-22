@@ -45,11 +45,11 @@ const arrondi = (n: number, total: number) => (total === 0 ? 0 : Math.round((n /
 
 /**
  * Où en est le profil. `pourcent` reste la jauge globale du sommaire
- * (neuf repères) ; `pourcentBloc` détaille chaque bloc pour le pourcentage
+ * (dix repères) ; `pourcentBloc` détaille chaque bloc pour le pourcentage
  * affiché à côté de son titre — la réponse à « c'est bien rempli ? » du
  * bloc qu'on a sous les yeux, pas du profil entier.
  *
- *  - qui êtes-vous : catégorie, ville, pays, au moins une langue, et la
+ *  - qui êtes-vous : photo de profil, catégorie, ville, pays, au moins une langue, et la
  *    référence professionnelle — seulement pour un producteur ou un
  *    autre talent, à qui elle est demandée ;
  *  - votre parcours : biofilmographie, au moins un métier, au moins un
@@ -72,7 +72,7 @@ export async function calculerCompletion(
     supabase
       .from("profiles")
       .select(
-        "full_name, first_name, category, validation_status, city, country, biofilmo, website, reseaux_reponse, site_reponse, autre_metier_actif, autre_genre_actif, personality_answers",
+        "full_name, first_name, category, validation_status, avatar_url, city, country, biofilmo, website, reseaux_reponse, site_reponse, autre_metier_actif, autre_genre_actif, personality_answers",
       )
       .eq("id", userId)
       .maybeSingle(),
@@ -115,6 +115,9 @@ export async function calculerCompletion(
   // Chaque repère porte l'intitulé du champ dans « Mon profil » : la bulle
   // de CinéMatch dit au membre ce qui lui manque (Sarah, 16/11/2026).
   const reperes: [boolean, string][] = [
+    // La photo compte dans la jauge depuis le 17/11/2026 (Sarah) : sans
+    // elle, le profil n'est pas complet.
+    [!!profil?.avatar_url, "Photo de profil"],
     [!!profil?.category, "Je suis…"],
     [!!profil?.city, "Ville"],
     [!!profil?.country, "Pays"],
@@ -133,6 +136,7 @@ export async function calculerCompletion(
   // plafonner à 80 % faute d'un champ qui ne le concerne pas.
   const doitProuver = profil?.category === "producteur" || profil?.category === "talent";
   const criteresIdentite = [
+    !!profil?.avatar_url,
     !!profil?.category,
     !!profil?.city,
     !!profil?.country,
