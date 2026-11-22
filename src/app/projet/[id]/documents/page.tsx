@@ -241,7 +241,7 @@ export default async function DocumentsPage({
         {/* Plus de limite au nombre de photos (14/10, Sarah). */}
         <label className={formStyles.field}>
           <span>{moodboard.length ? "Ajouter des photos" : "Choisir des photos"}</span>
-          <ChampFichier name="moodboard" accept={accept} multiple />
+          <ChampFichier name="moodboard" accept={accept} multiple alleger />
           <span className={formStyles.hint}>Vous pouvez en choisir plusieurs à la fois.</span>
         </label>
 

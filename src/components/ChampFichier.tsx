@@ -9,7 +9,34 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "className"> &
   /** Repère de la visite guidée : posé sur le bouton visible, pas sur le
       champ masqué (qui ne fait qu'un pixel). */
   "data-visite"?: string;
+  /** Allège les images dans le navigateur dès qu'elles sont choisies (1600 px, JPEG) :
+      des photos de téléphone à plusieurs Mo, envoyées ensemble, dépassaient la limite
+      d'une requête (25 Mo) et l'envoi échouait sans rien dire (22/11). */
+  alleger?: boolean;
 };
+
+const LARGEUR_MAX = 1600;
+
+async function reduire(f: File): Promise<File> {
+  if (!f.type.startsWith("image/") || f.size < 400 * 1024) return f;
+  try {
+    const bmp = await createImageBitmap(f, { imageOrientation: "from-image" });
+    const k = Math.min(1, LARGEUR_MAX / bmp.width);
+    const c = document.createElement("canvas");
+    c.width = Math.round(bmp.width * k);
+    c.height = Math.round(bmp.height * k);
+    const ctx = c.getContext("2d");
+    if (!ctx) return f;
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.drawImage(bmp, 0, 0, c.width, c.height);
+    const blob: Blob | null = await new Promise((r) => c.toBlob(r, "image/jpeg", 0.85));
+    if (!blob || blob.size >= f.size) return f;
+    return new File([blob], f.name.replace(/\.[^.]+$/, "") + ".jpg", { type: "image/jpeg" });
+  } catch {
+    return f;
+  }
+}
 
 /**
  * Un champ « fichier » dont le bouton suit la langue du globe.
@@ -22,7 +49,7 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "className"> &
  * en français ou en anglais, protégés de la traduction automatique.
  * S'emploie dans une <label> comme le champ natif qu'il remplace.
  */
-export default function ChampFichier({ onChange, multiple, "data-visite": visite, ...reste }: Props) {
+export default function ChampFichier({ onChange, multiple, alleger, "data-visite": visite, ...reste }: Props) {
   const langue = useLangueDuGlobe();
   const [noms, setNoms] = useState<string[]>([]);
   const en = langue === "en";
@@ -37,8 +64,17 @@ export default function ChampFichier({ onChange, multiple, "data-visite": visite
         type="file"
         multiple={multiple}
         className={styles.cache}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          setNoms(Array.from(e.target.files ?? []).map((f) => f.name));
+        onChange={async (e: ChangeEvent<HTMLInputElement>) => {
+          const champ = e.target;
+          let fichiers = Array.from(champ.files ?? []);
+          if (alleger && fichiers.length) {
+            setNoms(fichiers.map((f) => f.name));
+            fichiers = await Promise.all(fichiers.map(reduire));
+            const lot = new DataTransfer();
+            fichiers.forEach((f) => lot.items.add(f));
+            champ.files = lot.files;
+          }
+          setNoms(fichiers.map((f) => f.name));
           onChange?.(e);
         }}
         {...reste}
