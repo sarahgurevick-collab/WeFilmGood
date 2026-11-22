@@ -15,7 +15,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const [sortie, combienTxt = "5000", dejaChemin, vague = "recents"] = process.argv.slice(2);
-const anciens = vague === "anciens";
+const anciens = vague === "anciens" || vague === "anciens2";
+const seuilBas = vague === "anciens2"; // troisième vague (22/11) : seuils de votes plus bas
 const combien = Number(combienTxt);
 const jeton = readFileSync(new URL("../.env.local", import.meta.url), "utf8").match(/^TMDB_READ_TOKEN=(.+)$/m)[1].trim();
 const deja = new Set(dejaChemin ? JSON.parse(readFileSync(dejaChemin, "utf8")) : []);
@@ -38,7 +39,14 @@ async function parPaquets(liste, taille, fn) {
 const dates = anciens
   ? "primary_release_date.lte=2000-12-31&language=fr-FR"
   : "primary_release_date.gte=2001-01-01&primary_release_date.lte=2025-12-31&without_original_language=fr&language=fr-FR";
-const listes = anciens
+const listes = seuilBas
+  ? [
+      { tri: `sort_by=vote_count.desc&vote_count.gte=15&${dates}`, pages: 500 },
+      { tri: `sort_by=vote_average.desc&vote_count.gte=40&${dates}`, pages: 300 },
+      { tri: `sort_by=vote_count.desc&vote_count.gte=8&without_original_language=en&${dates}`, pages: 400 },
+      { tri: `sort_by=vote_average.desc&vote_count.gte=20&without_original_language=en&${dates}`, pages: 300 },
+    ]
+  : anciens
   ? [
       { tri: `sort_by=vote_count.desc&vote_count.gte=80&${dates}`, pages: 250 },
       { tri: `sort_by=vote_average.desc&vote_count.gte=200&${dates}`, pages: 150 },
