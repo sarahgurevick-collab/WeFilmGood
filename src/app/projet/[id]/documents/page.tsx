@@ -49,7 +49,7 @@ export default async function DocumentsPage({
     aPositionner?.storage_path,
     ...moodboard.map((m) => m.storage_path),
   ]);
-  const accept = "image/jpeg,image/png,image/webp";
+  const accept = "image/jpeg,image/png,image/webp,image/avif";
 
   // Le scénario se relit dans la page, page par page, comme sur WFG 1
   // (22/11, remarque d'un auteur reprise par Sarah). Lien signé une heure,
@@ -209,7 +209,7 @@ export default async function DocumentsPage({
         <h2 className={styles.sousTitre}>L&apos;image de présentation</h2>
         <p className={formStyles.hint}>
           C&apos;est elle qui représente votre projet dans les Galaxies, et en haut de votre
-          fiche. Format 16/9 (paysage), JPG ou PNG. N&apos;y faites figurer ni votre nom ni le
+          fiche. Format 16/9 (paysage), JPG, PNG, WebP ou AVIF. N&apos;y faites figurer ni votre nom ni le
           titre.
         </p>
         <ImagePresentation

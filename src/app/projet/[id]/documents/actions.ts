@@ -27,10 +27,10 @@ export async function enregistrerDocuments(formData: FormData) {
   );
 
   if (vignette && vignette.size > 0 && !IMAGES.includes(vignette.type)) {
-    echec("L'image de présentation doit être un JPG ou un PNG.");
+    echec("L'image de présentation doit être un JPG, un PNG, un WebP ou un AVIF.");
   }
   if (moodboard.some((f) => !IMAGES.includes(f.type))) {
-    echec("Le Moodboard n'accepte que des photos JPG ou PNG.");
+    echec("Le Moodboard n'accepte que des photos JPG, PNG, WebP ou AVIF.");
   }
   const scenario = formData.get("scenario") as File | null;
   if (scenario && scenario.size > 0 && scenario.type !== "application/pdf") {

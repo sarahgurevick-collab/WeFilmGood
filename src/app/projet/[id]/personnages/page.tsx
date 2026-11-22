@@ -149,7 +149,7 @@ function FormulairePersonnage({
       >
         <label className={styles.boutonPhoto}>
           <span>{photo ? "Remplacer le portrait" : "Portrait (JPG ou PNG)"}</span>
-          <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" />
+          <input type="file" name="photo" accept="image/jpeg,image/png,image/webp,image/avif" />
         </label>
         {/* « Enregistrer » sous le portrait (15/10, Sarah). Il enregistre tous
             les cadres modifiés, pas seulement le sien (03/11). */}

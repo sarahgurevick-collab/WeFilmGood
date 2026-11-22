@@ -9,7 +9,7 @@ import { alleger } from "@/lib/image";
  * « scenarios ». Chaque envoi renvoie le chemin stocké, ou null s'il a
  * été refusé — l'appelant prévient alors l'auteur, au lieu de se taire.
  */
-export const IMAGES = ["image/jpeg", "image/png", "image/webp"];
+export const IMAGES = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 // Neuf photos (03/10, Sarah) : trois rangées de trois dans le cadre du moodboard.
 
 const BUCKET_IMAGES = "project-media";

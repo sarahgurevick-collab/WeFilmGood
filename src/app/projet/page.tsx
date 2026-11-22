@@ -59,7 +59,7 @@ export default async function NouvelleFichePage({
                 fiche. Format 16/9 (paysage), JPG ou PNG. N&apos;y faites figurer ni votre nom ni le
                 titre.
               </span>
-              <ChampFichier name="vignette" accept="image/jpeg,image/png,image/webp" data-visite="vignette" />
+              <ChampFichier name="vignette" accept="image/jpeg,image/png,image/webp,image/avif" data-visite="vignette" />
               <span className={formStyles.hint}>Inutile de la compresser : nous nous en chargeons.</span>
             </label>
             </>

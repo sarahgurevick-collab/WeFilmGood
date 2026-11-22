@@ -105,7 +105,7 @@ export async function poserPhoto(formData: FormData) {
   const retour = (m?: string) =>
     redirect(`/admin/portraits?avis=sans${m ? `&erreur=${encodeURIComponent(m)}` : ""}`);
   if (!id || !photo || photo.size === 0) retour("Choisissez d’abord une photo.");
-  if (!IMAGES.includes(photo!.type)) retour("La photo doit être une image JPG, PNG ou WebP.");
+  if (!IMAGES.includes(photo!.type)) retour("La photo doit être une image JPG, PNG, WebP ou AVIF.");
 
   const a = await clientAidant();
   const { data: perso } = await a

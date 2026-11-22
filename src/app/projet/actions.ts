@@ -74,7 +74,7 @@ export async function createProject(formData: FormData) {
   const vignette = formData.get("vignette") as File | null;
   const aVignette = !!vignette && vignette.size > 0;
   if (aVignette && !IMAGES.includes(vignette.type)) {
-    echec("L'image de présentation doit être un JPG ou un PNG.");
+    echec("L'image de présentation doit être un JPG, un PNG, un WebP ou un AVIF.");
   }
 
   const { data: project, error } = await supabase
