@@ -144,7 +144,8 @@ export default async function FicheAdminPage({
           <ChampNote depart={score} />
         </label>
 
-        {enregistre && <p className={formStyles.hint}>Enregistré.</p>}
+        {enregistre === "1" && <p className={formStyles.hint}>Enregistré.</p>}
+        {enregistre === "0" && <p className={formStyles.hint}>L&apos;enregistrement a échoué : rien n&apos;a été gardé. Réessayez.</p>}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
           <button type="submit" formAction={enregistrerBrouillon} formNoValidate className={formStyles.submit}>
             Enregistrer

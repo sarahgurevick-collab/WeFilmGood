@@ -101,7 +101,7 @@ export async function enregistrerBrouillon(formData: FormData) {
 
   await poserMotivation(supabase, reportId, formData);
 
-  await supabase.from("fiches_brouillons_admin").upsert({
+  const { error } = await supabase.from("fiches_brouillons_admin").upsert({
     reading_report_id: reportId,
     content,
     score: score !== null && Number.isInteger(score) && score >= 0 && score <= 200 ? score : null,
@@ -110,5 +110,10 @@ export async function enregistrerBrouillon(formData: FormData) {
     enregistre_le: new Date().toISOString(),
   });
 
+  // Un échec ne doit jamais passer pour un « Enregistré ».
+  if (error) {
+    console.error("Enregistrement de la fiche refusé :", error.message);
+    redirect(`/admin/fiches/${reportId}?enregistre=0`);
+  }
   redirect(`/admin/fiches/${reportId}?enregistre=1`);
 }
