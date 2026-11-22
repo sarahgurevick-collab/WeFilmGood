@@ -1,3 +1,4 @@
+import CoeurNote from "@/components/CoeurNote";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import FicheContent from "@/components/FicheContent";
@@ -83,6 +84,7 @@ export default async function FichesDuProjetPage({
                     {" — "}
                     {f.note}/200
                     {f.note > 150 && " · labellisé"}
+                    <CoeurNote note={f.note} />
                   </span>
                 )}
               </summary>

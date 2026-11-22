@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import ChampNote from "./ChampNote";
 import PageShell from "@/components/PageShell";
 import NavAdmin from "../../NavAdmin";
 import formStyles from "@/components/form.module.css";
@@ -138,14 +139,7 @@ export default async function FicheAdminPage({
 
         <label className={formStyles.field}>
           <span>Note publiée (au-delà de 150, le projet est labellisé)</span>
-          <input
-            type="number"
-            name="score"
-            min={0}
-            max={200}
-            defaultValue={score}
-            required
-          />
+          <ChampNote depart={score} />
         </label>
 
         {enregistre && <p className={formStyles.hint}>Enregistré.</p>}

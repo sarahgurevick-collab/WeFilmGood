@@ -1,5 +1,6 @@
 "use client";
 
+import CoeurNote from "@/components/CoeurNote";
 import JaugeSatisfaction from "@/components/JaugeSatisfaction";
 import { useMemo, useState, type ReactNode } from "react";
 import MenuCases from "./MenuCases";
@@ -385,8 +386,13 @@ export default function TableauFiches({
  * telle quelle, et une fiche ne se rejette jamais (décision du 23/09).
  */
 function Note({ ligne }: { ligne: LigneFiche }) {
-  const texte = ligne.note ?? "—";
-  if (ligne.statut !== "À valider") return <>{texte}</>;
+  const texte = (
+    <>
+      {ligne.note ?? "—"}
+      <CoeurNote note={ligne.note} />
+    </>
+  );
+  if (ligne.statut !== "À valider") return texte;
   const titre = "Fiche à relire — note du lecteur, à confirmer";
   return ligne.lienFiche ? (
     <a href={ligne.lienFiche} className={styles.noteAValider} title={titre}>
