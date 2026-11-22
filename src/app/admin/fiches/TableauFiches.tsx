@@ -132,7 +132,15 @@ export default function TableauFiches({
       return mots.every((m) => texte.includes(m));
     });
     const { colonne, sens } = tri;
+    // Les lignes dont le titre contient ce qu'on cherche passent en tête
+    // (22/11, Sarah) : « La Part des Anges » ramenait 62 fiches, chaque mot
+    // se trouvant quelque part dans une analyse, et la bonne était noyée.
+    const cherche = mots.join(" ");
+    const parTitre = (l: LigneFiche) =>
+      cherche && sansAccents(l.titre ?? "").replace(/\s+/g, " ").includes(cherche) ? 0 : 1;
     return filtrees.sort((a, b) => {
+      const ecart = parTitre(a) - parTitre(b);
+      if (ecart) return ecart;
       const va = valeur(a, colonne);
       const vb = valeur(b, colonne);
       return (va < vb ? -1 : va > vb ? 1 : 0) * sens;
