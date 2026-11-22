@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import Frise, { type EtapeFrise } from "@/components/Frise";
 import PageShell from "@/components/PageShell";
@@ -48,6 +49,10 @@ export default async function CineCrushPage({
 }: {
   searchParams: Promise<{ erreur?: string; attente?: string }>;
 }) {
+  // CinéCrush retiré le 22/11 (Sarah : « on le remettra plus tard ») :
+  // passer `retire` à false pour rouvrir la page.
+  const retire = true as boolean;
+  if (retire) redirect("/galaxies");
   const { erreur, attente } = await searchParams;
   const supabase = await createClient();
   const {
