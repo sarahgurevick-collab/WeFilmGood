@@ -9,6 +9,7 @@ import RichTextEditor from "@/components/RichTextEditor";
 import { sanitizeFiche } from "@/lib/sanitize";
 import { createClient } from "@/lib/supabase/server";
 import { enregistrerBrouillon, publishReport } from "./actions";
+import PanneauFilmsAVoir from "../PanneauFilmsAVoir";
 
 type Report = {
   id: string;
@@ -152,6 +153,10 @@ export default async function FicheAdminPage({
           </button>
         </div>
       </form>
+
+      {report.project && (
+        <PanneauFilmsAVoir projectId={report.project.id} retour={`/admin/fiches/${report.id}`} />
+      )}
 
       <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
         <Link href="/admin/fiches-a-valider">

@@ -6,6 +6,8 @@ import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { chargerFiches } from "../fiches-donnees";
+import FilmsAVoir, { chargerFilmsAVoir } from "../FilmsAVoir";
+import PanneauFilmsAVoir from "@/app/admin/fiches/PanneauFilmsAVoir";
 import { archivesDuProjet } from "@/lib/archives-lecture";
 import styles from "../fiches.module.css";
 import Surligne from "@/components/Surligne";
@@ -47,6 +49,7 @@ export default async function FichesDuProjetPage({
   // synthèse de lecture (31/10, Sarah).
   const { data: estAdmin } = await supabase.rpc("is_admin");
   const archives = estAdmin === true ? await archivesDuProjet(id) : [];
+  const filmsAVoir = await chargerFilmsAVoir(supabase, id);
   const dateFr = (d: string | null) =>
     d ? new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "Date inconnue";
 
@@ -139,6 +142,8 @@ export default async function FichesDuProjetPage({
           ))}
         </>
       )}
+      <FilmsAVoir films={filmsAVoir} />
+      {estAdmin === true && <PanneauFilmsAVoir projectId={id} retour={`/projet/${id}/fiches`} />}
     </PageShell>
   );
 }

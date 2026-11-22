@@ -5,6 +5,7 @@ import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../admin.module.css";
 import NavAdmin from "../NavAdmin";
+import { ajouterFilmAVoir } from "../fiches/films-a-voir-actions";
 
 /**
  * Films proches (Sarah, 21/11/2026) : un outil d'administration, pour
@@ -419,6 +420,17 @@ export default async function FilmsProchesPage({
                                 </span>
                               ))}
                             </span>
+                          )}
+                          {/* un projet est choisi : on peut conseiller ce film à son auteur */}
+                          {projet && (
+                            <form action={ajouterFilmAVoir} style={{ marginTop: 4 }}>
+                              <input type="hidden" name="project_id" value={projet.id} />
+                              <input type="hidden" name="film_id" value={f.film_id} />
+                              <input type="hidden" name="retour" value={lien({ projet: projet.id })} />
+                              <button type="submit" style={{ fontSize: 13, cursor: "pointer" }}>
+                                Ajouter aux films à voir de {projet.title}
+                              </button>
+                            </form>
                           )}
                           <details style={{ marginTop: 4 }}>
                             <summary

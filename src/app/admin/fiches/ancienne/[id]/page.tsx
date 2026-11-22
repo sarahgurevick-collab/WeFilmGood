@@ -10,6 +10,7 @@ import adminStyles from "../../../admin.module.css";
 import NavAdmin from "../../../NavAdmin";
 import ScoreSlider from "@/app/lecteur/[assignmentId]/ScoreSlider";
 import { validerFicheAncienne } from "./actions";
+import PanneauFilmsAVoir from "../../PanneauFilmsAVoir";
 
 /**
  * Une fiche de lecture reprise de WFG 1, telle que le lecteur l'a rendue.
@@ -145,6 +146,10 @@ export default async function FicheAnciennePage({
             {fiche.content?.trim() ? <FicheContent html={ficheHeriteeEnHtml(fiche.content)} /> : "Fiche vide."}
           </div>
         </div>
+      )}
+
+      {fiche.project && (
+        <PanneauFilmsAVoir projectId={fiche.project.id} retour={`/admin/fiches/ancienne/${fiche.legacy_review_id}`} />
       )}
 
       <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
