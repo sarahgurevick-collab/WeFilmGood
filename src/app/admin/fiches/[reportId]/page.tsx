@@ -9,6 +9,7 @@ import RichTextEditor from "@/components/RichTextEditor";
 import { sanitizeFiche } from "@/lib/sanitize";
 import { createClient } from "@/lib/supabase/server";
 import { enregistrerBrouillon, publishReport } from "./actions";
+import { FORMATS } from "@/app/projet/ChampsFiche";
 import PanneauFilmsAVoir from "../PanneauFilmsAVoir";
 
 type Report = {
@@ -19,7 +20,7 @@ type Report = {
   label_motivation: string | null;
   status: string;
   submitted_at: string;
-  project: { id: string; title: string } | null;
+  project: { id: string; title: string; format: string | null } | null;
   reader: { full_name: string | null } | null;
 };
 
@@ -42,7 +43,7 @@ export default async function FicheAdminPage({
   const { data: report } = await supabase
     .from("reading_reports")
     .select(
-      "id, reader_id, content, score, label_motivation, status, submitted_at, project:projects(id, title), reader:profiles!reading_reports_reader_id_fkey(full_name)",
+      "id, reader_id, content, score, label_motivation, status, submitted_at, project:projects(id, title, format), reader:profiles!reading_reports_reader_id_fkey(full_name)",
     )
     .eq("id", reportId)
     .maybeSingle<Report>();
@@ -86,7 +87,7 @@ export default async function FicheAdminPage({
   return (
     <PageShell nav="admin"
       avantTitre={<NavAdmin />}
-      eyebrow="Fiche de lecture"
+      eyebrow={`Fiche de lecture${FORMATS.find((f) => f.value === report.project?.format)?.label ? ` · ${FORMATS.find((f) => f.value === report.project?.format)?.label}` : ""}`}
       title={report.project?.title ?? "Projet"}
       theme="clair"
     >
