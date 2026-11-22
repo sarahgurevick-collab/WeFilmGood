@@ -17,8 +17,7 @@ const ELEMENTS_MENU = [
   // WeFilmGood, la suite du mot suit la même horloge que le logo — les
   // trois couleurs des engagements, Planet, Humanity, Education. Un
   // battement sur quatre, les deux mots sont au rouge : la fusion.
-  // CinéCrush retiré du menu le 22/11 (Sarah : « on le remettra plus tard »).
-  // { label: "CinéCrush", href: "/cinecrush", special: true },
+  { label: "CinéCrush", href: "/cinecrush", special: true },
   { label: "CinéMatch", href: "/cinematch", special: true },
   { label: "Maison des Scénaristes", href: "/association" },
   { label: "Nos appels à projets", href: "/appels-a-projets" },
