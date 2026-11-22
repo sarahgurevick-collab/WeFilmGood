@@ -40,6 +40,7 @@ type Film = {
   source: string;
   pourcent: number | null;
   prix: string[] | null;
+  cites: { project_id: string; titre: string; extrait: string | null }[] | null;
 };
 
 type Projet = {
@@ -90,29 +91,32 @@ export default async function FilmsProchesPage({
     themes?: string;
     origine?: string;
     primes?: string;
+    cites?: string;
   }>;
 }) {
   const supabase = await createClient();
   const { data: estAdmin } = await supabase.rpc("is_admin");
   if (estAdmin !== true) redirect("/");
 
-  const { projet: p, q: qq, themes: th, origine: o, primes: pr } = await searchParams;
+  const { projet: p, q: qq, themes: th, origine: o, primes: pr, cites: ci } = await searchParams;
   const projetId = /^[0-9a-f-]{36}$/i.test(p ?? "") ? p! : "";
   const q = (qq ?? th ?? "").trim();
   const origine = ORIGINES.some((x) => x.cle === o) ? (o ?? "") : "";
   const primes = pr === "1";
+  const cites = ci === "1";
   const mots = q
     .split(/[,;\n]+/)
     .map((x) => x.trim())
     .filter((x) => x.length >= 2);
 
-  const lien = (r: { projet?: string; q?: string; origine?: string; primes?: boolean }) => {
+  const lien = (r: { projet?: string; q?: string; origine?: string; primes?: boolean; cites?: boolean }) => {
     const u = new URLSearchParams();
     if (r.projet) u.set("projet", r.projet);
     if (r.q) u.set("q", r.q);
     const og = r.origine ?? origine;
     if (og) u.set("origine", og);
     if (r.primes ?? primes) u.set("primes", "1");
+    if (r.cites ?? cites) u.set("cites", "1");
     const t = u.toString();
     return `/admin/films-proches${t ? `?${t}` : ""}`;
   };
@@ -161,6 +165,7 @@ export default async function FilmsProchesPage({
         p_limite: 60,
         p_origine: origine || null,
         p_primes: primes,
+        p_cites: cites,
       }),
       supabase.rpc("projets_proches", {
         p_project: projet?.id ?? null,
@@ -206,6 +211,7 @@ export default async function FilmsProchesPage({
         />
         {origine && <input type="hidden" name="origine" value={origine} />}
         {primes && <input type="hidden" name="primes" value="1" />}
+        {cites && <input type="hidden" name="cites" value="1" />}
       </form>
 
       {(crushs ?? []).length > 0 && (
@@ -344,6 +350,17 @@ export default async function FilmsProchesPage({
               >
                 Films primés
               </Link>
+              {/* filtre : films recommandés ou comparés dans les fiches de lecture */}
+              <Link
+                href={lien({
+                  projet: projetId,
+                  q: projet ? "" : q,
+                  cites: !cites,
+                })}
+                className={cites ? adminStyles.anneeActive : adminStyles.annee}
+              >
+                Films cités
+              </Link>
             </nav>
             {films.length === 0 && <p>Aucun film ne partage ces thèmes.</p>}
             {films.length > 0 && (
@@ -388,6 +405,19 @@ export default async function FilmsProchesPage({
                             <span style={{ color: "var(--dim)" }}>
                               {" "}
                               · {autresMots.join(", ")}
+                            </span>
+                          )}
+                          {f.cites && f.cites.length > 0 && (
+                            <span style={{ display: "block", fontSize: 13 }}>
+                              Cité dans la fiche de lecture de :{" "}
+                              {f.cites.map((c, i) => (
+                                <span key={c.project_id}>
+                                  {i > 0 && ", "}
+                                  <Link href={`/projet/${c.project_id}`}>
+                                    {c.titre}
+                                  </Link>
+                                </span>
+                              ))}
                             </span>
                           )}
                           <details style={{ marginTop: 4 }}>
