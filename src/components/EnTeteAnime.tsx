@@ -19,14 +19,14 @@ const ELEMENTS_MENU = [
   // battement sur quatre, les deux mots sont au rouge : la fusion.
   { label: "CinéCrush", href: "/cinecrush", special: true },
   { label: "CinéMatch", href: "/cinematch", special: true },
-  { label: "Maison des Scénaristes", href: "/association" },
+  { label: "Adhésion", href: "/adhesion" },
   { label: "Nos appels à projets", href: "/appels-a-projets" },
+  { label: "ScenarioLabs", href: "/ateliers" },
+  { label: "Maison des Scénaristes", href: "/association" },
   { label: "Tutoriels", href: "/tutoriels" },
   { label: "Masterclass", href: "/masterclass" },
-  { label: "Ateliers en visio", href: "/ateliers" },
   { label: "Notre histoire", href: "/notre-histoire" },
   { label: "Témoignages", href: "/temoignages" },
-  { label: "Adhésion", href: "/adhesion" },
 ];
 
 /**
