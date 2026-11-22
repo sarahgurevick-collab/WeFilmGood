@@ -15,8 +15,15 @@ export default async function ArchivesLecturePage({ searchParams }: { searchPara
   if (!(await estAdmin())) redirect("/");
   const q = ((await searchParams).q ?? "").trim().toLowerCase();
   const toutes = await toutesLesArchives();
+  // Le titre d'abord (22/11, Sarah : règle de toutes les recherches) : les
+  // fiches dont le titre contient ce qu'on cherche passent avant celles
+  // trouvées par l'auteur ou le lecteur.
+  const parTitre = (f: (typeof toutes)[number]) =>
+    [f.titre, f.projet].some((v) => v?.toLowerCase().includes(q)) ? 0 : 1;
   const montrees = q
-    ? toutes.filter((f) => [f.titre, f.auteurs, f.lecteur, f.projet].some((v) => v?.toLowerCase().includes(q)))
+    ? toutes
+        .filter((f) => [f.titre, f.auteurs, f.lecteur, f.projet].some((v) => v?.toLowerCase().includes(q)))
+        .sort((x, y) => parTitre(x) - parTitre(y))
     : toutes;
   const parAppel = new Map<string, typeof montrees>();
   for (const f of montrees) {
