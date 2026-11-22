@@ -8,6 +8,7 @@ import ChampFichier from "@/components/ChampFichier";
 
 type Langue = "fr" | "en";
 export type DepotAffiche = {
+  id: string;
   langue: Langue;
   etat: string;
   nom_origine: string | null;
@@ -149,10 +150,22 @@ export default function EnvoiVideopitch({
         if (!d || d.etat === "valide") return null;
         const texte = etatLisible(d);
         return texte ? (
-          <p key={l} className={formStyles.hint} style={{ color: "#1a1a1a" }}>
-            <strong>Version {libelleLangue(l)}</strong>
-            {d.nom_origine ? ` (${d.nom_origine})` : ""} — {texte}
-          </p>
+          <div key={l}>
+            <p className={formStyles.hint} style={{ color: "#1a1a1a" }}>
+              <strong>Version {libelleLangue(l)}</strong>
+              {d.nom_origine ? ` (${d.nom_origine})` : ""} — {texte}
+            </p>
+            {/* L'auteur revoit la vidéo qu'il vient de déposer (22/11) : la
+                version allégée, celle que l'équipe regarde. */}
+            {d.etat === "a_valider" && (
+              <video
+                controls
+                preload="metadata"
+                src={`/api/videopitch/depots/${d.id}/video`}
+                style={{ width: "100%", maxWidth: 640, maxHeight: 420, background: "#000", borderRadius: 6, margin: "6px 0 12px" }}
+              />
+            )}
+          </div>
         ) : null;
       })}
 

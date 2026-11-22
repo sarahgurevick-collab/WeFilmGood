@@ -11,6 +11,8 @@ import { basculerAutorisationStoryPitch, enregistrerDocuments } from "./actions"
 import BoutonRetirerPhoto from "./BoutonRetirerPhoto";
 import ImagePresentation from "./ImagePresentation";
 import EnvoiVideopitch, { type DepotAffiche } from "./EnvoiVideopitch";
+import VideopitchLecteur from "@/components/VideopitchLecteur";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 type Fichier = { id: string; kind: string; storage_path: string; original_name: string | null };
 
@@ -49,13 +51,27 @@ export default async function DocumentsPage({
   ]);
   const accept = "image/jpeg,image/png,image/webp";
 
+  // Le scénario se relit dans la page, page par page, comme sur WFG 1
+  // (22/11, remarque d'un auteur reprise par Sarah). Lien signé une heure,
+  // demandé avec le client à privilèges : pendant la lecture, la règle de
+  // stockage ferme le fichier à son auteur en écriture comme en lecture,
+  // alors qu'il doit pouvoir continuer à le relire. La page n'est ouverte
+  // qu'au porteur du projet et à l'administration (chargerProjetAModifier).
+  let lienScenario: string | null = null;
+  if (scenario) {
+    const { data: signe } = await (createAdminClient() ?? supabase).storage
+      .from("scenarios")
+      .createSignedUrl(scenario.storage_path, 60 * 60);
+    lienScenario = signe?.signedUrl ?? null;
+  }
+
   // Le StoryPitch (22/10) : ce qui est en ligne (Vimeo), ce qui attend, et
   // si la personne peut en déposer un — voir plus bas.
   const [{ data: videopitchEnLigne }, { data: depots }, { data: adherent }, { data: estAdmin }, { data: autorisation }] = await Promise.all([
     supabase.from("project_videopitchs").select("videopitch_fr, videopitch_en").eq("project_id", id).maybeSingle(),
     supabase
       .from("videopitch_depots")
-      .select("langue, etat, nom_origine, motif_refus, cree_le")
+      .select("id, langue, etat, nom_origine, motif_refus, cree_le")
       .eq("project_id", id)
       .eq("genre", "videopitch")
       .order("cree_le", { ascending: false })
@@ -225,9 +241,23 @@ export default async function DocumentsPage({
           <span className={formStyles.hint}>Vous pouvez en choisir plusieurs à la fois.</span>
         </label>
 
+        {(scenarioModifiable || lienScenario) && <h2 className={styles.sousTitre}>Le scénario</h2>}
+        {scenario && lienScenario && (
+          <>
+            <p className={formStyles.hint}>
+              <a href={lienScenario} target="_blank" rel="noopener noreferrer">
+                {scenario.original_name ?? "scenario.pdf"}
+              </a>
+            </p>
+            <iframe
+              src={lienScenario}
+              title={scenario.original_name ?? "Scénario"}
+              style={{ width: "100%", height: "80vh", minHeight: 480, border: "1px solid #ccc", background: "#fff", marginBottom: 16 }}
+            />
+          </>
+        )}
         {scenarioModifiable && (
           <>
-            <h2 className={styles.sousTitre}>Le scénario</h2>
             <label className={formStyles.field}>
               <span>{scenario ? "Remplacer le scénario (PDF)" : "Scénario (PDF)"}</span>
               <ChampFichier name="scenario" accept="application/pdf" />
@@ -263,6 +293,15 @@ export default async function DocumentsPage({
         Deux minutes face caméra pour donner envie de lire votre scénario. Visible des membres
         adhérents sur votre fiche, après un regard de l&apos;équipe.
       </p>
+      {(videopitchEnLigne?.videopitch_fr || videopitchEnLigne?.videopitch_en) && (
+        <div style={{ maxWidth: 640, margin: "12px 0" }}>
+          <VideopitchLecteur
+            fr={videopitchEnLigne.videopitch_fr ?? null}
+            en={videopitchEnLigne.videopitch_en ?? null}
+            titre={projet.title}
+          />
+        </div>
+      )}
       {peutDeposerVideopitch ? (
         <EnvoiVideopitch
           projectId={projet.id}
