@@ -126,9 +126,10 @@ export default function GalaxieAccueil({ projet }: { projet: ProjetOrbite | null
               <circle cx="350" cy="350" r={RAYON_EQUIPE} className={styles.cercleEquipe} />
             </svg>
 
-            <Link href={`/projet/${projet.id}`} className={styles.centre}>
+            <Link href={projet.cinecrush ? "/cinecrush" : `/projet/${projet.id}`} className={styles.centre}>
               <span className={styles.centreGenre}>
-                Projet{projet.genre ? ` · ${projet.genre}` : ""}
+                {projet.cinecrush ? "CinéCrush" : "Projet"}
+                {projet.genre ? ` · ${projet.genre}` : ""}
               </span>
               <span className={styles.centreTitre}>{projet.titre}</span>
               <span className={styles.centreLogline}>{projet.tagline}</span>

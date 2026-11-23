@@ -19,6 +19,8 @@ export type ProjetOrbite = {
   titre: string;
   genre: string | null;
   tagline: string;
+  /** Le projet est le CinéCrush de la semaine (ou le dernier en date) : le centre l'écrit et mène à /cinecrush (0325). */
+  cinecrush: boolean;
   personnages: NoeudOrbite[];
   equipe: NoeudOrbite[];
 };
@@ -28,6 +30,7 @@ type Brut = {
   titre: string;
   genre: string | null;
   tagline: string;
+  cinecrush?: boolean;
   personnages: { nom: string; age: string | null; photo: string; bio: string }[];
   equipe: { id: string; nom: string; role: string; avatar: string; bio: string }[];
 };
@@ -71,6 +74,7 @@ export async function chargerProjetOrbite(): Promise<ProjetOrbite | null> {
     titre: brut.titre,
     genre: brut.genre,
     tagline: brut.tagline,
+    cinecrush: brut.cinecrush === true,
     personnages,
     equipe: brut.equipe.slice(0, 4).map((m) => ({
       id: m.id,
