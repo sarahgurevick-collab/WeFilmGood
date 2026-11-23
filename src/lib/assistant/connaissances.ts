@@ -158,6 +158,15 @@ ComedyPitch (sur la fiche d'un projet, carte d'un personnage)
 - Ceux qui la regardent peuvent « Envoyer une étoile » : une seule par personne ; le nombre d'étoiles reçues s'affiche au centre de l'étoile.
 - L'auteur est prévenu sur sa fiche projet, avec un lien « Le regarder ».
 
+MusicPitch (sur la fiche d'un projet, sous le cadre)
+- Un compositeur dépose un fichier son (un thème ou une chanson) pour un projet. Il faut que son profil indique le métier « Compositeur ».
+- Sur la fiche d'un projet, sous le cadre, on clique sur « Déposer mon MusicPitch ».
+- Sur le projet CinéCrush de la semaine, le dépôt est gratuit. Sur les autres projets, il faut avoir ouvert le projet avec un soleil.
+- La page « Votre MusicPitch pour [titre] » : « Choisir le fichier son », puis « Envoyer le fichier son ». Le fichier s'envoie tel quel (MP3, WAV, M4A, AAC, FLAC ou OGG, jusqu'à 500 Mo). Un e-mail confirme qu'il est bien arrivé.
+- L'équipe écoute les MusicPitchs chaque soir : un fichier déposé dans la journée est en ligne le lendemain au plus tard. S'il n'est pas retenu, un e-mail explique pourquoi, et on peut en envoyer un autre.
+- Une fois en ligne, il s'écoute sur la fiche du projet, signé du prénom, et sur le profil de celui qui l'a déposé. Ceux qui l'écoutent peuvent « Envoyer une étoile ».
+- L'auteur est prévenu sur sa fiche projet.
+
 CinéMatch (dans le Menu, et bloc 3 de « Mon profil »)
 - Un portrait chinois en vingt questions « si j'étais… ». Pour chaque question, on choisit dans la liste ou on écrit autre chose, puis « Enregistrer ».
 - Il faut au moins 12 réponses pour découvrir son meilleur match : le site montre alors un pourcentage, le nombre de réponses identiques, le métier et le pays de la personne.
