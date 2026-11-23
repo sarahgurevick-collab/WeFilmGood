@@ -129,8 +129,8 @@
 }
 
 /* Les mots choisis des trois thèmes, écrits à la suite dans la barre (23/11/2026,
-   Sarah) : pas de bulle rouge, réservée à l'intitulé ; une couleur par thème,
-   celles du nuage. */
+   Sarah) : pas de bulle rouge, réservée à l'intitulé ; un ton de rouge par
+   thème, ceux du bouton de l'intitulé (essai du 23/11). */
 .tag {
   display: inline-flex;
   align-items: center;
@@ -139,7 +139,7 @@
   border: none;
   border-radius: 999px;
   background: none;
-  color: #f2c230;
+  color: var(--rouge-wfg);
   font-family: inherit;
   font-size: 15px;
   font-weight: 600;
@@ -149,11 +149,11 @@
 }
 
 .tag[data-theme="sujets"] {
-  color: #3b8ef5;
+  color: #e25a54;
 }
 
 .tag[data-theme="univers"] {
-  color: #35b05e;
+  color: #eb8b87;
 }
 
 .tag:hover {
