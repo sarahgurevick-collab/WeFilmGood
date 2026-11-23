@@ -379,7 +379,13 @@ export default async function ProjetPage({
   // Sarah : « l'adhésion donnerait les contacts partout ») : équipe et
   // contact. La base applique la même règle (0280) ; la semaine finie, la
   // fiche redevient restreinte tant qu'il n'y a pas dépensé de soleil.
-  const restreint = !chezSoi && !ouverture && !(reglesComedy.cinecrush && adherent === true);
+  // Pareil pour le match d'un de ses projets (23/11, Sarah : « Sans soleil
+  // pour l'adhérent ») ; la base applique la même règle (0318).
+  const { data: matchOuvert } =
+    user && adherent === true && !chezSoi && !ouverture
+      ? await supabase.rpc("match_ouvert_pour_moi", { p_project_id: id })
+      : { data: false };
+  const restreint = !chezSoi && !ouverture && !(reglesComedy.cinecrush && adherent === true) && matchOuvert !== true;
   if (!chezSoi && !ouverture && adherent !== true && !reglesComedy.cinecrush) {
     return <FicheFermee supabase={supabase} projetId={project.id} />;
   }
