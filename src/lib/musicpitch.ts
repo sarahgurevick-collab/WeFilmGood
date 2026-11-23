@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { estLeCinecrush } from "@/lib/comedypitch";
+import { estLeCinecrush, producteurEcarte } from "@/lib/comedypitch";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { BUCKET_MUSICPITCH } from "@/lib/videopitch";
 
@@ -16,12 +16,13 @@ import { BUCKET_MUSICPITCH } from "@/lib/videopitch";
  * dans le stockage du site (dossier privé « musicpitchs ») et s'écoute par
  * un lien temporaire, donné à ceux qui ont le droit de voir la fiche.
  *
- * QUI DÉPOSE — PAS ENCORE DÉCIDÉ (question de Sarah du 23/11 : tout le
- * monde, ou les profils « compositeur » seulement ?). Tant que
- * MUSICPITCH_OUVERT est faux, seule l'administration dépose : Sarah essaie
- * et valide les textes avant l'ouverture. La règle prête pour l'ouverture
- * reprend celle du ComedyPitch, sans condition de métier : projet d'un
- * auteur adhérent ouvert avec un soleil, ou CinéCrush de la semaine.
+ * QUI DÉPOSE (23/11, Sarah : « ouvre à tous sauf les producteurs ») : tout
+ * membre, sans avoir coché « Compositeur », sur le projet d'un auteur
+ * adhérent ouvert avec un soleil, ou sur le CinéCrush de la semaine. Les
+ * profils producteur sont écartés (producteurEcarte).
+ *
+ * Tant que MUSICPITCH_OUVERT est faux, seule l'administration dépose : les
+ * textes du dépôt et des e-mails attendent la validation de Sarah.
  */
 export const MUSICPITCH_OUVERT = false;
 
@@ -57,7 +58,7 @@ export async function peutDeposerMusicPitch(
   if (!MUSICPITCH_OUVERT || !projet.is_public || projet.owner_id === userId) return null;
 
   const { cinecrush, accepte } = await projetAccepteMusicPitch(admin, projet);
-  if (!accepte) return null;
+  if (!accepte || (await producteurEcarte(admin, userId, "compositeur"))) return null;
   if (cinecrush) return { projet };
   const { data: ouverture } = await supabase
     .from("gravity_ouvertures")

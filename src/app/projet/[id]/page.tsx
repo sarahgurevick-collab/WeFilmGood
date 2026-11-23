@@ -37,7 +37,7 @@ import BarreGravity, { type EtatGravity } from "./BarreGravity";
 import { compterArchives } from "@/lib/archives-lecture";
 import { photoNette } from "@/lib/photo";
 import { clientCartes, clientProfils, createAdminClient } from "@/lib/supabase/admin";
-import { assezDecrit, comedypitchsDuProjet, projetAccepte } from "@/lib/comedypitch";
+import { assezDecrit, comedypitchsDuProjet, producteurEcarte, projetAccepte } from "@/lib/comedypitch";
 import { musicpitchsDuProjet, peutDeposerMusicPitch } from "@/lib/musicpitch";
 import BlocMusicPitch from "./BlocMusicPitch";
 import comedyStyles from "./comedypitch.module.css";
@@ -447,13 +447,8 @@ export default async function ProjetPage({
   const comedyEnLigne = voitComedyPitchs && user ? await comedypitchsDuProjet(project.id, user.id) : [];
   let comedienPeutDeposer = false;
   if (user && service && reglesComedy.accepte && (ouverture || reglesComedy.cinecrush)) {
-    const { data: comedien } = await service
-      .from("profile_roles")
-      .select("role_slug")
-      .eq("profile_id", user.id)
-      .eq("role_slug", "comedien")
-      .maybeSingle();
-    comedienPeutDeposer = !!comedien;
+    // Tous sauf les producteurs (23/11, Sarah) : plus besoin du métier « Comédien ».
+    comedienPeutDeposer = !(await producteurEcarte(service, user.id, "comedien"));
   }
   // Pour l'auteur : les ComedyPitchs mis en ligne qu'il n'a pas encore vus.
   // Arriver sur le personnage par « Le regarder » les marque comme vus.

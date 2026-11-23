@@ -17,8 +17,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
  *    en attendant, une description d'au moins SEUIL_DESCRIPTION caractères,
  *    et n'importe quelle description pour le CinéCrush de la semaine.
  *
- * QUI dépose : un profil « comédien » qui a ouvert le projet avec un
- * soleil — ou n'importe quel comédien sur le CinéCrush de la semaine.
+ * QUI dépose (23/11, Sarah : « ouvre à tous sauf les producteurs ») : tout
+ * membre qui a ouvert le projet avec un soleil — ou n'importe quel membre
+ * sur le CinéCrush de la semaine. Plus besoin d'avoir coché « Comédien »
+ * (règle du 13/11, annulée). Seuls les profils producteur sont écartés,
+ * sauf s'ils ont aussi coché le métier (voir producteurEcarte).
  * L'administration peut toujours déposer (essais, vidéo reçue autrement).
  *
  * QUI regarde : ceux qui voient la fiche en entier (l'auteur, son équipe,
@@ -28,6 +31,17 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export const SEUIL_DESCRIPTION = 300;
 
 type Admin = NonNullable<ReturnType<typeof createAdminClient>>;
+
+/**
+ * « Tous sauf les producteurs » (23/11, Sarah), pour le ComedyPitch et le
+ * MusicPitch : un profil producteur ne dépose pas — sauf s'il a aussi coché
+ * le métier de l'exercice (comédien, compositeur), comme il le pouvait avant.
+ */
+export async function producteurEcarte(admin: Admin, userId: string, metier: "comedien" | "compositeur"): Promise<boolean> {
+  const { data } = await admin.from("profile_roles").select("role_slug").eq("profile_id", userId).in("role_slug", ["producteur", metier]);
+  const slugs = (data ?? []).map((r) => r.role_slug as string);
+  return slugs.includes("producteur") && !slugs.includes(metier);
+}
 
 /** Ce projet est-il le CinéCrush de la semaine en cours ? */
 export async function estLeCinecrush(admin: Admin, projectId: string): Promise<boolean> {
@@ -99,11 +113,11 @@ export async function peutDeposerComedyPitch(
   const { cinecrush, accepte } = await projetAccepte(admin, projet);
   if (!accepte || !assezDecrit(personnage.biography, cinecrush)) return null;
 
-  const [{ data: comedien }, { data: ouverture }] = await Promise.all([
-    admin.from("profile_roles").select("role_slug").eq("profile_id", userId).eq("role_slug", "comedien").maybeSingle(),
+  const [ecarte, { data: ouverture }] = await Promise.all([
+    producteurEcarte(admin, userId, "comedien"),
     supabase.from("gravity_ouvertures").select("project_id").eq("profile_id", userId).eq("project_id", projet.id).maybeSingle(),
   ]);
-  if (!comedien) return null;
+  if (ecarte) return null;
   return cinecrush || ouverture ? acces : null;
 }
 

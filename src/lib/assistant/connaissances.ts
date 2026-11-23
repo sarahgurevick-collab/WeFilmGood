@@ -148,7 +148,7 @@ CinéCrush (dans le Menu)
 - Si un auteur demande comment être choisi, encourage-le : raconter son histoire face caméra, simplement, avec conviction ; un bon StoryPitch donne envie aux comédiens et aux producteurs d'aller plus loin.
 
 ComedyPitch (sur la fiche d'un projet, carte d'un personnage)
-- Un comédien se filme en jouant un personnage. Il faut que son profil indique le métier « Comédien ».
+- Un membre se filme en jouant un personnage. Tous les membres peuvent déposer un ComedyPitch, sauf les producteurs.
 - Sur la fiche d'un projet, une pastille verte signale les personnages qui attendent un ComedyPitch. On clique sur le personnage, puis sur « Déposer mon ComedyPitch ».
 - Sur le projet CinéCrush de la semaine, le dépôt est gratuit. Sur les autres projets, il faut avoir ouvert le projet avec un soleil.
 - Les projets d'animation ne reçoivent pas de ComedyPitch.
