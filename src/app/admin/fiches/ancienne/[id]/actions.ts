@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { ficheEstVide, sanitizeFiche } from "@/lib/sanitize";
 
 /**
  * Valider une fiche de lecture reprise de WFG 1 (statut 1 : rendue par le
@@ -19,14 +20,14 @@ export async function validerFicheAncienne(formData: FormData) {
   if (!isAdmin) redirect("/");
 
   const id = Number(formData.get("legacy_review_id"));
-  const content = ((formData.get("content") as string) ?? "").trim();
+  const content = sanitizeFiche(((formData.get("content") as string) ?? "").trim());
   const score = Number(formData.get("score"));
   const motivation = ((formData.get("label_motivation") as string) ?? "").trim();
   // Le lecteur peut être changé au dernier moment (une fiche refaite par
   // quelqu'un d'autre) : c'est lui qui sera payé.
   const lecteur = Number(formData.get("reader_legacy_id"));
 
-  if (!Number.isInteger(id) || !content || !Number.isInteger(score) || score < 0 || score > 200) {
+  if (!Number.isInteger(id) || ficheEstVide(content) || !Number.isInteger(score) || score < 0 || score > 200) {
     redirect(`/admin/fiches/ancienne/${id}`);
   }
 

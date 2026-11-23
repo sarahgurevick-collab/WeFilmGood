@@ -1,4 +1,5 @@
 import Link from "next/link";
+import RichTextEditor from "@/components/RichTextEditor";
 import FicheContent from "@/components/FicheContent";
 import { ficheHeriteeEnHtml } from "@/lib/sanitize";
 import { redirect } from "next/navigation";
@@ -125,10 +126,10 @@ export default async function FicheAnciennePage({
                 ))}
               </select>
             </label>
-            <label className={formStyles.field}>
+            <div className={formStyles.field}>
               <span>Texte publié à l&apos;auteur</span>
-              <textarea name="content" rows={28} required defaultValue={fiche.content ?? ""} />
-            </label>
+              <RichTextEditor fiche surlignerSubjectif name="content" defaultValue={ficheHeriteeEnHtml(fiche.content)} />
+            </div>
             <ScoreSlider
               defaultValue={fiche.final_mark ?? 100}
               bouton={
