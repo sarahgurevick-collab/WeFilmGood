@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -93,13 +94,16 @@ export default async function FilmsProchesPage({
     origine?: string;
     primes?: string;
     cites?: string;
+    integre?: string;
   }>;
 }) {
   const supabase = await createClient();
   const { data: estAdmin } = await supabase.rpc("is_admin");
   if (estAdmin !== true) redirect("/");
 
-  const { projet: p, q: qq, themes: th, origine: o, primes: pr, cites: ci } = await searchParams;
+  const { projet: p, q: qq, themes: th, origine: o, primes: pr, cites: ci, integre: ig } = await searchParams;
+  // Affichée sous une fiche à valider (23/11) : sans barre ni titre, pour ne pas la quitter.
+  const integre = ig === "1";
   const projetId = /^[0-9a-f-]{36}$/i.test(p ?? "") ? p! : "";
   const q = (qq ?? th ?? "").trim();
   const origine = ORIGINES.some((x) => x.cle === o) ? (o ?? "") : "";
@@ -119,7 +123,9 @@ export default async function FilmsProchesPage({
     if (r.primes ?? primes) u.set("primes", "1");
     if (r.cites ?? cites) u.set("cites", "1");
     const t = u.toString();
-    return `/admin/films-proches${t ? `?${t}` : ""}`;
+    if (integre) u.set("integre", "1");
+    const t2 = u.toString();
+    return `/admin/films-proches${t2 ? `?${t2}` : ""}`;
   };
 
   // Les derniers CinéCrush, en raccourci.
@@ -193,12 +199,7 @@ export default async function FilmsProchesPage({
   );
 
   return (
-    <PageShell
-      nav="admin"
-      avantTitre={<NavAdmin />}
-      title="Films proches"
-      theme="clair"
-    >
+    <Coque integre={integre}>
       <form
         className={formStyles.field}
         style={{ margin: "8px 0 12px", maxWidth: 640 }}
@@ -210,6 +211,7 @@ export default async function FilmsProchesPage({
           aria-label="Chercher un projet, un thème, un mot-clé"
           autoFocus={!cherche}
         />
+        {integre && <input type="hidden" name="integre" value="1" />}
         {origine && <input type="hidden" name="origine" value={origine} />}
         {primes && <input type="hidden" name="primes" value="1" />}
         {cites && <input type="hidden" name="cites" value="1" />}
@@ -471,6 +473,21 @@ export default async function FilmsProchesPage({
           </section>
         </div>
       )}
+    </Coque>
+  );
+}
+
+function Coque({ integre, children }: { integre: boolean; children: ReactNode }) {
+  if (integre) {
+    return (
+      <div className="clair" style={{ background: "var(--bg)", color: "var(--fg)", padding: 16, minHeight: "100vh" }}>
+        {children}
+      </div>
+    );
+  }
+  return (
+    <PageShell nav="admin" avantTitre={<NavAdmin />} title="Films proches" theme="clair">
+      {children}
     </PageShell>
   );
 }

@@ -1,7 +1,7 @@
-import Link from "next/link";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { chargerFilmsAVoir } from "@/app/projet/[id]/FilmsAVoir";
+import FilmsProchesEnDessous from "./FilmsProchesEnDessous";
 import { ajouterFilmAVoir, commenterFilmAVoir, retirerFilmAVoir } from "./films-a-voir-actions";
 
 /**
@@ -55,9 +55,9 @@ export default async function PanneauFilmsAVoir({ projectId, retour }: { project
         <strong>Mots-clés du projet :</strong>{" "}
         {mots.length ? mots.join(", ") : "aucun"}
       </p>
-      <p style={{ margin: "0 0 12px" }}>
-        <Link href={`/admin/films-proches?projet=${projectId}`}>Voir ses films proches</Link>
-      </p>
+      <div style={{ margin: "0 0 12px" }}>
+        <FilmsProchesEnDessous projectId={projectId} />
+      </div>
 
       {films.length > 0 && (
         <ul style={{ paddingLeft: 18 }}>
