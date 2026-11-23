@@ -15,8 +15,9 @@ const THEMES: { cle: keyof ThemesMatch; titre: string }[] = [
  *  · tant qu'il n'y a pas 3 mots dans chacun des 3 thèmes : la jauge à
  *    trois segments (un par thème) et l'invitation à les remplir ;
  *  · adhérent : le projet, les mots en commun, la fiche et le message ;
- *  · sans adhésion : les mots en commun et une image floue neutre — pas la
- *    vraie vignette, qu'un flou d'écran ne protégerait pas — et l'adhésion.
+ *  · sans adhésion : les mots en commun, la vignette du match floutée par
+ *    le serveur dans l'image elle-même (même verrou que les photos des
+ *    talents ; une image neutre si le match n'a pas de vignette), et l'adhésion.
  *
  * Le pourcentage n'est jamais affiché : on montre les mots en commun.
  * Textes validés par Sarah le 23/11.
@@ -71,6 +72,10 @@ export default function CarteMatch({
               ) : (
                 <span className={styles.vignette} aria-hidden="true" />
               )
+            ) : match.vignetteFloue ? (
+              // Floutée par le serveur, dans l'image elle-même : la vraie vignette n'arrive jamais ici.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className={styles.vignette} src={match.vignetteFloue} alt="" />
             ) : (
               <span className={`${styles.vignette} ${styles.floue}`} aria-hidden="true" />
             )}

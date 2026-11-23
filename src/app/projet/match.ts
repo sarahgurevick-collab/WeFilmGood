@@ -17,6 +17,11 @@ export type Match = {
   motsCommuns: string[] | null;
   nouveau: boolean;
   projet: { id: string; titre: string; tagline: string | null; vignette: string | null } | null;
+  /**
+   * Sans adhésion : l'adresse de la vignette du match floutée par le serveur
+   * (/api/projets/match-flou), demandée avec SON projet. null si le match n'a pas d'image.
+   */
+  vignetteFloue: string | null;
 };
 
 type Brut = {
@@ -25,6 +30,7 @@ type Brut = {
   adherent: boolean;
   mots_communs?: string[];
   nouveau?: boolean;
+  change_le?: string;
   projet?: { id: string; titre: string; tagline: string | null } | null;
 };
 
@@ -42,6 +48,16 @@ export async function chargerMatch(
   if (!brut) return null;
 
   let vignette: string | null = null;
+  let vignetteFloue: string | null = null;
+  const service = !brut.projet && brut.mots_communs ? createAdminClient() : null;
+  if (service) {
+    const { data: m } = await service.from("projets_matchs").select("match_id").eq("project_id", projectId).maybeSingle<{ match_id: string }>();
+    const { count } = m
+      ? await service.from("project_files").select("id", { count: "exact", head: true }).eq("project_id", m.match_id).eq("kind", "vignette")
+      : { count: 0 };
+    // « v » renouvelle l'image quand le match change.
+    if ((count ?? 0) > 0) vignetteFloue = `/api/projets/match-flou?projet=${projectId}&v=${encodeURIComponent(brut.change_le ?? "")}`;
+  }
   const admin = brut.projet ? createAdminClient() : null;
   if (brut.projet && admin) {
     const { data: fichiers } = await admin
@@ -62,5 +78,6 @@ export async function chargerMatch(
     motsCommuns: brut.mots_communs ?? null,
     nouveau: brut.nouveau === true,
     projet: brut.projet ? { id: brut.projet.id, titre: brut.projet.titre, tagline: brut.projet.tagline, vignette } : null,
+    vignetteFloue,
   };
 }
