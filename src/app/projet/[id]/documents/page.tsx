@@ -131,6 +131,12 @@ export default async function DocumentsPage({
   // changer le scénario pendant que la lecture est en cours ») : elle le lit
   // depuis la fiche projet.
   const scenarioModifiable = enLecture !== true;
+  // Un scénario déjà passé chez un lecteur ne se remontre plus jamais à
+  // son auteur, même après l'analyse (23/11, Sarah : « Non, jamais ») ; il
+  // ne voit que le champ pour déposer sa nouvelle version (0322). Le fichier
+  // reste dans le stockage. Hors lecture, l'administration le voit encore.
+  const { data: scenarioDejaLu } = await supabase.rpc("scenario_deja_parti_en_lecture", { p_project_id: id });
+  const scenarioVisible = scenarioModifiable && (estAdmin === true || scenarioDejaLu !== true);
   const test = modeHelloAsso() === "sandbox";
   const peutPayer = !test || estAdmin === true || testeurPaiement(user?.id);
   const envoyeLe = (demandesPayees ?? [])[0]?.paid_at ?? null;
@@ -290,7 +296,7 @@ export default async function DocumentsPage({
             donc plus (23/11, Sarah). Il revient avec le dépôt de la version
             retravaillée, après l'analyse. Pareil pour l'administration. */}
         {scenarioModifiable && <h2 className={styles.sousTitre}>Le scénario</h2>}
-        {scenarioModifiable && scenario && lienScenario && (
+        {scenarioVisible && scenario && lienScenario && (
           <>
             <p className={formStyles.hint}>
               <a href={lienScenario} target="_blank" rel="noopener noreferrer">
@@ -307,7 +313,7 @@ export default async function DocumentsPage({
         {scenarioModifiable && (
           <>
             <label className={formStyles.field}>
-              <span>{scenario ? "Remplacer le scénario (PDF)" : "Scénario (PDF)"}</span>
+              <span>{scenario && scenarioVisible ? "Remplacer le scénario (PDF)" : "Scénario (PDF)"}</span>
               <ChampFichier name="scenario" accept="application/pdf" />
               <span className={formStyles.hint}>
                 Confidentiel : seuls vous, les lecteurs qui en seront chargés et
