@@ -135,12 +135,34 @@ export default function MotsClesAuteur({
    * Claude lui a donné (keywords.theme) ; le bouton passe sur ce thème pour
    * qu'on voie où il est rangé. Un mot pas encore classé va dans le thème du bouton.
    */
+  /**
+   * Un thème rempli (dix mots) : le bouton passe tout seul au thème suivant
+   * qui a encore de la place, après un court instant pour laisser voir le
+   * « 10/10 » (23/11/2026, Sarah : les auteurs ne voyaient pas qu'il y a
+   * trois thèmes).
+   */
+  const avance = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => void (avance.current && clearTimeout(avance.current)), []);
+  const choisir = (cle: CleNuage, mot: string) => {
+    const avant = choisis[cle];
+    const remplit = !avant.includes(mot) && avant.length + 1 === MAXIMUM_MOTS_AUTEUR;
+    basculer(cle, mot);
+    if (!remplit) return;
+    const depart = THEMES.findIndex((t) => t.cle === cle);
+    const suivant = [1, 2]
+      .map((n) => THEMES[(depart + n) % THEMES.length].cle)
+      .find((c) => choisis[c].length < MAXIMUM_MOTS_AUTEUR);
+    if (!suivant) return;
+    if (avance.current) clearTimeout(avance.current);
+    avance.current = setTimeout(() => setTheme(suivant), 700);
+  };
+
   const prendre = ({ label: suggere, theme: sonTheme, label_en }: Suggestion) => {
     const trouve = ligneDe.get(cleDe(suggere));
     if (label_en) setAnglais((avant) => new Map(avant).set(trouve ? trouve.mot : suggere, label_en));
     const cle: CleNuage = trouve ? trouve.cle : THEMES.some((t) => t.cle === sonTheme) ? (sonTheme as CleNuage) : theme;
-    if (!dejaChoisi(suggere)) basculer(cle, trouve ? trouve.mot : suggere);
     setTheme(cle);
+    if (!dejaChoisi(suggere)) choisir(cle, trouve ? trouve.mot : suggere);
     setSaisie("");
     setSuggestions([]);
   };
@@ -151,6 +173,7 @@ export default function MotsClesAuteur({
   const titre = langue === "en" ? leTheme.titreEn : leTheme.titre;
   const en = langue === "en";
   const montre = (mot: string) => (en && anglais.get(mot)) || mot;
+  const rang = THEMES.findIndex((t) => t.cle === theme) + 1;
   const themeSuivant = () => setTheme(THEMES[(THEMES.findIndex((t) => t.cle === theme) + 1) % THEMES.length].cle);
 
   // Le nuage du thème : les mots les plus utilisés, plus ceux déjà choisis qui seraient plus loin.
@@ -190,6 +213,10 @@ export default function MotsClesAuteur({
             onClick={themeSuivant}
             aria-label={langue === "en" ? `${titre}. Click to change` : `${titre}. Cliquer pour changer`}
           >
+            {/* « 1/3 » : on voit qu'il y a trois thèmes (23/11/2026, Sarah). */}
+            <span className={styles.modeRang}>
+              {rang}/{THEMES.length}
+            </span>
             <AnimatePresence mode="popLayout" initial={false}>
               <motion.span key={theme} className={styles.modeMot}>
                 {titre.split("").map((lettre, i) => (
@@ -274,6 +301,11 @@ export default function MotsClesAuteur({
               traduit, et le compteur restait à 0 en anglais (08/11). */}
           <span className={`${plein ? styles.plein : ""} notranslate`} translate="no">
             {liste.length}/{MAXIMUM_MOTS_AUTEUR}
+            {rang < THEMES.length && (
+              <button type="button" className={styles.suivant} onClick={themeSuivant}>
+                {en ? "Next" : "Suivant"} →
+              </button>
+            )}
           </span>
           <div className={styles.reglage}>
             <button
@@ -297,7 +329,7 @@ export default function MotsClesAuteur({
             </button>
           </div>
         </div>
-        <NuageDisque mots={motsNuage} choisis={liste} bloque={plein} enAnglais={en} onChoisir={(mot) => basculer(theme, mot)} />
+        <NuageDisque mots={motsNuage} choisis={liste} bloque={plein} enAnglais={en} onChoisir={(mot) => choisir(theme, mot)} />
       </div>
 
     </div>
