@@ -38,6 +38,9 @@ import { compterArchives } from "@/lib/archives-lecture";
 import { photoNette } from "@/lib/photo";
 import { clientCartes, clientProfils, createAdminClient } from "@/lib/supabase/admin";
 import { assezDecrit, comedypitchsDuProjet, projetAccepte } from "@/lib/comedypitch";
+import { musicpitchsDuProjet, peutDeposerMusicPitch } from "@/lib/musicpitch";
+import BlocMusicPitch from "./BlocMusicPitch";
+import comedyStyles from "./comedypitch.module.css";
 import { GRAVITY } from "@/lib/gravity-textes";
 
 const FORMATS_LISIBLES: Record<string, string> = {
@@ -473,6 +476,28 @@ export default async function ProjetPage({
       .map((d) => ({ id: d.id, personnageId: d.personnage_id, prenom: comedyEnLigne.find((v) => v.id === d.id)?.prenom ?? "" }));
   }
 
+  // Le MusicPitch (23/11, 0323) : mêmes regards que le ComedyPitch ; le
+  // bouton de dépôt selon src/lib/musicpitch.ts (l'administration seule tant
+  // que le dépôt n'est pas ouvert). L'auteur est prévenu une fois, sur sa fiche.
+  const musicEnLigne = voitComedyPitchs && user ? await musicpitchsDuProjet(project.id, user.id) : [];
+  const deposerMusicPitch =
+    user && (await peutDeposerMusicPitch(supabase, user.id, estAdmin === true, project.id)) ? `/projet/${project.id}/musicpitch` : null;
+  let nouveauxMusicPitchs: { id: string; prenom: string }[] = [];
+  if (isOwner && service) {
+    const { data: nonEcoutes } = await service
+      .from("videopitch_depots")
+      .select("id")
+      .eq("project_id", project.id)
+      .eq("genre", "musicpitch")
+      .eq("etat", "valide")
+      .is("vu_par_auteur_le", null)
+      .returns<{ id: string }[]>();
+    if (nonEcoutes?.length) {
+      await service.from("videopitch_depots").update({ vu_par_auteur_le: new Date().toISOString() }).in("id", nonEcoutes.map((d) => d.id));
+      nouveauxMusicPitchs = nonEcoutes.map((d) => ({ id: d.id, prenom: musicEnLigne.find((m) => m.id === d.id)?.prenom ?? "" }));
+    }
+  }
+
   // La phrase d'encouragement des lecteurs, pour un projet labellisé.
   const { data: avisWfg } = await supabase.rpc("avis_wfg_projet", { p_project_id: id });
 
@@ -709,6 +734,11 @@ export default async function ProjetPage({
           <Link href={`/projet/${project.id}?personnage=${n.personnageId}#personnages`}>Le regarder</Link>
         </p>
       ))}
+      {nouveauxMusicPitchs.map((n) => (
+        <p key={n.id} className={formStyles.hint} style={{ color: "inherit" }}>
+          {n.prenom} a déposé un MusicPitch pour votre projet. <a href="#musicpitch">L&apos;écouter</a>
+        </p>
+      ))}
       {gravity && <BarreGravity projetId={project.id} gravity={gravity} favori={favori} />}
       {/* L'image de présentation est dans le cadre, côté « La fiche ». */}
       <CadreEquipe
@@ -761,6 +791,14 @@ export default async function ProjetPage({
         bandeAnnonce={project.bandeau === "tourne" ? lecteurBandeAnnonce(project.trailer_url) : null}
         langueProjet={project.language}
       />
+      {(musicEnLigne.length > 0 || deposerMusicPitch) && (
+        <div id="musicpitch" className={comedyStyles.musicpitch}>
+          <BlocMusicPitch
+            sons={musicEnLigne.map((m) => ({ id: m.id, prenom: m.prenom, url: m.url, etoiles: m.etoiles, donnee: m.donnee, peutEtoiler: m.compositeurId !== user?.id }))}
+            deposer={deposerMusicPitch}
+          />
+        </div>
+      )}
       {(isOwner || estAdmin) && <AjouterUnTalent projectId={id} resultat={talent} />}
       {/* Le match du projet (23/11) : vu de l'auteur seul (et de l'administration). */}
       {match && <CarteMatch themes={match.themes} seuil={match.seuil} match={match} />}

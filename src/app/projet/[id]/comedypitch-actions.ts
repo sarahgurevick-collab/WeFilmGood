@@ -22,7 +22,8 @@ export async function envoyerEtoileFilante(depotId: string): Promise<boolean> {
     .from("videopitch_depots")
     .select("id, project_id, deposant_id")
     .eq("id", depotId)
-    .eq("genre", "comedypitch")
+    // Les MusicPitchs reçoivent les mêmes étoiles (23/11).
+    .in("genre", ["comedypitch", "musicpitch"])
     .eq("etat", "valide")
     .maybeSingle<{ id: string; project_id: string; deposant_id: string }>();
   if (!depot || depot.deposant_id === user.id) return false;

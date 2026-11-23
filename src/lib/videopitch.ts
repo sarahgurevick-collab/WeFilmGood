@@ -26,15 +26,22 @@ export const TAILLE_MAX = 2 * 1024 * 1024 * 1024;
 /** Les morceaux envoyés par le navigateur (nginx en accepte au moins 12 Mo). */
 export const TAILLE_MORCEAU = 8 * 1024 * 1024;
 export const EXTENSIONS = ["mp4", "mov", "m4v", "avi", "mkv", "webm", "mpg", "mpeg", "wmv", "3gp", "mts", "m2ts"];
+/** MusicPitch (0323) : un fichier son, jusqu'à 500 Mo (un WAV de studio pèse lourd). */
+export const TAILLE_MAX_SON = 500 * 1024 * 1024;
+export const EXTENSIONS_SON = ["mp3", "wav", "m4a", "aac", "flac", "ogg", "oga", "opus", "aif", "aiff", "wma"];
+/** Le stockage du site refuse un fichier de plus de 50 Mo : un MP3 d'une demi-heure. */
+export const TAILLE_MAX_MP3 = 50 * 1024 * 1024;
+/** Le dossier privé du stockage où restent les MusicPitchs en ligne. */
+export const BUCKET_MUSICPITCH = "musicpitchs";
 
 export type Etat = "envoi" | "recu" | "preparation" | "a_valider" | "valide" | "refuse" | "echec";
 export type Langue = "fr" | "en";
 
-export type Genre = "videopitch" | "comedypitch";
+export type Genre = "videopitch" | "comedypitch" | "musicpitch";
 
 export type Depot = {
   id: string;
-  /** videopitch : l'auteur, pour son projet. comedypitch : un comédien joue un personnage (0261). */
+  /** videopitch : l'auteur, pour son projet. comedypitch : un comédien joue un personnage (0261). musicpitch : un son pour le projet (0323). */
   genre: Genre;
   personnage_id: string | null;
   project_id: string;
@@ -64,9 +71,20 @@ export function extension(nom: string | null | undefined): string | null {
   return EXTENSIONS.includes(ext) ? ext : null;
 }
 
+export function extensionSon(nom: string | null | undefined): string | null {
+  const ext = (nom ?? "").split(".").pop()?.toLowerCase() ?? "";
+  return EXTENSIONS_SON.includes(ext) ? ext : null;
+}
+
+/** L'extension sous laquelle le fichier d'origine d'un dépôt est rangé sur le disque. */
+export const extensionOrigine = (depot: Pick<Depot, "genre" | "nom_origine">) =>
+  depot.genre === "musicpitch" ? (extensionSon(depot.nom_origine) ?? "mp3") : (extension(depot.nom_origine) ?? "mp4");
+
 export const dossierDepot = (id: string) => path.join(DOSSIER, id);
 export const cheminOrigine = (id: string, ext: string) => path.join(dossierDepot(id), `origine.${ext}`);
-export const cheminAllege = (id: string) => path.join(dossierDepot(id), "allege.mp4");
+/** La version préparée par le serveur : une vidéo 720p, ou un MP3 pour un MusicPitch. */
+export const cheminAllege = (id: string, genre: Genre = "videopitch") =>
+  path.join(dossierDepot(id), genre === "musicpitch" ? "allege.mp3" : "allege.mp4");
 
 /** Efface le dossier d'un dépôt (original et version allégée). Jamais bloquant. */
 export async function supprimerFichiers(id: string) {
@@ -136,6 +154,25 @@ async function alleger(source: string, cible: string) {
 }
 
 /**
+ * MusicPitch : le son en MP3 stéréo 192 kb/s, lisible par tous les
+ * navigateurs. Une image de pochette dans le fichier est laissée de côté.
+ */
+async function convertirEnMp3(source: string, cible: string) {
+  await run(
+    "nice",
+    [
+      "-n", "10", "ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-nostdin",
+      "-i", source,
+      "-vn", "-map", "0:a:0", "-map_metadata", "-1",
+      "-c:a", "libmp3lame", "-b:a", "192k", "-ar", "44100", "-ac", "2",
+      "-threads", "2",
+      cible,
+    ],
+    { maxBuffer: 1024 * 1024, timeout: 30 * 60_000 },
+  );
+}
+
+/**
  * Convertit un dépôt reçu. Un seul ouvrier à la fois par dépôt : c'est le
  * passage « recu → preparation » qui réserve le travail.
  */
@@ -152,15 +189,17 @@ export async function convertir(id: string): Promise<void> {
     .maybeSingle<Depot>();
   if (!reserve) return;
 
-  const ext = extension(reserve.nom_origine) ?? "mp4";
-  const source = cheminOrigine(id, ext);
-  const cible = cheminAllege(id);
+  const son = reserve.genre === "musicpitch";
+  const source = cheminOrigine(id, extensionOrigine(reserve));
+  const cible = cheminAllege(id, reserve.genre);
 
   try {
     await fs.access(source);
-    await alleger(source, cible);
+    if (son) await convertirEnMp3(source, cible);
+    else await alleger(source, cible);
     const [{ size }, duree] = await Promise.all([fs.stat(cible), dureeDe(cible)]);
-    if (size === 0) throw new Error("vidéo vide après conversion");
+    if (size === 0) throw new Error(son ? "son vide après conversion" : "vidéo vide après conversion");
+    if (son && size > TAILLE_MAX_MP3) throw new Error("son trop long : plus de 50 Mo une fois en MP3");
     await admin
       .from("videopitch_depots")
       .update({ etat: "a_valider", taille_allegee: size, duree_secondes: duree, erreur: null })
@@ -248,6 +287,9 @@ async function destinataire(depot: Pick<Depot, "deposant_id" | "project_id" | "p
   };
 }
 
+/** La page où le compositeur dépose et suit son MusicPitch. */
+const pageMusicPitch = (depot: Pick<Depot, "project_id">) => `${SITE}/projet/${depot.project_id}/musicpitch`;
+
 /** La page où le comédien dépose et suit son ComedyPitch. */
 const pageComedyPitch = (depot: Pick<Depot, "project_id" | "personnage_id">) =>
   `${SITE}/projet/${depot.project_id}/comedypitch/${depot.personnage_id}`;
@@ -283,6 +325,19 @@ async function prevenirRecu(depot: Depot) {
     });
     return;
   }
+  // MusicPitch : textes repris de ceux du ComedyPitch (23/11), à faire valider par Sarah.
+  if (depot.genre === "musicpitch") {
+    await envoyerEmail({
+      to: [{ email: d.email, name: d.prenom ?? undefined }],
+      subject: `Votre MusicPitch pour « ${d.titre} » est bien arrivé`,
+      htmlContent: gabarit(
+        d.prenom,
+        [`Nous avons bien reçu votre MusicPitch pour « ${echapper(d.titre)} ». L'équipe l'écoute avant de le mettre en ligne.`],
+        { href: pageMusicPitch(depot), texte: "Suivre mon MusicPitch" },
+      ),
+    });
+    return;
+  }
   await envoyerEmail({
     to: [{ email: d.email, name: d.prenom ?? undefined }],
     subject: `Votre StoryPitch pour « ${d.titre} » est bien arrivé`,
@@ -306,6 +361,20 @@ async function prevenirEchec(depot: Depot) {
           `Nous n'avons pas réussi à lire la vidéo envoyée pour ${echapper(d.personnage)}. Le fichier est peut-être abîmé, ou dans un format que nous ne connaissons pas. Vous pouvez la renvoyer, de préférence en MP4.`,
         ],
         { href: pageComedyPitch(depot), texte: "Renvoyer ma vidéo" },
+      ),
+    });
+    return;
+  }
+  if (depot.genre === "musicpitch") {
+    await envoyerEmail({
+      to: [{ email: d.email, name: d.prenom ?? undefined }],
+      subject: `Votre MusicPitch pour « ${d.titre} » n'a pas pu être lu`,
+      htmlContent: gabarit(
+        d.prenom,
+        [
+          `Nous n'avons pas réussi à lire le fichier son envoyé pour « ${echapper(d.titre)} ». Le fichier est peut-être abîmé, ou dans un format que nous ne connaissons pas. Vous pouvez le renvoyer, de préférence en MP3.`,
+        ],
+        { href: pageMusicPitch(depot), texte: "Renvoyer mon fichier" },
       ),
     });
     return;
@@ -342,6 +411,21 @@ export async function prevenirRefuse(depot: Depot, motif: string) {
           `<em>${echapper(motif)}</em>`,
         ],
         { href: pageComedyPitch(depot), texte: "Envoyer un autre ComedyPitch" },
+      ),
+    });
+    return;
+  }
+  if (depot.genre === "musicpitch") {
+    await envoyerEmail({
+      to: [{ email: d.email, name: d.prenom ?? undefined }],
+      subject: `Votre MusicPitch pour « ${d.titre} » n'a pas été retenu`,
+      htmlContent: gabarit(
+        d.prenom,
+        [
+          `Nous avons écouté votre MusicPitch pour « ${echapper(d.titre)} », et nous ne le mettons pas en ligne tel quel.`,
+          `<em>${echapper(motif)}</em>`,
+        ],
+        { href: pageMusicPitch(depot), texte: "Envoyer un autre MusicPitch" },
       ),
     });
     return;

@@ -5,7 +5,7 @@ import { cheminAllege } from "@/lib/videopitch";
 import { depotDe } from "../../../acces";
 
 /**
- * La vidéo allégée, pour la regarder dans l'admin (ou la télécharger
+ * La vidéo allégée (ou le MP3 d'un MusicPitch), pour la regarder dans l'admin (ou la télécharger
  * avant de la déposer sur Vimeo : ?telecharger=1). Les plages d'octets
  * (Range) sont servies : sans elles, impossible d'avancer dans la vidéo.
  */
@@ -16,7 +16,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   const { depot, admin } = acces;
   if (depot.etat !== "a_valider") return new Response("Vidéo indisponible", { status: 404 });
 
-  const chemin = cheminAllege(id);
+  const son = depot.genre === "musicpitch";
+  const chemin = cheminAllege(id, depot.genre);
   let taille: number;
   try {
     taille = (await fs.stat(chemin)).size;
@@ -26,7 +27,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   const telecharger = new URL(req.url).searchParams.get("telecharger") === "1";
   const entetes: Record<string, string> = {
-    "Content-Type": "video/mp4",
+    "Content-Type": son ? "audio/mpeg" : "video/mp4",
     "Accept-Ranges": "bytes",
     "Cache-Control": "private, no-store",
   };
@@ -38,7 +39,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     // nom de fichier ne supporte pas sont retirés. Une version anglaise
     // porte « EN » derrière, pour ne pas écraser la française.
     const titre = (projet?.title ?? "StoryPitch").replace(/[\\/:*?"<>|\u0000-\u001f]+/g, " ").replace(/\s+/g, " ").trim() || "StoryPitch";
-    const nom = `${titre}${depot.genre !== "comedypitch" && depot.langue === "en" ? " EN" : ""}.mp4`;
+    const nom = `${titre}${depot.genre !== "comedypitch" && depot.langue === "en" ? " EN" : ""}${son ? ".mp3" : ".mp4"}`;
     const secours = nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\x20-\x7e]/g, "_").replace(/"/g, "'");
     entetes["Content-Disposition"] = `attachment; filename="${secours}"; filename*=UTF-8''${encodeURIComponent(nom).replace(/'/g, "%27")}`;
   }

@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { COLONNES, dureeLisible, tailleLisible, type Depot } from "@/lib/videopitch";
 import NavAdmin from "../NavAdmin";
 import adminStyles from "../admin.module.css";
-import { refuserVideopitch, validerVideopitch } from "./actions";
+import { refuserVideopitch, validerMusicpitch, validerVideopitch } from "./actions";
 
 /**
  * Les StoryPitchs déposés par les auteurs (22/10/2026). Pour chacun : la
@@ -69,6 +69,7 @@ export default async function VideopitchsAdminPage({
   const titre = (l: Ligne) => (
     <>
       {l.genre === "comedypitch" && <>ComedyPitch · {l.personnage?.name ?? "—"} · </>}
+      {l.genre === "musicpitch" && <>MusicPitch · </>}
       {l.project ? (
         <Link href={`/projet/${l.project.id}${l.personnage_id ? `?personnage=${l.personnage_id}#personnages` : ""}`}>{l.project.title}</Link>
       ) : (
@@ -77,8 +78,8 @@ export default async function VideopitchsAdminPage({
     </>
   );
   const version = (l: Ligne) =>
-    l.genre === "comedypitch" ? "ComedyPitch" : `version ${l.langue === "en" ? "anglaise" : "française"}`;
-  const langue = (l: Ligne) => (l.genre === "comedypitch" ? "—" : l.langue.toUpperCase());
+    l.genre === "comedypitch" ? "ComedyPitch" : l.genre === "musicpitch" ? "MusicPitch" : `version ${l.langue === "en" ? "anglaise" : "française"}`;
+  const langue = (l: Ligne) => (l.genre !== "videopitch" ? "—" : l.langue.toUpperCase());
 
   return (
     <PageShell nav="admin" avantTitre={<NavAdmin />} title={`StoryPitchs à valider${aValider?.length ? ` (${aValider.length})` : ""}`} theme="clair">
@@ -87,7 +88,8 @@ export default async function VideopitchsAdminPage({
         Chaque vidéo a été allégée par le serveur (720p, moins de 100 Mo). Regardez-la ici, puis
         téléchargez-la et déposez-la sur Vimeo ; collez enfin le lien Vimeo pour la mettre en ligne
         sur la fiche. L&apos;auteur reçoit un e-mail en cas de refus seulement. Les ComedyPitchs des
-        comédiens arrivent ici aussi : ils portent le nom du personnage.
+        comédiens arrivent ici aussi : ils portent le nom du personnage. Les MusicPitchs des
+        compositeurs aussi : un fichier son à écouter ici, qui se met en ligne d&apos;un clic, sans Vimeo.
       </p>
 
       {(aValider ?? []).length === 0 ? (
@@ -100,15 +102,21 @@ export default async function VideopitchsAdminPage({
               style={{ display: "grid", gridTemplateColumns: "minmax(260px, 420px) 1fr", gap: 24, alignItems: "start", padding: 18, border: "1px solid #e4e4e4", borderRadius: 10 }}
             >
               <div>
-                <video
-                  controls
-                  preload="metadata"
-                  src={`/api/videopitch/depots/${l.id}/video`}
-                  style={{ width: "100%", maxHeight: 420, background: "#000", borderRadius: 6 }}
-                />
+                {l.genre === "musicpitch" ? (
+                  <audio controls preload="metadata" src={`/api/videopitch/depots/${l.id}/video`} style={{ width: "100%" }} />
+                ) : (
+                  <video
+                    controls
+                    preload="metadata"
+                    src={`/api/videopitch/depots/${l.id}/video`}
+                    style={{ width: "100%", maxHeight: 420, background: "#000", borderRadius: 6 }}
+                  />
+                )}
                 <p className={formStyles.hint} style={{ marginTop: 6 }}>
                   {dureeLisible(l.duree_secondes)} · {tailleLisible(l.taille_allegee)} ·{" "}
-                  <a href={`/api/videopitch/depots/${l.id}/video?telecharger=1`}>Télécharger pour Vimeo</a>
+                  <a href={`/api/videopitch/depots/${l.id}/video?telecharger=1`}>
+                    {l.genre === "musicpitch" ? "Télécharger le MP3" : "Télécharger pour Vimeo"}
+                  </a>
                 </p>
               </div>
               <div>
@@ -119,16 +127,25 @@ export default async function VideopitchsAdminPage({
                   {l.nom_origine ? ` · fichier d'origine : ${l.nom_origine} (${tailleLisible(l.taille_annoncee)})` : ""}
                 </p>
 
-                <form action={validerVideopitch} style={{ marginTop: 16 }}>
-                  <input type="hidden" name="depot_id" value={l.id} />
-                  <label className={formStyles.field}>
-                    <span>Lien Vimeo de la vidéo, une fois déposée</span>
-                    <input type="text" name="lien" placeholder="https://vimeo.com/123456789" required />
-                  </label>
-                  <button type="submit" className={formStyles.submit} style={{ marginTop: 8 }}>
-                    {l.genre === "comedypitch" ? "Mettre en ligne sur le personnage" : "Mettre en ligne sur la fiche"}
-                  </button>
-                </form>
+                {l.genre === "musicpitch" ? (
+                  <form action={validerMusicpitch} style={{ marginTop: 16 }}>
+                    <input type="hidden" name="depot_id" value={l.id} />
+                    <button type="submit" className={formStyles.submit}>
+                      Mettre en ligne sur la fiche
+                    </button>
+                  </form>
+                ) : (
+                  <form action={validerVideopitch} style={{ marginTop: 16 }}>
+                    <input type="hidden" name="depot_id" value={l.id} />
+                    <label className={formStyles.field}>
+                      <span>Lien Vimeo de la vidéo, une fois déposée</span>
+                      <input type="text" name="lien" placeholder="https://vimeo.com/123456789" required />
+                    </label>
+                    <button type="submit" className={formStyles.submit} style={{ marginTop: 8 }}>
+                      {l.genre === "comedypitch" ? "Mettre en ligne sur le personnage" : "Mettre en ligne sur la fiche"}
+                    </button>
+                  </form>
+                )}
 
                 <form action={refuserVideopitch} style={{ marginTop: 18 }}>
                   <input type="hidden" name="depot_id" value={l.id} />
@@ -200,7 +217,7 @@ export default async function VideopitchsAdminPage({
                   <td>
                     {l.etat === "valide" ? (
                       <>
-                        Mis en ligne{l.vimeo_id && <> · <a href={`https://vimeo.com/${l.vimeo_id}`}>vimeo.com/{l.vimeo_id}</a></>}
+                        Mis en ligne{l.genre !== "musicpitch" && l.vimeo_id && <> · <a href={`https://vimeo.com/${l.vimeo_id}`}>vimeo.com/{l.vimeo_id}</a></>}
                       </>
                     ) : (
                       <>Refusé{l.motif_refus && <span className={formStyles.hint}> — {l.motif_refus}</span>}</>

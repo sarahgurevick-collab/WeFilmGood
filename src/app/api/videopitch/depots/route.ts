@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { TAILLE_MAX, TAILLE_MORCEAU, dossierDepot, extension, supprimerFichiers } from "@/lib/videopitch";
+import { TAILLE_MAX, TAILLE_MAX_SON, TAILLE_MORCEAU, dossierDepot, extension, extensionSon, supprimerFichiers } from "@/lib/videopitch";
+import { dernierMusicPitch, peutDeposerMusicPitch, seRenvoie } from "@/lib/musicpitch";
 import { peutDeposerComedyPitch, peutRenvoyerComedyPitch } from "@/lib/comedypitch";
 import { peutDeposer, utilisateur } from "../acces";
 
@@ -12,10 +13,11 @@ import { peutDeposer, utilisateur } from "../acces";
  */
 export async function POST(req: Request) {
   const corps = (await req.json().catch(() => null)) as
-    | { project_id?: string; personnage_id?: string; langue?: string; nom?: string; taille?: number; type?: string }
+    | { project_id?: string; personnage_id?: string; genre?: string; langue?: string; nom?: string; taille?: number; type?: string }
     | null;
   if (corps?.personnage_id) return ouvrirComedyPitch(corps as { personnage_id: string; nom?: string; taille?: number; type?: string });
   if (!corps?.project_id) return Response.json({ erreur: "Projet manquant." }, { status: 400 });
+  if (corps.genre === "musicpitch") return ouvrirMusicPitch(corps as { project_id: string; nom?: string; taille?: number; type?: string });
 
   const acces = await peutDeposer(corps.project_id);
   if (!acces) return Response.json({ erreur: "Vous ne pouvez pas déposer de StoryPitch sur ce projet." }, { status: 403 });
@@ -105,6 +107,60 @@ async function ouvrirComedyPitch(corps: { personnage_id: string; nom?: string; t
       deposant_id: u.id,
       langue: "fr",
       nom_origine: (corps.nom ?? "video").slice(0, 200),
+      type_origine: (corps.type ?? "").slice(0, 100) || null,
+      taille_annoncee: taille,
+    })
+    .select("id")
+    .single();
+  if (error || !depot) return Response.json({ erreur: "Le dépôt n'a pas pu être ouvert." }, { status: 500 });
+
+  await fs.mkdir(dossierDepot(depot.id), { recursive: true });
+  return Response.json({ id: depot.id, morceau: TAILLE_MORCEAU });
+}
+
+/**
+ * Le MusicPitch (23/11, migration 0323) : un fichier son pour un projet.
+ * Un seul par compositeur et par projet : le dépôt précédent qui n'est pas
+ * en ligne s'efface ; celui qui est en ligne reste jusqu'à ce que le
+ * nouveau soit validé (c'est la validation qui le remplace).
+ */
+async function ouvrirMusicPitch(corps: { project_id: string; nom?: string; taille?: number; type?: string }) {
+  const u = await utilisateur();
+  if (!u) return Response.json({ erreur: "Connectez-vous." }, { status: 401 });
+  const acces = await peutDeposerMusicPitch(u.supabase, u.id, u.estAdmin, corps.project_id);
+  if (!acces && !seRenvoie((await dernierMusicPitch(u.id, corps.project_id))?.etat)) {
+    return Response.json({ erreur: "Vous ne pouvez pas déposer de MusicPitch pour ce projet." }, { status: 403 });
+  }
+  const admin = createAdminClient();
+  if (!admin) return Response.json({ erreur: "Indisponible." }, { status: 500 });
+
+  const taille = Number(corps.taille ?? 0);
+  if (!extensionSon(corps.nom)) {
+    return Response.json({ erreur: "Ce format de fichier son n'est pas reconnu. Envoyez un MP3, WAV, M4A, AAC, FLAC ou OGG." }, { status: 400 });
+  }
+  if (!Number.isFinite(taille) || taille <= 0) return Response.json({ erreur: "Fichier vide." }, { status: 400 });
+  if (taille > TAILLE_MAX_SON) return Response.json({ erreur: "Le fichier dépasse 500 Mo." }, { status: 400 });
+
+  const { data: anciens } = await admin
+    .from("videopitch_depots")
+    .select("id")
+    .eq("genre", "musicpitch")
+    .eq("project_id", corps.project_id)
+    .eq("deposant_id", u.id)
+    .in("etat", ["envoi", "recu", "preparation", "a_valider", "refuse", "echec"]);
+  for (const a of anciens ?? []) {
+    await supprimerFichiers(a.id);
+    await admin.from("videopitch_depots").delete().eq("id", a.id);
+  }
+
+  const { data: depot, error } = await admin
+    .from("videopitch_depots")
+    .insert({
+      genre: "musicpitch",
+      project_id: corps.project_id,
+      deposant_id: u.id,
+      langue: "fr",
+      nom_origine: (corps.nom ?? "son").slice(0, 200),
       type_origine: (corps.type ?? "").slice(0, 100) || null,
       taille_annoncee: taille,
     })

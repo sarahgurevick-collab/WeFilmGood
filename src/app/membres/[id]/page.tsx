@@ -27,6 +27,8 @@ import { clientCartes, clientProfils } from "@/lib/supabase/admin";
 import { accesAuxFiches } from "@/lib/acces-fiches";
 import { comedypitchsDuComedien } from "@/lib/comedypitch";
 import BlocComedyPitch from "@/app/projet/[id]/BlocComedyPitch";
+import { musicpitchsDuCompositeur } from "@/lib/musicpitch";
+import BlocMusicPitch from "@/app/projet/[id]/BlocMusicPitch";
 
 type Membre = {
   id: string;
@@ -231,6 +233,8 @@ export default async function ProfilMembrePage({
   // comédien »). Tant que les profils sont masqués aux autres membres (nom
   // caché, photo floutée), ils ne paraissent que pour lui et l'administration.
   const comedypitchs = masque ? [] : await comedypitchsDuComedien(membre.id, user.id);
+  // Pareil pour les MusicPitchs du compositeur (« MusicPitch sur le profil du compositeur : confirmé », 12/11).
+  const musicpitchs = masque ? [] : await musicpitchsDuCompositeur(membre.id, user.id);
 
   return (
     <PageShell eyebrow="Membre" title={nom}>
@@ -337,6 +341,18 @@ export default async function ProfilMembrePage({
                 />
               </div>
             ))}
+          </div>
+        </>
+      )}
+
+      {musicpitchs.length > 0 && (
+        <>
+          <h2 style={{ marginTop: 40 }}>MusicPitch</h2>
+          <div style={{ maxWidth: 620 }}>
+            <BlocMusicPitch
+              sons={musicpitchs.map((m) => ({ id: m.id, prenom: m.prenom, url: m.url, etoiles: m.etoiles, donnee: m.donnee, peutEtoiler: m.compositeurId !== user.id, projet: m.projet }))}
+              deposer={null}
+            />
           </div>
         </>
       )}

@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { promises as fs } from "node:fs";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { COLONNES, numeroVimeo, prevenirRefuse, supprimerFichiers, type Depot } from "@/lib/videopitch";
+import { BUCKET_MUSICPITCH, COLONNES, cheminAllege, numeroVimeo, prevenirRefuse, supprimerFichiers, type Depot } from "@/lib/videopitch";
 
 async function adminConnecte() {
   const supabase = await createClient();
@@ -78,6 +79,52 @@ export async function validerVideopitch(formData: FormData) {
     .from("videopitch_depots")
     .update({ etat: "valide", vimeo_id: numero, traite_le: new Date().toISOString(), traite_par: user.id })
     .eq("id", id);
+  await supprimerFichiers(id);
+  revalidatePath(`/projet/${depot.project_id}`);
+  revalidatePath("/admin/videopitchs");
+  retour();
+}
+
+/**
+ * Mettre en ligne un MusicPitch (23/11, migration 0323) : pas de Vimeo. Le
+ * MP3 préparé par le serveur est rangé dans le stockage du site, le dépôt
+ * devient le MusicPitch en ligne et remplace celui que ce compositeur avait
+ * déjà pour ce projet. Pas d'e-mail à la mise en ligne.
+ */
+export async function validerMusicpitch(formData: FormData) {
+  const { user, admin } = await adminConnecte();
+  const id = String(formData.get("depot_id") ?? "");
+  const depot = await depotAValider(admin, id);
+  if (depot.genre !== "musicpitch") retour("Ce dépôt n'est pas un MusicPitch.");
+
+  let son: Buffer;
+  try {
+    son = await fs.readFile(cheminAllege(id, "musicpitch"));
+  } catch {
+    return retour("Le fichier son est introuvable sur le serveur.");
+  }
+  const { error: rangement } = await admin.storage
+    .from(BUCKET_MUSICPITCH)
+    .upload(`${id}.mp3`, son, { contentType: "audio/mpeg", upsert: true });
+  if (rangement) retour("Le son n'a pas pu être rangé : " + rangement.message);
+
+  const { data: remplaces } = await admin
+    .from("videopitch_depots")
+    .select("id")
+    .eq("genre", "musicpitch")
+    .eq("etat", "valide")
+    .eq("project_id", depot.project_id)
+    .eq("deposant_id", depot.deposant_id)
+    .neq("id", id);
+  const { error: echec } = await admin
+    .from("videopitch_depots")
+    .update({ etat: "valide", traite_le: new Date().toISOString(), traite_par: user.id, vu_par_auteur_le: null })
+    .eq("id", id);
+  if (echec) retour("Le MusicPitch n'a pas pu être mis en ligne : " + echec.message);
+  if (remplaces?.length) {
+    await admin.from("videopitch_depots").delete().in("id", remplaces.map((r) => r.id));
+    await admin.storage.from(BUCKET_MUSICPITCH).remove(remplaces.map((r) => `${r.id}.mp3`));
+  }
   await supprimerFichiers(id);
   revalidatePath(`/projet/${depot.project_id}`);
   revalidatePath("/admin/videopitchs");

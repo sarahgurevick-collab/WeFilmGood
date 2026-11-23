@@ -1,5 +1,5 @@
 import { promises as fs } from "node:fs";
-import { TAILLE_MAX, cheminOrigine, extension } from "@/lib/videopitch";
+import { TAILLE_MAX, cheminOrigine, extensionOrigine } from "@/lib/videopitch";
 import { depotDe } from "../../../acces";
 
 /**
@@ -25,7 +25,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     return Response.json({ erreur: "La vidéo dépasse la taille annoncée." }, { status: 400 });
   }
 
-  const chemin = cheminOrigine(id, extension(depot.nom_origine) ?? "mp4");
+  const chemin = cheminOrigine(id, extensionOrigine(depot));
   await fs.appendFile(chemin, donnees);
   await admin.from("videopitch_depots").update({ taille_recue: total }).eq("id", id);
   return Response.json({ recu: total });

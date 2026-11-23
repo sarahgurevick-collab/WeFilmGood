@@ -21,7 +21,7 @@ export type ComedyPitchCadre = {
  * 12/11. Une seule par personne : après l'envoi, il ne reste que l'étoile
  * et son nombre.
  */
-function Etoiles({ video }: { video: ComedyPitchCadre["videos"][number] }) {
+export function Etoiles({ video }: { video: Pick<ComedyPitchCadre["videos"][number], "id" | "etoiles" | "donnee" | "peutEtoiler"> }) {
   const [donnee, setDonnee] = useState(video.donnee);
   const [nombre, setNombre] = useState(video.etoiles);
   const [enCours, lancer] = useTransition();
