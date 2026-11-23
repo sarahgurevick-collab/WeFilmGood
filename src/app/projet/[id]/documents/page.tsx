@@ -99,11 +99,12 @@ export default async function DocumentsPage({
     // La lecture payée dont l'analyse n'est pas encore rendue.
     supabase.rpc("lecture_demande_en_cours", { p_project_id: id }),
   ]);
-  // Pendant la lecture (de l'envoi, quelques minutes de vérification
-  // passées, jusqu'à la publication de l'analyse), l'auteur ne peut plus
-  // changer son scénario (11/11, Sarah) ; ensuite il dépose sa version
-  // retravaillée, qui écrase l'ancienne. La base fait respecter la règle
-  // (migrations 0254 et 0255).
+  // Pendant la lecture (dès qu'un lecteur a le projet, jusqu'à la
+  // publication de l'analyse), l'auteur ne peut plus changer son scénario
+  // (11/11, Sarah) ; ensuite il dépose sa version retravaillée, qui écrase
+  // l'ancienne. Tant que le projet attend dans la file sans lecteur, il
+  // peut encore le remplacer (23/11, Sarah). La base fait respecter la
+  // règle (migrations 0254, 0255 et 0319).
   const { data: enLecture } = await supabase.rpc("scenario_en_lecture", { p_project_id: id });
   const scenarioModifiable = estAdmin === true || enLecture !== true;
   const test = modeHelloAsso() === "sandbox";

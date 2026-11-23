@@ -107,8 +107,9 @@ export async function enregistrerDocuments(formData: FormData) {
   }
 
   if (scenario && scenario.size > 0) {
-    // Pendant la lecture, le scénario ne se remplace pas (11/11, Sarah).
-    // L'écran ne montre plus le champ ; la base refuse de toute façon (0255).
+    // Pendant la lecture (un lecteur a le projet), le scénario ne se
+    // remplace pas (11/11, Sarah ; 23/11 : avant le lecteur, si). L'écran ne
+    // montre plus le champ ; la base refuse de toute façon (0255, 0319).
     const [{ data: enLecture }, { data: admin }] = await Promise.all([
       supabase.rpc("scenario_en_lecture", { p_project_id: id }),
       supabase.rpc("is_admin"),
