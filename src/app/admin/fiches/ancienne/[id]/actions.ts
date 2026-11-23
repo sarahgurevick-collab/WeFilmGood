@@ -55,7 +55,40 @@ export async function validerFicheAncienne(formData: FormData) {
     .eq("id", fiche.project_id)
     .in("status", ["depose", "en_lecture"]);
 
+  // Validée : le brouillon n'a plus lieu d'être.
+  await admin.from("fiches_brouillons_anciennes").delete().eq("legacy_review_id", id);
+
   revalidatePath("/admin/fiches-a-valider");
   revalidatePath(`/projet/${fiche.project_id}`);
   redirect("/admin/fiches-a-valider");
+}
+
+/**
+ * « Enregistrer » (23/11, Sarah) : garde le texte corrigé, la note et le
+ * lecteur choisi, sans valider ni rien changer pour l'auteur.
+ */
+export async function enregistrerBrouillonAncienne(formData: FormData) {
+  const supabase = await createClient();
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  if (!isAdmin) redirect("/");
+
+  const id = Number(formData.get("legacy_review_id"));
+  const content = sanitizeFiche(((formData.get("content") as string) ?? "").trim());
+  const brut = formData.get("score");
+  const score = brut === null || brut === "" ? null : Number(brut);
+  const lecteur = Number(formData.get("reader_legacy_id"));
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { error } = await supabase.from("fiches_brouillons_anciennes").upsert({
+    legacy_review_id: id,
+    content,
+    score: score !== null && Number.isInteger(score) && score >= 0 && score <= 200 ? score : null,
+    reader_legacy_id: Number.isInteger(lecteur) && lecteur > 0 ? lecteur : null,
+    enregistre_par: user?.id ?? null,
+    enregistre_le: new Date().toISOString(),
+  });
+  if (error) console.error("Enregistrement de l'ancienne fiche refusé :", error.message);
+  redirect(`/admin/fiches/ancienne/${id}?enregistre=${error ? "0" : "1"}`);
 }

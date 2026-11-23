@@ -116,6 +116,8 @@ export async function createProject(formData: FormData) {
       p_themes: formData.getAll("mots_cles_auteur_theme").map(String).slice(0, 40),
     });
     if (sansMots) console.error("Mots-clés de l'auteur non enregistrés :", sansMots.message);
+    // Le match du projet (23/11) : recalculé dès que ses mots-clés changent.
+    await supabase.rpc("calculer_match", { p_project: project.id });
   }
 
   if (aVignette) {

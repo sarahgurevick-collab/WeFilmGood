@@ -1,7 +1,7 @@
 import Link from "next/link";
 import RichTextEditor from "@/components/RichTextEditor";
 import FicheContent from "@/components/FicheContent";
-import { ficheHeriteeEnHtml } from "@/lib/sanitize";
+import { ficheHeriteeEnHtml, sanitizeFiche } from "@/lib/sanitize";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -10,7 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 import adminStyles from "../../../admin.module.css";
 import NavAdmin from "../../../NavAdmin";
 import ScoreSlider from "@/app/lecteur/[assignmentId]/ScoreSlider";
-import { validerFicheAncienne } from "./actions";
+import { enregistrerBrouillonAncienne, validerFicheAncienne } from "./actions";
 import PanneauFilmsAVoir from "../../PanneauFilmsAVoir";
 
 /**
@@ -22,10 +22,13 @@ import PanneauFilmsAVoir from "../../PanneauFilmsAVoir";
  */
 export default async function FicheAnciennePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ enregistre?: string }>;
 }) {
   const { id } = await params;
+  const { enregistre } = await searchParams;
 
   const supabase = await createClient();
   const { data: isAdmin } = await supabase.rpc("is_admin");
@@ -61,6 +64,13 @@ export default async function FicheAnciennePage({
     : { data: null };
 
   const aRelire = fiche.statut === 1;
+
+  // Les corrections enregistrées sans valider (bouton « Enregistrer ») passent avant tout.
+  const { data: brouillon } = await supabase
+    .from("fiches_brouillons_anciennes")
+    .select("content, score, reader_legacy_id")
+    .eq("legacy_review_id", fiche.legacy_review_id)
+    .maybeSingle<{ content: string; score: number | null; reader_legacy_id: number | null }>();
 
   // Les lecteurs de WFG 2 rattachés à un compte WFG 1 : ce sont eux
   // qu'on peut mettre sur une fiche héritée (et payer, onglet Lecteurs).
@@ -118,7 +128,7 @@ export default async function FicheAnciennePage({
             <input type="hidden" name="legacy_review_id" value={fiche.legacy_review_id} />
             <label className={formStyles.field}>
               <span>Lecteur (celui qui sera payé pour cette fiche)</span>
-              <select name="reader_legacy_id" defaultValue={fiche.reader_legacy_id ?? ""}>
+              <select name="reader_legacy_id" defaultValue={brouillon?.reader_legacy_id ?? fiche.reader_legacy_id ?? ""}>
                 {lecteurs.map((l) => (
                   <option key={l.legacy_user_id} value={l.legacy_user_id}>
                     {l.full_name ?? `n° ${l.legacy_user_id}`}
@@ -128,16 +138,23 @@ export default async function FicheAnciennePage({
             </label>
             <div className={formStyles.field}>
               <span>Texte publié à l&apos;auteur</span>
-              <RichTextEditor fiche surlignerSubjectif name="content" defaultValue={ficheHeriteeEnHtml(fiche.content)} />
+              <RichTextEditor fiche surlignerSubjectif name="content" defaultValue={brouillon ? sanitizeFiche(brouillon.content) : ficheHeriteeEnHtml(fiche.content)} />
             </div>
             <ScoreSlider
-              defaultValue={fiche.final_mark ?? 100}
+              defaultValue={brouillon?.score ?? fiche.final_mark ?? 100}
               bouton={
-                <button type="submit" className={formStyles.submit}>
-                  Valider
-                </button>
+                <>
+                  <button type="submit" formAction={enregistrerBrouillonAncienne} formNoValidate className={formStyles.submit}>
+                    Enregistrer
+                  </button>
+                  <button type="submit" className={formStyles.submit}>
+                    Valider
+                  </button>
+                </>
               }
             />
+            {enregistre === "1" && <p className={formStyles.hint}>Enregistré.</p>}
+            {enregistre === "0" && <p className={formStyles.hint}>L&apos;enregistrement a échoué : rien n&apos;a été gardé. Réessayez.</p>}
           </form>
         </>
       ) : (
