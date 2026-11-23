@@ -126,7 +126,7 @@ export default async function FicheAdminPage({
 
         <div className={formStyles.field}>
           <span>Texte publié à l&apos;auteur</span>
-          <RichTextEditor fiche name="content" defaultValue={content} />
+          <RichTextEditor fiche surlignerSubjectif name="content" defaultValue={content} />
         </div>
 
         <label className={formStyles.field}>
