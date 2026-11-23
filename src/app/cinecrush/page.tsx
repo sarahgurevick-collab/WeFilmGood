@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import Chrono from "./Chrono";
 import Commentaires, { type Avis } from "./Commentaires";
 import styles from "./cinecrush.module.css";
-import { clientCartes, clientProfils } from "@/lib/supabase/admin";
+import { clientCartes, clientProfils, createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = { title: "CinéCrush — WeFilmGood" };
 
@@ -98,6 +98,13 @@ export default async function CineCrushPage({
     .filter((c) => c.project && c.semaine <= dimancheEnCours)
     .sort((a, b) => (a.semaine < b.semaine ? 1 : -1));
   const enCours = liste.find((c) => c.semaine === dimancheEnCours) ?? null;
+  // Le talent a vu le CinéCrush de la semaine : le rappel en fenêtre des
+  // Galaxies ne s'affiche plus pour lui (24/11, Sarah, migration 0326).
+  if (enCours) {
+    await createAdminClient()
+      ?.from("cinecrush_visites")
+      .upsert({ profile_id: user.id, semaine: dimancheEnCours }, { onConflict: "profile_id,semaine", ignoreDuplicates: true });
+  }
 
   // Le stockage est privé : les vignettes sont signées pour une heure.
   const chemins = liste
