@@ -250,28 +250,32 @@ export default function MotsClesAuteur({
               <path d="M7 9l5-5 5 5M7 15l5 5 5-5" />
             </svg>
           </motion.button>
-          {/* Les mots choisis du thème, dans la barre comme les tags du Finder. */}
+          {/* Les mots choisis des trois thèmes, à la suite (23/11, Sarah) : ceux du thème 1
+              restent quand on passe au 2 — sinon on croit qu'ils ne sont pas enregistrés.
+              Écrits, sans bulle rouge (réservée à l'intitulé), une couleur par thème. */}
           <AnimatePresence initial={false}>
-            {liste.map((m) => (
-              <motion.button
-                key={m}
-                type="button"
-                layout
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ type: "spring", stiffness: 420, damping: 34 }}
-                className={styles.tag}
-                data-theme={theme}
-                onClick={() => basculer(theme, m)}
-                aria-label={`Retirer ${montre(m)}`}
-              >
-                {montre(m)}
-                <span className={styles.tagCroix} aria-hidden="true">
-                  ×
-                </span>
-              </motion.button>
-            ))}
+            {THEMES.flatMap(({ cle }) =>
+              choisis[cle].map((m) => (
+                <motion.button
+                  key={`${cle}-${m}`}
+                  type="button"
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                  className={styles.tag}
+                  data-theme={cle}
+                  onClick={() => basculer(cle, m)}
+                  aria-label={`Retirer ${montre(m)}`}
+                >
+                  {montre(m)}
+                  <span className={styles.tagCroix} aria-hidden="true">
+                    ×
+                  </span>
+                </motion.button>
+              )),
+            )}
           </AnimatePresence>
           {THEMES.some(({ cle }) => choisis[cle].length < MAXIMUM_MOTS_AUTEUR) && (
             <input

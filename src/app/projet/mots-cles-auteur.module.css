@@ -6,7 +6,8 @@
   gap: 6px;
   background: var(--surface);
   border: 1px solid var(--bordure);
-  border-radius: 999px;
+  /* Jusqu'à trente mots sur plusieurs lignes : un cadre arrondi plutôt qu'une gélule. */
+  border-radius: 26px;
   padding: 5px;
 }
 
@@ -127,18 +128,20 @@
   cursor: default;
 }
 
-/* Les mots choisis du thème, dans la barre : les tags du Finder, à la couleur du bouton. */
+/* Les mots choisis des trois thèmes, écrits à la suite dans la barre (23/11/2026,
+   Sarah) : pas de bulle rouge, réservée à l'intitulé ; une couleur par thème,
+   celles du nuage. */
 .tag {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 12px 7px 14px;
+  gap: 6px;
+  padding: 6px 6px 6px 10px;
   border: none;
   border-radius: 999px;
-  background: var(--rouge-wfg);
-  color: #fff;
+  background: none;
+  color: #f2c230;
   font-family: inherit;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
@@ -146,15 +149,19 @@
 }
 
 .tag[data-theme="sujets"] {
-  background: #e25a54;
+  color: #3b8ef5;
 }
 
 .tag[data-theme="univers"] {
-  background: #eb8b87;
-  color: #4a0b08;
+  color: #35b05e;
+}
+
+.tag:hover {
+  background: rgba(127, 127, 127, 0.18);
 }
 
 .tagCroix {
+  opacity: 0.7;
   font-size: 17px;
   line-height: 1;
 }
