@@ -34,6 +34,28 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Le halo de « Mes messages » et du Finder : le bouton bat tant que les trois
+   thèmes n'ont pas chacun leurs trois mots (23/11, Sarah). */
+.mode[data-halo="true"] {
+  animation: haloTheme 1.6s ease-in-out infinite;
+}
+
+@keyframes haloTheme {
+  0%,
+  100% {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18), 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18), 0 0 0 5px color-mix(in srgb, var(--rouge-wfg, #da2c25) 45%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mode[data-halo="true"] {
+    animation: none;
+  }
+}
+
 /* Une couleur par thème, les tons du Finder. */
 .mode[data-theme="sujets"] {
   background: #e25a54;

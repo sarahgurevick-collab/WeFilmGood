@@ -100,6 +100,8 @@ export default function MotsClesAuteur({
     return depart;
   });
   const [theme, setTheme] = useState<CleNuage>("styles");
+  // Trois mots par thème dévoilent le match (0315) : tant qu'ils n'y sont pas, le bouton des thèmes bat.
+  const SEUIL_MATCH = match?.seuil ?? 3;
   const [combien, setCombien] = useState(DEFAUT);
   const [saisie, setSaisie] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -150,13 +152,18 @@ export default function MotsClesAuteur({
   useEffect(() => () => void (avance.current && clearTimeout(avance.current)), []);
   const choisir = (cle: CleNuage, mot: string) => {
     const avant = choisis[cle];
-    const remplit = !avant.includes(mot) && avant.length + 1 === MAXIMUM_MOTS_AUTEUR;
+    const apres = avant.includes(mot) ? avant.length : avant.length + 1;
+    const remplit = !avant.includes(mot) && apres === MAXIMUM_MOTS_AUTEUR;
+    // Le thème vient d'avoir ses trois mots (23/11, Sarah : faire comprendre
+    // qu'il faut passer à 1/3, 2/3 puis 3/3) : on passe au thème suivant qui
+    // n'a pas encore les siens.
+    const atteint = !avant.includes(mot) && apres === SEUIL_MATCH;
     basculer(cle, mot);
-    if (!remplit) return;
+    if (!remplit && !atteint) return;
     const depart = THEMES.findIndex((t) => t.cle === cle);
     const suivant = [1, 2]
       .map((n) => THEMES[(depart + n) % THEMES.length].cle)
-      .find((c) => choisis[c].length < MAXIMUM_MOTS_AUTEUR);
+      .find((c) => choisis[c].length < (remplit ? MAXIMUM_MOTS_AUTEUR : SEUIL_MATCH));
     if (!suivant) return;
     if (avance.current) clearTimeout(avance.current);
     avance.current = setTimeout(() => setTheme(suivant), 700);
@@ -223,6 +230,7 @@ export default function MotsClesAuteur({
             className={`${styles.mode} notranslate`}
             translate="no"
             data-theme={theme}
+            data-halo={THEMES.some(({ cle }) => choisis[cle].length < SEUIL_MATCH)}
             onClick={themeSuivant}
             aria-label={langue === "en" ? `${titre}. Click to change` : `${titre}. Cliquer pour changer`}
           >
