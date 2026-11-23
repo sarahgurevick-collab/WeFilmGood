@@ -254,3 +254,21 @@
 .suivant:hover {
   color: var(--fg);
 }
+
+/* « Besoin d'idées ? » : ouvre le nuage, fermé au départ (23/11, Sarah). */
+.idees {
+  align-self: flex-start;
+  margin-top: 8px;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.idees:hover {
+  color: var(--fg);
+}

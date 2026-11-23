@@ -103,7 +103,7 @@ export const VISITE_NOUVELLE_FICHE: EtapeVisite[] = [
   {
     cible: '[data-visite="mots-cles"]',
     titre: "Vos mots-clés",
-    texte: "Trois thèmes : sous-genres et styles, sujets et personnages, univers et lieux. Tapez un mot ou piochez dans le nuage, dix par thème au plus. Ils aident les producteurs à trouver votre projet.",
+    texte: "Trois thèmes : sous-genres et styles, sujets et personnages, univers et lieux. Tapez un mot, dix par thème au plus. Ils aident les producteurs à trouver votre projet.",
     titreEn: "Your keywords",
     texteEn: "Three themes: sub-genres and styles, subjects and characters, worlds and places. Type a word or pick from the cloud, ten per theme at most. They help producers find your project.",
   },

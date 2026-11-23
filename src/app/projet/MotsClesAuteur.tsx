@@ -103,6 +103,9 @@ export default function MotsClesAuteur({
   // Trois mots par thème dévoilent le match (0315) : tant qu'ils n'y sont pas, le bouton des thèmes bat.
   const SEUIL_MATCH = match?.seuil ?? 3;
   const [combien, setCombien] = useState(DEFAUT);
+  // Le nuage est fermé au départ (23/11, Sarah : l'auteur ne faisait que piocher
+  // dedans, « réducteur ») : on tape d'abord, « Besoin d'idées ? » l'ouvre.
+  const [nuageOuvert, setNuageOuvert] = useState(false);
   const [saisie, setSaisie] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const minuteur = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -289,7 +292,7 @@ export default function MotsClesAuteur({
             <input
               type="text"
               className={styles.champModesInput}
-              placeholder="Tapez un mot-clé ou piochez dans le nuage…"
+              placeholder="Tapez un mot-clé…"
               maxLength={60}
               aria-labelledby="mots-cles-auteur-libelle"
               autoComplete="off"
@@ -319,8 +322,19 @@ export default function MotsClesAuteur({
         )}
       </div>
 
+      <button
+        type="button"
+        className={styles.idees}
+        aria-expanded={nuageOuvert}
+        aria-controls="mots-cles-auteur-nuage"
+        onClick={() => setNuageOuvert((o) => !o)}
+      >
+        {en ? "Need ideas?" : "Besoin d'idées ?"}
+      </button>
+
       {/* Le nuage du thème choisi, celui du Finder. */}
-      <div className={styles.nuage} data-theme={theme}>
+      {nuageOuvert && (
+      <div id="mots-cles-auteur-nuage" className={styles.nuage} data-theme={theme}>
         <div className={styles.nuageEntete}>
           {/* « notranslate » : la traduction automatique fige le texte qu'elle a
               traduit, et le compteur restait à 0 en anglais (08/11). */}
@@ -356,6 +370,7 @@ export default function MotsClesAuteur({
         </div>
         <NuageDisque mots={motsNuage} choisis={liste} bloque={plein} enAnglais={en} onChoisir={(mot) => choisir(theme, mot)} />
       </div>
+      )}
 
     </div>
   );
