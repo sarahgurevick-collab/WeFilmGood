@@ -205,6 +205,14 @@ export default function MotsClesAuteur({
         )),
       )}
 
+      {/* Le match du projet (23/11) : au-dessus du nuage, sinon on ne le voit pas (Sarah, 23/11) ; la jauge se remplit pendant la saisie, le match arrive à l'enregistrement. */}
+      <CarteMatch
+        themes={{ styles: choisis.styles.length, sujets: choisis.sujets.length, univers: choisis.univers.length }}
+        seuil={match?.seuil ?? 3}
+        match={match}
+        nouvelOnglet
+      />
+
       {/* Le bouton des thèmes dans le champ lui-même, comme le Finder : un clic passe au suivant. */}
       <div className={styles.zoneSaisie}>
         <span className={styles.champModes}>
@@ -336,14 +344,6 @@ export default function MotsClesAuteur({
         </div>
         <NuageDisque mots={motsNuage} choisis={liste} bloque={plein} enAnglais={en} onChoisir={(mot) => choisir(theme, mot)} />
       </div>
-
-      {/* Le match du projet (23/11) : la jauge se remplit pendant la saisie, le match arrive à l'enregistrement. */}
-      <CarteMatch
-        themes={{ styles: choisis.styles.length, sujets: choisis.sujets.length, univers: choisis.univers.length }}
-        seuil={match?.seuil ?? 3}
-        match={match}
-        nouvelOnglet
-      />
 
     </div>
   );
