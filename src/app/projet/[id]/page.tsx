@@ -580,6 +580,14 @@ export default async function ProjetPage({
 
   // Le match du projet (23/11). L'auteur l'a sous les yeux : la pastille s'éteint.
   const match = isOwner || estAdmin ? await chargerMatch(supabase, id) : null;
+  // Les films ou séries proches cités par l'auteur (23/11, Sarah) : montrés
+  // aux membres adhérents, au porteur et à l'administration — la base fait
+  // respecter la règle (0321).
+  const { data: filmsProchesBruts } =
+    isOwner || estAdmin === true || adherent === true
+      ? await supabase.rpc("films_proches_de_la_fiche", { p_project: id })
+      : { data: null };
+  const filmsProches = (filmsProchesBruts ?? []) as { titre: string; annee: number | null; realisateur: string | null }[];
   if (isOwner && match?.nouveau) await supabase.rpc("match_vu", { p_project: id });
 
   return (
@@ -780,6 +788,13 @@ export default async function ProjetPage({
           {(comediens ?? []).length > 0 && (
             <>Comédien·ne·s envisagé·e·s : {(comediens ?? []).map((c) => c.libelle).join(" · ")}</>
           )}
+        </p>
+      )}
+
+      {filmsProches.length > 0 && (
+        <p className={formStyles.hint} style={{ marginTop: 12 }}>
+          Films ou séries proches de ce projet :{" "}
+          {filmsProches.map((f) => (f.annee ? `${f.titre} (${f.annee})` : f.titre)).join(" · ")}
         </p>
       )}
 
