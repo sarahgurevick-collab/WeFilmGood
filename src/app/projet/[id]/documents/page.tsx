@@ -10,6 +10,7 @@ import { modeHelloAsso, testeurPaiement } from "@/lib/helloasso";
 import { basculerAutorisationStoryPitch, enregistrerDocuments } from "./actions";
 import BoutonRetirerPhoto from "./BoutonRetirerPhoto";
 import ZoneMoodboard from "./ZoneMoodboard";
+import FilmsProches, { type FilmCite } from "./FilmsProches";
 import ImagePresentation from "./ImagePresentation";
 import EnvoiVideopitch, { type DepotAffiche } from "./EnvoiVideopitch";
 import VideopitchLecteur from "@/components/VideopitchLecteur";
@@ -51,6 +52,27 @@ export default async function DocumentsPage({
     ...moodboard.map((m) => m.storage_path),
   ]);
   const accept = "image/jpeg,image/png,image/webp,image/avif";
+
+  // Les films ou séries proches du projet, cités par l'auteur (23/11) : le
+  // titre vient de la base des films quand il y a été trouvé.
+  const [{ data: citesBruts }, { data: trouvesBruts }] = await Promise.all([
+    supabase
+      .from("projet_films_proches")
+      .select("id, titre, film_id")
+      .eq("project_id", id)
+      .order("created_at", { ascending: true })
+      .returns<{ id: string; titre: string; film_id: number | null }[]>(),
+    supabase.rpc("films_proches_cites", { p_project: id }),
+  ]);
+  const details = new Map(
+    ((trouvesBruts ?? []) as { film_id: number; annee: number | null; realisateur: string | null }[]).map((f) => [f.film_id, f]),
+  );
+  const filmsCites: FilmCite[] = (citesBruts ?? []).map((c) => ({
+    id: c.id,
+    titre: c.titre,
+    annee: (c.film_id && details.get(c.film_id)?.annee) || null,
+    realisateur: (c.film_id && details.get(c.film_id)?.realisateur) || null,
+  }));
 
   // Le scénario se relit dans la page, page par page, comme sur WFG 1
   // (22/11, remarque d'un auteur reprise par Sarah). Lien signé une heure,
@@ -230,6 +252,12 @@ export default async function DocumentsPage({
         <p className={formStyles.hint}>
           Une photo par image : évitez les pages de dossier qui en regroupent plusieurs.
         </p>
+        {/* Demande de Sarah du 23/11 : les auteurs déposent des images IA. */}
+        <p className={formStyles.hint}>
+          Un Moodboard en images générées par IA vaut mieux que rien, mais nous préférons de
+          vraies photos : des décors trouvés sur internet ou des images de films qui vous ont
+          inspiré.
+        </p>
         {moodboard.length > 0 && (
           <ul className={styles.grilleImages}>
             {moodboard.map((m) => (
@@ -246,6 +274,14 @@ export default async function DocumentsPage({
           <ZoneMoodboard projectId={projet.id} />
           <span className={formStyles.hint}>Vous pouvez en glisser ou en choisir plusieurs à la fois.</span>
         </div>
+
+        <h2 className={styles.sousTitre}>Films ou séries proches de votre projet</h2>
+        <p className={formStyles.hint}>
+          Citez au moins 3 films ou séries qui se rapprochent de votre projet. Tapez un titre :
+          s&apos;il est dans notre base, choisissez-le dans la liste ; sinon, ajoutez-le tel que
+          vous l&apos;avez écrit.
+        </p>
+        <FilmsProches projectId={projet.id} films={filmsCites} />
 
         {(scenarioModifiable || lienScenario) && <h2 className={styles.sousTitre}>Le scénario</h2>}
         {scenario && lienScenario && (

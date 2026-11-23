@@ -280,3 +280,37 @@ export async function ajouterPhotoMoodboard(formData: FormData): Promise<{ ok: b
   });
   return { ok: !error };
 }
+
+export type FilmTrouve = { film_id: number; titre: string; annee: number | null; realisateur: string | null };
+
+/** Cherche un film de la base par son titre (23/11) : huit propositions au plus. */
+export async function chercherFilm(projectId: string, saisie: string): Promise<FilmTrouve[]> {
+  const { supabase } = await chargerProjetAModifier(projectId, "documents");
+  const { data } = await supabase.rpc("chercher_film_par_titre", { p_titre: saisie.slice(0, 100) });
+  return (data ?? []) as FilmTrouve[];
+}
+
+/**
+ * Un film ou une série proche du projet, cité par l'auteur (23/11, Sarah) :
+ * choisi dans la base (film_id) ou, s'il n'y est pas, gardé tel qu'écrit.
+ * Enregistré aussitôt, comme les photos du Moodboard.
+ */
+export async function ajouterFilmProche(projectId: string, titre: string, filmId: number | null): Promise<{ ok: boolean }> {
+  const { supabase } = await chargerProjetAModifier(projectId, "documents");
+  const propre = titre.replace(/\s+/g, " ").trim().slice(0, 200);
+  if (!propre) return { ok: false };
+  const { error } = await supabase.from("projet_films_proches").insert({
+    project_id: projectId,
+    titre: propre,
+    film_id: Number.isInteger(filmId) ? filmId : null,
+  });
+  revalidatePath(`/projet/${projectId}/documents`);
+  // 23505 : déjà cité, rien à faire.
+  return { ok: !error || error.code === "23505" };
+}
+
+export async function retirerFilmProche(projectId: string, id: string): Promise<void> {
+  const { supabase } = await chargerProjetAModifier(projectId, "documents");
+  await supabase.from("projet_films_proches").delete().eq("id", id).eq("project_id", projectId);
+  revalidatePath(`/projet/${projectId}/documents`);
+}
