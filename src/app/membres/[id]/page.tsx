@@ -350,7 +350,7 @@ export default async function ProfilMembrePage({
           <h2 style={{ marginTop: 40 }}>MusicPitch</h2>
           <div style={{ maxWidth: 620 }}>
             <BlocMusicPitch
-              sons={musicpitchs.map((m) => ({ id: m.id, prenom: m.prenom, url: m.url, etoiles: m.etoiles, donnee: m.donnee, peutEtoiler: m.compositeurId !== user.id, projet: m.projet }))}
+              sons={musicpitchs.map((m) => ({ id: m.id, prenom: m.prenom, url: m.url, photo: photoNette(m.avatar), duree: m.duree, etoiles: m.etoiles, donnee: m.donnee, peutEtoiler: m.compositeurId !== user.id, projet: m.projet }))}
               deposer={null}
             />
           </div>

@@ -1,9 +1,10 @@
 import "server-only";
 
+import { createHash } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { aCocheLeMetier, estLeCinecrush } from "@/lib/comedypitch";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { BUCKET_MUSICPITCH } from "@/lib/videopitch";
+import { BUCKET_MUSICPITCH, dureeLisible } from "@/lib/videopitch";
 
 /**
  * Le MusicPitch (23/11/2026, migration 0323) : un compositeur dépose un
@@ -98,6 +99,10 @@ export type MusicPitchEnLigne = {
   prenom: string;
   /** Lien d'écoute temporaire (une heure). */
   url: string;
+  /** La photo de profil du compositeur, telle qu'elle est en base (à flouter ou non selon qui regarde). */
+  avatar: string | null;
+  /** « 2 min 14 s », ou null si la durée n'est pas connue. */
+  duree: string | null;
   etoiles: number;
   /** La personne connectée a déjà envoyé son étoile. */
   donnee: boolean;
@@ -110,16 +115,16 @@ async function enLigne(
 ): Promise<MusicPitchEnLigne[]> {
   const { data: depots } = await admin
     .from("videopitch_depots")
-    .select("id, project_id, deposant_id")
+    .select("id, project_id, deposant_id, duree_secondes")
     .eq("genre", "musicpitch")
     .eq("etat", "valide")
     .eq(filtre.colonne, filtre.valeur)
     .order("traite_le", { ascending: true })
-    .returns<{ id: string; project_id: string; deposant_id: string }[]>();
+    .returns<{ id: string; project_id: string; deposant_id: string; duree_secondes: number | null }[]>();
   const lignes = depots ?? [];
   if (lignes.length === 0) return [];
   const [{ data: profils }, { data: etoiles }, { data: liens }] = await Promise.all([
-    admin.from("profiles").select("id, first_name, full_name").in("id", [...new Set(lignes.map((d) => d.deposant_id))]),
+    admin.from("profiles").select("id, first_name, full_name, avatar_url").in("id", [...new Set(lignes.map((d) => d.deposant_id))]),
     admin.from("comedypitch_etoiles").select("depot_id, profile_id").in("depot_id", lignes.map((d) => d.id)),
     admin.storage.from(BUCKET_MUSICPITCH).createSignedUrls(lignes.map((d) => `${d.id}.mp3`), 60 * 60),
   ]);
@@ -129,6 +134,7 @@ async function enLigne(
       ((p.first_name as string | null)?.trim() || (p.full_name as string | null)?.trim()?.split(" ")[0] || "") as string,
     ]),
   );
+  const avatars = new Map((profils ?? []).map((p) => [p.id as string, (p.avatar_url as string | null) ?? null]));
   const urls = new Map((liens ?? []).map((l) => [l.path, l.signedUrl]));
   return lignes
     .map((d) => {
@@ -139,6 +145,8 @@ async function enLigne(
         compositeurId: d.deposant_id,
         prenom: prenoms.get(d.deposant_id) ?? "",
         url: urls.get(`${d.id}.mp3`) ?? "",
+        avatar: avatars.get(d.deposant_id) ?? null,
+        duree: d.duree_secondes == null ? null : dureeLisible(d.duree_secondes),
         etoiles: siennes.length,
         donnee: siennes.some((e) => e.profile_id === userId),
       };
@@ -146,10 +154,18 @@ async function enLigne(
     .filter((m) => m.url);
 }
 
-/** Les MusicPitchs en ligne d'un projet. À n'appeler que pour qui a le droit de les écouter. */
+/**
+ * Les MusicPitchs en ligne d'un projet. À n'appeler que pour qui a le droit
+ * de les écouter. L'ordre change chaque jour (24/11, Sarah) : chacun passe
+ * en tête à son tour, ce n'est pas un classement.
+ */
 export async function musicpitchsDuProjet(projectId: string, userId: string) {
   const admin = createAdminClient();
-  return admin ? enLigne(admin, { colonne: "project_id", valeur: projectId }, userId) : [];
+  if (!admin) return [];
+  const jour = new Date().toISOString().slice(0, 10);
+  const rang = (id: string) => createHash("md5").update(id + jour).digest("hex");
+  const lignes = await enLigne(admin, { colonne: "project_id", valeur: projectId }, userId);
+  return lignes.sort((a, b) => rang(a.id).localeCompare(rang(b.id)));
 }
 
 /** Les MusicPitchs en ligne d'un compositeur, avec le titre du projet (pour son profil). */

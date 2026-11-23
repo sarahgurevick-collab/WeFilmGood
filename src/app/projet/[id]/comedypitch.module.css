@@ -102,9 +102,121 @@
 }
 
 /* Le MusicPitch (23/11/2026) : le lecteur de son, et sa place sous le cadre de la fiche. */
-.son {
-  display: block;
+.ecouteEntete {
+  margin: 0 0 8px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ecouteTitre {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.ecouteNombre {
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.ecouteNote {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.ecouteLigne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 6px;
+  border-top: 1px solid rgba(128, 128, 128, 0.35);
+}
+
+.ecouteActive {
+  background: rgba(128, 128, 128, 0.14);
+}
+
+.ecouteLecture {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  background: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ecouteLecture:hover {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.ecoutePhoto {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #da2c25;
+  color: #fff;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ecoutePhoto img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ecouteTexte {
+  flex: 1;
+  min-width: 0;
+}
+
+.ecouteInfos {
+  margin: 2px 0 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.ecouteInfos a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.ecouteBarre {
+  margin-top: 8px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(128, 128, 128, 0.35);
+  overflow: hidden;
+}
+
+.ecouteBarre div {
+  height: 100%;
+  background: #da2c25;
+}
+
+.ecouteLigne .etoiles {
+  margin: 0;
+  flex: none;
+}
+
+@media (max-width: 520px) {
+  .ecouteLigne {
+    flex-wrap: wrap;
+  }
+
+  .ecouteLigne .etoiles {
+    margin-left: 50px;
+  }
 }
 
 .musicpitch {

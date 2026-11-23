@@ -789,8 +789,20 @@ export default async function ProjetPage({
       {(musicEnLigne.length > 0 || deposerMusicPitch) && (
         <div id="musicpitch" className={comedyStyles.musicpitch}>
           <BlocMusicPitch
-            sons={musicEnLigne.map((m) => ({ id: m.id, prenom: m.prenom, url: m.url, etoiles: m.etoiles, donnee: m.donnee, peutEtoiler: m.compositeurId !== user?.id }))}
+            sons={musicEnLigne.map((m) => ({
+              id: m.id,
+              prenom: m.prenom,
+              url: m.url,
+              // Comme pour l'équipe : la photo reste floutée tant que la fiche est restreinte.
+              photo: m.avatar ? (restreint ? `/api/talents/photo?id=${m.compositeurId}` : photoNette(m.avatar)) : null,
+              duree: m.duree,
+              profil: `/membres/${m.compositeurId}`,
+              etoiles: m.etoiles,
+              donnee: m.donnee,
+              peutEtoiler: m.compositeurId !== user?.id,
+            }))}
             deposer={deposerMusicPitch}
+            tournant
           />
         </div>
       )}
