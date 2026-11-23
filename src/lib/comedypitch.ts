@@ -17,11 +17,13 @@ import { createAdminClient } from "@/lib/supabase/admin";
  *    en attendant, une description d'au moins SEUIL_DESCRIPTION caractères,
  *    et n'importe quelle description pour le CinéCrush de la semaine.
  *
- * QUI dépose (23/11, Sarah : « ouvre à tous sauf les producteurs ») : tout
- * membre qui a ouvert le projet avec un soleil — ou n'importe quel membre
- * sur le CinéCrush de la semaine. Plus besoin d'avoir coché « Comédien »
- * (règle du 13/11, annulée). Seuls les profils producteur sont écartés,
- * sauf s'ils ont aussi coché le métier (voir producteurEcarte).
+ * QUI dépose : un talent qui a coché le métier « Comédien » dans son
+ * profil, et qui a ouvert le projet avec un soleil — ou n'importe quel
+ * comédien sur le CinéCrush de la semaine. Règle du 13/11, ouverte à tous
+ * sauf aux producteurs quelques heures le 23/11, puis rétablie le 24/11
+ * (Sarah, d'après Nicolas : « nous sommes un réseau pro. Si on laisse
+ * n'importe qui déposer […] cela va être n'importe quoi »). Un producteur
+ * qui a aussi coché « Comédien » dépose donc.
  * L'administration peut toujours déposer (essais, vidéo reçue autrement).
  *
  * QUI regarde : ceux qui voient la fiche en entier (l'auteur, son équipe,
@@ -33,14 +35,13 @@ export const SEUIL_DESCRIPTION = 300;
 type Admin = NonNullable<ReturnType<typeof createAdminClient>>;
 
 /**
- * « Tous sauf les producteurs » (23/11, Sarah), pour le ComedyPitch et le
- * MusicPitch : un profil producteur ne dépose pas — sauf s'il a aussi coché
- * le métier de l'exercice (comédien, compositeur), comme il le pouvait avant.
+ * Le talent a-t-il coché ce métier dans son profil ? (24/11, Sarah :
+ * « Uniquement un talent qui a coché "comédien" peut envoyer un ComedyPitch,
+ * uniquement un talent qui a coché "compositeur" peut envoyer un MusicPitch ».)
  */
-export async function producteurEcarte(admin: Admin, userId: string, metier: "comedien" | "compositeur"): Promise<boolean> {
-  const { data } = await admin.from("profile_roles").select("role_slug").eq("profile_id", userId).in("role_slug", ["producteur", metier]);
-  const slugs = (data ?? []).map((r) => r.role_slug as string);
-  return slugs.includes("producteur") && !slugs.includes(metier);
+export async function aCocheLeMetier(admin: Admin, userId: string, metier: "comedien" | "compositeur"): Promise<boolean> {
+  const { data } = await admin.from("profile_roles").select("role_slug").eq("profile_id", userId).eq("role_slug", metier).maybeSingle();
+  return !!data;
 }
 
 /** Ce projet est-il le CinéCrush de la semaine en cours ? */
@@ -113,11 +114,11 @@ export async function peutDeposerComedyPitch(
   const { cinecrush, accepte } = await projetAccepte(admin, projet);
   if (!accepte || !assezDecrit(personnage.biography, cinecrush)) return null;
 
-  const [ecarte, { data: ouverture }] = await Promise.all([
-    producteurEcarte(admin, userId, "comedien"),
+  const [comedien, { data: ouverture }] = await Promise.all([
+    aCocheLeMetier(admin, userId, "comedien"),
     supabase.from("gravity_ouvertures").select("project_id").eq("profile_id", userId).eq("project_id", projet.id).maybeSingle(),
   ]);
-  if (ecarte) return null;
+  if (!comedien) return null;
   return cinecrush || ouverture ? acces : null;
 }
 

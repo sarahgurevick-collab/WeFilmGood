@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { estLeCinecrush, producteurEcarte } from "@/lib/comedypitch";
+import { aCocheLeMetier, estLeCinecrush } from "@/lib/comedypitch";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { BUCKET_MUSICPITCH } from "@/lib/videopitch";
 
@@ -16,10 +16,11 @@ import { BUCKET_MUSICPITCH } from "@/lib/videopitch";
  * dans le stockage du site (dossier privé « musicpitchs ») et s'écoute par
  * un lien temporaire, donné à ceux qui ont le droit de voir la fiche.
  *
- * QUI DÉPOSE (23/11, Sarah : « ouvre à tous sauf les producteurs ») : tout
- * membre, sans avoir coché « Compositeur », sur le projet d'un auteur
- * adhérent ouvert avec un soleil, ou sur le CinéCrush de la semaine. Les
- * profils producteur sont écartés (producteurEcarte).
+ * QUI DÉPOSE (24/11, Sarah, d'après Nicolas : « nous sommes un réseau
+ * pro ») : uniquement un talent qui a coché le métier « Compositeur » dans
+ * son profil, sur le projet d'un auteur adhérent ouvert avec un soleil, ou
+ * sur le CinéCrush de la semaine. L'ouverture « à tous sauf aux
+ * producteurs » de la veille est annulée.
  *
  * Ouvert aux membres le 24/11 (Sarah : « ok pour les 19 textes, ouvre le
  * musicpitch »). MUSICPITCH_OUVERT à faux le referme : l'administration
@@ -59,7 +60,7 @@ export async function peutDeposerMusicPitch(
   if (!MUSICPITCH_OUVERT || !projet.is_public || projet.owner_id === userId) return null;
 
   const { cinecrush, accepte } = await projetAccepteMusicPitch(admin, projet);
-  if (!accepte || (await producteurEcarte(admin, userId, "compositeur"))) return null;
+  if (!accepte || !(await aCocheLeMetier(admin, userId, "compositeur"))) return null;
   if (cinecrush) return { projet };
   const { data: ouverture } = await supabase
     .from("gravity_ouvertures")

@@ -37,7 +37,7 @@ import BarreGravity, { type EtatGravity } from "./BarreGravity";
 import { compterArchives } from "@/lib/archives-lecture";
 import { photoNette } from "@/lib/photo";
 import { clientCartes, clientProfils, createAdminClient } from "@/lib/supabase/admin";
-import { assezDecrit, comedypitchsDuProjet, producteurEcarte, projetAccepte } from "@/lib/comedypitch";
+import { assezDecrit, aCocheLeMetier, comedypitchsDuProjet, projetAccepte } from "@/lib/comedypitch";
 import { musicpitchsDuProjet, peutDeposerMusicPitch } from "@/lib/musicpitch";
 import BlocMusicPitch from "./BlocMusicPitch";
 import comedyStyles from "./comedypitch.module.css";
@@ -447,8 +447,8 @@ export default async function ProjetPage({
   const comedyEnLigne = voitComedyPitchs && user ? await comedypitchsDuProjet(project.id, user.id) : [];
   let comedienPeutDeposer = false;
   if (user && service && reglesComedy.accepte && (ouverture || reglesComedy.cinecrush)) {
-    // Tous sauf les producteurs (23/11, Sarah) : plus besoin du métier « Comédien ».
-    comedienPeutDeposer = !(await producteurEcarte(service, user.id, "comedien"));
+    // Seulement qui a coché le métier « Comédien » (règle rétablie le 24/11, Sarah).
+    comedienPeutDeposer = await aCocheLeMetier(service, user.id, "comedien");
   }
   // Pour l'auteur : les ComedyPitchs mis en ligne qu'il n'a pas encore vus.
   // Arriver sur le personnage par « Le regarder » les marque comme vus.
@@ -472,7 +472,7 @@ export default async function ProjetPage({
   }
 
   // Le MusicPitch (23/11, 0323) : mêmes regards que le ComedyPitch ; le
-  // bouton de dépôt selon src/lib/musicpitch.ts (tous sauf les producteurs,
+  // bouton de dépôt selon src/lib/musicpitch.ts (qui a coché « Compositeur »,
   // 24/11). L'auteur est prévenu une fois, sur sa fiche.
   const musicEnLigne = voitComedyPitchs && user ? await musicpitchsDuProjet(project.id, user.id) : [];
   const deposerMusicPitch =
