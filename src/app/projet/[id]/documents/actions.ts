@@ -189,6 +189,10 @@ export async function envoyerALaLecture(formData: FormData) {
     admin.from("profiles").select("first_name, last_name").eq("id", user.id).maybeSingle(),
   ]);
   if (!scenarios) redirect(`${page}?paiement=sans-scenario`);
+  // Une nouvelle lecture demande un nouveau scénario (23/11, Sarah) : on ne
+  // paie pas pour faire relire la version déjà lue (0322).
+  const { data: scenarioDejaLu } = await supabase.rpc("scenario_deja_parti_en_lecture", { p_project_id: id });
+  if (scenarioDejaLu === true) redirect(`${page}?paiement=sans-scenario`);
   if (!images) redirect(`${page}?paiement=sans-image`);
   if (enCours) redirect(page);
   // Une lecture déjà commencée (attribuée, en relecture) ne se repaie pas ;

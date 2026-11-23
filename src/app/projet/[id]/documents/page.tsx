@@ -165,6 +165,9 @@ export default async function DocumentsPage({
   // d'abord le scénario choisi, puis mène à la page de paiement. Quand le
   // scénario n'est plus modifiable (lecture en cours), il reste après le
   // formulaire.
+  // Une nouvelle lecture demande un nouveau scénario (23/11, Sarah) : celui
+  // qui a déjà été lu, que l'auteur ne voit plus, ne se renvoie pas.
+  const scenarioAEnvoyer = !!scenario && scenarioDejaLu !== true;
   const blocEnvoi =
     peutPayer && (dejaEnvoye || !dejaLu || nouvelleAnalyse) ? (
       <div style={{ marginTop: 24 }}>
@@ -195,7 +198,7 @@ export default async function DocumentsPage({
                       Le paiement n&apos;a pas pu démarrer. Réessayez dans un instant, ou écrivez-nous.
                     </p>
                   )}
-                  {scenario && vignette ? (
+                  {scenarioAEnvoyer && vignette ? (
                     <div style={{ marginTop: 12 }}>
                       <button type="submit" name="envoyer" value="1" className={formStyles.submit}>
                         Envoyer
@@ -203,7 +206,7 @@ export default async function DocumentsPage({
                     </div>
                   ) : (
                     <p className={formStyles.hint}>
-                      {!scenario
+                      {!scenarioAEnvoyer
                         ? "Enregistrez d'abord votre scénario (PDF) pour l'envoyer à la lecture."
                         : "Enregistrez d'abord l'image de présentation de votre projet pour l'envoyer à la lecture."}
                     </p>
