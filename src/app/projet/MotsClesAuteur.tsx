@@ -6,6 +6,8 @@ import formStyles from "@/components/form.module.css";
 import NuageDisque from "@/components/NuageDisque";
 import { createClient } from "@/lib/supabase/client";
 import { useLangueDuGlobe } from "@/lib/langue-globe";
+import CarteMatch from "./CarteMatch";
+import type { Match } from "./match";
 import styles from "./mots-cles-auteur.module.css";
 
 /** Dix mots au plus par thème (07/11/2026, Sarah : « Limite à 10 par catégorie »). */
@@ -61,9 +63,12 @@ const cleDe = (mot: string) =>
 export default function MotsClesAuteur({
   initiaux,
   nuages,
+  match = null,
 }: {
   initiaux: MotInitial[];
   nuages: Nuages;
+  /** Le match du projet (23/11), s'il existe déjà ; la jauge, elle, suit la saisie. */
+  match?: Match | null;
 }) {
   // L'anglais de chaque mot connu (nuages, mots déjà choisis, suggestions prises) :
   // le mot reste le français partout en coulisse, l'anglais n'est qu'à l'affichage (08/11).
@@ -331,6 +336,14 @@ export default function MotsClesAuteur({
         </div>
         <NuageDisque mots={motsNuage} choisis={liste} bloque={plein} enAnglais={en} onChoisir={(mot) => choisir(theme, mot)} />
       </div>
+
+      {/* Le match du projet (23/11) : la jauge se remplit pendant la saisie, le match arrive à l'enregistrement. */}
+      <CarteMatch
+        themes={{ styles: choisis.styles.length, sujets: choisis.sujets.length, univers: choisis.univers.length }}
+        seuil={match?.seuil ?? 3}
+        match={match}
+        nouvelOnglet
+      />
 
     </div>
   );

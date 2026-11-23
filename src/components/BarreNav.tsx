@@ -21,6 +21,8 @@ export default async function BarreNav({
   // Le nombre de messages en attente, même pour un membre sans adhésion :
   // il ne peut pas les ouvrir, mais il doit voir qu'ils l'attendent.
   let messagesNonLus = 0;
+  // Les projets dont le match vient de changer, pas encore vu (23/11).
+  let matchsNouveaux = 0;
   let estAdmin = false;
   let estLecteur = false;
   // « Mes favoris » (12/11, Sarah) : pour les adhérents, et pour qui a déjà
@@ -58,6 +60,8 @@ export default async function BarreNav({
     const restePack = typeof pack === "number" ? pack : 0;
     if (adherent === true || restePack > 0) soleils = { jour: jour === true, pack: restePack };
     messagesNonLus = typeof data === "number" ? data : 0;
+    const { data: matchs } = await supabase.rpc("mes_matchs_nouveaux");
+    matchsNouveaux = typeof matchs === "number" ? matchs : 0;
     estAdmin = admin === true;
     // Un lecteur n'a pas accès à la plateforme : sa barre n'a que ses deux pages.
     estLecteur = !!roleLecteur && !estAdmin;
@@ -109,6 +113,15 @@ export default async function BarreNav({
                 {" "}
                 <span className={styles.logoOnglet} role="img" aria-label="WeFilmGood" />
               </>
+            )}
+            {o.cle === "deposer" && matchsNouveaux > 0 && (
+              <span className={styles.pastille}>
+                {matchsNouveaux}
+                <span className={styles.lecteurEcran}>
+                  {" "}
+                  nouveau{matchsNouveaux > 1 ? "x" : ""} match{matchsNouveaux > 1 ? "s" : ""}
+                </span>
+              </span>
             )}
             {o.cle === "messages" && messagesNonLus > 0 && (
               <span className={styles.pastille}>

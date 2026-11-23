@@ -1,0 +1,152 @@
+/* La carte du match d'un projet (23/11/2026). */
+.carte {
+  margin-top: 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--bordure-forte);
+  border-radius: 18px;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.titre {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* La jauge : un segment par thème, allumé quand le thème a ses mots. */
+.jauge {
+  display: inline-flex;
+  gap: 5px;
+  flex: none;
+}
+
+.segment {
+  width: 34px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bordure-forte);
+  transition: background 0.3s;
+}
+
+.segment[data-plein="true"] {
+  background: var(--rouge-wfg);
+}
+
+.texte {
+  margin: 10px 0 0;
+  font-size: 14px;
+  color: var(--dim);
+}
+
+.nouveau {
+  margin: 10px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rouge-wfg);
+}
+
+.corps {
+  display: flex;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.vignette {
+  flex: none;
+  width: 150px;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--bordure-forte);
+}
+
+/* Sans adhésion : une image neutre et floue, jamais la vraie vignette. */
+.floue {
+  background:
+    radial-gradient(circle at 30% 35%, #f5c542 0 18%, transparent 40%),
+    radial-gradient(circle at 70% 60%, var(--rouge-wfg) 0 22%, transparent 46%),
+    radial-gradient(circle at 45% 80%, #4c8bf5 0 16%, transparent 40%),
+    #222;
+  filter: blur(7px);
+}
+
+.infos {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.titreProjet {
+  font-size: 17px;
+}
+
+.tagline {
+  font-size: 14px;
+  color: var(--dim);
+}
+
+.ligneFloue {
+  display: block;
+  width: 110px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--dim);
+  opacity: 0.45;
+  filter: blur(4px);
+}
+
+.ligneLongue {
+  width: 190px;
+  height: 16px;
+}
+
+.mots {
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+
+.mots span {
+  color: var(--rouge-wfg);
+}
+
+.boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.bouton,
+.boutonPlein {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--bordure-forte);
+  font-size: 14px;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+}
+
+.boutonPlein {
+  border-color: var(--rouge-wfg);
+  background: var(--rouge-wfg);
+  color: #fff;
+}
+
+@media (max-width: 560px) {
+  .corps {
+    flex-direction: column;
+  }
+
+  .vignette {
+    width: 100%;
+  }
+}

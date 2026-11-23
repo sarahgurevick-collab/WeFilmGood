@@ -1,4 +1,6 @@
 import AjouterUnTalent from "./AjouterUnTalent";
+import CarteMatch from "../CarteMatch";
+import { chargerMatch } from "../match";
 import BandeauFichesANoter from "@/components/BandeauFichesANoter";
 import BandeauEnregistre from "@/components/BandeauEnregistre";
 import { ordonnerPersonnages } from "./ordre-personnages";
@@ -570,6 +572,10 @@ export default async function ProjetPage({
   // Globe sur l'anglais : les mots-clés traduits s'écrivent en anglais (08/11).
   const enAnglais = langueDuCookie((await cookies()).get("googtrans")?.value) === "en";
 
+  // Le match du projet (23/11). L'auteur l'a sous les yeux : la pastille s'éteint.
+  const match = isOwner || estAdmin ? await chargerMatch(supabase, id) : null;
+  if (isOwner && match?.nouveau) await supabase.rpc("match_vu", { p_project: id });
+
   return (
     <PageShell
       title={<Surligne texte={project.title} mots={motsCherches} />}
@@ -742,6 +748,8 @@ export default async function ProjetPage({
         langueProjet={project.language}
       />
       {(isOwner || estAdmin) && <AjouterUnTalent projectId={id} resultat={talent} />}
+      {/* Le match du projet (23/11) : vu de l'auteur seul (et de l'administration). */}
+      {match && <CarteMatch themes={match.themes} seuil={match.seuil} match={match} />}
 
       {/* Sous le cadre : les prix — puis les sélections et comédiens repris
           de WFG 1, en petit (28/09 : page allégée à la demande de Sarah).

@@ -4,6 +4,7 @@ import ChampTitre from "./ChampTitre";
 import LibelleSelection from "./LibelleSelection";
 import ChoixGenre, { type SousGenre } from "./ChoixGenre";
 import MotsClesAuteur, { type MotInitial, type Nuages } from "./MotsClesAuteur";
+import type { Match } from "./match";
 import formStyles from "@/components/form.module.css";
 import styles from "./deposer.module.css";
 
@@ -77,6 +78,7 @@ export default function ChampsFiche({
   sousGenres = [],
   selections = [],
   nuages = {},
+  match = null,
   avantNuage,
 }: {
   valeurs: ValeursFiche | null;
@@ -88,6 +90,8 @@ export default function ChampsFiche({
   selections?: string[];
   /** Les trois nuages de mots-clés (07/11), lus en base. */
   nuages?: Nuages;
+  /** Le match du projet (23/11), sur la modification seulement. */
+  match?: Match | null;
   /** Ce que la page ajoute avant le nuage, qui reste le dernier champ (l'image d'une nouvelle fiche). */
   avantNuage?: ReactNode;
 }) {
@@ -228,7 +232,7 @@ export default function ChampsFiche({
       {avantNuage}
 
       {/* Le nuage des mots-clés en dernier (07/11, Sarah) : plus rien après lui. */}
-      <MotsClesAuteur initiaux={valeurs?.mots_cles_auteur ?? []} nuages={nuages} />
+      <MotsClesAuteur initiaux={valeurs?.mots_cles_auteur ?? []} nuages={nuages} match={match} />
     </>
   );
 }

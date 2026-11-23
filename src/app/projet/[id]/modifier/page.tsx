@@ -3,6 +3,7 @@ import formStyles from "@/components/form.module.css";
 import profilStyles from "@/app/profil/profil.module.css";
 import BlocProjet from "../../BlocProjet";
 import ChampsFiche from "../../ChampsFiche";
+import { chargerMatch } from "../../match";
 import { chargerProjetAModifier } from "../../blocs";
 import styles from "../../deposer.module.css";
 import { modifierProjet } from "./actions";
@@ -34,6 +35,7 @@ export default async function ModifierProjetPage({
     .eq("source", "demande_auteur")
     .returns<{ theme_auteur: string | null; keyword: { label_fr: string; label_en: string | null } | null }[]>();
   const { data: nuages } = await supabase.rpc("nuages_mots_cles_fiche");
+  const match = await chargerMatch(supabase, id);
   const { data: selections } = await supabase
     .from("project_selections")
     .select("libelle")
@@ -61,7 +63,8 @@ export default async function ModifierProjetPage({
           genres={genres ?? []}
           sousGenres={sousGenres ?? []}
           selections={(selections ?? []).map((s) => s.libelle)}
-          nuages={nuages ?? {}} />
+          nuages={nuages ?? {}}
+          match={match} />
 
         <div className={profilStyles.pied}>
           {/* Rien n'est enregistré sans le bouton : la flèche ramène à « Mes projets » (01/10). */}
