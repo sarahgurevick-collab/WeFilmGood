@@ -127,7 +127,10 @@ export default async function DocumentsPage({
   // peut encore le remplacer (23/11, Sarah). La base fait respecter la
   // règle (migrations 0254, 0255 et 0319).
   const { data: enLecture } = await supabase.rpc("scenario_en_lecture", { p_project_id: id });
-  const scenarioModifiable = estAdmin === true || enLecture !== true;
+  // L'administration non plus (23/11, Sarah : « il ne faut absolument pas
+  // changer le scénario pendant que la lecture est en cours ») : elle le lit
+  // depuis la fiche projet.
+  const scenarioModifiable = enLecture !== true;
   const test = modeHelloAsso() === "sandbox";
   const peutPayer = !test || estAdmin === true || testeurPaiement(user?.id);
   const envoyeLe = (demandesPayees ?? [])[0]?.paid_at ?? null;
@@ -285,7 +288,7 @@ export default async function DocumentsPage({
         {/* Une fois le scénario parti en lecture (un lecteur a le projet), il
             quitte la page : l'auteur ne peut plus le changer, il ne le voit
             donc plus (23/11, Sarah). Il revient avec le dépôt de la version
-            retravaillée, après l'analyse. L'administration le voit toujours. */}
+            retravaillée, après l'analyse. Pareil pour l'administration. */}
         {scenarioModifiable && <h2 className={styles.sousTitre}>Le scénario</h2>}
         {scenarioModifiable && scenario && lienScenario && (
           <>

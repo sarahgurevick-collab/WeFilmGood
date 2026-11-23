@@ -110,11 +110,9 @@ export async function enregistrerDocuments(formData: FormData) {
     // Pendant la lecture (un lecteur a le projet), le scénario ne se
     // remplace pas (11/11, Sarah ; 23/11 : avant le lecteur, si). L'écran ne
     // montre plus le champ ; la base refuse de toute façon (0255, 0319).
-    const [{ data: enLecture }, { data: admin }] = await Promise.all([
-      supabase.rpc("scenario_en_lecture", { p_project_id: id }),
-      supabase.rpc("is_admin"),
-    ]);
-    if (enLecture === true && admin !== true) redirect(`/projet/${id}/documents`);
+    // L'administration non plus (23/11, Sarah).
+    const { data: enLecture } = await supabase.rpc("scenario_en_lecture", { p_project_id: id });
+    if (enLecture === true) redirect(`/projet/${id}/documents`);
     const depose = await deposerScenario(supabase, projet.owner_id, id, scenario);
     if (!depose) echec("Le scénario n'a pas pu être enregistré. Réessayez, ou écrivez-nous.");
   }
