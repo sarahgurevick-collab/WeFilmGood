@@ -76,9 +76,8 @@ export default async function DocumentsPage({
 
   // Le scénario se relit dans la page, page par page, comme sur WFG 1
   // (22/11, remarque d'un auteur reprise par Sarah). Lien signé une heure,
-  // demandé avec le client à privilèges : pendant la lecture, la règle de
-  // stockage ferme le fichier à son auteur en écriture comme en lecture,
-  // alors qu'il doit pouvoir continuer à le relire. La page n'est ouverte
+  // demandé avec le client à privilèges. Pendant la lecture, il n'est plus
+  // montré à l'auteur (23/11, voir plus bas). La page n'est ouverte
   // qu'au porteur du projet et à l'administration (chargerProjetAModifier).
   let lienScenario: string | null = null;
   if (scenario) {
@@ -283,8 +282,12 @@ export default async function DocumentsPage({
         </p>
         <FilmsProches projectId={projet.id} films={filmsCites} />
 
-        {(scenarioModifiable || lienScenario) && <h2 className={styles.sousTitre}>Le scénario</h2>}
-        {scenario && lienScenario && (
+        {/* Une fois le scénario parti en lecture (un lecteur a le projet), il
+            quitte la page : l'auteur ne peut plus le changer, il ne le voit
+            donc plus (23/11, Sarah). Il revient avec le dépôt de la version
+            retravaillée, après l'analyse. L'administration le voit toujours. */}
+        {scenarioModifiable && <h2 className={styles.sousTitre}>Le scénario</h2>}
+        {scenarioModifiable && scenario && lienScenario && (
           <>
             <p className={formStyles.hint}>
               <a href={lienScenario} target="_blank" rel="noopener noreferrer">
