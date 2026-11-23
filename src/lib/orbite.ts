@@ -33,7 +33,10 @@ type Brut = {
 };
 
 /**
- * Le projet de l'orbite d'accueil, tiré au hasard à chaque visite.
+ * Le projet de l'orbite d'accueil : le CinéCrush de la semaine (24/11,
+ * Sarah, migration 0324) ; sans CinéCrush programmé cette semaine, le
+ * dernier en date. Il ne change plus d'une visite à l'autre. (Avant : un
+ * projet tiré au hasard à chaque visite.)
  *
  * Passe par le client à privilèges : les projets ne sont pas lisibles
  * sans compte. À revoir avant la bascule (voir la migration 0107) : ne
