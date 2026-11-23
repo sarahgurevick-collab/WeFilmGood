@@ -325,7 +325,7 @@ async function prevenirRecu(depot: Depot) {
     });
     return;
   }
-  // MusicPitch : textes repris de ceux du ComedyPitch (23/11), à faire valider par Sarah.
+  // MusicPitch : textes repris de ceux du ComedyPitch, validés par Sarah le 24/11.
   if (depot.genre === "musicpitch") {
     await envoyerEmail({
       to: [{ email: d.email, name: d.prenom ?? undefined }],

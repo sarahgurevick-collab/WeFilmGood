@@ -21,10 +21,11 @@ import { BUCKET_MUSICPITCH } from "@/lib/videopitch";
  * adhérent ouvert avec un soleil, ou sur le CinéCrush de la semaine. Les
  * profils producteur sont écartés (producteurEcarte).
  *
- * Tant que MUSICPITCH_OUVERT est faux, seule l'administration dépose : les
- * textes du dépôt et des e-mails attendent la validation de Sarah.
+ * Ouvert aux membres le 24/11 (Sarah : « ok pour les 19 textes, ouvre le
+ * musicpitch »). MUSICPITCH_OUVERT à faux le referme : l'administration
+ * seule dépose alors.
  */
-export const MUSICPITCH_OUVERT = false;
+export const MUSICPITCH_OUVERT = true;
 
 type Admin = NonNullable<ReturnType<typeof createAdminClient>>;
 

@@ -12,9 +12,8 @@ export const metadata = { title: "MusicPitch", robots: { index: false } };
 /**
  * Déposer et suivre son MusicPitch pour un projet (23/11/2026, 0323). On y
  * arrive par le bouton « Déposer mon MusicPitch » de la fiche projet, ou
- * par les e-mails. Textes repris de ceux du ComedyPitch, adaptés au son :
- * À FAIRE VALIDER par Sarah. Tant que le dépôt n'est pas ouvert
- * (MUSICPITCH_OUVERT), seule l'administration voit cette page.
+ * par les e-mails. Textes repris de ceux du ComedyPitch, adaptés au son,
+ * validés par Sarah le 24/11.
  */
 export default async function MusicPitchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

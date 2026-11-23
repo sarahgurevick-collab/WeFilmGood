@@ -12,7 +12,7 @@ const ACCEPT = "audio/*,.mp3,.wav,.m4a,.aac,.flac,.ogg,.oga,.opus,.aif,.aiff,.wm
 /**
  * L'envoi d'un MusicPitch (23/11/2026) : le même que celui du ComedyPitch,
  * avec un fichier son, pour un projet. Textes repris de ceux du ComedyPitch
- * (validés le 12/11), adaptés au son : À FAIRE VALIDER par Sarah.
+ * (validés le 12/11), adaptés au son et validés par Sarah le 24/11.
  */
 export default function EnvoiMusicPitch({ projectId, remplace }: { projectId: string; remplace: boolean }) {
   const router = useRouter();

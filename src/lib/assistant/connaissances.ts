@@ -157,7 +157,6 @@ ComedyPitch (sur la fiche d'un projet, carte d'un personnage)
 - Une fois en ligne, elle paraît sous la description du personnage, signée du prénom du comédien, et sur le profil du comédien.
 - Ceux qui la regardent peuvent « Envoyer une étoile » : une seule par personne ; le nombre d'étoiles reçues s'affiche au centre de l'étoile.
 - L'auteur est prévenu sur sa fiche projet, avec un lien « Le regarder ».
-- Le MusicPitch des compositeurs n'est pas encore ouvert au dépôt.
 
 CinéMatch (dans le Menu, et bloc 3 de « Mon profil »)
 - Un portrait chinois en vingt questions « si j'étais… ». Pour chaque question, on choisit dans la liste ou on écrit autre chose, puis « Enregistrer ».

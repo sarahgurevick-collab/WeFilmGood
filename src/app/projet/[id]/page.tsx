@@ -472,8 +472,8 @@ export default async function ProjetPage({
   }
 
   // Le MusicPitch (23/11, 0323) : mêmes regards que le ComedyPitch ; le
-  // bouton de dépôt selon src/lib/musicpitch.ts (l'administration seule tant
-  // que le dépôt n'est pas ouvert). L'auteur est prévenu une fois, sur sa fiche.
+  // bouton de dépôt selon src/lib/musicpitch.ts (tous sauf les producteurs,
+  // 24/11). L'auteur est prévenu une fois, sur sa fiche.
   const musicEnLigne = voitComedyPitchs && user ? await musicpitchsDuProjet(project.id, user.id) : [];
   const deposerMusicPitch =
     user && (await peutDeposerMusicPitch(supabase, user.id, estAdmin === true, project.id)) ? `/projet/${project.id}/musicpitch` : null;
