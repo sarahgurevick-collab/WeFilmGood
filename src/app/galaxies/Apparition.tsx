@@ -21,11 +21,14 @@ export default function Apparition({
   children,
   rang,
   retourne = false,
+  premierSurTelephone = false,
 }: {
   children: ReactNode;
   rang: number;
   /** Carte à jouer : elle sort dos visible et se retourne en se posant. */
   retourne?: boolean;
+  /** Le CinéCrush rappelé : au milieu sur ordinateur, le premier sur téléphone. */
+  premierSurTelephone?: boolean;
 }) {
   const ref = useRef<HTMLLIElement>(null);
 
@@ -93,7 +96,7 @@ export default function Apparition({
   }, [rang, retourne]);
 
   return (
-    <li ref={ref} className={retourne ? styles.place : styles.item}>
+    <li ref={ref} className={`${retourne ? styles.place : styles.item} ${premierSurTelephone ? styles.premierSurTelephone : ""}`}>
       {children}
     </li>
   );

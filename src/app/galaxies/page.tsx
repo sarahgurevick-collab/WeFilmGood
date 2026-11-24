@@ -15,7 +15,7 @@ import { PERSONNAGES_PAR_PAGE, cartesPersonnages, lotDeCartes } from "./lot";
 import GrandNombre from "./GrandNombre";
 import { createClient } from "@/lib/supabase/server";
 import RechercheAvancee from "./RechercheAvancee";
-import RappelCineCrush from "./RappelCineCrush";
+import { crushARappeler } from "./rappel-cinecrush";
 import { adresse, lireFiltres, nombreDeFiltres } from "./filtres";
 import { AUDIENCES, BUDGETS, FORMATS } from "@/app/projet/ChampsFiche";
 import type { Tag } from "./tags";
@@ -150,7 +150,11 @@ export default async function ProjetsPage({
     ...BUDGETS.map((b) => ({ famille: "budget" as const, valeur: b.value, libelle: b.label })),
   ];
 
-  const { cartes, nombre, total, pages } = await lotDeCartes(supabase, user.id, page, filtres);
+  // Le CinéCrush de la semaine sort du Finder avec les autres tant que le
+  // talent n'a pas ouvert sa page (24/11, Sarah) : à l'arrivée seulement, pas
+  // sur une liste filtrée.
+  const crushId = page === 1 && nbFiltres === 0 ? await crushARappeler(supabase, user.id) : null;
+  const { cartes, nombre, total, pages } = await lotDeCartes(supabase, user.id, page, filtres, crushId);
 
   return (
     <PageShell
@@ -164,9 +168,8 @@ export default async function ProjetsPage({
       {/* Le CinéCrush de la semaine, seul en haut (12/11, Sarah) : à l'arrivée
           seulement, pas sur les pages suivantes ni sur une liste filtrée. */}
       {/* CinéCrush retiré le 22/11 ; confirmé le 24/11 (Sarah) : il a sa propre page,
-          il ne revient pas au-dessus du Finder. À la place, une fenêtre de rappel
-          tant que le talent n'a pas ouvert la page CinéCrush de la semaine. */}
-      {user && <RappelCineCrush supabase={supabase} userId={user.id} />}
+          il ne revient pas au-dessus du Finder. Le rappel : sa carte sort du Finder
+          avec les autres et respire (rappel-cinecrush.ts). */}
       {/* {page === 1 && nbFiltres === 0 && typeof params.q !== "string" && <CineCrushEnTete supabase={supabase} />} */}
       {/* La recherche avancée reste toujours là ; la liste des projets en dessous
           disparaît dès qu'un mot est cherché : ce qu'on ne demande pas ne

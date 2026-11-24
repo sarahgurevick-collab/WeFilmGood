@@ -51,6 +51,9 @@ export async function lotDeCartes(
   userId: string,
   page: number,
   filtres: Filtres,
+  /** Le CinéCrush de la semaine à rappeler (rappel-cinecrush.ts) : il prend la
+      deuxième place du lot — le milieu des trois colonnes — et respire. */
+  crushId: string | null = null,
 ): Promise<{ cartes: ReactNode; nombre: number; total: number; pages: number }> {
   // L'ordre vient de la base (fonction « pitchotheque ») : labellisés
   // d'abord, puis par tranche de remplissage, tirés au sort chaque nuit.
@@ -91,6 +94,23 @@ export async function lotDeCartes(
     total = count ?? 0;
   }
   const pages = Math.max(1, Math.ceil(total / PAR_PAGE));
+
+  // Le CinéCrush à rappeler (24/11, Sarah) : sorti de sa place s'il était
+  // déjà dans le lot, puis posé au milieu de la première ligne.
+  if (crushId && projects) {
+    const { data: crush } = await clientCartes(supabase)
+      .from("projects")
+      .select(SELECTION)
+      .eq("id", crushId)
+      .eq("is_public", true)
+      .maybeSingle<Projet>();
+    if (crush) {
+      projects = projects.filter((p) => p.id !== crushId);
+      projects.splice(Math.min(1, projects.length), 0, crush);
+    } else {
+      crushId = null;
+    }
+  }
 
   // Le stockage est privé : on signe les vignettes, et les portraits des
   // personnages de la carte (14/10), en un seul appel.
@@ -134,12 +154,19 @@ export async function lotDeCartes(
   // ligne n'existe pas.
   const contenuCarte = (p: Projet) => {
     const vignette = vignetteDe(p);
+    const estCrush = p.id === crushId;
     // Les informations du projet : format et genre — aux
     // couleurs des tags de la recherche avancée —, le titre (il ne part
     // qu'aux adhérents : sans lui, la ligne n'existe pas), puis la tagline.
     const texte = (
       <>
         <span className={duo.infos}>
+          {/* Le nom de la page où mène la carte, aux couleurs du menu. */}
+          {estCrush && (
+            <span className={`${duo.info} ${duo.crushNom} notranslate`} translate="no">
+              CinéCrush
+            </span>
+          )}
           {infosDe(p).map((info) => (
             <span key={info.famille} className={`${duo.info} ${duo[info.famille]}`}>
               {info.libelle}
@@ -169,8 +196,8 @@ export async function lotDeCartes(
       <>
         {/* L'effet d'eau au survol est retiré (12/11, Sarah) : il marchait
             moins bien sur de grandes images. */}
-        <Link href={`/projet/${p.id}`} className={`${styles.carte} ${styles.eau} ${duo.carte}`}>
-          <div className={`${styles.vignette} ${duo.image}`}>
+        <Link href={estCrush ? "/cinecrush" : `/projet/${p.id}`} className={`${styles.carte} ${styles.eau} ${duo.carte}`}>
+          <div className={`${styles.vignette} ${duo.image} ${estCrush ? duo.respire : ""}`}>
             <Bandeau valeur={p.bandeau} />
             {dejaOuverts.has(p.id) && <MarqueDejaOuvert />}
             {vignette ? (
@@ -193,7 +220,7 @@ export async function lotDeCartes(
   };
   return {
     cartes: (projects ?? []).map((p, i) => (
-      <Apparition key={p.id} rang={i}>
+      <Apparition key={p.id} rang={i} premierSurTelephone={p.id === crushId}>
         {contenuCarte(p)}
       </Apparition>
     )),

@@ -267,7 +267,35 @@
   opacity: 0.86;
 }
 
+/* Le CinéCrush rappelé (24/11, Sarah) : son image respire, le halo de
+   « Mes messages » et du Finder — le code du site pour « il y a quelque
+   chose à faire ici ». */
+.respire {
+  animation: respireCrush 1.6s ease-in-out infinite;
+}
+
+@keyframes respireCrush {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--rouge-wfg, #da2c25) 45%, transparent);
+  }
+}
+
+.crushNom {
+  --puce: var(--rouge-wfg);
+  border-color: var(--rouge-wfg);
+  color: var(--rouge-wfg);
+  font-weight: 700;
+}
+
 @media (max-width: 720px) {
+  .premierSurTelephone {
+    order: -1;
+  }
+
   .duo {
     margin-top: 20px;
     gap: 30px 14px;
@@ -306,6 +334,10 @@
   }
 
   .crushImage img {
+    animation: none;
+  }
+
+  .respire {
     animation: none;
   }
 }
