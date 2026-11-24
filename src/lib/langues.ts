@@ -17,3 +17,6 @@ export function nomDeLangue(code: string | null | undefined): string | null {
 
 /** Les langues de projet qu'un lecteur peut choisir de lire (celles de WFG 1). */
 export const LANGUES_LECTURE = ["fr", "en", "es", "de", "it", "pt", "ar"];
+
+/** Ce que lit un lecteur qui n'a encore rien coché : le français (24/11, Sarah). */
+export const LANGUES_PAR_DEFAUT = ["fr"];

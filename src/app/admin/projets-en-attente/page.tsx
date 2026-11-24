@@ -8,6 +8,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import FormulaireAttribuer from "./FormulaireAttribuer";
 import MemoProjet from "./MemoProjet";
 import LienScenario from "../LienScenario";
+import { LANGUES_PAR_DEFAUT } from "@/lib/langues";
 
 type PendingProject = {
   project_id: string;
@@ -134,9 +135,10 @@ export default async function ProjetsEnAttentePage() {
   const languesDe = new Map((voyants ?? []).map((v) => [v.profile_id, v.langues]));
   const peutLire = (lecteur: string, format: string | null, langue: string | null) => {
     const formats = formatsDe.get(lecteur);
-    const langues = languesDe.get(lecteur);
+    // Sans langue enregistrée, un lecteur lit le français, pas tout (24/11, Sarah).
+    const langues = languesDe.get(lecteur) ?? LANGUES_PAR_DEFAUT;
     const formatOk = !formats || (format ? formats.includes(format) : formats.length > 0);
-    const langueOk = !langues || (langue ? langues.includes(langue) : langues.length > 0);
+    const langueOk = langue ? langues.includes(langue) : langues.length > 0;
     return formatOk && langueOk;
   };
 

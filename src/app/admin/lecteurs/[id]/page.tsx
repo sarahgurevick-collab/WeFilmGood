@@ -4,7 +4,7 @@ import { positionDepuisCinq } from "@/lib/satisfaction";
 import { notFound, redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
-import { nomDeLangue } from "@/lib/langues";
+import { LANGUES_PAR_DEFAUT, nomDeLangue } from "@/lib/langues";
 import { nomDuPays } from "@/lib/pays";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -162,7 +162,7 @@ export default async function FicheLecteurPage({
           <dt>Pays</dt>
           <dd>{nomDuPays(profil.country) ?? profil.country ?? "—"}</dd>
           <dt>Langues</dt>
-          <dd>{(lecteur?.langues ?? []).map((c: string) => nomDeLangue(c) ?? c).join(", ") || "—"}</dd>
+          <dd>{(lecteur?.langues ?? LANGUES_PAR_DEFAUT).map((c: string) => nomDeLangue(c) ?? c).join(", ") || "—"}</dd>
           <dt>Formats</dt>
           <dd>
             {lecteur?.formats == null

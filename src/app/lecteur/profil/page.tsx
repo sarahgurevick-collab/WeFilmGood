@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { prenomEtNomProposes } from "@/lib/noms";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
-import { LANGUES_LECTURE, nomDeLangue } from "@/lib/langues";
+import { LANGUES_LECTURE, LANGUES_PAR_DEFAUT, nomDeLangue } from "@/lib/langues";
 import { createClient } from "@/lib/supabase/server";
 import ChampPhoto from "@/app/profil/identite/ChampPhoto";
 import { urlOriginal } from "@/app/profil/identite/original";
@@ -46,8 +46,8 @@ export default async function ProfilLecteurPage({
     .select("langues")
     .eq("profile_id", user.id)
     .maybeSingle<{ langues: string[] | null }>();
-  // Rien de coché n'a jamais été enregistré : toutes les langues le sont.
-  const cochees = fiche?.langues ?? LANGUES_LECTURE;
+  // Rien n'a jamais été enregistré : le français seul (24/11, Sarah).
+  const cochees = fiche?.langues ?? LANGUES_PAR_DEFAUT;
 
   return (
     <PageShell title="Mon profil" nav="profil" theme="clair">

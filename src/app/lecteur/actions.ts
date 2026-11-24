@@ -112,7 +112,9 @@ export async function choisirLanguesLues(formData: FormData) {
     .getAll("langue")
     .map(String)
     .filter((l) => LANGUES_LECTURE.includes(l));
-  const langues = coches.length === LANGUES_LECTURE.length ? null : coches;
+  // Toujours la liste cochée, même complète : « rien d'enregistré » veut
+  // dire français seulement, plus « toutes » (24/11, Sarah).
+  const langues = coches;
 
   await supabase
     .from("reader_profiles")
