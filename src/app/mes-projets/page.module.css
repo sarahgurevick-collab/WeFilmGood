@@ -77,11 +77,31 @@
 /* Le petit rappel de notation à côté de « Lire l'analyse » (24/11). */
 .rappelNote {
   font-size: 13px;
-  color: var(--dim);
+  color: var(--text, #fff);
   text-decoration: underline;
   text-underline-offset: 3px;
+  /* Blanc et qui respire, au rythme du halo du CinéCrush : le code du
+     site pour « il y a quelque chose à faire ici ». Le gris reste aux
+     explications de la plateforme (24/11, Sarah). */
+  animation: respireRappel 1.6s ease-in-out infinite;
 }
 
 .rappelNote:hover {
-  color: var(--text, #fff);
+  animation: none;
+}
+
+@keyframes respireRappel {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rappelNote {
+    animation: none;
+  }
 }
