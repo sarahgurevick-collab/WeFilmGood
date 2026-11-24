@@ -73,3 +73,15 @@
   text-transform: none;
   letter-spacing: normal;
 }
+
+/* Le petit rappel de notation à côté de « Lire l'analyse » (24/11). */
+.rappelNote {
+  font-size: 13px;
+  color: var(--dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.rappelNote:hover {
+  color: var(--text, #fff);
+}

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import BandeauFichesANoter from "@/components/BandeauFichesANoter";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import Bandeau from "@/components/Bandeau";
@@ -93,10 +92,15 @@ export default async function MesProjetsPage({
   // L'analyse du projet courant (10/11, Sarah : « y a-t-il un moyen de
   // mettre le bouton de la fiche de lecture ici ? ») : « Lire l'analyse »
   // à côté du sélecteur dès qu'elle est là, sinon l'état de la lecture.
-  const [analyses, { data: etatBrut }] = await Promise.all([
+  const [analyses, { data: etatBrut }, { data: aNoterBrut }] = await Promise.all([
     chargerFiches(supabase, courant.id),
     supabase.rpc("etat_de_lecture", { p_project_id: courant.id }),
+    supabase.rpc("fiches_a_noter"),
   ]);
+  // Le rappel de notation (24/11, Sarah) : la grosse bande rouge du haut de
+  // page est retirée ; un petit rappel à côté du bouton suffit, la note
+  // étant recommandée mais pas obligatoire.
+  const aNoter = ((aNoterBrut ?? []) as { project_id: string }[]).some((f) => f.project_id === courant.id);
   const etatLecture = ((etatBrut ?? []) as { etat: Etat }[])[0]?.etat ?? null;
 
   // L'état de chaque fiche : ses trois blocs, et le remplissage global.
@@ -123,7 +127,6 @@ export default async function MesProjetsPage({
   return (
     <PageShell nav="deposer" connecte>
       <h1 className={profilStyles.titre}>Mes projets</h1>
-      <BandeauFichesANoter retour="/mes-projets" />
       <p className={profilStyles.chapeau}>
         Une nouvelle version de votre scénario se dépose depuis l&apos;étape n°2 « Documents ». Créer
         une nouvelle fiche projet avec le même titre seulement si vous l&apos;adaptez dans un autre
@@ -144,7 +147,12 @@ export default async function MesProjetsPage({
           <Link href={`/projet/${courant.id}/fiches`} className={formStyles.submit} style={{ display: "inline-block" }}>
             {analyses.length > 1 ? `Lire les analyses (${analyses.length})` : "Lire l'analyse"}
           </Link>
-        ) : etatLecture && ETAT_LECTURE_LISIBLE[etatLecture] ? (
+        ) : null}
+        {analyses.length > 0 && aNoter ? (
+          <Link href={`/projet/${courant.id}/fiche-lecture`} className={styles.rappelNote}>
+            Notez cette analyse
+          </Link>
+        ) : analyses.length > 0 ? null : etatLecture && ETAT_LECTURE_LISIBLE[etatLecture] ? (
           <span className={styles.etatLecture}>{ETAT_LECTURE_LISIBLE[etatLecture]}</span>
         ) : null}
       </div>
