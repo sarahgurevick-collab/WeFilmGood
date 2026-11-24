@@ -191,15 +191,19 @@ export default async function ProjetsEnAttentePage() {
   // Les analyses rendues sur WFG 1 comptent aussi (22/11, Sarah : « le
   // projet a déjà été analysé mais tu ne le vois pas ») : elles sont dans
   // les fiches héritées, avec le numéro de compte WFG 1 du lecteur.
-  const { data: heritees } = idsProjets.length
+  const { data: heriteesBrutes } = idsProjets.length
     ? await (service ?? supabase)
         .from("legacy_reading_reports")
-        .select("project_id, reader_legacy_id, final_mark, read_at")
+        .select("project_id, reader_legacy_id, final_mark, read_at, content")
         .in("project_id", idsProjets)
         .order("read_at", { ascending: false })
-        .returns<{ project_id: string; reader_legacy_id: number | null; final_mark: number | null; read_at: string | null }[]>()
+        .returns<{ project_id: string; reader_legacy_id: number | null; final_mark: number | null; read_at: string | null; content: string | null }[]>()
     : { data: [] };
-  const idsAnciens = [...new Set((heritees ?? []).map((h) => h.reader_legacy_id).filter((n): n is number => n != null))];
+  // WFG 1 ouvrait une fiche vide à la création du projet, avant toute
+  // attribution : ni lecteur, ni texte, ni note. Ce n'est pas une analyse
+  // (24/11, Sarah : « Déjà vu par : ? (Fiche rendue…, 0) » sur Selqi).
+  const analysees = (heriteesBrutes ?? []).filter((h) => h.reader_legacy_id != null || (h.content ?? "").trim() !== "");
+  const idsAnciens = [...new Set(analysees.map((h) => h.reader_legacy_id).filter((n): n is number => n != null))];
   const nomAncien = new Map<number, string>();
   if (idsAnciens.length) {
     const [{ data: anciens }, { data: repris }] = await Promise.all([
@@ -212,7 +216,7 @@ export default async function ProjetsEnAttentePage() {
     for (const a of repris ?? []) if (a.full_name) nomAncien.set(a.legacy_user_id, a.full_name);
   }
   const analysesWfg1 = new Map<string, string[]>();
-  for (const h of heritees ?? []) {
+  for (const h of analysees) {
     const nom = (h.reader_legacy_id != null && nomAncien.get(h.reader_legacy_id)) || "?";
     const jour = h.read_at ? new Date(h.read_at).toLocaleDateString("fr-FR", { timeZone: "Europe/Paris", day: "2-digit", month: "2-digit", year: "2-digit" }) : null;
     const detail = [ETATS.rendue, jour ? `le ${jour}` : null].filter(Boolean).join(" ") + (h.final_mark != null ? `, ${h.final_mark}` : "");
