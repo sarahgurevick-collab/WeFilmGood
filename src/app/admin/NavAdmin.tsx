@@ -20,6 +20,7 @@ const PAGES = [
   { href: "/admin/archives-lecture", libelle: "Archives de lecture" },
   { href: "/admin/statistiques", libelle: "Statistiques" },
   { href: "/admin/films-proches", libelle: "Films proches" },
+  { href: "/admin/projets-sans-image", libelle: "Projets sans image" },
   { href: "/admin/portraits", libelle: "Portraits" },
   { href: "/admin/logos", libelle: "Logos" },
   { href: "/admin/photos", libelle: "Photos" },

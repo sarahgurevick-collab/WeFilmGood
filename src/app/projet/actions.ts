@@ -96,6 +96,8 @@ export async function createProject(formData: FormData) {
       has_awards: hasAwards,
       awards_detail: awardsDetail,
       status: "depose",
+      // Un projet est visible des membres dès qu'il est créé (Sarah, 24/11, migration 0329).
+      is_public: true,
     })
     .select("id")
     .single();
