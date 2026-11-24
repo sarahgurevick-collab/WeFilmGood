@@ -92,7 +92,7 @@ export default function EtatDeLecture({
 
       {analyses && analyses.nombre > 0 && (
         <p className={styles.lire}>
-          <Link href={analyses.href} className={formStyles.submit} style={{ display: "inline-block" }}>
+          <Link href={analyses.href} prefetch={false} className={formStyles.submit} style={{ display: "inline-block" }}>
             {analyses.nombre > 1 ? `Lire les analyses (${analyses.nombre})` : "Lire l'analyse"}
           </Link>
         </p>

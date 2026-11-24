@@ -1,4 +1,7 @@
 import CoeurNote from "@/components/CoeurNote";
+import ChoixJauge from "@/components/ChoixJauge";
+import JaugeSatisfaction from "@/components/JaugeSatisfaction";
+import { rateReport } from "../fiche-lecture/actions";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import FicheContent from "@/components/FicheContent";
@@ -44,6 +47,23 @@ export default async function FichesDuProjetPage({
   if (!projet) notFound();
 
   const fiches = await chargerFiches(supabase, id);
+  // L'auteur a ouvert ses analyses : le rappel « Notez cette analyse » de
+  // Mes projets peut s'afficher s'il repart sans noter (24/11, Sarah,
+  // migration 0327). Sans effet pour l'administration.
+  await supabase.rpc("marquer_fiches_lues", { p_project_id: id });
+  // La note de l'auteur, sous chaque analyse faite sur WFG 2.
+  const { data: projetAMoi } = await supabase
+    .from("projects")
+    .select("id")
+    .eq("id", id)
+    .eq("owner_id", user.id)
+    .maybeSingle();
+  const estAuteur = Boolean(projetAMoi);
+  const idsPubliees = fiches.filter((f) => f.cle.startsWith("p")).map((f) => f.cle.slice(1));
+  const { data: notes } = idsPubliees.length
+    ? await supabase.from("reading_report_ratings").select("reading_report_id, stars").in("reading_report_id", idsPubliees)
+    : { data: [] };
+  const noteDe = new Map((notes ?? []).map((n) => [n.reading_report_id as string, n.stars as number]));
   // Les archives de la Maison (Cannes 2016…) : l'administration seulement,
   // jamais l'auteur — même présentation, « ARCHIVE » à la place de la
   // synthèse de lecture (31/10, Sarah).
@@ -104,6 +124,24 @@ export default async function FichesDuProjetPage({
                   <p style={{ whiteSpace: "pre-wrap", margin: 0 }}><Surligne texte={f.avis} mots={mots} /></p>
                 </>
               )}
+              {f.cle.startsWith("p") && noteDe.has(f.cle.slice(1)) ? (
+                <p className={formStyles.hint} style={{ marginTop: 24 }}>
+                  Vous avez attribué <JaugeSatisfaction position={noteDe.get(f.cle.slice(1))!} taille={36} /> à cette
+                  fiche de lecture.
+                </p>
+              ) : f.cle.startsWith("p") && estAuteur ? (
+                <form action={rateReport} style={{ marginTop: 24 }}>
+                  <input type="hidden" name="report_id" value={f.cle.slice(1)} />
+                  <input type="hidden" name="project_id" value={id} />
+                  <input type="hidden" name="retour" value={`/projet/${id}/fiches`} />
+                  <div className={formStyles.field}>
+                    <span>Notez cette analyse</span>
+                    <div>
+                      <ChoixJauge taille={132} envoiDirect />
+                    </div>
+                  </div>
+                </form>
+              ) : null}
             </details>
           ))}
           {archives.map((a, i) => (

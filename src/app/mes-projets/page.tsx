@@ -99,7 +99,8 @@ export default async function MesProjetsPage({
   ]);
   // Le rappel de notation (24/11, Sarah) : la grosse bande rouge du haut de
   // page est retirée ; un petit rappel à côté du bouton suffit, la note
-  // étant recommandée mais pas obligatoire.
+  // étant recommandée mais pas obligatoire. Il n'apparaît qu'une fois
+  // l'analyse ouverte par l'auteur (migration 0327).
   const aNoter = ((aNoterBrut ?? []) as { project_id: string }[]).some((f) => f.project_id === courant.id);
   const etatLecture = ((etatBrut ?? []) as { etat: Etat }[])[0]?.etat ?? null;
 
@@ -144,12 +145,12 @@ export default async function MesProjetsPage({
       <div className={styles.entete}>
         <SelecteurProjet projets={tous.map((p) => ({ id: p.id, titre: p.title }))} courant={courant.id} />
         {analyses.length > 0 ? (
-          <Link href={`/projet/${courant.id}/fiches`} className={formStyles.submit} style={{ display: "inline-block" }}>
+          <Link href={`/projet/${courant.id}/fiches`} prefetch={false} className={formStyles.submit} style={{ display: "inline-block" }}>
             {analyses.length > 1 ? `Lire les analyses (${analyses.length})` : "Lire l'analyse"}
           </Link>
         ) : null}
         {analyses.length > 0 && aNoter ? (
-          <Link href={`/projet/${courant.id}/fiche-lecture`} className={styles.rappelNote}>
+          <Link href={`/projet/${courant.id}/fiches`} prefetch={false} className={styles.rappelNote}>
             Notez cette analyse
           </Link>
         ) : analyses.length > 0 ? null : etatLecture && ETAT_LECTURE_LISIBLE[etatLecture] ? (
