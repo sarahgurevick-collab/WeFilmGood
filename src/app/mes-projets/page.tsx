@@ -9,6 +9,7 @@ import { signerImages } from "@/app/projet/[id]/fichiers";
 import { BLOCS, etatDesBlocs, hrefBloc } from "@/app/projet/blocs";
 import styles from "./page.module.css";
 import SelecteurProjet from "./SelecteurProjet";
+import Explication from "@/components/Explication";
 import { chargerFiches } from "@/app/projet/[id]/fiches-donnees";
 import type { Etat } from "@/components/EtatDeLecture";
 import formStyles from "@/components/form.module.css";
@@ -130,6 +131,10 @@ export default async function MesProjetsPage({
   return (
     <PageShell nav="deposer" connecte>
       <h1 className={profilStyles.titre}>Mes projets</h1>
+      {/* Les deux explications grises : une fois la fiche affichée complète
+          (100 %), elles se rangent derrière le « ? », comme au profil
+          (24/11, Sarah). */}
+      <Explication repliee={etats[0].taux === 100} style={{ marginTop: 12 }}>
       <p className={profilStyles.chapeau}>
         Une nouvelle version de votre scénario se dépose depuis l&apos;étape n°2 « Documents ». Créer
         une nouvelle fiche projet avec le même titre seulement si vous l&apos;adaptez dans un autre
@@ -141,6 +146,7 @@ export default async function MesProjetsPage({
         un stade peu développé). En partageant la diversité de vos projets et de vos univers, vous
         multipliez les opportunités de correspondre avec le bon partenaire créatif.
       </p>
+      </Explication>
 
       {/* Le sélecteur, toujours là même avec un seul projet : la création
           d'une fiche est sa dernière ligne, plus un bouton à part (01/10). */}
