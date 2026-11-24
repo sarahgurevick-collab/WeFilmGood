@@ -226,3 +226,29 @@
     margin-right: 0;
   }
 }
+
+/* « CinéCrush » pas encore ouvert cette semaine (24/11, Sarah) : les lettres
+   respirent, au rythme du halo de « Mes messages » — le code du site pour
+   « il y a quelque chose à faire ici ». */
+.respire {
+  display: inline-block;
+  animation: respireLettres 1.6s ease-in-out infinite;
+}
+
+@keyframes respireLettres {
+  0%,
+  100% {
+    transform: scale(1);
+    text-shadow: 0 0 0 transparent;
+  }
+  50% {
+    transform: scale(1.1);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--rouge-wfg, #da2c25) 70%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .respire {
+    animation: none;
+  }
+}
