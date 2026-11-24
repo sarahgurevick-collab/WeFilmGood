@@ -267,20 +267,67 @@
   opacity: 0.86;
 }
 
-/* Le CinéCrush rappelé (24/11, Sarah) : son image respire, le halo de
-   « Mes messages » et du Finder — le code du site pour « il y a quelque
-   chose à faire ici ». */
-.respire {
-  animation: respireCrush 1.6s ease-in-out infinite;
+/* Le CinéCrush dans un fronton de cinéma (essai du 24/11, Sarah) : un
+   cadre rouge, des ampoules tout autour qui s'allument en vague. Trois
+   calques d'ampoules, une sur trois chacun, allumés l'un après l'autre.
+   Retour au halo : étiquette git galaxies-cinecrush-avant-fronton. */
+.fronton {
+  --ep: 16px;
+  position: relative;
+  padding: var(--ep);
+  border-radius: 24px;
+  background: linear-gradient(180deg, #e8382f, var(--rouge-wfg, #da2c25) 45%, #a51d18);
+  box-shadow:
+    0 0 0 1px #7d1512,
+    0 0 34px color-mix(in srgb, var(--rouge-wfg, #da2c25) 55%, transparent);
 }
 
-@keyframes respireCrush {
+.fronton .image {
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px #7d1512;
+}
+
+.ampoules {
+  --x: 16.67%;
+  --h: radial-gradient(circle at var(--x) 50%, #fffbe6 0 1.5px, #ffe08a 3px, transparent 4px);
+  --v: radial-gradient(circle at 50% var(--x), #fffbe6 0 1.5px, #ffe08a 3px, transparent 4px);
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: var(--h), var(--h), var(--v), var(--v);
+  background-position: left top, left bottom, left top, right top;
+  background-size:
+    calc(var(--ep) * 3) var(--ep),
+    calc(var(--ep) * 3) var(--ep),
+    var(--ep) calc(var(--ep) * 3),
+    var(--ep) calc(var(--ep) * 3);
+  background-repeat: round no-repeat, round no-repeat, no-repeat round, no-repeat round;
+  filter: drop-shadow(0 0 4px #ffd35c);
+  animation: ampoules 1.5s linear infinite;
+}
+
+.ampoules:nth-child(2) {
+  --x: 50%;
+  animation-delay: -1s;
+}
+
+.ampoules:nth-child(3) {
+  --x: 83.33%;
+  animation-delay: -0.5s;
+}
+
+@keyframes ampoules {
   0%,
-  100% {
-    box-shadow: 0 0 0 0 transparent;
+  30% {
+    opacity: 1;
   }
-  50% {
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--rouge-wfg, #da2c25) 45%, transparent);
+  45%,
+  88% {
+    opacity: 0.22;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
@@ -303,6 +350,11 @@
 
   .duo > li:nth-child(even) {
     margin-top: 0;
+  }
+
+  .fronton {
+    --ep: 11px;
+    border-radius: 16px;
   }
 
   .image {
@@ -337,7 +389,7 @@
     animation: none;
   }
 
-  .respire {
+  .ampoules {
     animation: none;
   }
 }

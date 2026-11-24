@@ -192,23 +192,38 @@ export async function lotDeCartes(
         {p.tagline && <p className={duo.tagline}>{p.tagline}</p>}
       </>
     );
+    const image = (
+      <div className={`${styles.vignette} ${duo.image}`}>
+        <Bandeau valeur={p.bandeau} />
+        {dejaOuverts.has(p.id) && <MarqueDejaOuvert />}
+        {vignette ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={vignette} alt="" loading="lazy" />
+          </>
+        ) : (
+          <span className={styles.sansImage}>Sans vignette</span>
+        )}
+      </div>
+    );
     return (
       <>
         {/* L'effet d'eau au survol est retiré (12/11, Sarah) : il marchait
             moins bien sur de grandes images. */}
         <Link href={estCrush ? "/cinecrush" : `/projet/${p.id}`} className={`${styles.carte} ${styles.eau} ${duo.carte}`}>
-          <div className={`${styles.vignette} ${duo.image} ${estCrush ? duo.respire : ""}`}>
-            <Bandeau valeur={p.bandeau} />
-            {dejaOuverts.has(p.id) && <MarqueDejaOuvert />}
-            {vignette ? (
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={vignette} alt="" loading="lazy" />
-              </>
-            ) : (
-              <span className={styles.sansImage}>Sans vignette</span>
-            )}
-          </div>
+          {/* Le CinéCrush dans un fronton de cinéma : un cadre rouge bordé
+              d'ampoules qui s'allument en vague (essai du 24/11, Sarah).
+              Retour au halo : étiquette git galaxies-cinecrush-avant-fronton. */}
+          {estCrush ? (
+            <div className={duo.fronton}>
+              <span className={duo.ampoules} aria-hidden="true" />
+              <span className={duo.ampoules} aria-hidden="true" />
+              <span className={duo.ampoules} aria-hidden="true" />
+              {image}
+            </div>
+          ) : (
+            image
+          )}
           {/* Le texte sous la photo, toujours visible (12/11, Sarah ; le volet
               blanc au survol façon WFG 1 a été essayé puis retiré). */}
           <div className={duo.legende}>{texte}</div>
