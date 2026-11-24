@@ -153,8 +153,8 @@ export default async function ProjetsPage({
   // Le CinéCrush de la semaine sort du Finder avec les autres tant que le
   // talent n'a pas ouvert sa page (24/11, Sarah) : à l'arrivée seulement, pas
   // sur une liste filtrée.
-  const crushId = page === 1 && nbFiltres === 0 ? await crushARappeler(supabase, user.id) : null;
-  const { cartes, nombre, total, pages } = await lotDeCartes(supabase, user.id, page, filtres, crushId);
+  const crush = page === 1 && nbFiltres === 0 ? await crushARappeler(supabase, user.id) : null;
+  const { cartes, nombre, total, pages } = await lotDeCartes(supabase, user.id, page, filtres, crush?.id ?? null, crush?.cadre);
 
   return (
     <PageShell

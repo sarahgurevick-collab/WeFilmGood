@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { cadreValide, type Cadre } from "@/lib/cinecrush-cadres";
 
 /**
  * Le rappel du CinéCrush sur les Galaxies (24/11/2026, Sarah). La fenêtre
@@ -8,22 +9,22 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * milieu des trois colonnes, le premier sur téléphone — et son image
  * respire, le code du site pour « il y a quelque chose à faire ici ».
  *
- * Rend le projet à rappeler, ou null : rien si aucune semaine n'est
+ * Rend le projet à rappeler et son cadre (cinecrush-cadres.ts), ou null : rien si aucune semaine n'est
  * programmée, ou si le talent a déjà ouvert la page CinéCrush cette
  * semaine-là (table cinecrush_visites, migration 0326).
  *
  * L'administration le voit toujours, même la page déjà ouverte (24/11,
  * Sarah) : elle doit pouvoir regarder la carte telle que la voit un talent.
  */
-export async function crushARappeler(supabase: SupabaseClient, userId: string): Promise<string | null> {
+export async function crushARappeler(supabase: SupabaseClient, userId: string): Promise<{ id: string; cadre: Cadre } | null> {
   const { data: dimanche } = await supabase.rpc("dimanche_de_la_semaine");
   if (!dimanche) return null;
   const [{ data: crush }, { data: visite }, { data: admin }] = await Promise.all([
-    supabase.from("cinecrush").select("project_id").eq("semaine", dimanche as string).maybeSingle<{ project_id: string | null }>(),
+    supabase.from("cinecrush").select("project_id, cadre").eq("semaine", dimanche as string).maybeSingle<{ project_id: string | null; cadre: string | null }>(),
     supabase.from("cinecrush_visites").select("semaine").eq("profile_id", userId).eq("semaine", dimanche as string).maybeSingle(),
     supabase.rpc("is_admin"),
   ]);
   if (!crush?.project_id) return null;
   if (visite && admin !== true) return null;
-  return crush.project_id;
+  return { id: crush.project_id, cadre: cadreValide(crush.cadre) };
 }

@@ -6,7 +6,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import NavAdmin from "../NavAdmin";
 import adminStyles from "../admin.module.css";
-import { modererCommentaire, programmerCineCrush, reglerFiltreIa, retirerCineCrush } from "./actions";
+import { CADRES } from "@/lib/cinecrush-cadres";
+import { changerCadre, modererCommentaire, programmerCineCrush, reglerFiltreIa, retirerCineCrush } from "./actions";
 
 /**
  * CinéCrush, côté administration (24/10/2026, Sarah) : la programmation,
@@ -18,6 +19,7 @@ import { modererCommentaire, programmerCineCrush, reglerFiltreIa, retirerCineCru
 type Semaine = {
   id: string;
   semaine: string;
+  cadre: string;
   project: { id: string; title: string; owner: { full_name: string | null } | null } | null;
 };
 
@@ -63,7 +65,7 @@ export default async function CineCrushAdminPage({
     await Promise.all([
       admin
         .from("cinecrush")
-        .select("id, semaine, project:projects(id, title, owner:profiles!projects_owner_id_fkey(full_name))")
+        .select("id, semaine, cadre, project:projects(id, title, owner:profiles!projects_owner_id_fkey(full_name))")
         .order("semaine", { ascending: false })
         .returns<Semaine[]>(),
       supabase.rpc("cinecrush_candidats", { p_limite: 60 }),
@@ -117,6 +119,16 @@ export default async function CineCrushAdminPage({
           <span>… ou le titre exact d&apos;un autre projet</span>
           <input type="text" name="titre" placeholder="Titre du projet" maxLength={200} />
         </label>
+        <label className={formStyles.field}>
+          <span>Cadre de la carte dans les Galaxies</span>
+          <select name="cadre" defaultValue="cinema">
+            {CADRES.map((c) => (
+              <option key={c.value} value={c.value}>
+                {c.label}
+              </option>
+            ))}
+          </select>
+        </label>
         <div>
           <button type="submit" className={formStyles.submit}>
             Programmer
@@ -135,6 +147,7 @@ export default async function CineCrushAdminPage({
               <th>Projet</th>
               <th>Auteur</th>
               <th>État</th>
+              <th>Cadre</th>
               <th></th>
             </tr>
           </thead>
@@ -145,6 +158,21 @@ export default async function CineCrushAdminPage({
                 <td>{s.project ? <Link href={`/projet/${s.project.id}`}>{s.project.title}</Link> : "—"}</td>
                 <td>{s.project?.owner?.full_name ?? "—"}</td>
                 <td>{etat(s)}</td>
+                <td>
+                  <form action={changerCadre} className={adminStyles.inlineForm}>
+                    <input type="hidden" name="id" value={s.id} />
+                    <select name="cadre" defaultValue={s.cadre} aria-label="Cadre">
+                      {CADRES.map((c) => (
+                        <option key={c.value} value={c.value}>
+                          {c.label}
+                        </option>
+                      ))}
+                    </select>
+                    <button type="submit" className={adminStyles.linkButton}>
+                      Changer
+                    </button>
+                  </form>
+                </td>
                 <td>
                   <form action={retirerCineCrush}>
                     <input type="hidden" name="id" value={s.id} />

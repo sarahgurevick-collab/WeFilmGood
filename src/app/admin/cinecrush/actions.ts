@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { echapper, envoyerEmail } from "@/lib/brevo";
 import { createAdminClient, emailDuMembre } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { cadreValide } from "@/lib/cinecrush-cadres";
 
 /** La programmation CinéCrush et la relecture des commentaires : l'administration seule. */
 async function adminConnecte() {
@@ -25,6 +26,7 @@ const retour = (message?: string): never =>
 function rafraichir() {
   revalidatePath("/admin/cinecrush");
   revalidatePath("/cinecrush");
+  revalidatePath("/galaxies");
 }
 
 /** Un dimanche, au format AAAA-MM-JJ, sinon rien. */
@@ -70,7 +72,7 @@ export async function programmerCineCrush(formData: FormData) {
 
   const { error } = await admin
     .from("cinecrush")
-    .insert({ project_id: projet!.id, semaine, cree_par: user.id });
+    .insert({ project_id: projet!.id, semaine, cree_par: user.id, cadre: cadreValide(formData.get("cadre")) });
   if (error) {
     if (error.code === "23505") retour("Cette semaine est déjà prise, ou ce projet a déjà été CinéCrush.");
     retour(error.message);
@@ -91,6 +93,15 @@ export async function programmerCineCrush(formData: FormData) {
 <p>L'équipe WeFilmGood</p>`,
     });
   }
+  rafraichir();
+  retour();
+}
+
+/** Changer le cadre de la carte des Galaxies pour une semaine programmée. */
+export async function changerCadre(formData: FormData) {
+  const { admin } = await adminConnecte();
+  const id = (formData.get("id") as string) ?? "";
+  if (id) await admin.from("cinecrush").update({ cadre: cadreValide(formData.get("cadre")) }).eq("id", id);
   rafraichir();
   retour();
 }

@@ -10,6 +10,7 @@ import { projetsDejaOuverts } from "@/lib/vues";
 import { accesAuxFiches } from "@/lib/acces-fiches";
 import { clientCartes } from "@/lib/supabase/admin";
 import { FORMATS } from "@/app/projet/ChampsFiche";
+import type { Cadre } from "@/lib/cinecrush-cadres";
 import { SELECTION_PERSONNAGES, cheminsPortraits, personnagesDeLaCarte, type PersonnageBrut } from "./personnages-carte";
 import { equipesDesCartes, lectureRestreinte } from "./equipe-carte";
 import { parametresRpc, type Filtres } from "./filtres";
@@ -52,8 +53,9 @@ export async function lotDeCartes(
   page: number,
   filtres: Filtres,
   /** Le CinéCrush de la semaine à rappeler (rappel-cinecrush.ts) : il prend la
-      deuxième place du lot — le milieu des trois colonnes — et respire. */
+      deuxième place du lot — le milieu des trois colonnes —, dans son cadre. */
   crushId: string | null = null,
+  crushCadre: Cadre = "cinema",
 ): Promise<{ cartes: ReactNode; nombre: number; total: number; pages: number }> {
   // L'ordre vient de la base (fonction « pitchotheque ») : labellisés
   // d'abord, puis par tranche de remplissage, tirés au sort chaque nuit.
@@ -213,18 +215,26 @@ export async function lotDeCartes(
         {/* L'effet d'eau au survol est retiré (12/11, Sarah) : il marchait
             moins bien sur de grandes images. */}
         <Link href={estCrush ? "/cinecrush" : `/projet/${p.id}`} className={`${styles.carte} ${styles.eau} ${duo.carte}`}>
-          {/* Le CinéCrush dans un fronton de cinéma : un cadre rouge bordé
-              d'ampoules qui s'allument en vague (essai du 24/11, Sarah).
+          {/* Le CinéCrush dans son cadre, choisi à la programmation (24/11,
+              Sarah) : le fronton de cinéma et ses ampoules en vague, le cadre
+              de tableau blanc et droit, ou le cadre fleuri.
               Retour au halo : étiquette git galaxies-cinecrush-avant-fronton. */}
-          {estCrush ? (
+          {!estCrush ? (
+            image
+          ) : crushCadre === "tableau" ? (
+            <div className={duo.tableau}>{image}</div>
+          ) : crushCadre === "fleuri" ? (
+            <div className={duo.fleuri}>
+              <span className={duo.fleurs} aria-hidden="true" />
+              {image}
+            </div>
+          ) : (
             <div className={duo.fronton}>
               <span className={duo.ampoules} aria-hidden="true" />
               <span className={duo.ampoules} aria-hidden="true" />
               <span className={duo.ampoules} aria-hidden="true" />
               {image}
             </div>
-          ) : (
-            image
           )}
           {/* Le texte sous la photo, toujours visible (12/11, Sarah ; le volet
               blanc au survol façon WFG 1 a été essayé puis retiré). */}

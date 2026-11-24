@@ -331,6 +331,60 @@
   }
 }
 
+/* Le cadre de tableau (24/11, Sarah), pour un drame : un bord blanc et
+   droit, un fin liseré autour de l'image comme un passe-partout. Immobile. */
+.tableau {
+  padding: 18px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px #d9d6cc,
+    0 10px 30px rgba(255, 255, 255, 0.14);
+}
+
+.tableau .image {
+  border-radius: 0;
+  box-shadow:
+    0 0 0 1px #111,
+    0 0 0 5px #f1efe8,
+    0 0 0 6px #b4b2a9;
+}
+
+/* Le cadre fleuri (24/11, Sarah), pour une dramédie amoureuse : un bord
+   crème, des fleurs roses et corail avec leurs feuilles tout autour.
+   Les fleurs sont deux petits dessins répétés, un pour les bords
+   horizontaux, un pour les bords verticaux. */
+.fleuri {
+  --ep: 26px;
+  position: relative;
+  padding: var(--ep);
+  border-radius: 18px;
+  background: #fbf6ea;
+  box-shadow:
+    0 0 0 1px #e9dfc6,
+    0 0 30px rgba(244, 167, 192, 0.35);
+}
+
+.fleuri .image {
+  border-radius: 8px;
+}
+
+.fleurs {
+  --h: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 52 26'%3E%3Cellipse cx='24' cy='11' rx='5' ry='2.2' fill='%236fae6a' transform='rotate%28-30 24 11%29'/%3E%3Cellipse cx='28' cy='15' rx='5' ry='2.2' fill='%236fae6a' transform='rotate%2830 28 15%29'/%3E%3Ccircle cx='13.0' cy='8.8' r='3.3' fill='%23f4a7c0'/%3E%3Ccircle cx='17.0' cy='11.7' r='3.3' fill='%23f4a7c0'/%3E%3Ccircle cx='15.5' cy='16.4' r='3.3' fill='%23f4a7c0'/%3E%3Ccircle cx='10.5' cy='16.4' r='3.3' fill='%23f4a7c0'/%3E%3Ccircle cx='9.0' cy='11.7' r='3.3' fill='%23f4a7c0'/%3E%3Ccircle cx='13' cy='13' r='2.2' fill='%23f6c84c'/%3E%3Ccircle cx='39.0' cy='8.8' r='3.3' fill='%23e8604f'/%3E%3Ccircle cx='43.0' cy='11.7' r='3.3' fill='%23e8604f'/%3E%3Ccircle cx='41.5' cy='16.4' r='3.3' fill='%23e8604f'/%3E%3Ccircle cx='36.5' cy='16.4' r='3.3' fill='%23e8604f'/%3E%3Ccircle cx='35.0' cy='11.7' r='3.3' fill='%23e8604f'/%3E%3Ccircle cx='39' cy='13' r='2.2' fill='%23fff3c4'/%3E%3C/svg%3E");
+  --v: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 52'%3E%3Cellipse cx='11' cy='24' rx='5' ry='2.2' fill='%236fae6a' transform='rotate%2860 11 24%29'/%3E%3Cellipse cx='15' cy='28' rx='5' ry='2.2' fill='%236fae6a' transform='rotate%28120 15 28%29'/%3E%3Ccircle cx='13.0' cy='8.8' r='3.3' fill='%23f4a7c0'/%3E%3Ccircle cx='17.0' cy='11.7' r='3.3' fill='%23f4a7c0'/%3E%3Ccircle cx='15.5' cy='16.4' r='3.3' fill='%23f4a7c0'/%3E%3Ccircle cx='10.5' cy='16.4' r='3.3' fill='%23f4a7c0'/%3E%3Ccircle cx='9.0' cy='11.7' r='3.3' fill='%23f4a7c0'/%3E%3Ccircle cx='13' cy='13' r='2.2' fill='%23f6c84c'/%3E%3Ccircle cx='13.0' cy='34.8' r='3.3' fill='%23e8604f'/%3E%3Ccircle cx='17.0' cy='37.7' r='3.3' fill='%23e8604f'/%3E%3Ccircle cx='15.5' cy='42.4' r='3.3' fill='%23e8604f'/%3E%3Ccircle cx='10.5' cy='42.4' r='3.3' fill='%23e8604f'/%3E%3Ccircle cx='9.0' cy='37.7' r='3.3' fill='%23e8604f'/%3E%3Ccircle cx='13' cy='39' r='2.2' fill='%23fff3c4'/%3E%3C/svg%3E");
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: var(--h), var(--h), var(--v), var(--v);
+  background-position: left top, left bottom, left top, right top;
+  background-size:
+    calc(var(--ep) * 2) var(--ep),
+    calc(var(--ep) * 2) var(--ep),
+    var(--ep) calc(var(--ep) * 2),
+    var(--ep) calc(var(--ep) * 2);
+  background-repeat: round no-repeat, round no-repeat, no-repeat round, no-repeat round;
+}
+
 .crushNom {
   --puce: var(--rouge-wfg);
   border-color: var(--rouge-wfg);
@@ -355,6 +409,15 @@
   .fronton {
     --ep: 11px;
     border-radius: 16px;
+  }
+
+  .tableau {
+    padding: 11px;
+  }
+
+  .fleuri {
+    --ep: 18px;
+    border-radius: 14px;
   }
 
   .image {
