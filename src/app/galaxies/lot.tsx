@@ -194,7 +194,9 @@ export async function lotDeCartes(
     );
     const image = (
       <div className={`${styles.vignette} ${duo.image}`}>
-        <Bandeau valeur={p.bandeau} />
+        {/* Pas de ruban (Signé, Tourné…) sur la carte du CinéCrush, le temps
+            de sa semaine (24/11, Sarah) : le fronton suffit. */}
+        {!estCrush && <Bandeau valeur={p.bandeau} />}
         {dejaOuverts.has(p.id) && <MarqueDejaOuvert />}
         {vignette ? (
           <>
