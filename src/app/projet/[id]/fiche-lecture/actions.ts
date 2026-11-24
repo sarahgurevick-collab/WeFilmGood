@@ -35,3 +35,24 @@ export async function rateReport(formData: FormData) {
     redirect(retour);
   }
 }
+
+/**
+ * L'auteur note une ancienne fiche (WFG 1) jamais notée, s'il le souhaite ;
+ * aucun rappel pour ces fiches (24/11, Sarah, migration 0328).
+ */
+export async function rateLegacyReport(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const projectId = formData.get("project_id") as string;
+  const legacyId = Number(formData.get("legacy_review_id"));
+  const stars = Number(formData.get("stars"));
+  const retour = `/projet/${projectId}/fiches`;
+  if (!user) redirect(`/connexion?next=${retour}`);
+  if (Number.isInteger(legacyId) && Number.isInteger(stars) && stars >= 1 && stars <= 4) {
+    await supabase.rpc("noter_ancienne_fiche", { p_legacy_review_id: legacyId, p_position: stars });
+  }
+  revalidatePath(retour);
+  redirect(retour);
+}

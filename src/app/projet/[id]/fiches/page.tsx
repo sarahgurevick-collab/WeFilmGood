@@ -1,7 +1,7 @@
 import CoeurNote from "@/components/CoeurNote";
 import ChoixJauge from "@/components/ChoixJauge";
 import JaugeSatisfaction from "@/components/JaugeSatisfaction";
-import { rateReport } from "../fiche-lecture/actions";
+import { rateLegacyReport, rateReport } from "../fiche-lecture/actions";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import FicheContent from "@/components/FicheContent";
@@ -63,7 +63,9 @@ export default async function FichesDuProjetPage({
   const { data: notes } = idsPubliees.length
     ? await supabase.from("reading_report_ratings").select("reading_report_id, stars").in("reading_report_id", idsPubliees)
     : { data: [] };
-  const noteDe = new Map((notes ?? []).map((n) => [n.reading_report_id as string, n.stars as number]));
+  const noteDe = new Map((notes ?? []).map((n) => [`p${n.reading_report_id}`, n.stars as number]));
+  // Les anciennes fiches portent leur note de WFG 1, ou celle donnée ici.
+  for (const f of fiches) if (f.noteAuteur) noteDe.set(f.cle, f.noteAuteur);
   // Les archives de la Maison (Cannes 2016…) : l'administration seulement,
   // jamais l'auteur — même présentation, « ARCHIVE » à la place de la
   // synthèse de lecture (31/10, Sarah).
@@ -124,14 +126,16 @@ export default async function FichesDuProjetPage({
                   <p style={{ whiteSpace: "pre-wrap", margin: 0 }}><Surligne texte={f.avis} mots={mots} /></p>
                 </>
               )}
-              {f.cle.startsWith("p") && noteDe.has(f.cle.slice(1)) ? (
+              {noteDe.has(f.cle) ? (
                 <p className={formStyles.hint} style={{ marginTop: 24 }}>
-                  Vous avez attribué <JaugeSatisfaction position={noteDe.get(f.cle.slice(1))!} taille={36} /> à cette
+                  Vous avez attribué <JaugeSatisfaction position={noteDe.get(f.cle)!} taille={36} /> à cette
                   fiche de lecture.
                 </p>
-              ) : f.cle.startsWith("p") && estAuteur ? (
-                <form action={rateReport} style={{ marginTop: 24 }}>
-                  <input type="hidden" name="report_id" value={f.cle.slice(1)} />
+              ) : i === 0 && estAuteur ? (
+                // Le cercle sous la dernière analyse du projet seulement,
+                // ancienne (WFG 1, sans rappel) ou nouvelle (24/11, Sarah).
+                <form action={f.cle.startsWith("p") ? rateReport : rateLegacyReport} style={{ marginTop: 24 }}>
+                  <input type="hidden" name={f.cle.startsWith("p") ? "report_id" : "legacy_review_id"} value={f.cle.slice(1)} />
                   <input type="hidden" name="project_id" value={id} />
                   <input type="hidden" name="retour" value={`/projet/${id}/fiches`} />
                   <div className={formStyles.field}>

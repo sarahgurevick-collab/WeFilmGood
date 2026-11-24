@@ -101,7 +101,9 @@ export default async function MesProjetsPage({
   // page est retirée ; un petit rappel à côté du bouton suffit, la note
   // étant recommandée mais pas obligatoire. Il n'apparaît qu'une fois
   // l'analyse ouverte par l'auteur (migration 0327).
-  const aNoter = ((aNoterBrut ?? []) as { project_id: string }[]).some((f) => f.project_id === courant.id);
+  // Seule la dernière analyse du projet se note ; pas de rappel pour une
+  // ancienne fiche de WFG 1 (migration 0328).
+  const aNoter = ((aNoterBrut ?? []) as { report_id: string }[]).some((f) => `p${f.report_id}` === analyses[0]?.cle);
   const etatLecture = ((etatBrut ?? []) as { etat: Etat }[])[0]?.etat ?? null;
 
   // L'état de chaque fiche : ses trois blocs, et le remplissage global.

@@ -1,4 +1,5 @@
 import { ficheHeriteeEnHtml } from "@/lib/sanitize";
+import { positionDepuisCinq } from "@/lib/satisfaction";
 import type { createClient } from "@/lib/supabase/server";
 
 export type FicheAffichee = {
@@ -9,6 +10,8 @@ export type FicheAffichee = {
   contenu: string | null;
   html: boolean;
   avis: string | null;
+  /** La note de l'auteur sur une ancienne fiche, de 1 à 4 (sinon vide). */
+  noteAuteur?: number | null;
 };
 
 /**
@@ -33,6 +36,7 @@ export async function chargerFiches(
       final_mark: number | null;
       wfg_review: string | null;
       read_at: string | null;
+      author_rating: number | null;
     }[])
       // Une lecture attribuée sur WFG 1 mais jamais rédigée là-bas laisse
       // une fiche vide (ni texte, ni avis, note à 0) : elle n'est ni
@@ -45,6 +49,7 @@ export async function chargerFiches(
       contenu: ficheHeriteeEnHtml(f.content),
       html: true,
       avis: f.wfg_review,
+      noteAuteur: positionDepuisCinq(f.author_rating),
     })),
     ...((publiees ?? []) as {
       report_id: string;
