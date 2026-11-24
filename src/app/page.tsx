@@ -76,44 +76,19 @@ export default async function Home() {
           à décider avec Sarah. */}
       <GalaxieAccueil projet={projetOrbite} />
 
-      {/* Les 10 ans de WeFilmGood (15/10, Sarah) : la page Témoignages posée
-          sous la galaxie, avec le feu d'artifice de l'ancien écran d'accueil
-          sur le titre, puis la sphère des témoignages devant le ciel étoilé. */}
-      <section className={styles.dixAns}>
+      {/* L'ordre de l'accueil (24/11, Sarah) : le titre des 10 ans et son feu
+          d'artifice, les projets réalisés, la bande blanche « Rejoignez… »,
+          puis les témoignages de nouveau sur fond noir. Avant : la sphère
+          était juste sous le titre (étiquette accueil-avant-ordre-10-ans). */}
+      <section className={`${styles.dixAns} ${styles.dixAnsSeul}`}>
         <FeuArtificeAuPassage className={styles.dixAnsCadre}>
           <h2 className={styles.dixAnsTitre}>
             We<span className={styles.rouge}>Film</span>Good a 10 ans !
           </h2>
         </FeuArtificeAuPassage>
-        {photosTemoignages.length > 0 && (
-          <div className={styles.dixAnsSphere}>
-            <CielEtoile />
-            <div style={{ position: "relative", zIndex: 1 }}>
-              <SpherePhotos photos={photosTemoignages} />
-              {/* Le bouton d'inscription (15/11, Sarah), sous la sphère, pour
-                  les visiteurs : le nombre est celui de l'anneau des chiffres. */}
-              {!auth?.user && chiffres && (
-                <p className={styles.bandeInscription}>
-                  <Link href="/connexion" className={formStyles.submit}>
-                    Créez votre profil et rejoignez les {chiffres.talents.toLocaleString("fr-FR")} talents
-                  </Link>
-                </p>
-              )}
-            </div>
-          </div>
-        )}
       </section>
 
-      {/* La barre au pouce, sur téléphone : pour les membres seulement. Un
-          visiteur n'a que l'accueil, et le bouton de connexion en haut. */}
-      {auth?.user && (
-        <div className={styles.barreNavMobileSeule}>
-          <BarreNav connecte />
-        </div>
-      )}
-
-      {/* Les success stories juste sous la galaxie (14/10, Sarah) : la bande
-          noire remonte au-dessus de la bande blanche et des engagements. */}
+      {/* Les success stories sous le titre des 10 ans (24/11, Sarah). */}
       <section className={styles.stories}>
         {/* Le bouton « Success stories » est retiré (15/11, Sarah : « il n'est
             pas prêt ») ; à sa place, un titre. */}
@@ -172,6 +147,35 @@ export default async function Home() {
           <NuageAccueil />
         </div>
       </section>
+
+      {/* La sphère des témoignages devant le ciel étoilé, en bas de page. */}
+      {photosTemoignages.length > 0 && (
+        <section className={styles.dixAns}>
+          <div className={styles.dixAnsSphere}>
+            <CielEtoile />
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <SpherePhotos photos={photosTemoignages} />
+              {/* Le bouton d'inscription (15/11, Sarah), sous la sphère, pour
+                  les visiteurs : le nombre est celui de l'anneau des chiffres. */}
+              {!auth?.user && chiffres && (
+                <p className={styles.bandeInscription}>
+                  <Link href="/connexion" className={formStyles.submit}>
+                    Créez votre profil et rejoignez les {chiffres.talents.toLocaleString("fr-FR")} talents
+                  </Link>
+                </p>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* La barre au pouce, sur téléphone : pour les membres seulement. Un
+          visiteur n'a que l'accueil, et le bouton de connexion en haut. */}
+      {auth?.user && (
+        <div className={styles.barreNavMobileSeule}>
+          <BarreNav connecte />
+        </div>
+      )}
 
       {/* Les quatre engagements en défilement (rouge, vert, jaune, bleu)
           retirés de l'accueil le 15/11 (Sarah). Composant gardé :

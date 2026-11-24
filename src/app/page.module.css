@@ -181,6 +181,14 @@
   color: var(--fg);
 }
 
+/* Le titre seul, les projets réalisés juste dessous (24/11). */
+.dixAnsSeul {
+  /* Au-dessus de la bande suivante : les gerbes du feu d'artifice
+     retombent par-dessus le titre des projets réalisés. */
+  z-index: 11;
+  padding-bottom: 0;
+}
+
 /* Le cadre du titre : le feu d'artifice part de son centre. */
 .dixAnsCadre {
   display: flex;
