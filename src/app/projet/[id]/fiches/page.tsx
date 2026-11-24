@@ -131,9 +131,10 @@ export default async function FichesDuProjetPage({
                   Vous avez attribué <JaugeSatisfaction position={noteDe.get(f.cle)!} taille={36} /> à cette
                   fiche de lecture.
                 </p>
-              ) : i === 0 && estAuteur ? (
-                // Le cercle sous la dernière analyse du projet seulement,
-                // ancienne (WFG 1, sans rappel) ou nouvelle (24/11, Sarah).
+              ) : estAuteur ? (
+                // Le cercle sous chaque analyse sans note, ancienne (WFG 1,
+                // sans rappel) ou nouvelle : chaque lecteur a sa note, une
+                // bonne fiche ne paie pas pour une autre (24/11, Sarah).
                 <form action={f.cle.startsWith("p") ? rateReport : rateLegacyReport} style={{ marginTop: 24 }}>
                   <input type="hidden" name={f.cle.startsWith("p") ? "report_id" : "legacy_review_id"} value={f.cle.slice(1)} />
                   <input type="hidden" name="project_id" value={id} />

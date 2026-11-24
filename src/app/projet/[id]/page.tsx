@@ -1,7 +1,6 @@
 import AjouterUnTalent from "./AjouterUnTalent";
 import CarteMatch from "../CarteMatch";
 import { chargerMatch } from "../match";
-import BandeauFichesANoter from "@/components/BandeauFichesANoter";
 import BandeauEnregistre from "@/components/BandeauEnregistre";
 import { ordonnerPersonnages } from "./ordre-personnages";
 import Link from "next/link";
@@ -625,7 +624,6 @@ export default async function ProjetPage({
       {enregistre && <BandeauEnregistre />}
       {message === "envoye" && <p className={profilStyles.ok}>Message envoyé.</p>}
       {/* La fiche de lecture pas encore notée par l'auteur (04/11) : le bandeau reste. */}
-      {isOwner && <BandeauFichesANoter retour={`/projet/${project.id}`} projetId={project.id} />}
 
       {/* Sous le titre, sur une seule ligne : genre, format, langue, budget,
           audience, puis, pour l'admin seulement, les mots-clés — écrits

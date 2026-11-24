@@ -297,7 +297,7 @@ export default async function FicheLecteurPage({
                     )}
                   </td>
                   <td>{f.final_mark ?? "—"}</td>
-                  <td className={adminStyles.emojiCellule} title={f.author_rating ? `${f.author_rating} étoile${f.author_rating > 1 ? "s" : ""} sur 5 sur WFG 1` : undefined}><JaugeSatisfaction position={positionDepuisCinq(f.author_rating)} /></td>
+                  <td className={adminStyles.emojiCellule} title={positionDepuisCinq(f.author_rating) ? `Note de l'auteur : ${positionDepuisCinq(f.author_rating)} sur 4` : undefined}><JaugeSatisfaction position={positionDepuisCinq(f.author_rating)} /></td>
                   <td>
                     <Link
                       href={`/admin/fiches/ancienne/${f.legacy_review_id}`}
