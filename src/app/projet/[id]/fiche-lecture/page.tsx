@@ -63,9 +63,9 @@ export default async function FicheLecturePage({
   return (
     <PageShell eyebrow="Fiche de lecture" title={`Analyse par ${report.reader_first_name ?? "un lecteur"}`}>
       <p className={formStyles.hint}>
-        Rendue le {new Date(report.submitted_at).toLocaleDateString("fr-FR")} · Note{" "}
-        {report.score ?? "—"} / 200
-        {report.labellise && " · Projet labellisé WFG"}
+        Rendue le {new Date(report.submitted_at).toLocaleDateString("fr-FR")}
+        {/* La note sur 200 seulement si le projet est labellisé (24/11, Sarah). */}
+        {report.labellise && ` · Note ${report.score ?? "—"} / 200 · Projet labellisé WFG`}
       </p>
 
       <div className={styles.content}>

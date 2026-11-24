@@ -104,7 +104,10 @@ export default async function FichesDuProjetPage({
                       year: "numeric",
                     })
                   : "Date inconnue"}
-                {f.note !== null && (
+                {/* L'auteur ne voit la note sur 200 que si elle vaut le label
+                    (plus de 150) ; en dessous, la note reste à
+                    l'administration (24/11, Sarah). */}
+                {f.note !== null && (estAdmin === true || f.note > 150) && (
                   <span style={{ fontWeight: 400 }}>
                     {" — "}
                     {f.note}/200
