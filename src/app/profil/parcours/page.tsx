@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import BlocProfil from "../BlocProfil";
+import Explication from "@/components/Explication";
+import { calculerCompletion } from "../completion";
 import { saveParcours } from "../actions";
 import { metiersPourCategorie, questionAgentConcernee } from "../metiers";
 import styles from "../profil.module.css";
@@ -63,11 +65,16 @@ export default async function ParcoursPage({
   const aMetier = (slug: string) => slugsMetiers.includes(slug);
   const rolesMembre = slugsMetiers.map((role_slug) => ({ role_slug }));
 
+  // Bloc rempli : l'explication grise se range derrière un « ? » (24/11).
+  const rempli = (await calculerCompletion(supabase, user.id)).fait.parcours;
+
   return (
     <BlocProfil actif="parcours">
-      <p className={formStyles.hint}>
-        Visible par les membres connectés.
-      </p>
+      <Explication repliee={rempli}>
+        <p className={formStyles.hint}>
+          Visible par les membres connectés.
+        </p>
+      </Explication>
 
       <form className={formStyles.form} action={saveParcours} style={{ marginTop: 24 }}>
         {erreur && <p className={formStyles.error}>{erreur}</p>}

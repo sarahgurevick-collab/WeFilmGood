@@ -227,28 +227,78 @@
   }
 }
 
-/* « CinéCrush » pas encore ouvert cette semaine (24/11, Sarah) : les lettres
-   respirent, au rythme du halo de « Mes messages » — le code du site pour
-   « il y a quelque chose à faire ici ». */
-.respire {
-  display: inline-block;
-  animation: respireLettres 1.6s ease-in-out infinite;
+/* Le « Menu » de la barre (24/11, Sarah : comme le menu de WFG 1) : un
+   onglet de plus, qui déroule la liste de la bande blanche. */
+.menu {
+  position: relative;
 }
 
-@keyframes respireLettres {
-  0%,
-  100% {
-    transform: scale(1);
-    text-shadow: 0 0 0 transparent;
-  }
-  50% {
-    transform: scale(1.1);
-    text-shadow: 0 0 10px color-mix(in srgb, var(--rouge-wfg, #da2c25) 70%, transparent);
-  }
+.menuBouton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .respire {
-    animation: none;
+.menuChevron {
+  transition: transform 0.2s ease;
+}
+
+.menuChevron[data-ouvert="true"] {
+  transform: rotate(180deg);
+}
+
+.menuListe {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 16px);
+  left: 0;
+  width: max-content;
+  min-width: 220px;
+  max-width: calc(100vw - 28px);
+  margin: 0;
+  padding: 10px;
+  list-style: none;
+  border-radius: 12px;
+  background: var(--bg, #1a1a1a);
+  border: 1px solid var(--fg, #fff);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.menuListe a {
+  display: block;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--fg);
+  transition: color 0.15s ease;
+}
+
+.menuListe a:hover {
+  color: var(--rouge-wfg);
+}
+
+/* Sur téléphone la barre est en bas : la liste monte, calée à droite. */
+@media (max-width: 720px) {
+  .menu {
+    flex: 1;
+    display: flex;
+  }
+
+  .menuBouton {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .menuListe {
+    top: auto;
+    bottom: calc(100% + 14px);
+    left: auto;
+    right: 0;
+    max-height: 70vh;
+    overflow-y: auto;
   }
 }

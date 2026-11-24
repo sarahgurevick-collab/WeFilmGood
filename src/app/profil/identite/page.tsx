@@ -5,6 +5,8 @@ import formStyles from "@/components/form.module.css";
 import { PAYS } from "@/lib/pays";
 import { createClient } from "@/lib/supabase/server";
 import BlocProfil from "../BlocProfil";
+import Explication from "@/components/Explication";
+import { calculerCompletion } from "../completion";
 import ChampPhoto from "./ChampPhoto";
 import VerifierAvantEnvoi from "./VerifierAvantEnvoi";
 import { saveIdentite } from "../actions";
@@ -42,6 +44,9 @@ export default async function IdentitePage({
     supabase.from("languages").select("code, label_fr").order("position"),
   ]);
   const aLangue = (code: string) => (langues ?? []).some((l) => l.language_code === code);
+  // Bloc rempli : les explications grises se rangent derrière un « ? »
+  // (24/11, Sarah).
+  const rempli = (await calculerCompletion(supabase, user.id)).fait.identite;
 
   return (
     <BlocProfil actif="identite">
@@ -87,10 +92,12 @@ export default async function IdentitePage({
             />
           </label>
         </div>
-        <p className={formStyles.hint} style={{ marginTop: -14 }}>
-          C&apos;est le nom que les autres membres voient. Si vous signez sous un nom de plume,
-          c&apos;est lui qu&apos;il faut mettre ici.
-        </p>
+        <Explication repliee={rempli} style={{ marginTop: -14 }}>
+          <p className={formStyles.hint} style={{ marginTop: -14 }}>
+            C&apos;est le nom que les autres membres voient. Si vous signez sous un nom de plume,
+            c&apos;est lui qu&apos;il faut mettre ici.
+          </p>
+        </Explication>
 
         <div className={formStyles.field}>
           <span>Je suis…</span>
@@ -124,12 +131,14 @@ export default async function IdentitePage({
             defaultValue={profil?.website ?? ""}
             placeholder="www.votresite.com (ou page IMDb)"
           />
+          <Explication repliee={rempli}>
           <span className={formStyles.hint}>
             Obligatoire pour un producteur ou un autre talent : votre site (ou votre page
             IMDb, Unifrance) — de quoi montrer au moins une expérience sur un film, un court
             métrage ou un clip. C&apos;est sur cette référence que l&apos;administration
             valide votre profil.
           </span>
+          </Explication>
           <span className={formStyles.error} data-erreur="website" hidden />
         </label>
 
@@ -147,11 +156,13 @@ export default async function IdentitePage({
         </div>
 
         <fieldset className={styles.cadreAdmin}>
+          <Explication repliee={rempli}>
           <p className={formStyles.hint}>
             Les informations ci-dessous sont réservées uniquement à l&apos;équipe de la Maison des
             Scénaristes/WeFilmGood afin de vous joindre. Aucun talent connecté à la plateforme ne
             peut les voir.
           </p>
+          </Explication>
 
           <div className={styles.row}>
             <div className={formStyles.field}>
@@ -172,10 +183,12 @@ export default async function IdentitePage({
                 autoComplete="tel"
               />
               {/* Texte de Sarah (18/10). */}
+              <Explication repliee={rempli}>
               <span className={formStyles.hint}>
                 Numéro réservé à l&apos;équipe de la Maison des Scénaristes. Utilisation
                 exceptionnelle, le contact par email est prioritaire.
               </span>
+              </Explication>
             </label>
           </div>
 

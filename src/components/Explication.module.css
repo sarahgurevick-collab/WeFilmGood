@@ -1,0 +1,31 @@
+/* Le « ? » qui range une explication grise (24/11). */
+.repli > summary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--dim);
+  border-radius: 50%;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--dim);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.repli > summary::-webkit-details-marker {
+  display: none;
+}
+
+.repli > summary:hover,
+.repli[open] > summary {
+  color: var(--text, inherit);
+  border-color: currentColor;
+}
+
+.repli > :not(summary) {
+  display: block;
+  margin-top: 6px !important;
+}

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import LogoAnime from "./LogoAnime";
 import styles from "./BarreNav.module.css";
 import { EMPLACEMENT_ENTETE } from "./useEmplacementEntete";
-import { crushARappeler } from "@/app/galaxies/rappel-cinecrush";
+import MenuBarre from "./MenuBarre";
 
 /**
  * Barre d'onglets fixée en bas sur téléphone, au pouce. Les producteurs
@@ -24,8 +24,6 @@ export default async function BarreNav({
   let messagesNonLus = 0;
   // Les projets dont le match vient de changer, pas encore vu (23/11).
   let matchsNouveaux = 0;
-  // Le CinéCrush de la semaine pas encore ouvert (24/11) : ses lettres respirent.
-  let crushAVoir = false;
   let estAdmin = false;
   let estLecteur = false;
   // « Mes favoris » (12/11, Sarah) : pour les adhérents, et pour qui a déjà
@@ -66,7 +64,6 @@ export default async function BarreNav({
     const { data: matchs } = await supabase.rpc("mes_matchs_nouveaux");
     matchsNouveaux = typeof matchs === "number" ? matchs : 0;
     estAdmin = admin === true;
-    crushAVoir = user ? (await crushARappeler(supabase, user.id)) !== null : false;
     // Un lecteur n'a pas accès à la plateforme : sa barre n'a que ses deux pages.
     estLecteur = !!roleLecteur && !estAdmin;
   }
@@ -79,8 +76,6 @@ export default async function BarreNav({
     { cle: "pitchotheque", href: "/galaxies", label: "Galaxies" },
     // La liste de ses fiches (ou la création s'il n'en a aucune). Un
     // visiteur non connecté n'a rien à y faire : pas d'onglet (26/09).
-    // « CinéCrush » après « Galaxies » (24/11, Sarah) : il n'était que dans le Menu.
-    ...(connecte ? [{ cle: "cinecrush", href: "/cinecrush", label: "CinéCrush" }] as const : []),
     ...(connecte ? [{ cle: "deposer", href: "/mes-projets", label: "Mes projets" }] as const : []),
     ...(aDesFavoris ? [{ cle: "favoris", href: "/favoris", label: "Mes favoris" }] as const : []),
     ...(connecte ? [{ cle: "messages", href: "/mes-messages", label: "Mes messages" }] as const : []),
@@ -113,15 +108,7 @@ export default async function BarreNav({
             {/* « Galaxies », « Mes projets », « Mes messages », « Mon profil »
                 (02/10). Le logo complet suit « Galaxies » et change de
                 couleur avec celui du haut (01/10). */}
-            {o.cle === "cinecrush" ? (
-              // Les couleurs du Menu : « Ciné » rouge, « Crush » sur l'horloge du logo.
-              <span className={`${crushAVoir ? styles.respire : ""} notranslate`} translate="no">
-                <span style={{ color: "var(--rouge-wfg, #da2c25)" }}>Ciné</span>
-                <span style={{ color: "var(--engagement, #da2c25)" }}>Crush</span>
-              </span>
-            ) : (
-              o.label
-            )}
+            {o.label}
             {o.cle === "pitchotheque" && (
               <>
                 {" "}
@@ -149,6 +136,8 @@ export default async function BarreNav({
             )}
           </Link>
         ))}
+        {/* Le Menu, au bout des onglets (24/11). Un lecteur n'a que ses deux pages. */}
+        {!estLecteur && <MenuBarre />}
       </div>
 
       {soleils && !estLecteur && (

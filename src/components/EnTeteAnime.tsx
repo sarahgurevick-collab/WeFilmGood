@@ -6,28 +6,11 @@ import { ENGAGEMENTS, ROUGE_WFG } from "@/lib/engagements";
 import { useEngagement } from "@/lib/useEngagement";
 import styles from "./EnTeteAnime.module.css";
 import { EMPLACEMENT_ENTETE } from "./useEmplacementEntete";
+import { ELEMENTS_MENU } from "./elements-menu";
 
 const ETATS = ENGAGEMENTS;
 
 const DELAI_APRES_SCROLL_MS = 500;
-
-const ELEMENTS_MENU = [
-  // En tête, les deux éléments vivants du site (Sarah, 24/10 : « tout le
-  // reste sont des informations dormantes »). « Ciné » reste fixe en rouge
-  // WeFilmGood, la suite du mot suit la même horloge que le logo — les
-  // trois couleurs des engagements, Planet, Humanity, Education. Un
-  // battement sur quatre, les deux mots sont au rouge : la fusion.
-  { label: "CinéCrush", href: "/cinecrush", special: true },
-  { label: "CinéMatch", href: "/cinematch", special: true },
-  { label: "Adhésion", href: "/adhesion" },
-  { label: "Nos appels à projets", href: "/appels-a-projets" },
-  { label: "ScenarioLabs", href: "/ateliers" },
-  { label: "Maison des Scénaristes", href: "/association" },
-  { label: "Masterclass", href: "/masterclass" },
-  { label: "Notre histoire", href: "/notre-histoire" },
-  { label: "Témoignages", href: "/temoignages" },
-  { label: "Tutoriels", href: "/tutoriels" },
-];
 
 /**
  * Bande blanche de l'accueil. Le logo est le fichier original de la
