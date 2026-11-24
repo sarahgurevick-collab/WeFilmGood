@@ -105,7 +105,7 @@ export default async function ProjetsPage({
         )}
         {voir === "personnages" ? (
           // Essai du 12/11 (Sarah) : des cartes à jouer, qui sortent du Finder
-          // dos visible et se retournent en se posant.
+          // comme les projets (retournement retiré le 24/11).
           <Suite
             key={`${adressePersonnages(filtresPersonnages)}-${page}`}
             quoi="personnages"

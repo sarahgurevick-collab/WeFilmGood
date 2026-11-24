@@ -371,31 +371,25 @@
   gap: 36px 28px;
 }
 
-/* La place d'une carte sur la table : la carte y arrive du Finder, dos
-   visible, puis se retourne. Invisible tant qu'elle n'est pas partie. */
+/* La place d'une carte sur la table : la carte y arrive du Finder comme
+   les projets. Invisible tant qu'elle n'est pas partie. */
 .place {
   position: relative;
   min-width: 0;
   aspect-ratio: 5 / 7;
   visibility: hidden;
-  transform-style: preserve-3d;
+  will-change: transform, opacity;
 }
 
 .place.vu {
   visibility: visible;
 }
 
-.face,
-.dos {
+.face {
   position: absolute;
   inset: 0;
   border-radius: 16px;
   overflow: hidden;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-.face {
   display: block;
   background: var(--surface-actif);
   border: 1px solid color-mix(in srgb, var(--fg) 24%, transparent);
@@ -475,16 +469,6 @@
   opacity: 0.82;
 }
 
-/* Le dos : rouge, liseré blanc, croisillons. */
-.dos {
-  transform: rotateY(180deg);
-  border: 7px solid #fff;
-  background:
-    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.16) 0 5px, transparent 5px 14px),
-    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.16) 0 5px, transparent 5px 14px),
-    var(--rouge-wfg);
-}
-
 @media (max-width: 1000px) {
   .table {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -498,13 +482,8 @@
     margin-top: 20px;
   }
 
-  .face,
-  .dos {
+  .face {
     border-radius: 12px;
-  }
-
-  .dos {
-    border-width: 5px;
   }
 
   .bas {

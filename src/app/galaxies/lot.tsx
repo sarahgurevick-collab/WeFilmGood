@@ -236,7 +236,7 @@ export const PERSONNAGES_PAR_PAGE = 24;
 /** Un lot de personnages en cartes à jouer, pour la page comme pour le bouton. */
 export function cartesPersonnages(personnages: PersonnageTrouve[]): ReactNode {
   return personnages.map((c, i) => (
-    <Apparition key={c.id} rang={i} retourne>
+    <Apparition key={c.id} rang={i} carte>
       <CarteAJouer c={c} />
     </Apparition>
   ));
