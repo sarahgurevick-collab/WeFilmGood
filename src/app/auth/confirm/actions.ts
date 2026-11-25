@@ -27,8 +27,11 @@ export async function confirmerLien(formData: FormData) {
       user?.last_sign_in_at && Date.now() - new Date(user.last_sign_in_at).getTime() < 120_000;
     if (!connexionRecente) {
       redirect(
+        // La destination est gardée (25/11) : le nouveau lien mène au même
+        // endroit — l'invitation à un projet, par exemple.
         "/connexion?erreur=" +
-          encodeURIComponent("Ce lien a déjà servi ou a expiré. Demandez-en un nouveau ci-dessous."),
+          encodeURIComponent("Ce lien a déjà servi ou a expiré. Demandez-en un nouveau ci-dessous.") +
+          (next !== "/" ? `&next=${encodeURIComponent(next)}` : ""),
       );
     }
   }

@@ -148,14 +148,19 @@ export async function inviterUnTalent(formData: FormData) {
   const service = admin!;
 
   // Déjà dans l'équipe (ou déjà invité) avec cette adresse.
+  // Une invitation restée sans réponse peut être renvoyée (25/11) : même
+  // ligne, nouveau lien — pas plus d'une fois par heure.
   const { data: existe } = await service
     .from("project_co_authors")
-    .select("id")
+    .select("id, status, invited_at")
     .eq("project_id", projectId)
     .ilike("invited_email", email)
     .in("status", ["invite", "accepte"])
-    .limit(1);
-  if (existe?.length) retour("deja");
+    .limit(1)
+    .returns<{ id: string; status: string; invited_at: string | null }[]>();
+  const enAttente = existe?.[0]?.status === "invite" ? existe[0] : null;
+  if (existe?.length && !enAttente) retour("deja");
+  if (enAttente?.invited_at && Date.now() - new Date(enAttente.invited_at).getTime() < 3600_000) retour("deja");
 
   // Le plafond du jour, pour le porteur du projet.
   const { data: sesProjets } = await service.from("projects").select("id").eq("owner_id", projet!.owner_id);
@@ -183,11 +188,18 @@ export async function inviterUnTalent(formData: FormData) {
     .maybeSingle();
   if (lecteur) retour("ok");
 
-  const { data: ligne, error } = await service
-    .from("project_co_authors")
-    .insert({ project_id: projectId, profile_id: profileId, invited_email: email, status: "invite", role_slug: metier!.slug })
-    .select("id")
-    .single<{ id: string }>();
+  const { data: ligne, error } = enAttente
+    ? await service
+        .from("project_co_authors")
+        .update({ invited_at: new Date().toISOString(), role_slug: metier!.slug })
+        .eq("id", enAttente.id)
+        .select("id")
+        .single<{ id: string }>()
+    : await service
+        .from("project_co_authors")
+        .insert({ project_id: projectId, profile_id: profileId, invited_email: email, status: "invite", role_slug: metier!.slug })
+        .select("id")
+        .single<{ id: string }>();
   if (error || !ligne) retour("erreur");
 
   const { data: porteurFiche } = await service

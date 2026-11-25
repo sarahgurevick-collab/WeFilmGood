@@ -127,7 +127,7 @@ export function gabarit(titre: string, texte: string, lien: string, bouton: stri
       </p>
       ${apres ? `<p>${apres}</p>` : ""}
       <p style="font-size: 13px; color: #666;">
-        Ce lien ne sert qu'une fois et expire au bout d'une heure.
+        Ce lien ne sert qu'une fois et expire au bout de 24 heures.
         Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.
       </p>
       <p style="font-size: 13px; color: #666;">— WeFilmGood</p>
@@ -285,7 +285,7 @@ export async function envoyerInvitationEquipe(p: {
       p.prenom ? `Bonjour ${echapper(p.prenom)},` : "Bonjour,",
       `Connaissez-vous le projet « ${echapper(p.titreProjet)} » de ${echapper(p.porteur)} ?<br><br>` +
         `Ce projet est maintenant sur WeFilmGood, et nous vous invitons à le rejoindre afin de vous identifier en tant que ${echapper(metier)} du projet.<br><br>` +
-        "Vous pouvez vous inscrire en cliquant sur le lien magique suivant, valable 1h. Vous n'aurez plus besoin de vous reconnecter.",
+        "Vous pouvez vous inscrire en cliquant sur le lien magique suivant, valable 24h. Vous n'aurez plus besoin de vous reconnecter.",
       lien,
       "Rejoindre le projet",
       "Vous êtes attendu !",
