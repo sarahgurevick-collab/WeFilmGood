@@ -420,7 +420,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
           "Rien de faux rien de vrai - Bachir Bensaddek",
           "Hotel Bleu - Bethany Jacobson",
           "Monday Man - Eric de Roquefeuil & Ian Swan",
-          "Fleur de Cannes - Fabrice Pierre & Murielle Therrin",
+          "Fleur de Cannes - Fabrice Pierre & Murielle Thierrin",
           "Le col du fémur - Frederic Quiring",
           '🎥 My little one (aka "Désert") - Frédéric Choffat & Julie Gilbert',
           "Train for Lhasa - Ghyslaine Côté & Martine D'Anjou",
