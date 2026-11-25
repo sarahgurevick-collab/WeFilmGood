@@ -1,6 +1,7 @@
 import formStyles from "@/components/form.module.css";
 import { createClient } from "@/lib/supabase/server";
 import { inviterUnTalent } from "./actions";
+import BoutonInviter from "./BoutonInviter";
 
 const MESSAGES: Record<string, { texte: string; ok?: boolean }> = {
   ok: { texte: "Invitation envoyée.", ok: true },
@@ -30,7 +31,7 @@ export default async function AjouterUnTalent({ projectId, resultat }: { project
   return (
     <section id="equipe" style={{ margin: "32px 0" }}>
       <h2>Ajouter un talent</h2>
-      {message && <p className={message.ok ? formStyles.hint : formStyles.error}>{message.texte}</p>}
+      {message && !message.ok && <p className={formStyles.error}>{message.texte}</p>}
       <form action={inviterUnTalent} className={formStyles.form} style={{ marginTop: 12 }}>
         <input type="hidden" name="project_id" value={projectId} />
         <label className={formStyles.field}>
@@ -54,9 +55,7 @@ export default async function AjouterUnTalent({ projectId, resultat }: { project
             ))}
           </select>
         </label>
-        <button type="submit" className={formStyles.submit}>
-          Inviter
-        </button>
+        <BoutonInviter envoyee={resultat === "ok"} />
       </form>
     </section>
   );

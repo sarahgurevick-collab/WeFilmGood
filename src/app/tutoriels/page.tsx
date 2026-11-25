@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import PageShell from "@/components/PageShell";
 import { createClient } from "@/lib/supabase/server";
 import { DOSSIER_TUTORIELS, TUTORIELS, langueDuCookie, nomDeFichier } from "./tutoriels";
-import styles from "./tutoriels.module.css";
+import TutorielsLecteur from "./TutorielsLecteur";
 
 /**
  * Les tutoriels : de courtes vidéos, un écran toutes les quatre secondes,
@@ -40,21 +40,15 @@ export default async function TutorielsPage() {
 
   return (
     <PageShell eyebrow="WeFilmGood" title="Tutoriels" enTeteAnime connecte={!!user}>
-      <div className={styles.liste}>
-        {visibles.map((t) => (
-          <section key={t.slug} id={t.slug} className={styles.carte}>
-            <h2 className={styles.titre}>{langue === "en" ? t.titreEn : t.titre}</h2>
-            <video
-              className={styles.video}
-              controls
-              preload="metadata"
-              playsInline
-              poster={adresse(`${nomDeFichier(t.slug, langue)}.jpg`)}
-              src={adresse(`${nomDeFichier(t.slug, langue)}.mp4`)}
-            />
-          </section>
-        ))}
-      </div>
+      {/* Comme les masterclass (25/11, Sarah) : l'écran à gauche, la roue des titres à droite. */}
+      <TutorielsLecteur
+        films={visibles.map((t) => {
+          // « Que faire avec WeFilmGood — auteur » : « auteur » en petit sous le titre.
+          const [titre, precision] = (langue === "en" ? t.titreEn : t.titre).split(" — ");
+          const nom = nomDeFichier(t.slug, langue);
+          return { slug: t.slug, titre, precision, video: adresse(`${nom}.mp4`), affiche: adresse(`${nom}.jpg`) };
+        })}
+      />
     </PageShell>
   );
 }

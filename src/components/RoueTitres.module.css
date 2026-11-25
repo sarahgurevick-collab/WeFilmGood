@@ -112,3 +112,25 @@
     font-size: 21px;
   }
 }
+
+/* Titres longs (tutoriels, 25/11) : plus petits, et ils passent à la ligne. */
+.petite .titre,
+.petite .actif {
+  font-size: 18px;
+  white-space: normal;
+  max-width: calc(100% - 44px);
+}
+
+.petite .actif {
+  font-size: 21px;
+}
+
+@media (max-width: 860px) {
+  .petite .titre,
+  .petite .actif {
+    font-size: 16px;
+  }
+  .petite .actif {
+    font-size: 18px;
+  }
+}

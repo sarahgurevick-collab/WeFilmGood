@@ -30,7 +30,10 @@ export default function RoueTitres({
   valeur,
   onChange,
   etiquette = "Choisir",
+  petite = false,
 }: {
+  /** Des titres plus petits, qui passent à la ligne : pour les titres longs des tutoriels (25/11). */
+  petite?: boolean;
   titres: TitreRoue[];
   valeur: string;
   onChange: (id: string) => void;
@@ -152,7 +155,7 @@ export default function RoueTitres({
   return (
     <div
       ref={zone}
-      className={styles.roue}
+      className={petite ? `${styles.roue} ${styles.petite}` : styles.roue}
       role="listbox"
       aria-label={etiquette}
       aria-activedescendant={`titre-${valeur}`}
