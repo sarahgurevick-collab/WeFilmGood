@@ -350,7 +350,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
         entrees: [
           "🎥 Les salopes - Renée Beaulieu (Québec)",
           "Les naufragés du réel - Pierre Schumacher & Pierre Barbieri",
-          "Capraïa - Marc-Elie Chouraqui & Jacopo Cozzi",
+          "Capraïa - Marc-Eliel Chouraqui & Jacopo Cozzi",
           "Il neige à Gaza - Storm Sigal-Battesti",
           "Le secret de Barra - Ellis Chan",
         ],
