@@ -351,7 +351,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
           "🎥 Les salopes - Renée Beaulieu (Québec)",
           "Les naufragés du réel - Pierre Schumacher & Pierre Barbieri",
           "Capraïa - Marc-Elie Chouraqui & Jacopo Cozzi",
-          "Il neige à Gaza - Strom Sigal-Battesti",
+          "Il neige à Gaza - Storm Sigal-Battesti",
           "Le secret de Barra - Ellis Chan",
         ],
       },
