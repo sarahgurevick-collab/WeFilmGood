@@ -206,7 +206,7 @@ export const SELECTIONS_PCDV: AnneeSelection[] = [
       {
         titre: "Short Connection (Writers-Producers Meetings)",
         entrees: [
-          "T'as pas une clope ? - Karen Alix",
+          "T'as pas une clope ? - Karen Alyx",
           "Landes - Jean-Baptiste Becq",
           "Les eaux troubles - Muriel Bénard",
           "Terre d'ambre - Antoine Calmel",

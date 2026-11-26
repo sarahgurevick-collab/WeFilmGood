@@ -392,7 +392,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
       {
         titre: '"From short to long" selection',
         entrees: [
-          "T'as pas une clope? - Alix Karen",
+          "T'as pas une clope? - Alyx Karen",
           "🎥 Landes - Becq Jean-Baptiste",
           "Les eaux troubles - Bénard Muriel",
           "Terre d'ambre - Calmel Antoine",
