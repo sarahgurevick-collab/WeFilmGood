@@ -349,7 +349,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
         titre: "Night Re-Writing Workshop / Nuit blanche du scénario",
         entrees: [
           "🎥 Les salopes - Renée Beaulieu (Québec)",
-          "Les naufragés du réel - Pierre Schumacher & Pierre Barbieri",
+          "Les naufragés du réel - Pierre Schumacher & Jacques Barbéri",
           "Capraïa - Marc-Eliel Chouraqui & Jacopo Cozzi",
           "Il neige à Gaza - Storm Sigal-Battesti",
           "Le secret de Barra - Ellis Chan",
