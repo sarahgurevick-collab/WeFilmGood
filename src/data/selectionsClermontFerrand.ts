@@ -312,7 +312,7 @@ export const SELECTIONS_CLERMONT_FERRAND: AnneeSelection[] = [
       {
         titre: "Writers-Producers Meetings",
         entrees: [
-          "🎦 Negative Space - Ru Kawahata et Pax Porter - Ikki Films Production",
+          "🎦 Negative Space - Ru Kuwahata et Max Porter - Ikki Films Production",
           "Julien - Alexandre Opeccini",
           "🎦 Un matin un lapin - Anne Sophie Diego - Hybridfilms Productions",
           "🎦 Seul le silence - Katia Jarjoura - Echo Films/Blue Train Films, Ezekiel Films",
