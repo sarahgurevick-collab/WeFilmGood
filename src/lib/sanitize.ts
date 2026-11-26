@@ -98,6 +98,31 @@ export function sanitizeFiche(html: string): string {
 }
 
 /**
+ * Le vert des corrections d'orthographe (26/11, Sarah). Avant sa relecture,
+ * les fautes d'une fiche en attente sont corrigées et le mot corrigé est mis
+ * en vert dans le brouillon de l'administration, pour qu'elle voie d'un coup
+ * d'œil ce qui a changé. Ce vert n'est qu'un repère de relecture : il est
+ * retiré à la publication, l'auteur ne le voit jamais.
+ */
+export const VERT_CORRECTION = "#3fb950";
+const VERT_RVB = "rgb\\(\\s*63\\s*,\\s*185\\s*,\\s*80\\s*\\)";
+
+export function retirerVertCorrection(html: string): string {
+  const vert = new RegExp(`^(?:${VERT_CORRECTION}|${VERT_RVB})$`, "i");
+  return html.replace(/\sstyle="([^"]*)"/gi, (_, style: string) => {
+    const gardees = style
+      .split(";")
+      .map((d) => d.trim())
+      .filter((d) => {
+        if (!d) return false;
+        const [prop, ...reste] = d.split(":");
+        return !(prop.trim().toLowerCase() === "color" && vert.test(reste.join(":").trim()));
+      });
+    return gardees.length ? ` style="${gardees.join("; ")}"` : "";
+  });
+}
+
+/**
  * Une fiche reprise de WFG 1 : du texte à retours à la ligne, semé de
  * balises (<u>, <b>, <font color>…) que l'ancien site interprétait. On
  * les interprète aussi — le soulignement et le gras réapparaissent, les

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { ficheEstVide, sanitizeFiche } from "@/lib/sanitize";
+import { ficheEstVide, retirerVertCorrection, sanitizeFiche } from "@/lib/sanitize";
 
 /**
  * Valider une fiche de lecture reprise de WFG 1 (statut 1 : rendue par le
@@ -20,7 +20,8 @@ export async function validerFicheAncienne(formData: FormData) {
   if (!isAdmin) redirect("/");
 
   const id = Number(formData.get("legacy_review_id"));
-  const content = sanitizeFiche(((formData.get("content") as string) ?? "").trim());
+  // Le vert des corrections d'orthographe ne sert qu'à la relecture : il part à la validation.
+  const content = retirerVertCorrection(sanitizeFiche(((formData.get("content") as string) ?? "").trim()));
   const score = Number(formData.get("score"));
   const motivation = ((formData.get("label_motivation") as string) ?? "").trim();
   // Le lecteur peut être changé au dernier moment (une fiche refaite par

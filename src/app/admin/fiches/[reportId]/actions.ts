@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { prevenirAuteurFichePrete } from "@/lib/email-fiche-prete";
-import { ficheEstVide, sanitizeFiche } from "@/lib/sanitize";
+import { ficheEstVide, retirerVertCorrection, sanitizeFiche } from "@/lib/sanitize";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -27,7 +27,8 @@ export async function publishReport(formData: FormData) {
   const supabase = await requireAdmin();
 
   const reportId = formData.get("report_id") as string;
-  const content = sanitizeFiche((formData.get("content") as string) ?? "");
+  // Le vert des corrections d'orthographe ne sert qu'à la relecture : il part à la publication.
+  const content = retirerVertCorrection(sanitizeFiche((formData.get("content") as string) ?? ""));
   const score = Number(formData.get("score"));
 
   if (ficheEstVide(content) || !Number.isInteger(score) || score < 0 || score > 200) {
