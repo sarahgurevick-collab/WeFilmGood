@@ -13,6 +13,7 @@ export const ELEMENTS_MENU: { label: string; href: string; special?: boolean }[]
   { label: "ScenarioLabs", href: "/ateliers" },
   { label: "Maison des Scénaristes", href: "/association" },
   { label: "Masterclass", href: "/masterclass" },
+  { label: "Ils parlent de nous", href: "/presse" },
   { label: "Notre histoire", href: "/notre-histoire" },
   { label: "Témoignages", href: "/temoignages" },
   { label: "Tutoriels", href: "/tutoriels" },
