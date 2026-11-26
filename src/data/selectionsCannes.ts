@@ -372,7 +372,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
           "Cost Killer - Martin Antoine",
           "Mal aimée - Miquel Joelle",
           "237 years - Mischie Ioana",
-          "Le meneur - Moreau Philippe",
+          "Le meneur - Moreau-Sainz Philippe",
           "The Park - Mostafa Omar",
           "Sous la Terre - Padez Jim",
           "La vie rêvée de Zhou - Show Shun Lee (interview)",
