@@ -104,12 +104,18 @@ export default async function AuteursSelectionnesPage() {
     }
   }
   const tous = [...parCle.values()];
-  const [{ data: sans }, { data: crees }, { data: adresses }] = await Promise.all([
+  const [{ data: sans }, { data: proches }, { data: crees }, { data: adresses }] = await Promise.all([
     supabase.rpc("noms_sans_profil", { noms: tous.map((c) => c.noms[0].nom) }),
+    supabase.rpc("noms_proches", { noms: tous.map((c) => c.noms[0].nom) }),
     supabase.rpc("profils_auteurs_selectionnes"),
     supabase.from("adresses_auteurs_selectionnes").select("cle, email"),
   ]);
   const indices = new Set(((sans ?? []) as { idx: number }[]).map((r) => r.idx));
+  // Un nom qui ressemble de très près à un profil existant (« Strom » pour
+  // « Storm ») n'est pas proposé ici : il attend dans l'onglet « Noms
+  // proches » que Sarah dise si c'est la même personne (26/11). Sans cela,
+  // elle remplissait la ligne d'un auteur qui avait déjà son profil.
+  for (const r of (proches ?? []) as { idx: number }[]) indices.delete(r.idx);
   // Les profils déjà créés d'ici, retrouvés par le nom (mêmes mots, tout ordre).
   const creeDe = new Map<string, { id: string; nom: string; avatar: string | null; site: string | null }>();
   for (const p of (crees ?? []) as { id: string; full_name: string | null; first_name: string | null; last_name: string | null; avatar_url: string | null; website: string | null }[]) {
