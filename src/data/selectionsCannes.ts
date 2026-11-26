@@ -266,6 +266,7 @@ export const SELECTIONS_CANNES: AnneeSelection[] = [
           "Solarium - Geoffrey Crété",
           "🎥 Les Héroïques - Maxime Roy",
           "Le vol de l'exocet - Claire Guissart",
+          "Les Chats Errants - María Castillejo, Maëlle Grand Bossi, Denis Mauguit, Víctor Sagristà & Elisabeth Silveiro (Belgique)",
         ],
       },
     ],
