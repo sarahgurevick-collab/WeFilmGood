@@ -17,6 +17,7 @@ const PAGES = [
   { href: "/admin/cinecrush", libelle: "CinéCrush" },
   { href: "/admin/mailing", libelle: "Mailing" },
   { href: "/admin/auteurs-selectionnes", libelle: "Auteurs sélectionnés sans profil" },
+  { href: "/admin/noms-proches", libelle: "Noms proches" },
   { href: "/admin/archives-lecture", libelle: "Archives de lecture" },
   { href: "/admin/statistiques", libelle: "Statistiques" },
   { href: "/admin/films-proches", libelle: "Films proches" },

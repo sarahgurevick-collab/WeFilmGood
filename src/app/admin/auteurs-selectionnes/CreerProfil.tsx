@@ -42,6 +42,8 @@ export default function CreerProfil({
   const [siteEnregistre, setSiteEnregistre] = useState(dejaCree?.site ?? "");
   const [cree, setCree] = useState<string | null>(dejaCree?.id ?? null);
   const [erreur, setErreur] = useState<string | null>(null);
+  /** Le profil qui porte déjà l'adresse saisie (26/11, Sarah). */
+  const [porteur, setPorteur] = useState<{ id: string; nom: string } | null>(null);
   const [enCours, demarrer] = useTransition();
 
   const champ = (cle: keyof typeof champs, libelle: string, type = "text", requis = false) => (
@@ -150,7 +152,10 @@ export default function CreerProfil({
             if ("id" in r) {
               if (photo) await envoyerPhoto(r.id, photo);
               setCree(r.id);
-            } else setErreur(r.erreur);
+            } else {
+              setErreur(r.erreur);
+              setPorteur(r.profil ?? null);
+            }
           });
         }}
         style={{ display: "flex", flexDirection: "column", gap: 10 }}
@@ -187,7 +192,19 @@ export default function CreerProfil({
             Créer le profil
           </button>
         </div>
-        {erreur && <span className={formStyles.error} style={{ fontSize: 12 }}>{erreur}</span>}
+        {erreur && (
+          <span className={formStyles.error} style={{ fontSize: 12 }}>
+            {erreur}
+            {porteur && (
+              <>
+                {" "}
+                <Link href={`/membres/${porteur.id}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline" }}>
+                  {porteur.nom || "Voir le profil"}
+                </Link>
+              </>
+            )}
+          </span>
+        )}
       </form>
     </td>
   );

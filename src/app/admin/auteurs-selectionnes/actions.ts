@@ -35,12 +35,20 @@ export async function creerProfilAuteur(champs: {
   telephone: string;
   site?: string;
   fiches: FicheAuteur[];
-}): Promise<{ id: string } | { erreur: string }> {
+}): Promise<{ id: string } | { erreur: string; profil?: { id: string; nom: string } }> {
   const supabase = await createClient();
   const { data: isAdmin } = await supabase.rpc("is_admin");
   if (isAdmin !== true) return { erreur: "Réservé à l'administration." };
   const admin = createAdminClient();
   if (!admin) return { erreur: ERREURS.indisponible };
+
+  // L'adresse appartient déjà à un compte : on dit lequel (26/11, Sarah), le
+  // plus souvent le même auteur sous un nom écrit autrement.
+  const dejaPrise = async (adresse: string) => {
+    const { data } = await admin.rpc("profil_de_l_adresse", { p_email: adresse });
+    const p = ((data ?? []) as { id: string; nom: string }[])[0];
+    return p ? { erreur: ERREURS.dejaUtilisee, profil: p } : { erreur: ERREURS.dejaUtilisee };
+  };
 
   const prenom = champs.prenom.trim();
   const nom = champs.nom.trim();
@@ -50,7 +58,7 @@ export async function creerProfilAuteur(champs: {
   if (email) {
     if (!adresseValide(email)) return { erreur: ERREURS.invalide };
     const { data: prise } = await admin.rpc("adresse_deja_utilisee", { p_email: email });
-    if (prise === true) return { erreur: ERREURS.dejaUtilisee };
+    if (prise === true) return dejaPrise(email);
   }
 
   const fiches = champs.fiches
@@ -71,7 +79,7 @@ export async function creerProfilAuteur(champs: {
     },
   });
   if (error) {
-    if (error.code === "email_exists" || /already|exists/i.test(error.message)) return { erreur: ERREURS.dejaUtilisee };
+    if (error.code === "email_exists" || /already|exists/i.test(error.message)) return email ? dejaPrise(email) : { erreur: ERREURS.dejaUtilisee };
     console.error("Profil d'auteur sélectionné : échec", error.message);
     return { erreur: ERREURS.indisponible };
   }
