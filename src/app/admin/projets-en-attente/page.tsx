@@ -38,12 +38,12 @@ const ETATS: Record<string, string> = {
 };
 
 /**
- * L'objectif est de rendre l'analyse en 10 jours. Une date seule oblige
- * à compter de tête : on affiche le délai écoulé, et il passe en rouge
- * dès 6 jours — assez tôt pour réattribuer le projet avant l'échéance,
- * plutôt que de constater le retard une fois qu'il est là.
+ * Ce qui demande une action de Sarah, c'est une lecture refusée ou
+ * proposée sans réponse : seul cet état s'affiche en rouge. Le délai
+ * depuis le paiement reste en blanc, en jours seulement (Sarah, 27/11).
  */
-const ALERTE_JOURS = 6;
+const ETATS_A_TRAITER = new Set(["proposee", "refusee"]);
+const ROUGE_ALERTE = { color: "#e2231a", fontWeight: 600 } as const;
 
 const FORMATS_COURTS: Record<string, string> = {
   long_metrage: "LM",
@@ -61,13 +61,8 @@ function formatCourt(format: string | null, langue: string | null): string {
   return lang ? `${abrege} (${lang})` : abrege;
 }
 
-function joursDepuis(date: string): number {
-  return Math.floor((Date.now() - new Date(date).getTime()) / 86400000);
-}
-
-function depuisJoursHeures(date: string): string {
-  const heures = Math.floor((Date.now() - new Date(date).getTime()) / 3600000);
-  return `${Math.floor(heures / 24)} jour(s), ${heures % 24} heure(s)`;
+function depuisJours(date: string): string {
+  return `${Math.floor((Date.now() - new Date(date).getTime()) / 86400000)} jour(s)`;
 }
 
 /** « 2026/09/25 à 19h », comme sur WFG 1. */
@@ -360,21 +355,16 @@ export default async function ProjetsEnAttentePage() {
                     )}
                   </td>
                   <td>{formatCourt(p.format, p.language)}</td>
-                  <td
-                    style={
-                      joursDepuis(p.submitted_at) >= ALERTE_JOURS
-                        ? { color: "#e2231a", fontWeight: 600 }
-                        : undefined
-                    }
-                  >
-                    {depuisJoursHeures(p.submitted_at)}
-                  </td>
+                  <td>{depuisJours(p.submitted_at)}</td>
                   <td>
                     {p.current_reader_name ?? "—"}
                     {mission && p.current_reader_name && (
                       <>
                         <br />
-                        <span className={adminStyles.etatMission}>
+                        <span
+                          className={adminStyles.etatMission}
+                          style={ETATS_A_TRAITER.has(mission.status) ? ROUGE_ALERTE : undefined}
+                        >
                           {mission.status === "en_cours" ? "Analyse en cours" : (ETATS[mission.status] ?? mission.status)}
                           {mission.recu && ` (reçu le ${dateWfg1(mission.recu)})`}
                         </span>
