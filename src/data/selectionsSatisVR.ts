@@ -51,10 +51,6 @@ export const SELECTIONS_SATIS_VR: AnneeSelection[] = [
           '"Women" - Urmila Jagannathan',
         ],
       },
-    ],
-  },
-  {
-    blocs: [
       {
         titre: "Scenariolab",
         entrees: [
