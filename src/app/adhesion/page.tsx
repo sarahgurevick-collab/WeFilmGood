@@ -1,3 +1,4 @@
+import { phraseAdherent } from "@/lib/adhesion-en-cours";
 import OrbiteAdhesion from "@/components/OrbiteAdhesion";
 import PageShell from "@/components/PageShell";
 import formStyles from "@/components/form.module.css";
@@ -25,6 +26,10 @@ export default async function AdhesionPage({
     ? await supabase.rpc("a_une_adhesion_active", { p_profile_id: user.id })
     : { data: false };
 
+  // « Vous êtes adhérent·e annuel·le… » (27/11, Sarah) : pour qu'on ne paie pas
+  // une adhésion qu'on a déjà.
+  const rappelAdherent = user && adherent === true ? await phraseAdherent(supabase, user.id) : null;
+
   const motsCles =
     ((fonds ?? [])[0] as { mots_cles: number } | undefined)?.mots_cles ?? 0;
 
@@ -43,6 +48,7 @@ export default async function AdhesionPage({
       {/* « Mes factures » est passé dans « Réglages du compte » (15/11, Sarah). */}
       {/* Le bouton « Aller aux Galaxies » des adhérents est retiré (15/11, Sarah) :
           la carte à 0 € porte « J'explore les Galaxies ». */}
+      {rappelAdherent && <p style={{ textAlign: "center", marginBottom: 16 }}>{rappelAdherent}</p>}
       {paiement === "erreur" && (
         <p className={formStyles.error}>
           Le paiement n&apos;a pas pu démarrer. Réessayez dans un instant, ou

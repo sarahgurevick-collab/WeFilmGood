@@ -1,3 +1,4 @@
+import { phraseAdherent } from "@/lib/adhesion-en-cours";
 import Link from "next/link";
 import formStyles from "@/components/form.module.css";
 import ChampFichier from "@/components/ChampFichier";
@@ -102,6 +103,8 @@ export default async function DocumentsPage({
     supabase.rpc("is_admin"),
     supabase.from("storypitch_autorises").select("project_id").eq("project_id", id).maybeSingle(),
   ]);
+  // « Vous êtes adhérent·e annuel·le… » (27/11, Sarah) : au-dessus du prix de la lecture.
+  const rappelAdherent = adherent === true ? await phraseAdherent(supabase, projet.owner_id) : null;
   // « Envoyer » (09/11) : la lecture se paie 60 €, 50 € pour un adhérent (11/11). Le bouton
   // paraît quand le scénario est là, tant que le projet n'a pas déjà été
   // envoyé ou lu. En mode test (compte HelloAsso de test), seule
@@ -187,6 +190,7 @@ export default async function DocumentsPage({
                 </p>
               ) : (
                 <>
+                  {rappelAdherent && <p style={{ marginBottom: 8 }}>{rappelAdherent}</p>}
                   <p className={formStyles.hint}>
                     {nouvelleAnalyse
                       ? "Nouvelle lecture et analyse de votre scénario retravaillé"
