@@ -29,6 +29,7 @@ const SEPARATEUR_AUTEURS = /(\s+(?:et|&|and)\s+|\s*\/\s*|\s*,\s*)/;
    Sarah 27/10). */
 const TITRES_FICHE: Record<string, string> = {
   "C'est pas une histoire d'amour": "It's not a love story",
+  "Planet espoir": "Planète espoir",
 };
 
 export function morceauxAuteurs(auteur: string): string[] {
