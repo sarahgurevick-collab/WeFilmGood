@@ -34,7 +34,8 @@ export default async function ArchivesLecturePage({ searchParams }: { searchPara
   return (
     <PageShell nav="admin" avantTitre={<NavAdmin />} title="Archives de lecture" theme="clair">
       <p className={formStyles.hint}>
-        {toutes.length} fiches, dont {toutes.filter((f) => f.project_id).length} rattachées à un projet de WFG 2.
+        {toutes.length} fiches, dont {toutes.filter((f) => f.project_id).length} rattachées à un projet de WFG 2
+        et {toutes.filter((f) => !f.project_id && f.relies.length > 0).length} au profil de leur auteur.
         Visibles de l&apos;administration seulement.
       </p>
       <form className={formStyles.field} style={{ margin: "12px 0 20px" }}>
@@ -51,7 +52,7 @@ export default async function ArchivesLecturePage({ searchParams }: { searchPara
             {appel} ({fiches.length})
           </h2>
           {fiches.map((f) => (
-            <FicheArchivee key={f.id} f={f} projet={f.projet} />
+            <FicheArchivee key={f.id} f={f} projet={f.projet} relies={f.relies} />
           ))}
         </section>
       ))}

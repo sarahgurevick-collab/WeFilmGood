@@ -1,12 +1,21 @@
 import Link from "next/link";
-import { dateArchive, type ArchiveLecture } from "@/lib/archives-lecture";
+import { dateArchive, type ArchiveLecture, type AuteurRelie } from "@/lib/archives-lecture";
 
 /**
  * Une fiche de lecture des archives de la Maison (31/10/2026), repliée :
  * on l'ouvre pour lire le texte, le mot du lecteur et le document
  * d'origine. Administration seulement.
  */
-export default function FicheArchivee({ f, projet }: { f: ArchiveLecture; projet?: string | null }) {
+export default function FicheArchivee({
+  f,
+  projet,
+  relies,
+}: {
+  f: ArchiveLecture;
+  projet?: string | null;
+  /** L'auteur retrouvé sur WFG 2 par son nom, quand le projet n'y est pas (27/11/2026). */
+  relies?: AuteurRelie[];
+}) {
   const reperes = [f.appel, f.lecteur ? `lue par ${f.lecteur}` : null, dateArchive(f.recue_le)].filter(Boolean).join(" · ");
   return (
     <details style={{ borderTop: "1px solid var(--border, #ddd)", padding: "10px 0" }}>
@@ -23,6 +32,17 @@ export default function FicheArchivee({ f, projet }: { f: ArchiveLecture; projet
             ) : (
               <em>Projet non retrouvé dans WFG 2</em>
             )}
+          </p>
+        )}
+        {!f.project_id && relies && relies.length > 0 && (
+          <p style={{ margin: "0 0 8px" }}>
+            Auteur sur WFG 2 :{" "}
+            {relies.map((a, i) => (
+              <span key={a.id}>
+                {i > 0 && ", "}
+                <Link href={`/membres/${a.id}`}>{a.nom}</Link>
+              </span>
+            ))}
           </p>
         )}
         {f.lien && (

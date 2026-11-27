@@ -1,3 +1,5 @@
+import { archivesDuProfil } from "@/lib/archives-lecture";
+import FicheArchivee from "@/components/FicheArchivee";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import Bandeau from "@/components/Bandeau";
@@ -110,6 +112,10 @@ export default async function ProfilMembrePage({
   // Le SIREN de sa société, repris de WFG 1 et contrôlé dans l'annuaire des
   // entreprises (14/11, Sarah) : pour l'administration seulement.
   let siren: { siren: string; etat: string | null; denomination: string | null; fermee_le: string | null } | null = null;
+  // Les archives des fiches de lecture de la Maison qui le concernent
+  // (27/11/2026, Sarah) : celles de ses projets et celles reliées à lui par
+  // son nom quand le projet lu n'est pas sur le site. Administration seulement.
+  const archives = estAdmin ? await archivesDuProfil(membre.id) : [];
   if (estAdmin) {
     const service = createAdminClient();
     if (service) {
@@ -297,6 +303,18 @@ export default async function ProfilMembrePage({
             </span>
           )}
         </div>
+      )}
+
+      {archives.length > 0 && (
+        <details style={{ marginTop: 16 }}>
+          <summary style={{ cursor: "pointer" }}>
+            Admin : {archives.length} archive{archives.length > 1 ? "s" : ""} de lecture (
+            {[...new Set(archives.map((a) => a.appel).filter(Boolean))].join(", ")})
+          </summary>
+          {archives.map((a) => (
+            <FicheArchivee key={a.id} f={a} projet={a.projet} />
+          ))}
+        </details>
       )}
 
       {soleil}
