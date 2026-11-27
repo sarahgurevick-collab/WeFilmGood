@@ -444,8 +444,8 @@ export const SUCCESS_STORIES_BLOG: SuccessStoryBlog[] = [
     "format": "CM",
     "statut": "tourne",
     "projetId": "77f7d269-f81c-4be9-8860-72d8c606c5fd",
-    "image": null,
-    "affiche": null
+    "image": "/success-stories/3-pissenlits.jpg",
+    "affiche": "/success-stories/affiches/3-pissenlits.jpg"
   },
   {
     "titre": "The place to be",
