@@ -32,13 +32,6 @@ export const SELECTIONS_SATIS_VR: AnneeSelection[] = [
           '"La suite del Demonio" - Alejandro Ortega Maeso',
         ],
       },
-      {
-        titre: "Scenariolab",
-        entrees: [
-          '"Dreamlike" - Noémie Fansten - Bertrand Suarez',
-          '"Visites" - Martin Fournier',
-        ],
-      },
     ],
   },
   {
@@ -56,6 +49,13 @@ export const SELECTIONS_SATIS_VR: AnneeSelection[] = [
           '"Big Sister" - Denis Volt',
           '"Liberté, égalité, fraternité" - Christian Dauteuille',
           '"Women" - Urmila Jagannathan',
+        ],
+      },
+      {
+        titre: "Scenariolab",
+        entrees: [
+          '"Dreamlike" - Noémie Fansten - Bertrand Suarez',
+          '"Visites" - Martin Fournier',
         ],
       },
     ],
