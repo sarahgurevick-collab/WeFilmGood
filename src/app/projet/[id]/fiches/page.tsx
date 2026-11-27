@@ -76,12 +76,19 @@ export default async function FichesDuProjetPage({
     d ? new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : "Date inconnue";
 
   return (
-    <PageShell eyebrow="Fiches de lecture" title={projet.title}>
+    <PageShell
+      avantTitre={
+        <p className={formStyles.linkRow} style={{ marginBottom: 16 }}>
+          <Link href={`/projet/${id}`}>← Retour au projet</Link>
+        </p>
+      }
+      eyebrow="Fiches de lecture"
+      title={projet.title}
+    >
       {fiches.length === 0 && archives.length === 0 ? (
         <p className={formStyles.hint}>
           Les fiches de lecture sont confidentielles : seuls l&apos;auteur du projet et
-          l&apos;équipe WeFilmGood peuvent les lire.{" "}
-          <Link href={`/projet/${id}`}>Retour au projet</Link>
+          l&apos;équipe WeFilmGood peuvent les lire.
         </p>
       ) : (
         <>
