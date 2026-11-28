@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import { createClient } from "@/lib/supabase/server";
+import { photoNette } from "@/lib/photo";
 import NavAdmin from "../NavAdmin";
 import styles from "../admin.module.css";
 import Trancher from "./Trancher";
@@ -22,6 +23,7 @@ type Ligne = {
   source: string;
   wfg1: string | null;
   projets: string | null;
+  photo: string | null;
 };
 
 export default async function FemmeHommePage() {
@@ -51,6 +53,7 @@ export default async function FemmeHommePage() {
             <table className={styles.table}>
               <thead>
                 <tr>
+                  <th />
                   <th>Auteur</th>
                   <th>Case de WFG 1</th>
                   <th>Projets</th>
@@ -62,6 +65,18 @@ export default async function FemmeHommePage() {
                   const nomComplet = [l.prenom, l.nom].filter(Boolean).join(" ").trim();
                   return (
                     <tr key={l.profile_id}>
+                      <td style={{ width: 72 }}>
+                        {l.photo ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={photoNette(l.photo) ?? undefined}
+                            alt=""
+                            style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", display: "block" }}
+                          />
+                        ) : (
+                          <span style={{ display: "block", width: 64, height: 64, borderRadius: "50%", background: "#eee" }} />
+                        )}
+                      </td>
                       <td>
                         <Link
                           href={`/membres/${l.profile_id}`}
