@@ -18,6 +18,7 @@ const PAGES = [
   { href: "/admin/mailing", libelle: "Mailing" },
   { href: "/admin/archives-lecture", libelle: "Archives de lecture" },
   { href: "/admin/statistiques", libelle: "Statistiques" },
+  { href: "/admin/femme-homme", libelle: "Femme / homme" },
   { href: "/admin/films-proches", libelle: "Films proches" },
   { href: "/admin/selectionnes-sans-image", libelle: "Sélectionnés sans image" },
   { href: "/admin/projets-sans-image", libelle: "Projets sans image" },
