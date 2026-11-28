@@ -20,7 +20,7 @@ type Report = {
   label_motivation: string | null;
   status: string;
   submitted_at: string;
-  project: { id: string; title: string; format: string | null } | null;
+  project: { id: string; title: string; format: string | null; owner: { full_name: string | null } | null } | null;
   reader: { full_name: string | null } | null;
 };
 
@@ -43,7 +43,7 @@ export default async function FicheAdminPage({
   const { data: report } = await supabase
     .from("reading_reports")
     .select(
-      "id, reader_id, content, score, label_motivation, status, submitted_at, project:projects(id, title, format), reader:profiles!reading_reports_reader_id_fkey(full_name)",
+      "id, reader_id, content, score, label_motivation, status, submitted_at, project:projects(id, title, format, owner:profiles!projects_owner_id_fkey(full_name)), reader:profiles!reading_reports_reader_id_fkey(full_name)",
     )
     .eq("id", reportId)
     .maybeSingle<Report>();
@@ -91,6 +91,10 @@ export default async function FicheAdminPage({
       title={report.project?.title ?? "Projet"}
       theme="clair"
     >
+      <p className={formStyles.hint}>
+        Projet de {report.project?.owner?.full_name ?? "—"}
+      </p>
+
       <p className={formStyles.hint}>
         Rendue par {report.reader?.full_name ?? "—"} le{" "}
         {new Date(report.submitted_at).toLocaleDateString("fr-FR")} · note du
