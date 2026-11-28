@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import ChampNote from "./ChampNote";
 import PageShell from "@/components/PageShell";
@@ -11,6 +10,7 @@ import { createClient } from "@/lib/supabase/server";
 import { enregistrerBrouillon, publishReport } from "./actions";
 import { FORMATS } from "@/app/projet/ChampsFiche";
 import PanneauFilmsAVoir from "../PanneauFilmsAVoir";
+import LienScenario from "../../LienScenario";
 
 type Report = {
   id: string;
@@ -84,6 +84,25 @@ export default async function FicheAdminPage({
     .sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
   const score = brouillon?.score ?? publication?.score ?? report.score ?? 0;
 
+  // Le PDF lu par le lecteur, à ouvrir dans un autre onglet (28/11, Sarah) :
+  // la dernière version déposée avant la remise de la fiche, sinon la
+  // dernière tout court.
+  let scenarioUrl: string | null = null;
+  if (report.project?.id) {
+    const { data: pdfs } = await supabase
+      .from("project_files")
+      .select("storage_path, uploaded_at")
+      .eq("project_id", report.project.id)
+      .eq("kind", "scenario")
+      .order("uploaded_at", { ascending: false });
+    const liste = (pdfs ?? []) as { storage_path: string; uploaded_at: string }[];
+    const pdf = liste.find((f) => f.uploaded_at <= report.submitted_at) ?? liste[0];
+    if (pdf) {
+      const { data: signe } = await supabase.storage.from("scenarios").createSignedUrl(pdf.storage_path, 60 * 60);
+      scenarioUrl = signe?.signedUrl ?? null;
+    }
+  }
+
   return (
     <PageShell nav="admin"
       avantTitre={<NavAdmin />}
@@ -93,6 +112,11 @@ export default async function FicheAdminPage({
     >
       <p className={formStyles.hint}>
         Projet de {report.project?.owner?.full_name ?? "—"}
+        {scenarioUrl && (
+          <span style={{ marginLeft: 12, verticalAlign: "middle", display: "inline-block" }}>
+            <LienScenario href={scenarioUrl} />
+          </span>
+        )}
       </p>
 
       <p className={formStyles.hint}>
@@ -164,11 +188,6 @@ export default async function FicheAdminPage({
         <PanneauFilmsAVoir projectId={report.project.id} retour={`/admin/fiches/${report.id}`} />
       )}
 
-      <p className={formStyles.linkRow} style={{ marginTop: 32 }}>
-        <Link href="/admin/fiches-a-valider">
-          Retour aux fiches à valider
-        </Link>
-      </p>
     </PageShell>
   );
 }
